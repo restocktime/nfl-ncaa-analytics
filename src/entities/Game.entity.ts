@@ -17,69 +17,69 @@ export enum GameStatus {
 @Index(['homeTeamId', 'awayTeamId'])
 export class Game {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'home_team_id' })
-  homeTeamId: string;
+  homeTeamId!: string;
 
   @Column({ name: 'away_team_id' })
-  awayTeamId: string;
+  awayTeamId!: string;
 
   @ManyToOne(() => Team, { eager: true })
-  homeTeam: Team;
+  homeTeam!: Team;
 
   @ManyToOne(() => Team, { eager: true })
-  awayTeam: Team;
+  awayTeam!: Team;
 
   @Column({ name: 'scheduled_time', type: 'timestamptz' })
-  scheduledTime: Date;
+  scheduledTime!: Date;
 
   @Column({
     type: 'enum',
     enum: GameStatus,
     default: GameStatus.SCHEDULED
   })
-  status: GameStatus;
+  status!: GameStatus;
 
   @Column({ nullable: true })
-  venue: string;
+  venue?: string;
 
   @Column({ nullable: true })
-  city: string;
+  city?: string;
 
   @Column({ nullable: true })
-  state: string;
+  state?: string;
 
   @Column({ name: 'home_score', default: 0 })
-  homeScore: number;
+  homeScore!: number;
 
   @Column({ name: 'away_score', default: 0 })
-  awayScore: number;
+  awayScore!: number;
 
   @Column({ nullable: true })
-  quarter: number;
+  quarter?: number;
 
   @Column({ name: 'time_remaining', nullable: true })
-  timeRemaining: string;
+  timeRemaining?: string;
 
   @Column({ name: 'weather_conditions', type: 'jsonb', nullable: true })
-  weatherConditions: any;
+  weatherConditions?: any;
 
   @Column({ name: 'betting_lines', type: 'jsonb', nullable: true })
-  bettingLines: any;
+  bettingLines?: any;
 
   @Column({ type: 'jsonb', nullable: true })
-  officials: any[];
+  officials?: any[];
 
   @OneToMany(() => GameState, gameState => gameState.game)
-  gameStates: GameState[];
+  gameStates!: GameState[];
 
   @OneToMany(() => GameProbabilities, probabilities => probabilities.game)
-  probabilities: GameProbabilities[];
+  probabilities!: GameProbabilities[];
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

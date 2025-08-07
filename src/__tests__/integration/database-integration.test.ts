@@ -1,24 +1,39 @@
 import { DataSource } from 'typeorm';
+import { DatabaseService } from '../../core/database-service';
 import { DatabaseManager, defaultDatabaseConfig } from '../../core/database-config';
 import { GameRepository } from '../../repositories/GameRepository';
 import { GameStateRepository } from '../../repositories/GameStateRepository';
 import { GameProbabilitiesRepository } from '../../repositories/GameProbabilitiesRepository';
+import { TeamRepository } from '../../repositories/TeamRepository';
+import { PlayerRepository } from '../../repositories/PlayerRepository';
+import { TeamStatisticsRepository } from '../../repositories/TeamStatisticsRepository';
+import { PlayerStatisticsRepository } from '../../repositories/PlayerStatisticsRepository';
 import { Game, GameStatus } from '../../entities/Game.entity';
 import { Team } from '../../entities/Team.entity';
+import { Player, Position, InjuryStatus } from '../../entities/Player.entity';
 import { GameState } from '../../entities/GameState.entity';
 import { GameProbabilities } from '../../entities/GameProbabilities.entity';
+import { TeamStatistics } from '../../entities/TeamStatistics.entity';
+import { PlayerStatistics } from '../../entities/PlayerStatistics.entity';
 
 describe('Database Integration Tests', () => {
+  let databaseService: DatabaseService;
   let databaseManager: DatabaseManager;
   let dataSource: DataSource;
   let gameRepository: GameRepository;
   let gameStateRepository: GameStateRepository;
   let gameProbabilitiesRepository: GameProbabilitiesRepository;
+  let teamRepository: TeamRepository;
+  let playerRepository: PlayerRepository;
+  let teamStatisticsRepository: TeamStatisticsRepository;
+  let playerStatisticsRepository: PlayerStatisticsRepository;
 
   // Test data
   let testTeam1: Team;
   let testTeam2: Team;
   let testGame: Game;
+  let testPlayer1: Player;
+  let testPlayer2: Player;
 
   beforeAll(async () => {
     // Use test database configuration
@@ -28,22 +43,28 @@ describe('Database Integration Tests', () => {
       host: process.env.TEST_DB_HOST || 'localhost',
       port: parseInt(process.env.TEST_DB_PORT || '5432'),
       username: process.env.TEST_DB_USERNAME || 'postgres',
-      password: process.env.TEST_DB_PASSWORD || 'password'
+      password: process.env.TEST_DB_PASSWORD || 'password',
+      enableTimescaleDB: true
     };
 
+    databaseService = new DatabaseService(testConfig);
     databaseManager = new DatabaseManager(testConfig);
     
     try {
-      await databaseManager.initialize();
-      dataSource = databaseManager.getDataSource();
+      await databaseService.initialize();
+      dataSource = databaseService.getDataSource();
       
-      // Initialize repositories
-      gameRepository = new GameRepository(dataSource);
-      gameStateRepository = new GameStateRepository(dataSource);
-      gameProbabilitiesRepository = new GameProbabilitiesRepository(dataSource);
+      // Get repositories from service
+      gameRepository = databaseService.gameRepository;
+      gameStateRepository = databaseService.gameStateRepository;
+      gameProbabilitiesRepository = databaseService.gameProbabilitiesRepository;
+      teamRepository = databaseService.teamRepository;
+      playerRepository = databaseService.playerRepository;
+      teamStatisticsRepository = databaseService.teamStatisticsRepository;
+      playerStatisticsRepository = databaseService.playerStatisticsRepository;
 
       // Run migrations
-      await databaseManager.runMigrations();
+      await databaseService.runMigrations();
     } catch (error) {
       console.warn('Database connection failed, skipping integration tests:', error);
       return;
@@ -51,6 +72,9 @@ describe('Database Integration Tests', () => {
   });
 
   afterAll(async () => {
+    if (databaseService) {
+      await databaseService.close();
+    }
     if (databaseManager) {
       await databaseManager.close();
     }
@@ -62,8 +86,11 @@ describe('Database Integration Tests', () => {
     }
 
     // Clean up test data
+    await dataSource.query('TRUNCATE TABLE player_statistics CASCADE');
+    await dataSource.query('TRUNCATE TABLE team_statistics CASCADE');
     await dataSource.query('TRUNCATE TABLE game_probabilities CASCADE');
     await dataSource.query('TRUNCATE TABLE game_states CASCADE');
+    await dataSource.query('TRUNCATE TABLE players CASCADE');
     await dataSource.query('TRUNCATE TABLE games CASCADE');
     await dataSource.query('TRUNCATE TABLE teams CASCADE');
 
@@ -83,6 +110,37 @@ describe('Database Integration Tests', () => {
       conference: 'Test Conference',
       city: 'Test City 2',
       state: 'TS'
+    });
+
+    // Create test players
+    testPlayer1 = await playerRepository.create({
+      name: 'Test Player 1',
+      jerseyNumber: 12,
+      position: Position.QB,
+      height: '6-2',
+      weight: 215,
+      age: 24,
+      experience: 3,
+      college: 'Test University',
+      teamId: testTeam1.id,
+      injuryStatus: InjuryStatus.HEALTHY,
+      depthChartPosition: 1,
+      isStarter: true
+    });
+
+    testPlayer2 = await playerRepository.create({
+      name: 'Test Player 2',
+      jerseyNumber: 21,
+      position: Position.RB,
+      height: '5-10',
+      weight: 195,
+      age: 22,
+      experience: 1,
+      college: 'Test College',
+      teamId: testTeam2.id,
+      injuryStatus: InjuryStatus.HEALTHY,
+      depthChartPosition: 1,
+      isStarter: true
     });
 
     // Create test game
@@ -424,5 +482,258 @@ describe('Database Integration Tests', () => {
       expect(endTime - startTime).toBeLessThan(1000);
       expect(recentProbabilities.length).toBeGreaterThan(0);
     }, 10000);
+  });
+
+  describe('DatabaseService', () => {
+    it('should provide access to all repositories', async () => {
+      if (!databaseService) return;
+
+      expect(databaseService.gameRepository).toBeDefined();
+      expect(databaseService.gameStateRepository).toBeDefined();
+      expect(databaseService.gameProbabilitiesRepository).toBeDefined();
+      expect(databaseService.teamRepository).toBeDefined();
+      expect(databaseService.playerRepository).toBeDefined();
+      expect(databaseService.teamStatisticsRepository).toBeDefined();
+      expect(databaseService.playerStatisticsRepository).toBeDefined();
+    });
+
+    it('should get database connection info', async () => {
+      if (!databaseService) return;
+
+      const connectionInfo = await databaseService.getConnectionInfo();
+      expect(connectionInfo.isConnected).toBe(true);
+      expect(connectionInfo.database).toBe('football_analytics_test');
+    });
+
+    it('should get database statistics', async () => {
+      if (!databaseService) return;
+
+      const stats = await databaseService.getDatabaseStats();
+      expect(stats.totalTables).toBeGreaterThan(0);
+      expect(typeof stats.databaseSize).toBe('string');
+    });
+
+    it('should execute transactions', async () => {
+      if (!databaseService || !testTeam1) return;
+
+      const result = await databaseService.executeTransaction(async (dataSource) => {
+        const teamRepo = dataSource.getRepository(Team);
+        await teamRepo.update(testTeam1.id, { name: 'Updated Team Name' });
+        return 'success';
+      });
+
+      expect(result).toBe('success');
+      
+      const updatedTeam = await teamRepository.findById(testTeam1.id);
+      expect(updatedTeam?.name).toBe('Updated Team Name');
+    });
+  });
+
+  describe('TeamRepository', () => {
+    it('should find teams by conference', async () => {
+      if (!teamRepository) return;
+
+      const teams = await teamRepository.findByConference('Test Conference');
+      expect(teams).toHaveLength(2);
+    });
+
+    it('should find team with players', async () => {
+      if (!teamRepository || !testTeam1) return;
+
+      const teamWithPlayers = await teamRepository.findWithPlayers(testTeam1.id);
+      expect(teamWithPlayers).toBeDefined();
+      expect(teamWithPlayers?.players).toHaveLength(1);
+      expect(teamWithPlayers?.players[0].name).toBe('Test Player 1');
+    });
+
+    it('should search teams by name', async () => {
+      if (!teamRepository) return;
+
+      const teams = await teamRepository.searchByName('Test Team');
+      expect(teams.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('PlayerRepository', () => {
+    it('should find players by team', async () => {
+      if (!playerRepository || !testTeam1) return;
+
+      const players = await playerRepository.findByTeam(testTeam1.id);
+      expect(players).toHaveLength(1);
+      expect(players[0].name).toBe('Test Player 1');
+    });
+
+    it('should find players by position', async () => {
+      if (!playerRepository) return;
+
+      const quarterbacks = await playerRepository.findByPosition(Position.QB);
+      expect(quarterbacks).toHaveLength(1);
+      expect(quarterbacks[0].position).toBe(Position.QB);
+    });
+
+    it('should find starters', async () => {
+      if (!playerRepository || !testTeam1) return;
+
+      const starters = await playerRepository.findStarters(testTeam1.id);
+      expect(starters).toHaveLength(1);
+      expect(starters[0].isStarter).toBe(true);
+    });
+
+    it('should update injury status', async () => {
+      if (!playerRepository || !testPlayer1) return;
+
+      const updatedPlayer = await playerRepository.updateInjuryStatus(
+        testPlayer1.id,
+        InjuryStatus.QUESTIONABLE,
+        'Shoulder injury'
+      );
+
+      expect(updatedPlayer?.injuryStatus).toBe(InjuryStatus.QUESTIONABLE);
+      expect(updatedPlayer?.injuryDescription).toBe('Shoulder injury');
+    });
+
+    it('should find injured players', async () => {
+      if (!playerRepository || !testPlayer1) return;
+
+      // First update a player to injured status
+      await playerRepository.updateInjuryStatus(testPlayer1.id, InjuryStatus.OUT);
+
+      const injuredPlayers = await playerRepository.findInjuredPlayers();
+      expect(injuredPlayers.length).toBeGreaterThan(0);
+      expect(injuredPlayers.some(p => p.id === testPlayer1.id)).toBe(true);
+    });
+  });
+
+  describe('TeamStatisticsRepository', () => {
+    let testTeamStats: TeamStatistics;
+
+    beforeEach(async () => {
+      if (!teamStatisticsRepository || !testTeam1) return;
+
+      testTeamStats = await teamStatisticsRepository.create({
+        teamId: testTeam1.id,
+        season: 2024,
+        week: 1,
+        opponentId: testTeam2.id,
+        isHome: true,
+        pointsScored: 28,
+        totalYards: 425,
+        passingYards: 275,
+        rushingYards: 150,
+        firstDowns: 22,
+        thirdDownConversions: 8,
+        thirdDownAttempts: 12,
+        redZoneConversions: 3,
+        redZoneAttempts: 4,
+        turnovers: 1,
+        pointsAllowed: 14,
+        yardsAllowed: 320,
+        sacks: 3,
+        interceptions: 2,
+        offensiveEfficiency: 0.785,
+        defensiveEfficiency: 0.642
+      });
+    });
+
+    it('should find statistics by team', async () => {
+      if (!teamStatisticsRepository || !testTeam1) return;
+
+      const stats = await teamStatisticsRepository.findByTeam(testTeam1.id, 2024);
+      expect(stats).toHaveLength(1);
+      expect(stats[0].pointsScored).toBe(28);
+    });
+
+    it('should calculate season totals', async () => {
+      if (!teamStatisticsRepository || !testTeam1) return;
+
+      const seasonTotals = await teamStatisticsRepository.findSeasonTotals(testTeam1.id, 2024);
+      expect(seasonTotals).toBeDefined();
+      expect(Number(seasonTotals?.totalpointsscored)).toBe(28);
+      expect(Number(seasonTotals?.gamesplayed)).toBe(1);
+    });
+
+    it('should find red zone statistics', async () => {
+      if (!teamStatisticsRepository || !testTeam1) return;
+
+      const redZoneStats = await teamStatisticsRepository.findRedZoneStats(testTeam1.id, 2024);
+      expect(redZoneStats.offensiveRedZonePercentage).toBe(75); // 3/4 * 100
+    });
+  });
+
+  describe('PlayerStatisticsRepository', () => {
+    let testPlayerStats: PlayerStatistics;
+
+    beforeEach(async () => {
+      if (!playerStatisticsRepository || !testPlayer1) return;
+
+      testPlayerStats = await playerStatisticsRepository.create({
+        playerId: testPlayer1.id,
+        season: 2024,
+        week: 1,
+        opponentId: testTeam2.id,
+        isHome: true,
+        gamesPlayed: 1,
+        gamesStarted: 1,
+        passingAttempts: 32,
+        passingCompletions: 24,
+        passingYards: 275,
+        passingTouchdowns: 2,
+        interceptionsThrown: 1,
+        qbRating: 98.5,
+        rushingAttempts: 4,
+        rushingYards: 18,
+        rushingTouchdowns: 1
+      });
+    });
+
+    it('should find statistics by player', async () => {
+      if (!playerStatisticsRepository || !testPlayer1) return;
+
+      const stats = await playerStatisticsRepository.findByPlayer(testPlayer1.id, 2024);
+      expect(stats).toHaveLength(1);
+      expect(stats[0].passingYards).toBe(275);
+    });
+
+    it('should calculate season totals', async () => {
+      if (!playerStatisticsRepository || !testPlayer1) return;
+
+      const seasonTotals = await playerStatisticsRepository.findSeasonTotals(testPlayer1.id, 2024);
+      expect(seasonTotals).toBeDefined();
+      expect(Number(seasonTotals?.totalpassingyards)).toBe(275);
+      expect(Number(seasonTotals?.weeksplayed)).toBe(1);
+    });
+
+    it('should find top passers', async () => {
+      if (!playerStatisticsRepository) return;
+
+      const topPassers = await playerStatisticsRepository.getTopPassers(2024, 5);
+      expect(topPassers).toHaveLength(1);
+      expect(Number(topPassers[0].totalpassingyards)).toBe(275);
+    });
+
+    it('should find fantasy relevant stats', async () => {
+      if (!playerStatisticsRepository) return;
+
+      const fantasyStats = await playerStatisticsRepository.getFantasyRelevantStats(2024, Position.QB, 5);
+      expect(fantasyStats).toHaveLength(1);
+      expect(Number(fantasyStats[0].totalpassingyards)).toBe(275);
+    });
+  });
+
+  describe('TimescaleDB Integration', () => {
+    it('should handle TimescaleDB hypertables', async () => {
+      if (!databaseService) return;
+
+      const hypertables = await databaseService.getTimescaleDBInfo();
+      // Should have game_states and game_probabilities as hypertables
+      expect(Array.isArray(hypertables)).toBe(true);
+    });
+
+    it('should optimize TimescaleDB settings', async () => {
+      if (!databaseService) return;
+
+      // This should not throw an error
+      await expect(databaseService.optimizeTimescaleDB()).resolves.not.toThrow();
+    });
   });
 });

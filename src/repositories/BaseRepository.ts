@@ -37,7 +37,7 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
 
   async delete(id: string): Promise<boolean> {
     const result = await this.repository.delete(id);
-    return result.affected !== null && result.affected > 0;
+    return result.affected !== null && result.affected !== undefined && result.affected > 0;
   }
 
   async count(options?: FindManyOptions<T>): Promise<number> {
@@ -49,7 +49,7 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
     return count > 0;
   }
 
-  async bulkCreate(entities: Partial<T>[]): Promise<T[]> {
+  async bulkCreate(entities: DeepPartial<T>[]): Promise<T[]> {
     const newEntities = this.repository.create(entities);
     return this.repository.save(newEntities);
   }

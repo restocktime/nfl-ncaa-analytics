@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: football-analytics-config
+  namespace: football-analytics
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  API_TIMEOUT: "30000"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "football_analytics"
+  INFLUXDB_HOST: "influxdb-service"
+  INFLUXDB_PORT: "8086"
+  INFLUXDB_DB: "football_metrics"
+  PROMETHEUS_PORT: "9090"
+  WEBSOCKET_PORT: "8080"
+  API_GATEWAY_PORT: "3000"
+  MONTE_CARLO_WORKERS: "4"
+  ML_MODEL_CACHE_TTL: "3600"
+  CIRCUIT_BREAKER_THRESHOLD: "5"
+  RATE_LIMIT_WINDOW: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "1000"
+  FRONTEND_URL: "https://your-domain.com"
+  GOOGLE_REDIRECT_URI: "https://your-domain.com/auth/google/callback"
+  ALLOWED_ORIGINS: "https://your-domain.com,https://www.your-domain.com"

@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probability-engine
+  namespace: football-analytics
+  labels:
+    app: probability-engine
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probability-engine
+  template:
+    metadata:
+      labels:
+        app: probability-engine
+    spec:
+      containers:
+      - name: probability-engine
+        image: football-analytics/probability-engine:latest
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: NODE_ENV
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: REDIS_HOST
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: football-analytics-secrets
+              key: REDIS_PASSWORD
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: POSTGRES_HOST
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: football-analytics-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: football-analytics-secrets
+              key: POSTGRES_PASSWORD
+        - name: INFLUXDB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: INFLUXDB_HOST
+        - name: INFLUXDB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: football-analytics-secrets
+              key: INFLUXDB_USERNAME
+        - name: INFLUXDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: football-analytics-secrets
+              key: INFLUXDB_PASSWORD
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3002
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probability-engine-service
+  namespace: football-analytics
+spec:
+  selector:
+    app: probability-engine
+  ports:
+  - port: 3002
+    targetPort: 3002
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: probability-engine-hpa
+  namespace: football-analytics
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: probability-engine
+  minReplicas: 3
+  maxReplicas: 12
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

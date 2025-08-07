@@ -1,0 +1,124 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: false
+        default: 'latest'
+
+env:
+  REGISTRY: ghcr.io
+  KUBE_NAMESPACE: football-analytics-staging
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging Environment
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Configure kubectl
+      run: |
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+    - name: Create staging namespace
+      run: |
+        kubectl create namespace ${{ env.KUBE_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Deploy staging configuration
+      run: |
+        # Update image tags for staging
+        sed -i 's|football-analytics/|${{ env.REGISTRY }}/${{ github.repository }}/|g' k8s/services/*.yaml
+        sed -i 's|:latest|:${{ github.event.inputs.version || 'develop' }}|g' k8s/services/*.yaml
+        
+        # Apply staging-specific configurations
+        kubectl apply -f k8s/configmap.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/secrets.yaml -n ${{ env.KUBE_NAMESPACE }}
+
+    - name: Deploy infrastructure services
+      run: |
+        kubectl apply -f k8s/services/redis-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/postgres-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/influxdb-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/monitoring/prometheus.yaml -n ${{ env.KUBE_NAMESPACE }}
+
+    - name: Wait for infrastructure
+      run: |
+        kubectl wait --for=condition=available deployment/redis -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/postgres -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/influxdb -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+
+    - name: Deploy application services
+      run: |
+        kubectl apply -f k8s/services/data-ingestion-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/probability-engine.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/monte-carlo-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/ml-model-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/historical-stats-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/api-gateway.yaml -n ${{ env.KUBE_NAMESPACE }}
+        kubectl apply -f k8s/services/websocket-service.yaml -n ${{ env.KUBE_NAMESPACE }}
+
+    - name: Wait for application services
+      run: |
+        kubectl wait --for=condition=available deployment/data-ingestion-service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/probability-engine -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/monte-carlo-service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/ml-model-service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/historical-stats-service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/api-gateway -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        kubectl wait --for=condition=available deployment/websocket-service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+
+    - name: Deploy ingress
+      run: |
+        # Update ingress for staging
+        sed -i 's|api.football-analytics.com|api-staging.football-analytics.com|g' k8s/ingress.yaml
+        sed -i 's|ws.football-analytics.com|ws-staging.football-analytics.com|g' k8s/ingress.yaml
+        kubectl apply -f k8s/ingress.yaml -n ${{ env.KUBE_NAMESPACE }}
+
+    - name: Run deployment verification tests
+      run: |
+        # Wait for ingress to get external IP
+        sleep 60
+        
+        # Run health checks
+        kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
+        kubectl get services -n ${{ env.KUBE_NAMESPACE }}
+        kubectl get ingress -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Test API endpoints
+        API_URL="https://api-staging.football-analytics.com"
+        curl -f "$API_URL/health" || exit 1
+        curl -f "$API_URL/ready" || exit 1
+
+    - name: Run integration tests against staging
+      run: |
+        npm ci
+        npm run test:integration:staging
+      env:
+        STAGING_API_URL: https://api-staging.football-analytics.com
+        STAGING_WS_URL: wss://ws-staging.football-analytics.com
+
+    - name: Notify deployment status
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monte-carlo-service
+  namespace: football-analytics
+  labels:
+    app: monte-carlo-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: monte-carlo-service
+  template:
+    metadata:
+      labels:
+        app: monte-carlo-service
+    spec:
+      containers:
+      - name: monte-carlo-service
+        image: football-analytics/monte-carlo-service:latest
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: NODE_ENV
+        - name: MONTE_CARLO_WORKERS
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: MONTE_CARLO_WORKERS
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: football-analytics-config
+              key: REDIS_HOST
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: football-analytics-secrets
+              key: REDIS_PASSWORD
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monte-carlo-service
+  namespace: football-analytics
+spec:
+  selector:
+    app: monte-carlo-service
+  ports:
+  - port: 3003
+    targetPort: 3003
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: monte-carlo-service-hpa
+  namespace: football-analytics
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: monte-carlo-service
+  minReplicas: 2
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 85

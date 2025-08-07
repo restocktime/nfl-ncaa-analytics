@@ -72,3 +72,4 @@ pids
 
 # Redis data
 dump.rdb
+node_modules

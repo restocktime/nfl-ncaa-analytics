@@ -1,0 +1,261 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+        default: 'latest'
+      skip_tests:
+        description: 'Skip pre-deployment tests'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  KUBE_NAMESPACE: football-analytics
+
+jobs:
+  pre-deployment-tests:
+    name: Pre-deployment Tests
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_tests }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run critical path tests
+      run: npm run test:critical
+      env:
+        NODE_ENV: production
+
+    - name: Run security validation
+      run: npm run security:validate
+
+  deploy-production:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    needs: [pre-deployment-tests]
+    if: always() && (needs.pre-deployment-tests.result == 'success' || inputs.skip_tests)
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Configure kubectl
+      run: |
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+    - name: Create backup of current deployment
+      run: |
+        mkdir -p backups
+        kubectl get deployments -n ${{ env.KUBE_NAMESPACE }} -o yaml > backups/deployments-backup-$(date +%Y%m%d-%H%M%S).yaml
+        kubectl get configmaps -n ${{ env.KUBE_NAMESPACE }} -o yaml > backups/configmaps-backup-$(date +%Y%m%d-%H%M%S).yaml
+
+    - name: Upload backup to S3
+      run: |
+        aws s3 cp backups/ s3://${{ secrets.BACKUP_S3_BUCKET }}/football-analytics/$(date +%Y%m%d)/ --recursive
+
+    - name: Update production configuration
+      run: |
+        # Update image tags for production
+        VERSION="${{ github.event.inputs.version || github.ref_name }}"
+        if [[ "$VERSION" == "main" ]]; then
+          VERSION="latest"
+        fi
+        
+        sed -i "s|football-analytics/|${{ env.REGISTRY }}/${{ github.repository }}/|g" k8s/services/*.yaml
+        sed -i "s|:latest|:$VERSION|g" k8s/services/*.yaml
+        
+        # Apply production-specific resource limits
+        sed -i 's|memory: "256Mi"|memory: "512Mi"|g' k8s/services/*.yaml
+        sed -i 's|memory: "512Mi"|memory: "1Gi"|g' k8s/services/*.yaml
+        sed -i 's|cpu: "250m"|cpu: "500m"|g' k8s/services/*.yaml
+
+    - name: Deploy configuration updates
+      run: |
+        kubectl apply -f k8s/configmap.yaml -n ${{ env.KUBE_NAMESPACE }}
+        # Note: Secrets are managed separately for security
+
+    - name: Rolling update - Infrastructure services
+      run: |
+        # Update infrastructure services with zero downtime
+        kubectl set image deployment/redis redis=${{ env.REGISTRY }}/${{ github.repository }}/redis:${{ github.event.inputs.version || 'latest' }} -n ${{ env.KUBE_NAMESPACE }} || true
+        kubectl rollout status deployment/redis -n ${{ env.KUBE_NAMESPACE }} --timeout=300s || true
+
+    - name: Rolling update - Core services
+      run: |
+        # Update core services in dependency order
+        services=("data-ingestion-service" "probability-engine" "monte-carlo-service" "ml-model-service" "historical-stats-service")
+        
+        for service in "${services[@]}"; do
+          echo "Updating $service..."
+          kubectl set image deployment/$service $service=${{ env.REGISTRY }}/${{ github.repository }}/$service:${{ github.event.inputs.version || 'latest' }} -n ${{ env.KUBE_NAMESPACE }}
+          kubectl rollout status deployment/$service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+          
+          # Health check after each service update
+          kubectl wait --for=condition=available deployment/$service -n ${{ env.KUBE_NAMESPACE }} --timeout=120s
+        done
+
+    - name: Rolling update - API services
+      run: |
+        # Update API services last
+        api_services=("api-gateway" "websocket-service")
+        
+        for service in "${api_services[@]}"; do
+          echo "Updating $service..."
+          kubectl set image deployment/$service $service=${{ env.REGISTRY }}/${{ github.repository }}/$service:${{ github.event.inputs.version || 'latest' }} -n ${{ env.KUBE_NAMESPACE }}
+          kubectl rollout status deployment/$service -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+          
+          # Health check after each service update
+          kubectl wait --for=condition=available deployment/$service -n ${{ env.KUBE_NAMESPACE }} --timeout=120s
+        done
+
+    - name: Verify deployment
+      run: |
+        # Check all pods are running
+        kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Check services
+        kubectl get services -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Check ingress
+        kubectl get ingress -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Verify all deployments are ready
+        deployments=$(kubectl get deployments -n ${{ env.KUBE_NAMESPACE }} -o jsonpath='{.items[*].metadata.name}')
+        for deployment in $deployments; do
+          kubectl wait --for=condition=available deployment/$deployment -n ${{ env.KUBE_NAMESPACE }} --timeout=60s
+        done
+
+    - name: Run post-deployment tests
+      run: |
+        # Wait for services to be fully ready
+        sleep 30
+        
+        # Test API endpoints
+        API_URL="https://api.football-analytics.com"
+        curl -f "$API_URL/health" || exit 1
+        curl -f "$API_URL/ready" || exit 1
+        
+        # Test WebSocket connection
+        npm ci
+        npm run test:websocket:production
+      env:
+        PRODUCTION_API_URL: https://api.football-analytics.com
+        PRODUCTION_WS_URL: wss://ws.football-analytics.com
+
+    - name: Run smoke tests
+      run: |
+        npm run test:smoke:production
+      env:
+        PRODUCTION_API_URL: https://api.football-analytics.com
+
+    - name: Update deployment status
+      run: |
+        # Record successful deployment
+        kubectl annotate deployment/api-gateway deployment.kubernetes.io/revision-history-limit=10 -n ${{ env.KUBE_NAMESPACE }}
+        kubectl label deployment/api-gateway version=${{ github.event.inputs.version || github.ref_name }} -n ${{ env.KUBE_NAMESPACE }} --overwrite
+
+    - name: Clean up old resources
+      run: |
+        # Clean up old replica sets (keep last 3)
+        kubectl delete replicaset -l app=api-gateway -n ${{ env.KUBE_NAMESPACE }} --field-selector='status.replicas=0' --ignore-not-found=true
+        
+        # Clean up old pods
+        kubectl delete pods -l app=api-gateway -n ${{ env.KUBE_NAMESPACE }} --field-selector='status.phase=Succeeded' --ignore-not-found=true
+
+    - name: Notify deployment success
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        text: |
+          :rocket: Production deployment successful!
+          Version: ${{ github.event.inputs.version || github.ref_name }}
+          Commit: ${{ github.sha }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  rollback-on-failure:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: failure()
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Configure kubectl
+      run: |
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+    - name: Rollback deployments
+      run: |
+        deployments=$(kubectl get deployments -n ${{ env.KUBE_NAMESPACE }} -o jsonpath='{.items[*].metadata.name}')
+        
+        for deployment in $deployments; do
+          echo "Rolling back $deployment..."
+          kubectl rollout undo deployment/$deployment -n ${{ env.KUBE_NAMESPACE }}
+          kubectl rollout status deployment/$deployment -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+        done
+
+    - name: Verify rollback
+      run: |
+        # Check all pods are running after rollback
+        kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Verify all deployments are ready
+        deployments=$(kubectl get deployments -n ${{ env.KUBE_NAMESPACE }} -o jsonpath='{.items[*].metadata.name}')
+        for deployment in $deployments; do
+          kubectl wait --for=condition=available deployment/$deployment -n ${{ env.KUBE_NAMESPACE }} --timeout=60s
+        done
+
+    - name: Notify rollback
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        text: |
+          :warning: Production deployment failed and was rolled back!
+          Version: ${{ github.event.inputs.version || github.ref_name }}
+          Commit: ${{ github.sha }}
+          Please check logs and investigate the issue.
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
