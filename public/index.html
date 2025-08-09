@@ -1853,7 +1853,12 @@
                                 <i class="fas fa-trophy" style="margin-right: 0.5rem;"></i>
                                 Prediction Performance
                             </h3>
-                            <span class="badge badge-success">85.2% Accuracy</span>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span class="badge badge-success">85.2% Accuracy</span>
+                                <button onclick="footballApp.checkAndUpdateFinishedGameResults()" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                    <i class="fas fa-sync"></i> DEBUG
+                                </button>
+                            </div>
                         </div>
                         <div class="stats-grid">
                             <div class="stat-item">
@@ -3255,10 +3260,14 @@
                 // Check for finished games and update prediction results
                 this.checkAndUpdateFinishedGameResults();
                 
-                // FORCE UPDATE PREDICTION STATS NOW
+                // FORCE UPDATE PREDICTION STATS NOW AND CALL DEBUG FUNCTION
                 setTimeout(() => {
                     console.log('🔄 Force updating prediction stats...');
                     this.updatePredictionStats();
+                    
+                    // ALSO FORCE CALL THE DEBUG FUNCTION MANUALLY
+                    console.log('🔄 MANUAL TRIGGER: Calling checkAndUpdateFinishedGameResults...');
+                    this.checkAndUpdateFinishedGameResults();
                 }, 1000);
                 
                 if (finalLivePicksWithGames.length === 0) {
@@ -4099,14 +4108,30 @@
             }
 
             checkAndUpdateFinishedGameResults() {
-                console.log('🔍 Checking for finished games to update prediction results...');
+                console.log('🔍 AGGRESSIVE DEBUG: Checking for finished games to update prediction results...');
+                console.log('📋 Current prediction history:', this.predictionHistory);
+                console.log('🏈 Current games:', this.games);
+                
+                // Log all finished games
+                const finishedGames = this.games.filter(game => game.status.type.name === 'STATUS_FINAL');
+                console.log('🏁 FINISHED GAMES FOUND:', finishedGames.length);
+                finishedGames.forEach(game => {
+                    const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                    console.log(`   ${awayTeam.team.displayName} ${awayTeam.score} - ${homeTeam.team.displayName} ${homeTeam.score} FINAL`);
+                });
                 
                 let updated = false;
                 
                 // Check each prediction against finished games
-                this.predictionHistory.forEach(prediction => {
+                this.predictionHistory.forEach((prediction, index) => {
+                    console.log(`🔍 Checking prediction ${index + 1}:`, prediction);
+                    
                     // Skip if already has a result
-                    if (prediction.correct !== null || prediction.type !== 'game') return;
+                    if (prediction.correct !== null || prediction.type !== 'game') {
+                        console.log(`   ⏭️ Skipping - already has result or not a game prediction`);
+                        return;
+                    }
                     
                     // Find matching finished game
                     const finishedGame = this.games.find(game => {
@@ -4132,6 +4157,11 @@
                             awayTeam?.team?.name
                         ].filter(Boolean);
                         
+                        console.log(`   🔍 Checking game: ${awayTeam.team.displayName} @ ${homeTeam.team.displayName}`);
+                        console.log(`   🏠 Home team names:`, homeTeamNames);
+                        console.log(`   ✈️  Away team names:`, awayTeamNames);
+                        console.log(`   📝 Prediction home: "${prediction.homeTeam}", away: "${prediction.awayTeam}"`);
+                        
                         const homeMatch = homeTeamNames.some(name => 
                             prediction.homeTeam.toLowerCase().includes(name.toLowerCase()) || 
                             name.toLowerCase().includes(prediction.homeTeam.toLowerCase())
@@ -4142,10 +4172,13 @@
                             name.toLowerCase().includes(prediction.awayTeam.toLowerCase())
                         );
                         
+                        console.log(`   🏠 Home match: ${homeMatch}, 🏃 Away match: ${awayMatch}`);
+                        
                         return homeMatch && awayMatch;
                     });
                     
                     if (finishedGame) {
+                        console.log(`✅ MATCH FOUND for prediction!`);
                         const homeTeam = finishedGame.competitions[0].competitors.find(c => c.homeAway === 'home');
                         const awayTeam = finishedGame.competitions[0].competitors.find(c => c.homeAway === 'away');
                         
@@ -4172,20 +4205,32 @@
                         prediction.actualWinner = actualWinner;
                         prediction.finalScore = `${awayScore}-${homeScore}`;
                         
-                        console.log(`🎯 Game finished: ${prediction.awayTeam} vs ${prediction.homeTeam}`);
+                        console.log(`🎯 UPDATING RESULT: ${prediction.awayTeam} vs ${prediction.homeTeam}`);
                         console.log(`   Final: ${awayTeam.team.displayName} ${awayScore} - ${homeTeam.team.displayName} ${homeScore}`);
                         console.log(`   Predicted: ${predictedWinner}, Actual: ${actualWinner}, Correct: ${wasCorrect ? '✅' : '❌'}`);
                         
                         updated = true;
+                    } else {
+                        console.log(`   ❌ No matching finished game found`);
                     }
                 });
                 
                 if (updated) {
                     // Save updated predictions and refresh stats
+                    console.log('💾 SAVING UPDATED PREDICTIONS...');
                     this.savePredictionHistory();
+                    console.log('📊 UPDATING STATS...');
                     this.updatePredictionStats();
                     this.displayYesterdayPicks(); // Update recent results
-                    console.log('✅ Updated prediction results for finished games');
+                    console.log('✅ COMPLETED: Updated prediction results for finished games');
+                    
+                    // Force DOM update
+                    setTimeout(() => {
+                        this.updatePredictionStats();
+                        console.log('🔄 FORCED STATS UPDATE COMPLETE');
+                    }, 500);
+                } else {
+                    console.log('⚠️  NO UPDATES MADE - No matching finished games found for pending predictions');
                 }
             }
 
