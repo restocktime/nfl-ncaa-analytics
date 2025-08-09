@@ -868,12 +868,34 @@
         @media screen and (max-width: 768px) {
             body {
                 font-size: 14px;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .app-container {
+                width: 100% !important;
+                max-width: 100vw !important;
+                overflow-x: hidden;
+                padding: 0;
+                margin: 0;
             }
             
             .main-content {
-                padding: 10px !important;
-                margin-left: 0 !important;
+                padding: 20px !important;
+                margin: 0 !important;
+                width: calc(100% - 40px) !important;
+                max-width: calc(100vw - 40px) !important;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+            
+            /* Add proper spacing to all views */
+            .view {
+                padding: 0 !important;
+                margin: 0 !important;
                 width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: hidden;
             }
             
             /* Make all grids single column */
@@ -891,15 +913,23 @@
             /* Card styling */
             .card {
                 width: 100% !important;
-                margin-bottom: 15px;
-                padding: 15px;
+                margin: 0 0 20px 0 !important;
+                padding: 20px !important;
                 box-sizing: border-box;
             }
             
             .game-card {
                 width: 100% !important;
-                padding: 15px;
-                margin-bottom: 15px;
+                padding: 20px !important;
+                margin: 0 0 20px 0 !important;
+                box-sizing: border-box;
+            }
+            
+            /* Dashboard cards need extra space */
+            .dashboard-card {
+                width: 100% !important;
+                margin: 0 0 25px 0 !important;
+                padding: 20px !important;
                 box-sizing: border-box;
             }
             
@@ -941,73 +971,112 @@
             /* Headers */
             .header {
                 text-align: center;
-                padding: 15px 0;
+                padding: 25px 0 20px 0 !important;
+                margin-bottom: 20px;
             }
             
             .header h2 {
-                font-size: 20px;
-                margin-bottom: 5px;
+                font-size: 22px;
+                margin: 0 0 10px 0;
+                padding: 0 10px;
             }
             
             .header p {
-                font-size: 13px;
+                font-size: 14px;
                 opacity: 0.8;
+                margin: 0;
+                padding: 0 10px;
+            }
+            
+            /* Section spacing */
+            .section, .view > div {
+                margin-bottom: 30px;
             }
             
             /* Prediction stats */
             .prediction-stats {
                 display: block !important;
+                margin-bottom: 30px;
             }
             
             .stat-card {
                 width: 100% !important;
-                margin-bottom: 10px;
-                padding: 15px;
+                margin: 0 0 15px 0 !important;
+                padding: 20px !important;
                 text-align: center;
                 box-sizing: border-box;
             }
             
             .stat-value {
-                font-size: 28px;
+                font-size: 30px;
                 display: block;
-                margin-bottom: 5px;
+                margin-bottom: 8px;
+                font-weight: bold;
+            }
+            
+            .stat-label {
+                font-size: 14px;
+                margin: 0;
+                opacity: 0.9;
             }
             
             /* Buttons and inputs */
             .btn {
                 width: 100%;
-                margin-bottom: 10px;
-                padding: 12px;
-                min-height: 44px;
+                margin: 0 0 15px 0;
+                padding: 15px;
+                min-height: 48px;
                 font-size: 16px;
                 box-sizing: border-box;
             }
             
+            .btn-group {
+                margin-bottom: 20px;
+            }
+            
             .filter-select {
                 width: 100%;
-                margin-bottom: 10px;
-                min-height: 44px;
+                margin: 0 0 15px 0;
+                min-height: 48px;
                 font-size: 16px;
-                padding: 10px;
+                padding: 12px;
                 box-sizing: border-box;
+            }
+            
+            /* Filters section */
+            .filters {
+                margin-bottom: 25px;
+                padding: 0;
             }
             
             /* Player props */
             .prop-card {
                 width: 100% !important;
-                margin-bottom: 15px;
-                padding: 15px;
+                margin: 0 0 20px 0 !important;
+                padding: 20px !important;
                 box-sizing: border-box;
             }
             
             .prop-prediction {
                 text-align: center;
-                padding: 15px;
-                margin: 10px 0;
+                padding: 18px;
+                margin: 15px 0;
                 font-size: 18px;
                 border-radius: 8px;
                 background: var(--primary);
                 color: white;
+                box-sizing: border-box;
+            }
+            
+            /* Yesterday's picks section */
+            .yesterday-picks {
+                margin-bottom: 25px;
+            }
+            
+            .pick-item {
+                margin: 0 0 12px 0;
+                padding: 15px;
+                box-sizing: border-box;
             }
             
             /* Tables - make scrollable */
@@ -1027,7 +1096,7 @@
         /* Small Mobile Screens */
         @media screen and (max-width: 480px) {
             .mobile-header {
-                padding: 10px;
+                padding: 15px;
             }
             
             .mobile-logo span {
@@ -1035,12 +1104,14 @@
             }
             
             .main-content {
-                padding: 8px !important;
+                padding: 15px !important;
+                width: calc(100% - 30px) !important;
+                max-width: calc(100vw - 30px) !important;
             }
             
-            .card, .game-card {
-                padding: 12px;
-                margin-bottom: 12px;
+            .card, .game-card, .dashboard-card {
+                padding: 15px !important;
+                margin: 0 0 18px 0 !important;
             }
             
             .team img {
@@ -1052,19 +1123,36 @@
                 font-size: 13px;
             }
             
+            .stat-card {
+                padding: 18px !important;
+                margin: 0 0 12px 0 !important;
+            }
+            
             .stat-value {
-                font-size: 24px;
+                font-size: 26px;
+            }
+            
+            .prop-card {
+                padding: 15px !important;
+                margin: 0 0 18px 0 !important;
             }
             
             .prop-prediction {
                 font-size: 16px;
-                padding: 12px;
+                padding: 15px;
+                margin: 12px 0;
             }
             
             .btn {
-                padding: 10px;
+                padding: 12px;
                 font-size: 15px;
-                min-height: 44px;
+                min-height: 48px;
+                margin: 0 0 12px 0;
+            }
+            
+            .header {
+                padding: 20px 0 15px 0 !important;
+                margin-bottom: 15px;
             }
             
             .header h2 {
@@ -1073,6 +1161,12 @@
             
             .header p {
                 font-size: 12px;
+            }
+            
+            .filter-select {
+                padding: 12px;
+                margin: 0 0 12px 0;
+                min-height: 48px;
             }
         }
 
