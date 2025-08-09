@@ -3252,6 +3252,9 @@
                 
                 console.log('✅ FORCED DISPLAY: NYG game (Final 34-25) + Houston vs Vikings (LIVE from API)');
                 
+                // Check for finished games and update prediction results
+                this.checkAndUpdateFinishedGameResults();
+                
                 // FORCE UPDATE PREDICTION STATS NOW
                 setTimeout(() => {
                     console.log('🔄 Force updating prediction stats...');
@@ -4045,6 +4048,9 @@
                 setInterval(() => {
                     if (this.currentView === 'dashboard' || this.currentView === 'live-games' || this.currentView === 'live-picks') {
                         this.loadGames().then(() => {
+                            // Check for finished games and update prediction results
+                            this.checkAndUpdateFinishedGameResults();
+                            
                             this.displayLiveGames();
                             if (this.currentView === 'live-games') {
                                 this.displayAllGames();
@@ -4090,6 +4096,97 @@
                     }
                 }
                 return streak;
+            }
+
+            checkAndUpdateFinishedGameResults() {
+                console.log('🔍 Checking for finished games to update prediction results...');
+                
+                let updated = false;
+                
+                // Check each prediction against finished games
+                this.predictionHistory.forEach(prediction => {
+                    // Skip if already has a result
+                    if (prediction.correct !== null || prediction.type !== 'game') return;
+                    
+                    // Find matching finished game
+                    const finishedGame = this.games.find(game => {
+                        if (game.status.type.name !== 'STATUS_FINAL') return false;
+                        
+                        const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                        const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                        
+                        // Enhanced team matching for finished games
+                        const homeTeamNames = [
+                            homeTeam?.team?.displayName, 
+                            homeTeam?.team?.shortDisplayName, 
+                            homeTeam?.team?.abbreviation,
+                            homeTeam?.team?.location,
+                            homeTeam?.team?.name
+                        ].filter(Boolean);
+                        
+                        const awayTeamNames = [
+                            awayTeam?.team?.displayName, 
+                            awayTeam?.team?.shortDisplayName, 
+                            awayTeam?.team?.abbreviation,
+                            awayTeam?.team?.location,
+                            awayTeam?.team?.name
+                        ].filter(Boolean);
+                        
+                        const homeMatch = homeTeamNames.some(name => 
+                            prediction.homeTeam.toLowerCase().includes(name.toLowerCase()) || 
+                            name.toLowerCase().includes(prediction.homeTeam.toLowerCase())
+                        );
+                        
+                        const awayMatch = awayTeamNames.some(name => 
+                            prediction.awayTeam.toLowerCase().includes(name.toLowerCase()) || 
+                            name.toLowerCase().includes(prediction.awayTeam.toLowerCase())
+                        );
+                        
+                        return homeMatch && awayMatch;
+                    });
+                    
+                    if (finishedGame) {
+                        const homeTeam = finishedGame.competitions[0].competitors.find(c => c.homeAway === 'home');
+                        const awayTeam = finishedGame.competitions[0].competitors.find(c => c.homeAway === 'away');
+                        
+                        const homeScore = parseInt(homeTeam?.score) || 0;
+                        const awayScore = parseInt(awayTeam?.score) || 0;
+                        
+                        // Determine the actual winner
+                        let actualWinner;
+                        if (homeScore > awayScore) {
+                            actualWinner = homeTeam.team.displayName;
+                        } else if (awayScore > homeScore) {
+                            actualWinner = awayTeam.team.displayName;
+                        } else {
+                            actualWinner = 'Tie'; // Handle ties
+                        }
+                        
+                        // Check if prediction was correct
+                        const predictedWinner = prediction.predictedWinner;
+                        const wasCorrect = predictedWinner.toLowerCase().includes(actualWinner.toLowerCase()) || 
+                                         actualWinner.toLowerCase().includes(predictedWinner.toLowerCase());
+                        
+                        // Update prediction with result
+                        prediction.correct = wasCorrect;
+                        prediction.actualWinner = actualWinner;
+                        prediction.finalScore = `${awayScore}-${homeScore}`;
+                        
+                        console.log(`🎯 Game finished: ${prediction.awayTeam} vs ${prediction.homeTeam}`);
+                        console.log(`   Final: ${awayTeam.team.displayName} ${awayScore} - ${homeTeam.team.displayName} ${homeScore}`);
+                        console.log(`   Predicted: ${predictedWinner}, Actual: ${actualWinner}, Correct: ${wasCorrect ? '✅' : '❌'}`);
+                        
+                        updated = true;
+                    }
+                });
+                
+                if (updated) {
+                    // Save updated predictions and refresh stats
+                    this.savePredictionHistory();
+                    this.updatePredictionStats();
+                    this.displayYesterdayPicks(); // Update recent results
+                    console.log('✅ Updated prediction results for finished games');
+                }
             }
 
             displayYesterdayPicks() {
