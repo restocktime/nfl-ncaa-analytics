@@ -3008,21 +3008,31 @@
 
                 console.log('🔍 Searching for live games and matching predictions...');
 
-                // Get current live games that we have picks for
+                // Get current live games AND recently finished games that we have picks for
                 const liveGames = this.games.filter(game => {
                     const status = game.status.type.name;
                     const isLive = status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
+                    const isRecentlyFinished = status === 'STATUS_FINAL';
+                    const isRelevant = isLive || isRecentlyFinished;
                     
-                    if (isLive) {
+                    if (isRelevant) {
                         const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
                         const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
-                        console.log(`🏈 Live game found: ${awayTeam?.team.displayName} @ ${homeTeam?.team.displayName}`);
+                        console.log(`🏈 Relevant game found (${status}): ${awayTeam?.team.displayName} @ ${homeTeam?.team.displayName}`);
                     }
                     
-                    return isLive;
+                    return isRelevant;
                 });
 
                 console.log(`📊 Found ${liveGames.length} live games, checking against ${this.predictionHistory.length} predictions`);
+                
+                // Debug: Show what predictions we have
+                console.log('🔍 Available predictions:', this.predictionHistory.map(p => ({
+                    type: p.type,
+                    homeTeam: p.homeTeam, 
+                    awayTeam: p.awayTeam,
+                    predictedWinner: p.predictedWinner
+                })));
 
                 // Find ALL predictions that match live games (automatic detection)
                 const livePicksWithGames = [];
@@ -3053,20 +3063,43 @@
                             awayTeam?.team.name
                         ].filter(Boolean);
                         
-                        // Check if prediction teams match any variation of live game teams
-                        const homeMatch = homeTeamNames.some(name => 
-                            pred.homeTeam.includes(name) || name.includes(pred.homeTeam) || 
-                            pred.homeTeam.toLowerCase().includes(name.toLowerCase()) || 
-                            name.toLowerCase().includes(pred.homeTeam.toLowerCase())
-                        );
+                        // Enhanced team matching with debugging
+                        const homeMatch = homeTeamNames.some(name => {
+                            const match = pred.homeTeam.includes(name) || name.includes(pred.homeTeam) || 
+                                         pred.homeTeam.toLowerCase().includes(name.toLowerCase()) || 
+                                         name.toLowerCase().includes(pred.homeTeam.toLowerCase()) ||
+                                         // Additional matching patterns
+                                         pred.homeTeam.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') ||
+                                         name.toLowerCase().includes(pred.homeTeam.toLowerCase().split(' ')[0]) ||
+                                         pred.homeTeam.toLowerCase().includes(name.toLowerCase().split(' ')[0]);
+                            
+                            if (match) {
+                                console.log(`✓ Home team match: "${pred.homeTeam}" matches "${name}"`);
+                            }
+                            return match;
+                        });
                         
-                        const awayMatch = awayTeamNames.some(name => 
-                            pred.awayTeam.includes(name) || name.includes(pred.awayTeam) ||
-                            pred.awayTeam.toLowerCase().includes(name.toLowerCase()) || 
-                            name.toLowerCase().includes(pred.awayTeam.toLowerCase())
-                        );
+                        const awayMatch = awayTeamNames.some(name => {
+                            const match = pred.awayTeam.includes(name) || name.includes(pred.awayTeam) ||
+                                         pred.awayTeam.toLowerCase().includes(name.toLowerCase()) || 
+                                         name.toLowerCase().includes(pred.awayTeam.toLowerCase()) ||
+                                         // Additional matching patterns
+                                         pred.awayTeam.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') ||
+                                         name.toLowerCase().includes(pred.awayTeam.toLowerCase().split(' ')[0]) ||
+                                         pred.awayTeam.toLowerCase().includes(name.toLowerCase().split(' ')[0]);
+                            
+                            if (match) {
+                                console.log(`✓ Away team match: "${pred.awayTeam}" matches "${name}"`);
+                            }
+                            return match;
+                        });
                         
-                        return homeMatch && awayMatch;
+                        const isMatch = homeMatch && awayMatch;
+                        if (!isMatch) {
+                            console.log(`✗ No match for prediction "${pred.awayTeam} @ ${pred.homeTeam}" against live game teams:`, {homeTeamNames, awayTeamNames});
+                        }
+                        
+                        return isMatch;
                     });
                     
                     if (matchingGame) {
