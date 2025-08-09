@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Analytics Pro - Advanced Sports Intelligence</title>
+    
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <!-- Modern Theme -->
+    <link rel="stylesheet" href="modern-theme.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-container">
+            <div class="logo-loading">
+                <i class="fas fa-football-ball"></i>
+            </div>
+            <div class="loading-text">Loading NFL Analytics Pro...</div>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container" id="app-container" style="display: none;">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-football-ball"></i>
+                </div>
+                <span>NFL Analytics Pro</span>
+            </a>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search teams, players, stats...">
+                </div>
+                
+                <button class="btn btn-secondary btn-sm">
+                    <i class="fas fa-bell"></i>
+                    Alerts
+                </button>
+                
+                <button class="btn btn-primary btn-sm">
+                    <i class="fas fa-user"></i>
+                    Account
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                        <i class="fas fa-chart-line nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#live-games" class="nav-link" data-view="live-games">
+                        <i class="fas fa-play nav-icon"></i>
+                        <span>Live Games</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#predictions" class="nav-link" data-view="predictions">
+                        <i class="fas fa-crystal-ball nav-icon"></i>
+                        <span>Predictions</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#monte-carlo" class="nav-link" data-view="monte-carlo">
+                        <i class="fas fa-dice nav-icon"></i>
+                        <span>Monte Carlo</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#ml-models" class="nav-link" data-view="ml-models">
+                        <i class="fas fa-brain nav-icon"></i>
+                        <span>ML Models</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#teams" class="nav-link" data-view="teams">
+                        <i class="fas fa-shield nav-icon"></i>
+                        <span>Teams</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#players" class="nav-link" data-view="players">
+                        <i class="fas fa-user-friends nav-icon"></i>
+                        <span>Players</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#statistics" class="nav-link" data-view="statistics">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Statistics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#historical" class="nav-link" data-view="historical">
+                        <i class="fas fa-history nav-icon"></i>
+                        <span>Historical</span>
+                    </a>
+                </li>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Analytics Dashboard</h1>
+                    <p class="page-subtitle">Real-time insights, predictions, and advanced analytics for professional football</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid slide-in-left">
+                    <div class="stat-card">
+                        <div class="stat-value" id="live-games-count">3</div>
+                        <div class="stat-label">Live Games</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>12% more than avg</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="prediction-accuracy">87.3%</div>
+                        <div class="stat-label">Prediction Accuracy</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2.1% this week</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ml-models-active">5</div>
+                        <div class="stat-label">ML Models Active</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>All operational</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="simulations-run">12.4K</div>
+                        <div class="stat-label">Simulations Today</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+34% from yesterday</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Games Section -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-play"></i>
+                            Live Games Today
+                        </h2>
+                        <p class="chart-subtitle">August 8, 2025 - Preseason Week 1</p>
+                    </div>
+                    <div id="live-games-grid" class="card-grid">
+                        <!-- Games will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Prediction Accuracy Chart -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            Prediction Accuracy Trends
+                        </h2>
+                        <p class="chart-subtitle">Model performance over the last 7 days</p>
+                    </div>
+                    <canvas id="accuracy-chart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Top Predictions -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-crystal-ball"></i>
+                            Today's Top Predictions
+                        </h2>
+                        <p class="chart-subtitle">High-confidence predictions for today's games</p>
+                    </div>
+                    <div id="top-predictions-grid" class="card-grid">
+                        <!-- Predictions will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Games View -->
+            <div id="live-games-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Live Games</h1>
+                    <p class="page-subtitle">Real-time game tracking and live updates</p>
+                </div>
+                
+                <div id="live-games-container" class="card-grid">
+                    <!-- Live games will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Predictions View -->
+            <div id="predictions-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">AI Predictions</h1>
+                    <p class="page-subtitle">Advanced machine learning predictions and analysis</p>
+                </div>
+                
+                <div id="predictions-container">
+                    <!-- Predictions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Monte Carlo View -->
+            <div id="monte-carlo-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Monte Carlo Simulations</h1>
+                    <p class="page-subtitle">Advanced statistical modeling and game simulations</p>
+                </div>
+                
+                <!-- Game Selection -->
+                <div class="modern-card mb-xl">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-gamepad card-icon"></i>
+                            Game Simulation
+                        </h3>
+                        <div class="card-badge">Interactive</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Game to Simulate</label>
+                        <select id="monte-carlo-game-select" class="form-select">
+                            <option value="">Choose a game...</option>
+                        </select>
+                    </div>
+                    
+                    <button id="run-game-simulation" class="btn btn-primary btn-lg">
+                        <i class="fas fa-dice"></i>
+                        Run 10,000 Simulations
+                    </button>
+                    
+                    <div id="game-simulation-results" class="mt-xl">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+
+                <!-- Player Props -->
+                <div class="modern-card mb-xl">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user-chart card-icon"></i>
+                            Player Props Simulation
+                        </h3>
+                        <div class="card-badge">Advanced</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Game for Player Props</label>
+                        <select id="player-props-game-select" class="form-select">
+                            <option value="">Choose a game...</option>
+                        </select>
+                    </div>
+                    
+                    <button id="run-player-simulation" class="btn btn-accent btn-lg">
+                        <i class="fas fa-chart-line"></i>
+                        Simulate Player Performance
+                    </button>
+                    
+                    <div id="player-simulation-results" class="mt-xl">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ML Models View -->
+            <div id="ml-models-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Machine Learning Models</h1>
+                    <p class="page-subtitle">Advanced AI models for game prediction and analysis</p>
+                </div>
+                
+                <div id="ml-models-container" class="card-grid">
+                    <!-- ML models will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Teams View -->
+            <div id="teams-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Teams</h1>
+                    <p class="page-subtitle">Comprehensive team statistics and analysis</p>
+                </div>
+                
+                <div id="teams-container" class="card-grid">
+                    <!-- Teams will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Players View -->
+            <div id="players-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Players</h1>
+                    <p class="page-subtitle">Player statistics, performance metrics, and predictions</p>
+                </div>
+                
+                <div id="players-container">
+                    <!-- Players will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Statistics View -->
+            <div id="statistics-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Advanced Statistics</h1>
+                    <p class="page-subtitle">Deep statistical analysis and performance metrics</p>
+                </div>
+                
+                <div id="statistics-container">
+                    <!-- Statistics will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Historical View -->
+            <div id="historical-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Historical Data</h1>
+                    <p class="page-subtitle">Historical trends, patterns, and comparative analysis</p>
+                </div>
+                
+                <div id="historical-container">
+                    <!-- Historical data will be populated by JavaScript -->
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Loading Screen Styles -->
+    <style>
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-container {
+            text-align: center;
+        }
+
+        .logo-loading {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xl);
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: var(--surface-light);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-primary);
+            width: 0%;
+            border-radius: var(--radius-full);
+            animation: loadProgress 1.2s ease-out forwards;
+        }
+
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+    </style>
+
+    <!-- Scripts - Load all existing functionality -->
+    <script src="nfl-2024-data.js"></script>
+    <script src="live-nfl-games-today.js"></script>
+    <script src="comprehensive-nfl-app.js"></script>
+    <script src="modern-integration.js"></script>
+</body>
+</html>

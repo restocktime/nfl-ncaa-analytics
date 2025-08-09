@@ -3,566 +3,1005 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Analytics Pro - Elite Sports Intelligence</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>NFL Analytics Pro - Advanced Sports Intelligence</title>
+    
+    <!-- Modern Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <!-- Modern Theme -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
 </head>
+
 <body>
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="login-modal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2><i class="fas fa-shield-alt"></i> Football Analytics Pro</h2>
-                <p>Elite Sports Intelligence Platform</p>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-container">
+            <div class="logo-loading">
+                <i class="fas fa-football-ball"></i>
             </div>
-            <div class="modal-content">
-                <form id="login-form" class="auth-form">
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required placeholder="Enter your email">
-                        <i class="fas fa-envelope form-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required placeholder="Enter your password">
-                        <i class="fas fa-lock form-icon"></i>
-                        <button type="button" class="password-toggle" id="password-toggle">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="form-options">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="remember-me">
-                            <span class="checkmark"></span>
-                            Remember me
-                        </label>
-                        <a href="#" class="forgot-password">Forgot password?</a>
-                    </div>
-                    <button type="submit" class="btn-primary">
-                        <span>Sign In</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </form>
-                <div class="auth-divider">
-                    <span>or continue with</span>
-                </div>
-                <div class="social-auth">
-                    <button class="btn-social google">
-                        <i class="fab fa-google"></i>
-                        <span>Google</span>
-                    </button>
-                    <button class="btn-social microsoft">
-                        <i class="fab fa-microsoft"></i>
-                        <span>Microsoft</span>
-                    </button>
-                </div>
-                <div class="auth-footer">
-                    <p>Don't have an account? <a href="#" id="show-register">Create account</a></p>
-                </div>
+            <div class="loading-text">Loading NFL Analytics Pro...</div>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
             </div>
         </div>
     </div>
 
-    <!-- Registration Modal -->
-    <div class="modal-overlay" id="register-modal" style="display: none;">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2><i class="fas fa-user-plus"></i> Create Account</h2>
-                <p>Join Football Analytics Pro</p>
-            </div>
-            <div class="modal-content">
-                <form id="register-form" class="auth-form">
-                    <div class="form-group">
-                        <label for="register-name">Full Name</label>
-                        <input type="text" id="register-name" name="name" required placeholder="Enter your full name">
-                        <i class="fas fa-user form-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-email">Email Address</label>
-                        <input type="email" id="register-email" name="email" required placeholder="Enter your email">
-                        <i class="fas fa-envelope form-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-password">Password</label>
-                        <input type="password" id="register-password" name="password" required placeholder="Create a strong password">
-                        <i class="fas fa-lock form-icon"></i>
-                        <button type="button" class="password-toggle" id="register-password-toggle">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm-password">Confirm Password</label>
-                        <input type="password" id="confirm-password" name="confirmPassword" required placeholder="Confirm your password">
-                        <i class="fas fa-lock form-icon"></i>
-                        <button type="button" class="password-toggle" id="confirm-password-toggle">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="form-options">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="agree-terms" required>
-                            <span class="checkmark"></span>
-                            I agree to the <a href="#" class="terms-link">Terms of Service</a>
-                        </label>
-                    </div>
-                    <button type="submit" class="btn-primary">
-                        <span>Create Account</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </form>
-                <div class="auth-divider">
-                    <span>or sign up with</span>
-                </div>
-                <div class="social-auth">
-                    <button class="btn-social google" id="register-google">
-                        <i class="fab fa-google"></i>
-                        <span>Google</span>
-                    </button>
-                    <button class="btn-social microsoft" id="register-microsoft">
-                        <i class="fab fa-microsoft"></i>
-                        <span>Microsoft</span>
-                    </button>
-                </div>
-                <div class="auth-footer">
-                    <p>Already have an account? <a href="#" id="show-login">Sign in</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Application -->
-    <div class="app" id="main-app" style="display: none;">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
+    <!-- Main App Container -->
+    <div class="app-container" id="app-container" style="display: none;">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <a href="#" class="logo">
+                <div class="logo-icon">
                     <i class="fas fa-football-ball"></i>
-                    <span class="logo-text">Analytics Pro</span>
                 </div>
-                <button class="sidebar-toggle" id="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
+                <span>NFL Analytics Pro</span>
+            </a>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search teams, players, stats...">
+                </div>
+                
+                <button class="btn btn-secondary btn-sm">
+                    <i class="fas fa-bell"></i>
+                    Alerts
+                </button>
+                
+                <button class="btn btn-primary btn-sm">
+                    <i class="fas fa-user"></i>
+                    Account
                 </button>
             </div>
-            
-            <div class="sidebar-menu">
-                <div class="menu-section">
-                    <h3>Analytics</h3>
-                    <ul>
-                        <li class="menu-item active" data-view="dashboard">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Dashboard</span>
-                        </li>
-                        <li class="menu-item" data-view="live-games">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <span>Live Games</span>
-                            <div class="live-indicator-small"></div>
-                        </li>
-                        <li class="menu-item" data-view="predictions">
-                            <i class="fas fa-crystal-ball"></i>
-                            <span>Predictions</span>
-                        </li>
-                        <li class="menu-item" data-view="compare">
-                            <i class="fas fa-balance-scale"></i>
-                            <span>Compare</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="menu-section">
-                    <h3>Data</h3>
-                    <ul>
-                        <li class="menu-item" data-view="teams">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Teams</span>
-                        </li>
-                        <li class="menu-item" data-view="players">
-                            <i class="fas fa-users"></i>
-                            <span>Players</span>
-                        </li>
-                        <li class="menu-item" data-view="statistics">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Statistics</span>
-                        </li>
-                        <li class="menu-item" data-view="historical">
-                            <i class="fas fa-history"></i>
-                            <span>Historical</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="menu-section">
-                    <h3>Tools</h3>
-                    <ul>
-                        <li class="menu-item" data-view="monte-carlo">
-                            <i class="fas fa-dice"></i>
-                            <span>Monte Carlo</span>
-                        </li>
-                        <li class="menu-item" data-view="ml-models">
-                            <i class="fas fa-brain"></i>
-                            <span>ML Models</span>
-                        </li>
-                        <li class="menu-item" data-view="alerts">
-                            <i class="fas fa-bell"></i>
-                            <span>Alerts</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="sidebar-footer">
-                <div class="user-profile" id="user-profile">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name" id="user-name">Loading...</div>
-                        <div class="user-role">Pro Analyst</div>
-                    </div>
-                    <div class="user-menu-toggle">
-                        <i class="fas fa-chevron-up"></i>
-                    </div>
-                </div>
-                <div class="user-menu" id="user-menu">
-                    <a href="#" class="user-menu-item">
-                        <i class="fas fa-user-cog"></i>
-                        <span>Profile Settings</span>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                        <i class="fas fa-chart-line nav-icon"></i>
+                        <span>Dashboard</span>
                     </a>
-                    <a href="#" class="user-menu-item">
-                        <i class="fas fa-bell"></i>
-                        <span>Notifications</span>
+                </li>
+                <li class="nav-item">
+                    <a href="#live-games" class="nav-link" data-view="live-games">
+                        <i class="fas fa-play nav-icon"></i>
+                        <span>Live Games</span>
                     </a>
-                    <a href="#" class="user-menu-item">
-                        <i class="fas fa-question-circle"></i>
-                        <span>Help & Support</span>
+                </li>
+                <li class="nav-item">
+                    <a href="#predictions" class="nav-link" data-view="predictions">
+                        <i class="fas fa-crystal-ball nav-icon"></i>
+                        <span>Predictions</span>
                     </a>
-                    <div class="menu-divider"></div>
-                    <a href="#" class="user-menu-item" id="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Sign Out</span>
+                </li>
+                <li class="nav-item">
+                    <a href="#monte-carlo" class="nav-link" data-view="monte-carlo">
+                        <i class="fas fa-dice nav-icon"></i>
+                        <span>Monte Carlo</span>
                     </a>
-                </div>
-            </div>
-        </nav>
+                </li>
+                <li class="nav-item">
+                    <a href="#ml-models" class="nav-link" data-view="ml-models">
+                        <i class="fas fa-brain nav-icon"></i>
+                        <span>ML Models</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#teams" class="nav-link" data-view="teams">
+                        <i class="fas fa-shield nav-icon"></i>
+                        <span>Teams</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#players" class="nav-link" data-view="players">
+                        <i class="fas fa-user-friends nav-icon"></i>
+                        <span>Players</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#statistics" class="nav-link" data-view="statistics">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Statistics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#schedule" class="nav-link" data-view="schedule">
+                        <i class="fas fa-calendar nav-icon"></i>
+                        <span>Schedule</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#news" class="nav-link" data-view="news">
+                        <i class="fas fa-newspaper nav-icon"></i>
+                        <span>News AI</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#historical" class="nav-link" data-view="historical">
+                        <i class="fas fa-history nav-icon"></i>
+                        <span>Historical</span>
+                    </a>
+                </li>
+            </nav>
+        </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Bar -->
-            <header class="top-bar">
-                <div class="top-bar-left">
-                    <h1 class="page-title" id="page-title">Dashboard</h1>
-                    <div class="breadcrumb" id="breadcrumb">
-                        <span>Analytics</span>
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Dashboard</span>
+        <main class="app-main">
+            
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Analytics Dashboard</h1>
+                    <p class="page-subtitle">Real-time insights, predictions, and advanced analytics for professional football</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid slide-in-left">
+                    <div class="stat-card">
+                        <div class="stat-value" id="live-games-count">3</div>
+                        <div class="stat-label">Live Games</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>12% more than avg</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="prediction-accuracy">87.3%</div>
+                        <div class="stat-label">Prediction Accuracy</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2.1% this week</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ml-models-active">5</div>
+                        <div class="stat-label">ML Models Active</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>All operational</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="simulations-run">12.4K</div>
+                        <div class="stat-label">Simulations Today</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+34% from yesterday</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Games Section -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-play"></i>
+                            Live Games Today
+                        </h2>
+                        <p class="chart-subtitle">August 8, 2025 - Preseason Week 1</p>
+                    </div>
+                    <div id="live-games-grid" class="card-grid">
+                        <!-- Games will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Prediction Accuracy Chart -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            Prediction Accuracy Trends
+                        </h2>
+                        <p class="chart-subtitle">Model performance over the last 7 days</p>
+                    </div>
+                    <canvas id="accuracy-chart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Top Predictions -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-crystal-ball"></i>
+                            Today's Top Predictions
+                        </h2>
+                        <p class="chart-subtitle">High-confidence predictions for today's games</p>
+                    </div>
+                    <div id="top-predictions-grid" class="card-grid">
+                        <!-- Predictions will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Prediction Performance Tracking -->
+                <div class="chart-container scale-in">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fas fa-trophy"></i>
+                            Prediction Performance Tracker
+                        </h2>
+                        <p class="chart-subtitle">Track our wins and losses across all bet types</p>
+                    </div>
+                    <div id="prediction-stats-container" class="prediction-stats-grid">
+                        <!-- Prediction stats will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Games View -->
+            <div id="live-games-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Live Games</h1>
+                    <p class="page-subtitle">Real-time game tracking and live updates</p>
+                </div>
+                
+                <div id="live-games-container" class="card-grid">
+                    <!-- Live games will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Predictions View -->
+            <div id="predictions-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">AI Predictions</h1>
+                    <p class="page-subtitle">Advanced machine learning predictions and analysis</p>
+                </div>
+                
+                <div id="predictions-container">
+                    <!-- Predictions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Monte Carlo View -->
+            <div id="monte-carlo-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Monte Carlo Simulations</h1>
+                    <p class="page-subtitle">Advanced statistical modeling and game simulations</p>
+                </div>
+                
+                <!-- Game Selection -->
+                <div class="modern-card mb-xl">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-gamepad card-icon"></i>
+                            Game Simulation
+                        </h3>
+                        <div class="card-badge">Interactive</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Game to Simulate</label>
+                        <select id="monte-carlo-game-select" class="form-select">
+                            <option value="">Choose a game...</option>
+                        </select>
+                    </div>
+                    
+                    <button id="run-game-simulation" class="btn btn-primary btn-lg">
+                        <i class="fas fa-dice"></i>
+                        Run 10,000 Simulations
+                    </button>
+                    
+                    <div id="game-simulation-results" class="mt-xl">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+
+                <!-- Player Props -->
+                <div class="modern-card mb-xl">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user-chart card-icon"></i>
+                            Player Props Simulation
+                        </h3>
+                        <div class="card-badge">Advanced</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Game for Player Props</label>
+                        <select id="player-props-game-select" class="form-select">
+                            <option value="">Choose a game...</option>
+                        </select>
+                    </div>
+                    
+                    <button id="run-player-simulation" class="btn btn-accent btn-lg">
+                        <i class="fas fa-chart-line"></i>
+                        Simulate Player Performance
+                    </button>
+                    
+                    <div id="player-simulation-results" class="mt-xl">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ML Models View -->
+            <div id="ml-models-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Machine Learning Models</h1>
+                    <p class="page-subtitle">Advanced AI models for game prediction and analysis</p>
+                </div>
+                
+                <div id="ml-models-container" class="card-grid">
+                    <!-- ML models will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Teams View -->
+            <div id="teams-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Teams</h1>
+                    <p class="page-subtitle">Comprehensive team statistics and analysis</p>
+                </div>
+                
+                <div id="teams-container" class="card-grid">
+                    <!-- Teams will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Players View -->
+            <div id="players-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Players & Stats</h1>
+                    <p class="page-subtitle">Real ESPN player statistics, match-ups, and performance analysis</p>
+                </div>
+                
+                <!-- Player Stats Controls -->
+                <div class="player-stats-controls mb-xl">
+                    <div class="modern-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter card-icon"></i>
+                                Player Stats Filters
+                            </h3>
+                            <button class="btn btn-primary btn-sm" id="refresh-player-stats">
+                                <i class="fas fa-sync"></i>
+                                Refresh Stats
+                            </button>
+                        </div>
+                        
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label class="form-label">Category</label>
+                                <select id="stats-category-filter" class="form-select">
+                                    <option value="passing">Passing Stats</option>
+                                    <option value="rushing">Rushing Stats</option>
+                                    <option value="receiving">Receiving Stats</option>
+                                    <option value="defense">Defensive Stats</option>
+                                    <option value="kicking">Kicking Stats</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="form-label">Team</label>
+                                <select id="stats-team-filter" class="form-select">
+                                    <option value="all">All Teams</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="form-label">Season</label>
+                                <select id="stats-season-filter" class="form-select">
+                                    <option value="2024">2024 Season</option>
+                                    <option value="2025" selected>2025 Season</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match-ups Section -->
+                <div class="matchups-section mb-xl">
+                    <div class="modern-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-versus card-icon"></i>
+                                Team Match-ups
+                            </h3>
+                            <div class="card-badge">Interactive</div>
+                        </div>
+                        
+                        <div class="matchup-builder">
+                            <div class="matchup-teams">
+                                <div class="team-selector">
+                                    <label class="form-label">Team A</label>
+                                    <select id="matchup-team-a" class="form-select">
+                                        <option value="">Select Team A...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="versus-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>VS</span>
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                
+                                <div class="team-selector">
+                                    <label class="form-label">Team B</label>
+                                    <select id="matchup-team-b" class="form-select">
+                                        <option value="">Select Team B...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button id="generate-matchup" class="btn btn-accent btn-lg">
+                                <i class="fas fa-chart-line"></i>
+                                Generate Match-up Analysis
+                            </button>
+                        </div>
+                        
+                        <div id="matchup-results" class="matchup-results mt-xl">
+                            <!-- Match-up analysis will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player Stats Grid -->
+                <div class="player-stats-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <span id="current-stats-title">Player Statistics</span>
+                        </h2>
+                        <div class="stats-info">
+                            <small id="stats-source-info">Loading ESPN player stats...</small>
+                        </div>
+                    </div>
+                    
+                    <div id="players-container" class="players-stats-grid">
+                        <!-- Players will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics View -->
+            <div id="statistics-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Advanced Statistics</h1>
+                    <p class="page-subtitle">Deep statistical analysis and performance metrics</p>
+                </div>
+                
+                <div id="statistics-container">
+                    <!-- Statistics will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Schedule View -->
+            <div id="schedule-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL Schedule 2025</h1>
+                    <p class="page-subtitle">Complete season schedule with live updates and status tracking</p>
+                </div>
+                
+                <!-- Correct Schedule Testing -->
+                <div class="schedule-testing mb-xl">
+                    <div class="modern-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bug card-icon"></i>
+                                ESPN Schedule Testing
+                            </h3>
+                            <div class="card-badge">Debug Tools</div>
+                        </div>
+                        
+                        <div class="testing-buttons">
+                            <button class="btn btn-primary btn-sm" onclick="testCorrectSchedule()">
+                                <i class="fas fa-bug"></i>
+                                Test Correct Schedule API
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="fetchCompleteSchedule()">
+                                <i class="fas fa-calendar"></i>
+                                Fetch Complete Schedule
+                            </button>
+                            <button class="btn btn-accent btn-sm" onclick="viewScheduleSummary()">
+                                <i class="fas fa-chart-bar"></i>
+                                View Schedule Summary
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="testESPNEndpoint()">
+                                <i class="fas fa-network-wired"></i>
+                                Test ESPN Endpoint
+                            </button>
+                        </div>
+                        
+                        <div class="schedule-status mt-md">
+                            <div id="schedule-test-status" class="status-display">
+                                <div class="status-item">
+                                    <span class="status-label">📡 ESPN Endpoint:</span>
+                                    <span class="status-value" id="espn-endpoint-status">Ready to test</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">📅 Schedule Data:</span>
+                                    <span class="status-value" id="schedule-data-status">Loading...</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">🔍 Data Source:</span>
+                                    <span class="status-value" id="data-source-status">ESPN Calendar API</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Controls -->
+                <div class="schedule-controls mb-xl">
+                    <div class="modern-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter card-icon"></i>
+                                Schedule Filters
+                            </h3>
+                            <button class="btn btn-primary btn-sm" id="refresh-schedule">
+                                <i class="fas fa-sync"></i>
+                                Refresh Schedule
+                            </button>
+                        </div>
+                        
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label class="form-label">Season</label>
+                                <select id="season-filter" class="form-select">
+                                    <option value="all">All Seasons</option>
+                                    <option value="Preseason" selected>Preseason</option>
+                                    <option value="Regular Season">Regular Season</option>
+                                    <option value="Playoffs">Playoffs</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="form-label">Week</label>
+                                <select id="week-filter" class="form-select">
+                                    <option value="all">All Weeks</option>
+                                    <option value="1" selected>Week 1</option>
+                                    <option value="2">Week 2</option>
+                                    <option value="3">Week 3</option>
+                                    <option value="4">Week 4</option>
+                                    <option value="5">Week 5</option>
+                                    <option value="6">Week 6</option>
+                                    <option value="7">Week 7</option>
+                                    <option value="8">Week 8</option>
+                                    <option value="9">Week 9</option>
+                                    <option value="10">Week 10</option>
+                                    <option value="11">Week 11</option>
+                                    <option value="12">Week 12</option>
+                                    <option value="13">Week 13</option>
+                                    <option value="14">Week 14</option>
+                                    <option value="15">Week 15</option>
+                                    <option value="16">Week 16</option>
+                                    <option value="17">Week 17</option>
+                                    <option value="18">Week 18</option>
+                                    <option value="wildcard">Wild Card</option>
+                                    <option value="divisional">Divisional</option>
+                                    <option value="conference">Conference</option>
+                                    <option value="superbowl">Super Bowl</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="form-label">Team</label>
+                                <select id="team-filter" class="form-select">
+                                    <option value="all">All Teams</option>
+                                    <option value="Detroit Lions">Detroit Lions</option>
+                                    <option value="Atlanta Falcons">Atlanta Falcons</option>
+                                    <option value="Kansas City Chiefs">Kansas City Chiefs</option>
+                                    <option value="Buffalo Bills">Buffalo Bills</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="form-label">Status</label>
+                                <select id="status-filter" class="form-select">
+                                    <option value="all">All Status</option>
+                                    <option value="LIVE">Live</option>
+                                    <option value="UPCOMING">Upcoming</option>
+                                    <option value="SCHEDULED">Scheduled</option>
+                                    <option value="FINAL">Final</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="top-bar-right">
-                    <div class="search-container">
-                        <input type="text" placeholder="Search teams, players, games..." class="search-input" id="global-search">
-                        <i class="fas fa-search search-icon"></i>
+                <!-- Live Games Section -->
+                <div class="schedule-section mb-xl">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-circle live-indicator"></i>
+                            Live Games
+                        </h2>
+                        <div class="live-count-badge" id="live-games-badge">2 LIVE</div>
                     </div>
                     
-                    <div class="status-indicators">
-                        <div class="status-item" id="api-status" title="API Connection">
-                            <i class="fas fa-circle"></i>
-                            <span>API</span>
-                        </div>
-                        <div class="status-item" id="ws-status" title="Live Updates">
-                            <i class="fas fa-circle"></i>
-                            <span>Live</span>
-                        </div>
+                    <div id="live-schedule-games" class="schedule-grid">
+                        <!-- Live games will be populated by JavaScript -->
                     </div>
-                    
-                    <div class="notification-center">
-                        <button class="notification-btn" id="notification-btn">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge">3</span>
+                </div>
+                
+                <!-- Upcoming Games Section -->
+                <div class="schedule-section mb-xl">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-clock"></i>
+                            Upcoming Games
+                        </h2>
+                        <button class="btn btn-secondary btn-sm" id="refresh-schedule">
+                            <i class="fas fa-refresh"></i>
+                            Refresh
                         </button>
                     </div>
-                </div>
-            </header>
-
-            <!-- Content Views -->
-            <div class="content-container">
-                <!-- Dashboard View -->
-                <div class="view active" id="dashboard-view">
-                    <div class="dashboard-grid">
-                        <!-- KPI Cards -->
-                        <div class="kpi-section">
-                            <div class="kpi-card">
-                                <div class="kpi-header">
-                                    <div class="kpi-icon teams">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <div class="kpi-trend up">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <span>+12%</span>
-                                    </div>
-                                </div>
-                                <div class="kpi-content">
-                                    <h3 id="teams-count">-</h3>
-                                    <p>Active Teams</p>
-                                    <div class="kpi-subtitle">Across all conferences</div>
-                                </div>
-                            </div>
-                            
-                            <div class="kpi-card">
-                                <div class="kpi-header">
-                                    <div class="kpi-icon games">
-                                        <i class="fas fa-gamepad"></i>
-                                    </div>
-                                    <div class="kpi-trend up">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <span>+8%</span>
-                                    </div>
-                                </div>
-                                <div class="kpi-content">
-                                    <h3 id="games-count">-</h3>
-                                    <p>Live Games</p>
-                                    <div class="kpi-subtitle">Real-time tracking</div>
-                                </div>
-                            </div>
-                            
-                            <div class="kpi-card">
-                                <div class="kpi-header">
-                                    <div class="kpi-icon predictions">
-                                        <i class="fas fa-crystal-ball"></i>
-                                    </div>
-                                    <div class="kpi-trend up">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <span>+15%</span>
-                                    </div>
-                                </div>
-                                <div class="kpi-content">
-                                    <h3 id="predictions-count">-</h3>
-                                    <p>Predictions</p>
-                                    <div class="kpi-subtitle">ML-powered insights</div>
-                                </div>
-                            </div>
-                            
-                            <div class="kpi-card">
-                                <div class="kpi-header">
-                                    <div class="kpi-icon accuracy">
-                                        <i class="fas fa-bullseye"></i>
-                                    </div>
-                                    <div class="kpi-trend up">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <span>+3%</span>
-                                    </div>
-                                </div>
-                                <div class="kpi-content">
-                                    <h3>87.3%</h3>
-                                    <p>Accuracy</p>
-                                    <div class="kpi-subtitle">Model performance</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Live Games Section -->
-                        <div class="dashboard-section">
-                            <div class="section-header">
-                                <h2>
-                                    <i class="fas fa-broadcast-tower"></i>
-                                    Live Games & Predictions
-                                </h2>
-                                <div class="section-actions">
-                                    <div class="live-indicator">
-                                        <span class="pulse"></span>
-                                        <span>LIVE</span>
-                                    </div>
-                                    <button class="btn-secondary" id="refresh-games">
-                                        <i class="fas fa-sync-alt"></i>
-                                        Refresh
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="games-grid" id="games-grid">
-                                <!-- Games will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Analytics Charts -->
-                        <div class="charts-section">
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3>Prediction Accuracy Trend</h3>
-                                    <div class="chart-controls">
-                                        <select class="chart-timeframe">
-                                            <option value="7d">Last 7 days</option>
-                                            <option value="30d">Last 30 days</option>
-                                            <option value="90d">Last 90 days</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <canvas id="accuracy-chart"></canvas>
-                            </div>
-                            
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3>Conference Performance</h3>
-                                    <div class="chart-controls">
-                                        <button class="chart-type-btn active" data-type="wins">Wins</button>
-                                        <button class="chart-type-btn" data-type="points">Points</button>
-                                    </div>
-                                </div>
-                                <canvas id="conference-chart"></canvas>
-                            </div>
-                        </div>
+                    
+                    <div id="upcoming-schedule-games" class="schedule-grid">
+                        <!-- Upcoming games will be populated by JavaScript -->
                     </div>
                 </div>
+                
+                <!-- All Games Section -->
+                <div class="schedule-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Complete Schedule
+                        </h2>
+                        <div class="view-toggle">
+                            <button class="btn btn-sm toggle-active" data-view="grid">Grid</button>
+                            <button class="btn btn-sm" data-view="list">List</button>
+                        </div>
+                    </div>
+                    
+                    <div id="complete-schedule-games" class="schedule-grid">
+                        <!-- All games will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
 
-                <!-- Compare View -->
-                <div class="view" id="compare-view">
-                    <div class="compare-container">
-                        <div class="compare-header">
-                            <h2>Team & Player Comparison</h2>
-                            <div class="compare-controls">
-                                <div class="compare-tabs">
-                                    <button class="tab-btn active" data-tab="teams">Teams</button>
-                                    <button class="tab-btn" data-tab="players">Players</button>
+            <!-- News AI View -->
+            <div id="news-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">NFL News AI Analysis</h1>
+                    <p class="page-subtitle">Real-time RSS feeds analyzed by AI to enhance ML models and predictions</p>
+                </div>
+                
+                <!-- News Analysis Dashboard -->
+                <div class="news-dashboard">
+                    <!-- System Status -->
+                    <div class="news-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-satellite-dish"></i>
+                                System Status
+                            </h2>
+                            <div class="system-status">
+                                <div class="status-indicator active" id="news-system-status">
+                                    <i class="fas fa-circle"></i>
+                                    Active
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="compare-content">
-                            <!-- Team Comparison -->
-                            <div class="compare-tab active" id="teams-compare">
-                                <div class="compare-selectors">
-                                    <div class="team-selector">
-                                        <label>Team A</label>
-                                        <select id="team-a-select" class="team-select">
-                                            <option value="">Select Team A</option>
-                                        </select>
-                                    </div>
-                                    <div class="vs-divider">
-                                        <span>VS</span>
-                                    </div>
-                                    <div class="team-selector">
-                                        <label>Team B</label>
-                                        <select id="team-b-select" class="team-select">
-                                            <option value="">Select Team B</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="comparison-results" id="team-comparison-results">
-                                    <!-- Comparison results will be populated here -->
+                        <div class="status-grid">
+                            <div class="status-card modern-card">
+                                <div class="stat-icon"><i class="fas fa-rss"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="active-feeds-count">8</div>
+                                    <div class="stat-label">Active RSS Feeds</div>
+                                    <div class="stat-trend positive">All operational</div>
                                 </div>
                             </div>
                             
-                            <!-- Player Comparison -->
-                            <div class="compare-tab" id="players-compare">
-                                <div class="compare-selectors">
-                                    <div class="player-selector">
-                                        <label>Player A</label>
-                                        <select id="player-a-select" class="player-select">
-                                            <option value="">Select Player A</option>
-                                        </select>
-                                    </div>
-                                    <div class="vs-divider">
-                                        <span>VS</span>
-                                    </div>
-                                    <div class="player-selector">
-                                        <label>Player B</label>
-                                        <select id="player-b-select" class="player-select">
-                                            <option value="">Select Player B</option>
-                                        </select>
-                                    </div>
+                            <div class="status-card modern-card">
+                                <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="total-articles-count">247</div>
+                                    <div class="stat-label">Articles Cached</div>
+                                    <div class="stat-trend positive">+23 in last hour</div>
                                 </div>
-                                
-                                <div class="comparison-results" id="player-comparison-results">
-                                    <!-- Comparison results will be populated here -->
+                            </div>
+                            
+                            <div class="status-card modern-card">
+                                <div class="stat-icon"><i class="fas fa-brain"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="ai-analyses-count">184</div>
+                                    <div class="stat-label">AI Analyses</div>
+                                    <div class="stat-trend positive">94.2% confidence</div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-card modern-card">
+                                <div class="stat-icon"><i class="fas fa-cogs"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="model-updates-count">42</div>
+                                    <div class="stat-label">ML Updates</div>
+                                    <div class="stat-trend positive">Last: 3 min ago</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Other views will be added here -->
-                <div class="view" id="teams-view">
-                    <div class="teams-container">
-                        <div class="teams-header">
-                            <h2>Teams Overview</h2>
-                            <div class="teams-filters">
-                                <select class="filter-select" id="conference-filter">
-                                    <option value="">All Conferences</option>
-                                </select>
-                                <select class="filter-select" id="division-filter">
-                                    <option value="">All Divisions</option>
+                    
+                    <!-- High Impact News -->
+                    <div class="news-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                High Impact News
+                            </h2>
+                            <div class="news-controls">
+                                <select id="impact-filter" class="form-select">
+                                    <option value="7">Impact 7+ (Critical)</option>
+                                    <option value="6">Impact 6+ (High)</option>
+                                    <option value="5">Impact 5+ (Medium)</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="teams-grid" id="teams-grid-detailed">
-                            <!-- Teams will be populated here -->
+                        
+                        <div id="high-impact-news" class="news-grid">
+                            <!-- High impact news will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Latest News Feed -->
+                    <div class="news-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-stream"></i>
+                                Latest News Feed
+                            </h2>
+                            <div class="feed-controls">
+                                <select id="feed-source-filter" class="form-select">
+                                    <option value="all">All Sources</option>
+                                    <option value="espn_nfl">ESPN NFL</option>
+                                    <option value="nfl_official">NFL.com</option>
+                                    <option value="profootballtalk">Pro Football Talk</option>
+                                    <option value="injury_reports">Injury Reports</option>
+                                </select>
+                                <button class="btn btn-secondary btn-sm" id="refresh-news">
+                                    <i class="fas fa-sync"></i>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="latest-news-feed" class="news-feed">
+                            <!-- Latest news will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- AI Analysis Insights -->
+                    <div class="news-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-lightbulb"></i>
+                                AI Analysis Insights
+                            </h2>
+                        </div>
+                        
+                        <div class="insights-grid">
+                            <div class="insight-card modern-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Sentiment Analysis</h3>
+                                    <div class="card-badge">Real-time</div>
+                                </div>
+                                <div class="sentiment-breakdown">
+                                    <div class="sentiment-item positive">
+                                        <div class="sentiment-bar" style="width: 45%"></div>
+                                        <span>Positive: 45%</span>
+                                    </div>
+                                    <div class="sentiment-item neutral">
+                                        <div class="sentiment-bar" style="width: 35%"></div>
+                                        <span>Neutral: 35%</span>
+                                    </div>
+                                    <div class="sentiment-item negative">
+                                        <div class="sentiment-bar" style="width: 20%"></div>
+                                        <span>Negative: 20%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="insight-card modern-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Top Keywords</h3>
+                                    <div class="card-badge">Trending</div>
+                                </div>
+                                <div class="keywords-cloud">
+                                    <span class="keyword high-freq">injury</span>
+                                    <span class="keyword medium-freq">trade</span>
+                                    <span class="keyword high-freq">playoffs</span>
+                                    <span class="keyword low-freq">contract</span>
+                                    <span class="keyword medium-freq">draft</span>
+                                    <span class="keyword high-freq">performance</span>
+                                </div>
+                            </div>
+                            
+                            <div class="insight-card modern-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">ML Model Impact</h3>
+                                    <div class="card-badge">Active</div>
+                                </div>
+                                <div class="model-impacts">
+                                    <div class="model-impact">
+                                        <span class="model-name">Neural Network v3.0</span>
+                                        <span class="impact-level high">High Impact</span>
+                                    </div>
+                                    <div class="model-impact">
+                                        <span class="model-name">Injury Predictor</span>
+                                        <span class="impact-level critical">Critical Update</span>
+                                    </div>
+                                    <div class="model-impact">
+                                        <span class="model-name">Team Chemistry</span>
+                                        <span class="impact-level medium">Medium Impact</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RSS Feed Management -->
+                    <div class="news-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-list-ul"></i>
+                                RSS Feed Management
+                            </h2>
+                        </div>
+                        
+                        <div id="rss-feeds-management" class="feeds-management">
+                            <!-- RSS feeds management will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Historical View -->
+            <div id="historical-view" class="view">
+                <div class="page-header fade-in">
+                    <h1 class="page-title">Historical Data</h1>
+                    <p class="page-subtitle">Historical trends, patterns, and comparative analysis</p>
+                </div>
+                
+                <div id="historical-container">
+                    <!-- Historical data will be populated by JavaScript -->
+                </div>
+            </div>
+
         </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-football-ball"></i>
+                        <span>NFL Analytics Pro</span>
+                    </div>
+                    <p class="footer-description">Advanced NFL analytics powered by machine learning and AI</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Features</h4>
+                    <ul class="footer-links">
+                        <li>Live Game Tracking</li>
+                        <li>ML Predictions</li>
+                        <li>Monte Carlo Simulations</li>
+                        <li>Player Analytics</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Technology</h4>
+                    <ul class="footer-links">
+                        <li>Neural Networks</li>
+                        <li>Real-time Data</li>
+                        <li>Advanced Statistics</li>
+                        <li>News Analysis</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Data Sources</h4>
+                    <ul class="footer-links">
+                        <li>ESPN NFL</li>
+                        <li>NFL.com</li>
+                        <li>Pro Football Talk</li>
+                        <li>The Athletic</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 NFL Analytics Pro. All rights reserved.</p>
+                </div>
+                <div class="footer-credit">
+                    <p><i class="fas fa-code"></i> Made with ❤️ by <strong>Isaac Benyakar</strong></p>
+                </div>
+            </div>
+        </footer>
+
     </div>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-container">
-            <div class="loading-spinner">
-                <div class="spinner-ring"></div>
-                <div class="spinner-ring"></div>
-                <div class="spinner-ring"></div>
-            </div>
-            <h3>Football Analytics Pro</h3>
-            <p>Loading elite sports intelligence...</p>
-        </div>
-    </div>
+    <!-- Loading Screen Styles -->
+    <style>
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
 
-    <!-- Notification Panel -->
-    <div class="notification-panel" id="notification-panel">
-        <div class="notification-header">
-            <h3>Notifications</h3>
-            <button class="close-notifications" id="close-notifications">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="notification-content">
-            <div class="notification-item">
-                <div class="notification-icon success">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="notification-text">
-                    <h4>Prediction Updated</h4>
-                    <p>Alabama vs Georgia probabilities refreshed</p>
-                    <span class="notification-time">2 minutes ago</span>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notification-icon info">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <div class="notification-text">
-                    <h4>New Game Added</h4>
-                    <p>Michigan vs Texas scheduled for next week</p>
-                    <span class="notification-time">5 minutes ago</span>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notification-icon warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="notification-text">
-                    <h4>Model Accuracy Alert</h4>
-                    <p>XGBoost model performance below threshold</p>
-                    <span class="notification-time">10 minutes ago</span>
-                </div>
-            </div>
-        </div>
-    </div>
+        .loading-container {
+            text-align: center;
+        }
 
-    <script src="app.js"></script>
+        .logo-loading {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xl);
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: var(--surface-light);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-primary);
+            width: 0%;
+            border-radius: var(--radius-full);
+            animation: loadProgress 1.2s ease-out forwards;
+        }
+
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+    </style>
+
+    <!-- Scripts - Load all existing functionality -->
+    <script src="nfl-2024-data.js"></script>
+    <script src="live-nfl-games-today.js"></script>
+    <script src="nfl-schedule-2025.js"></script>
+    <script src="nfl-news-analysis.js"></script>
+    <script src="comprehensive-nfl-app.js"></script>
+    <!-- <script src="modern-integration.js"></script> -->
 </body>
 </html>

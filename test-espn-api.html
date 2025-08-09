@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESPN API Test</title>
+</head>
+<body>
+    <h1>ESPN API Live Test</h1>
+    <div id="output"></div>
+    
+    <script>
+    async function testESPNAPI() {
+        const output = document.getElementById('output');
+        output.innerHTML = '<p>Fetching ESPN data...</p>';
+        
+        try {
+            const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+            const data = await response.json();
+            
+            console.log('Full ESPN API Response:', data);
+            
+            let html = '<h2>Live Games:</h2>';
+            
+            if (data.events && data.events.length > 0) {
+                data.events.forEach(game => {
+                    const competition = game.competitions[0];
+                    const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
+                    
+                    html += `
+                        <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+                            <h3>Game ID: ${game.id}</h3>
+                            <p><strong>Away Team:</strong> ${awayTeam.team.displayName} (${awayTeam.team.abbreviation}) - Score: ${awayTeam.score || 0}</p>
+                            <p><strong>Home Team:</strong> ${homeTeam.team.displayName} (${homeTeam.team.abbreviation}) - Score: ${homeTeam.score || 0}</p>
+                            <p><strong>Status:</strong> ${game.status.type.description}</p>
+                            <p><strong>Period:</strong> ${game.status.period || 'N/A'}</p>
+                            <p><strong>Clock:</strong> ${game.status.displayClock || 'N/A'}</p>
+                            <p><strong>Venue:</strong> ${competition.venue?.fullName || 'N/A'}</p>
+                            <hr>
+                            <pre>Raw team data: ${JSON.stringify({
+                                away: { name: awayTeam.team.displayName, abbr: awayTeam.team.abbreviation },
+                                home: { name: homeTeam.team.displayName, abbr: homeTeam.team.abbreviation }
+                            }, null, 2)}</pre>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p>No games found</p>';
+            }
+            
+            output.innerHTML = html;
+            
+        } catch (error) {
+            console.error('Error:', error);
+            output.innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+    }
+    
+    // Test immediately
+    testESPNAPI();
+    </script>
+</body>
+</html>

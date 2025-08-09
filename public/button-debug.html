@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Debug Test</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Functionality Test</h1>
+    
+    <div>
+        <h2>Test 1: Basic onclick</h2>
+        <button class="test-button" onclick="testBasicClick()">Test Basic Click</button>
+        <div id="basic-result" class="result">Not clicked yet</div>
+    </div>
+    
+    <div>
+        <h2>Test 2: Window object method</h2>
+        <button class="test-button" onclick="window.testWindowMethod()">Test Window Method</button>
+        <div id="window-result" class="result">Not clicked yet</div>
+    </div>
+    
+    <div>
+        <h2>Test 3: Football App Method</h2>
+        <button class="test-button" onclick="window.footballApp && window.footballApp.refreshData()">Test Football App</button>
+        <div id="app-result" class="result">Not clicked yet</div>
+    </div>
+    
+    <div>
+        <h2>Test 4: Notification Button</h2>
+        <button class="test-button" onclick="window.footballApp && window.footballApp.toggleNotificationPanel()">Test Notifications</button>
+        <div id="notification-result" class="result">Not clicked yet</div>
+    </div>
+    
+    <div>
+        <h2>Debug Info</h2>
+        <div id="debug-info" class="result">Loading...</div>
+    </div>
+    
+    <script>
+        function testBasicClick() {
+            document.getElementById('basic-result').textContent = 'Basic click works! ✅';
+            console.log('Basic click test passed');
+        }
+        
+        window.testWindowMethod = function() {
+            document.getElementById('window-result').textContent = 'Window method works! ✅';
+            console.log('Window method test passed');
+        };
+        
+        // Debug info
+        setTimeout(() => {
+            const debugInfo = document.getElementById('debug-info');
+            const info = [];
+            
+            info.push(`window.footballApp exists: ${!!window.footballApp}`);
+            if (window.footballApp) {
+                info.push(`refreshData method: ${typeof window.footballApp.refreshData}`);
+                info.push(`toggleNotificationPanel method: ${typeof window.footballApp.toggleNotificationPanel}`);
+            }
+            
+            debugInfo.innerHTML = info.join('<br>');
+        }, 1000);
+        
+        // Override console.log to show in page
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const logDiv = document.createElement('div');
+            logDiv.textContent = args.join(' ');
+            logDiv.style.color = '#00ff00';
+            logDiv.style.fontSize = '12px';
+            logDiv.style.marginTop = '5px';
+            document.body.appendChild(logDiv);
+        };
+    </script>
+    
+    <!-- Load the main app to test integration -->
+    <script src="app.js"></script>
+</body>
+</html>

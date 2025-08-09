@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Navigation Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .menu-section {
+            margin-bottom: 25px;
+        }
+        
+        .menu-section h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-bottom: 10px;
+            padding-left: 16px;
+        }
+        
+        .menu-section ul {
+            list-style: none;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 2px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active {
+            background: rgba(0,212,255,0.2);
+            color: #00d4ff;
+            border-left: 3px solid #00d4ff;
+        }
+        
+        .menu-item i {
+            width: 16px;
+            text-align: center;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .top-bar {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .content-card h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .content-card p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .click-counter {
+            background: rgba(0,212,255,0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-football-ball"></i>
+                    <span>Analytics Pro</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <h3>Analytics</h3>
+                    <ul>
+                        <li class="menu-item active" data-view="dashboard">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </li>
+                        <li class="menu-item" data-view="live-games">
+                            <i class="fas fa-broadcast-tower"></i>
+                            <span>Live Games</span>
+                        </li>
+                        <li class="menu-item" data-view="predictions">
+                            <i class="fas fa-crystal-ball"></i>
+                            <span>Predictions</span>
+                        </li>
+                        <li class="menu-item" data-view="compare">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Compare</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Data</h3>
+                    <ul>
+                        <li class="menu-item" data-view="teams">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Teams</span>
+                        </li>
+                        <li class="menu-item" data-view="players">
+                            <i class="fas fa-users"></i>
+                            <span>Players</span>
+                        </li>
+                        <li class="menu-item" data-view="statistics">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Statistics</span>
+                        </li>
+                        <li class="menu-item" data-view="historical">
+                            <i class="fas fa-history"></i>
+                            <span>Historical</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Tools</h3>
+                    <ul>
+                        <li class="menu-item" data-view="monte-carlo">
+                            <i class="fas fa-dice"></i>
+                            <span>Monte Carlo</span>
+                        </li>
+                        <li class="menu-item" data-view="ml-models">
+                            <i class="fas fa-brain"></i>
+                            <span>ML Models</span>
+                        </li>
+                        <li class="menu-item" data-view="alerts">
+                            <i class="fas fa-bell"></i>
+                            <span>Alerts</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 id="page-title">Dashboard</h1>
+                <p><span class="status-indicator"></span>Sidebar navigation is working perfectly!</p>
+            </header>
+
+            <!-- Dashboard View -->
+            <div class="view active" id="dashboard-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                    <p>Welcome to the Football Analytics Dashboard! Click any item in the left sidebar to navigate between different sections.</p>
+                    <div class="click-counter">
+                        <strong>Navigation Clicks: <span id="click-count">0</span></strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Games View -->
+            <div class="view" id="live-games-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-broadcast-tower"></i> Live Games</h2>
+                    <p>Real-time NFL game tracking and live updates. This section would show current games in progress with live scores and statistics.</p>
+                </div>
+            </div>
+
+            <!-- Predictions View -->
+            <div class="view" id="predictions-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-crystal-ball"></i> Predictions</h2>
+                    <p>AI-powered game predictions and probability analysis. Machine learning models provide insights into upcoming game outcomes.</p>
+                </div>
+            </div>
+
+            <!-- Compare View -->
+            <div class="view" id="compare-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-balance-scale"></i> Compare</h2>
+                    <p>Side-by-side team and player comparisons. Analyze performance metrics and statistics to make informed decisions.</p>
+                </div>
+            </div>
+
+            <!-- Teams View -->
+            <div class="view" id="teams-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-shield-alt"></i> Teams</h2>
+                    <p>Complete NFL team database with statistics, roster information, and performance analytics for all 32 teams.</p>
+                </div>
+            </div>
+
+            <!-- Players View -->
+            <div class="view" id="players-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-users"></i> Players</h2>
+                    <p>Comprehensive player database with individual statistics, performance metrics, and career analytics.</p>
+                </div>
+            </div>
+
+            <!-- Statistics View -->
+            <div class="view" id="statistics-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-chart-bar"></i> Statistics</h2>
+                    <p>Advanced statistical analysis and data visualization tools for in-depth football analytics.</p>
+                </div>
+            </div>
+
+            <!-- Historical View -->
+            <div class="view" id="historical-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-history"></i> Historical</h2>
+                    <p>Historical data analysis and trend identification across multiple seasons and decades of NFL data.</p>
+                </div>
+            </div>
+
+            <!-- Monte Carlo View -->
+            <div class="view" id="monte-carlo-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-dice"></i> Monte Carlo</h2>
+                    <p>Advanced probability simulations using Monte Carlo methods to predict game outcomes and scenarios.</p>
+                </div>
+            </div>
+
+            <!-- ML Models View -->
+            <div class="view" id="ml-models-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-brain"></i> ML Models</h2>
+                    <p>Machine learning model management, training, and performance monitoring for predictive analytics.</p>
+                </div>
+            </div>
+
+            <!-- Alerts View -->
+            <div class="view" id="alerts-view">
+                <div class="content-card">
+                    <h2><i class="fas fa-bell"></i> Alerts</h2>
+                    <p>Notification and alert management system for important events, predictions, and system updates.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        console.log('🧭 Sidebar Navigation Test - Loading...');
+        
+        let clickCount = 0;
+        
+        function initializeSidebarNavigation() {
+            console.log('🧭 Initializing sidebar navigation...');
+            
+            const menuItems = document.querySelectorAll('.menu-item[data-view]');
+            const views = document.querySelectorAll('.view');
+            const pageTitle = document.getElementById('page-title');
+            const clickCounter = document.getElementById('click-count');
+            
+            console.log(`🧭 Found ${menuItems.length} menu items`);
+            
+            menuItems.forEach((item, index) => {
+                const viewName = item.dataset.view;
+                
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    clickCount++;
+                    clickCounter.textContent = clickCount;
+                    
+                    console.log(`🧭 Menu item clicked: ${viewName} (Click #${clickCount})`);
+                    
+                    // Remove active class from all menu items
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    item.classList.add('active');
+                    
+                    // Hide all views
+                    views.forEach(view => {
+                        view.classList.remove('active');
+                    });
+                    
+                    // Show target view
+                    const targetView = document.getElementById(viewName + '-view');
+                    if (targetView) {
+                        targetView.classList.add('active');
+                        console.log(`✅ Switched to view: ${viewName}`);
+                    } else {
+                        console.log(`❌ View not found: ${viewName}-view`);
+                    }
+                    
+                    // Update page title
+                    const title = item.querySelector('span').textContent;
+                    pageTitle.textContent = title;
+                    
+                    // Visual feedback
+                    item.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        item.style.transform = '';
+                    }, 150);
+                });
+                
+                console.log(`✅ Setup navigation for: ${viewName}`);
+            });
+            
+            console.log('✅ Sidebar navigation initialized successfully!');
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeSidebarNavigation);
+        
+        // Also initialize when window loads (fallback)
+        window.addEventListener('load', function() {
+            setTimeout(initializeSidebarNavigation, 500);
+        });
+        
+        console.log('✅ Sidebar navigation test script loaded');
+    </script>
+</body>
+</html>

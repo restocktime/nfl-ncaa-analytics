@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Real-Time NFL Scores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            padding: 20px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #222;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 Real-Time NFL Scores Test</h1>
+    <p>Use these buttons to test the real-time scoring system:</p>
+    
+    <button class="test-button" onclick="testESPNAPI()">Test ESPN API Connection</button>
+    <button class="test-button" onclick="forceRefreshScores()">Force Refresh All Scores</button>
+    <button class="test-button" onclick="eliminateAllDemo()">Eliminate Demo Data</button>
+    <button class="test-button" onclick="viewCurrentScores()">View Current Scores</button>
+    <button class="test-button" onclick="clearLog()">Clear Log</button>
+    
+    <div id="log" class="log">
+        <div>🔄 Test console ready. Click buttons above to test functionality.</div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function testESPNAPI() {
+            log('🧪 Testing ESPN API connection...');
+            if (window.testESPNScores) {
+                window.testESPNScores();
+                log('✅ ESPN API test triggered');
+            } else {
+                log('❌ testESPNScores function not found - app may not be loaded');
+            }
+        }
+
+        function forceRefreshScores() {
+            log('🔄 Force refreshing all scores...');
+            if (window.forceRefreshScores) {
+                window.forceRefreshScores();
+                log('✅ Force refresh triggered');
+            } else {
+                log('❌ forceRefreshScores function not found');
+            }
+        }
+
+        function eliminateAllDemo() {
+            log('🚫 Eliminating all demo data...');
+            if (window.eliminateAllDemo) {
+                window.eliminateAllDemo();
+                log('✅ Demo data elimination triggered');
+            } else {
+                log('❌ eliminateAllDemo function not found');
+            }
+        }
+
+        function viewCurrentScores() {
+            log('📊 Viewing current scores...');
+            if (window.LIVE_NFL_GAMES_TODAY) {
+                window.LIVE_NFL_GAMES_TODAY.forEach(game => {
+                    log(`🏈 ${game.awayTeam} ${game.awayScore} - ${game.homeScore} ${game.homeTeam} (${game.status})`);
+                });
+                log(`✅ Found ${window.LIVE_NFL_GAMES_TODAY.length} games`);
+            } else {
+                log('❌ LIVE_NFL_GAMES_TODAY not found');
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '<div>🔄 Log cleared.</div>';
+        }
+
+        // Monitor console output
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, arguments);
+            
+            // Filter for relevant logs
+            const message = args.join(' ');
+            if (message.includes('ESPN') || message.includes('score') || message.includes('LIVE') || message.includes('🏈')) {
+                log(`💡 Console: ${message}`);
+            }
+        };
+
+        log('✅ Test page loaded successfully');
+        log('🔍 Waiting for NFL app to initialize...');
+        
+        // Check app status every 2 seconds
+        setInterval(() => {
+            const hasApp = window.app || window.modernApp;
+            const hasGames = window.LIVE_NFL_GAMES_TODAY;
+            
+            if (hasApp && hasGames && !window.statusReported) {
+                log('🎉 NFL app detected and ready!');
+                log(`📊 ${hasGames.length} games available`);
+                window.statusReported = true;
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

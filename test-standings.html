@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test NFL Team Standings</title>
+    <link rel="stylesheet" href="public/styles.css">
+</head>
+<body>
+    <div id="test-output"></div>
+    
+    <script>
+        // Simple test to verify standings functionality
+        console.log('🧪 Testing NFL Team Standings Functionality...');
+        
+        // Test ESPN API call
+        async function testStandingsAPI() {
+            try {
+                console.log('📡 Testing ESPN Standings API...');
+                const url = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/standings?season=2025&seasontype=1';
+                
+                const response = await fetch(url);
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ ESPN API Response received:', data);
+                    
+                    document.getElementById('test-output').innerHTML = `
+                        <div style="padding: 20px; color: white; background: #111;">
+                            <h2>🏆 ESPN Standings API Test Results</h2>
+                            <p><strong>Status:</strong> ${response.status} ${response.ok ? '✅ Success' : '❌ Failed'}</p>
+                            <p><strong>Data Received:</strong> ${data ? 'Yes ✅' : 'No ❌'}</p>
+                            <p><strong>Standings Available:</strong> ${data.standings ? 'Yes ✅' : 'No ❌'}</p>
+                            ${data.standings ? `<p><strong>Conferences:</strong> ${data.standings.length}</p>` : ''}
+                            <h3>Raw Data Sample:</h3>
+                            <pre style="background: #222; padding: 10px; overflow: auto; max-height: 300px;">
+${JSON.stringify(data, null, 2)}
+                            </pre>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+            } catch (error) {
+                console.error('❌ ESPN API Test Failed:', error);
+                document.getElementById('test-output').innerHTML = `
+                    <div style="padding: 20px; color: white; background: #111;">
+                        <h2>🏆 ESPN Standings API Test Results</h2>
+                        <p><strong>Status:</strong> ❌ Failed</p>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Note:</strong> This might be expected if 2025 preseason standings are not yet available</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Run test when page loads
+        window.addEventListener('load', testStandingsAPI);
+    </script>
+</body>
+</html>

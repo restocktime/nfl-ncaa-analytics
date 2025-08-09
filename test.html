@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Modern NFL App</title>
+</head>
+<body>
+    <h1>Testing Data Sources</h1>
+    
+    <div id="test-results"></div>
+    
+    <script src="nfl-2024-data.js"></script>
+    <script src="live-nfl-games-today.js"></script>
+    <script src="comprehensive-nfl-app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const results = document.getElementById('test-results');
+            
+            let html = '<h2>Data Source Tests:</h2>';
+            
+            // Test NFL Teams data
+            if (window.NFL_TEAMS_2024) {
+                html += `<p>✅ NFL Teams: ${window.NFL_TEAMS_2024.length} teams loaded</p>`;
+            } else {
+                html += `<p>❌ NFL Teams: Not loaded</p>`;
+            }
+            
+            // Test Live Games data
+            if (window.LIVE_NFL_GAMES_TODAY) {
+                html += `<p>✅ Live Games: ${window.LIVE_NFL_GAMES_TODAY.length} games loaded</p>`;
+            } else {
+                html += `<p>❌ Live Games: Not loaded</p>`;
+            }
+            
+            // Test Upcoming Games data
+            if (window.UPCOMING_GAMES_THIS_WEEK) {
+                html += `<p>✅ Upcoming Games: ${window.UPCOMING_GAMES_THIS_WEEK.length} games loaded</p>`;
+            } else {
+                html += `<p>❌ Upcoming Games: Not loaded</p>`;
+            }
+            
+            // Test Comprehensive App
+            if (window.ComprehensiveNFLApp) {
+                html += `<p>✅ Comprehensive App: Available</p>`;
+                
+                try {
+                    const app = new window.ComprehensiveNFLApp();
+                    html += `<p>✅ Comprehensive App: Instantiated successfully</p>`;
+                } catch (e) {
+                    html += `<p>❌ Comprehensive App: Error instantiating - ${e.message}</p>`;
+                }
+            } else {
+                html += `<p>❌ Comprehensive App: Not available</p>`;
+            }
+            
+            results.innerHTML = html;
+        });
+    </script>
+</body>
+</html>

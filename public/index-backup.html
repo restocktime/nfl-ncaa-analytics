@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Analytics Pro - Elite Sports Intelligence</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <!-- NO LOGIN REQUIRED - Direct access to main app -->
+                </form>
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+                <div class="social-auth">
+                    <button class="btn-social google">
+                        <i class="fab fa-google"></i>
+                        <span>Google</span>
+                    </button>
+                    <button class="btn-social microsoft">
+                        <i class="fab fa-microsoft"></i>
+                        <span>Microsoft</span>
+                    </button>
+                </div>
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="show-register">Create account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NO REGISTRATION REQUIRED -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="app" id="main-app" style="display: flex;">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-football-ball"></i>
+                    <span class="logo-text">Analytics Pro</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <h3>Analytics</h3>
+                    <ul>
+                        <li class="menu-item active" data-view="dashboard">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </li>
+                        <li class="menu-item" data-view="live-games">
+                            <i class="fas fa-broadcast-tower"></i>
+                            <span>Live Games</span>
+                            <div class="live-indicator-small"></div>
+                        </li>
+                        <li class="menu-item" data-view="predictions">
+                            <i class="fas fa-crystal-ball"></i>
+                            <span>Predictions</span>
+                        </li>
+                        <li class="menu-item" data-view="compare">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Compare</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Data</h3>
+                    <ul>
+                        <li class="menu-item" data-view="teams">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Teams</span>
+                        </li>
+                        <li class="menu-item" data-view="players">
+                            <i class="fas fa-users"></i>
+                            <span>Players</span>
+                        </li>
+                        <li class="menu-item" data-view="statistics">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Statistics</span>
+                        </li>
+                        <li class="menu-item" data-view="historical">
+                            <i class="fas fa-history"></i>
+                            <span>Historical</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Tools</h3>
+                    <ul>
+                        <li class="menu-item" data-view="monte-carlo">
+                            <i class="fas fa-dice"></i>
+                            <span>Monte Carlo</span>
+                        </li>
+                        <li class="menu-item" data-view="ml-models">
+                            <i class="fas fa-brain"></i>
+                            <span>ML Models</span>
+                        </li>
+                        <li class="menu-item" data-view="alerts">
+                            <i class="fas fa-bell"></i>
+                            <span>Alerts</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile" id="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Loading...</div>
+                        <div class="user-role">Pro Analyst</div>
+                    </div>
+                    <div class="user-menu-toggle">
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                </div>
+                <div class="user-menu" id="user-menu">
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Profile Settings</span>
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help & Support</span>
+                    </a>
+                    <div class="menu-divider"></div>
+                    <a href="#" class="user-menu-item" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title" id="page-title">Dashboard</h1>
+                    <div class="breadcrumb" id="breadcrumb">
+                        <span>Analytics</span>
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Dashboard</span>
+                    </div>
+                </div>
+                
+                <div class="top-bar-right">
+                    <div class="search-container">
+                        <input type="text" placeholder="Search teams, players, games..." class="search-input" id="global-search">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    
+                    <div class="status-indicators">
+                        <div class="status-item" id="api-status" title="API Connection">
+                            <i class="fas fa-circle"></i>
+                            <span>API</span>
+                        </div>
+                        <div class="status-item" id="ws-status" title="Live Updates">
+                            <i class="fas fa-circle"></i>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-center">
+                        <button class="notification-btn" id="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Views -->
+            <div class="content-container">
+                <!-- Dashboard View -->
+                <div class="view active" id="dashboard-view">
+                    <div class="dashboard-grid">
+                        <!-- KPI Cards -->
+                        <div class="kpi-section">
+                            <div class="kpi-card">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon teams">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="kpi-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+12%</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="teams-count">32</h3>
+                                    <p>Active Teams</p>
+                                    <div class="kpi-subtitle">NFL Teams</div>
+                                </div>
+                            </div>
+                            
+                            <div class="kpi-card">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon games">
+                                        <i class="fas fa-gamepad"></i>
+                                    </div>
+                                    <div class="kpi-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+8%</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="games-count">6</h3>
+                                    <p>Wild Card Games</p>
+                                    <div class="kpi-subtitle">Real-time tracking</div>
+                                </div>
+                            </div>
+                            
+                            <div class="kpi-card">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon predictions">
+                                        <i class="fas fa-crystal-ball"></i>
+                                    </div>
+                                    <div class="kpi-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+15%</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="predictions-count">125</h3>
+                                    <p>Predictions</p>
+                                    <div class="kpi-subtitle">ML-powered insights</div>
+                                </div>
+                            </div>
+                            
+                            <div class="kpi-card">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon accuracy">
+                                        <i class="fas fa-bullseye"></i>
+                                    </div>
+                                    <div class="kpi-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+3%</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3>87.3%</h3>
+                                    <p>Accuracy</p>
+                                    <div class="kpi-subtitle">Model performance</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Games Section -->
+                        <div class="dashboard-section">
+                            <div class="section-header">
+                                <h2>
+                                    <i class="fas fa-broadcast-tower"></i>
+                                    Live Games & Predictions
+                                </h2>
+                                <div class="section-actions">
+                                    <div class="live-indicator">
+                                        <span class="pulse"></span>
+                                        <span>LIVE</span>
+                                    </div>
+                                    <button class="btn-secondary" onclick="loadRealNFLGames()" style="margin-right: 10px;">
+                                        <i class="fas fa-football-ball"></i>
+                                        Load NFL Games
+                                    </button>
+                                    <button class="btn-secondary" id="refresh-games">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="games-grid" id="games-grid">
+                                <!-- Games will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Analytics Charts -->
+                        <div class="charts-section">
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3>Prediction Accuracy Trend</h3>
+                                    <div class="chart-controls">
+                                        <select class="chart-timeframe">
+                                            <option value="7d">Last 7 days</option>
+                                            <option value="30d">Last 30 days</option>
+                                            <option value="90d">Last 90 days</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <canvas id="accuracy-chart"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3>Conference Performance</h3>
+                                    <div class="chart-controls">
+                                        <button class="chart-type-btn active" data-type="wins">Wins</button>
+                                        <button class="chart-type-btn" data-type="points">Points</button>
+                                    </div>
+                                </div>
+                                <canvas id="conference-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Games View -->
+                <div class="view" id="live-games-view">
+                    <div class="live-games-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-broadcast-tower"></i> Live NFL Games</h2>
+                            <div class="section-actions">
+                                <div class="live-indicator">
+                                    <span class="pulse"></span>
+                                    <span>LIVE</span>
+                                </div>
+                                <button class="btn-secondary" onclick="loadRealNFLGames()">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Refresh Games
+                                </button>
+                            </div>
+                        </div>
+                        <div class="games-grid" id="live-games-grid">
+                            <!-- Live games will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Predictions View -->
+                <div class="view" id="predictions-view">
+                    <div class="predictions-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-crystal-ball"></i> 2025 NFL Predictions</h2>
+                            <div class="section-actions">
+                                <select class="filter-select" id="prediction-type-filter">
+                                    <option value="all">All Predictions</option>
+                                    <option value="playoffs">Playoff Predictions</option>
+                                    <option value="season">Season Predictions</option>
+                                    <option value="awards">Award Predictions</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="predictions-grid" id="predictions-grid">
+                            <!-- Predictions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare View -->
+                <div class="view" id="compare-view">
+                    <div class="compare-container">
+                        <div class="compare-header">
+                            <h2>Team & Player Comparison</h2>
+                            <div class="compare-controls">
+                                <div class="compare-tabs">
+                                    <button class="tab-btn active" data-tab="teams">Teams</button>
+                                    <button class="tab-btn" data-tab="players">Players</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="compare-content">
+                            <!-- Team Comparison -->
+                            <div class="compare-tab active" id="teams-compare">
+                                <div class="compare-selectors">
+                                    <div class="team-selector">
+                                        <label>Team A</label>
+                                        <select id="team-a-select" class="team-select">
+                                            <option value="">Select Team A</option>
+                                        </select>
+                                    </div>
+                                    <div class="vs-divider">
+                                        <span>VS</span>
+                                    </div>
+                                    <div class="team-selector">
+                                        <label>Team B</label>
+                                        <select id="team-b-select" class="team-select">
+                                            <option value="">Select Team B</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="comparison-results" id="team-comparison-results">
+                                    <!-- Comparison results will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Player Comparison -->
+                            <div class="compare-tab" id="players-compare">
+                                <div class="compare-selectors">
+                                    <div class="player-selector">
+                                        <label>Player A</label>
+                                        <select id="player-a-select" class="player-select">
+                                            <option value="">Select Player A</option>
+                                        </select>
+                                    </div>
+                                    <div class="vs-divider">
+                                        <span>VS</span>
+                                    </div>
+                                    <div class="player-selector">
+                                        <label>Player B</label>
+                                        <select id="player-b-select" class="player-select">
+                                            <option value="">Select Player B</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="comparison-results" id="player-comparison-results">
+                                    <!-- Comparison results will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teams View -->
+                <div class="view" id="teams-view">
+                    <div class="teams-container">
+                        <div class="teams-header">
+                            <h2><i class="fas fa-shield-alt"></i> NFL Teams Overview</h2>
+                            <div class="teams-filters">
+                                <select class="filter-select" id="conference-filter">
+                                    <option value="">All Conferences</option>
+                                    <option value="AFC">AFC</option>
+                                    <option value="NFC">NFC</option>
+                                </select>
+                                <select class="filter-select" id="division-filter">
+                                    <option value="">All Divisions</option>
+                                    <option value="East">East</option>
+                                    <option value="North">North</option>
+                                    <option value="South">South</option>
+                                    <option value="West">West</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="teams-grid" id="teams-grid-detailed">
+                            <!-- Teams will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Players View -->
+                <div class="view" id="players-view">
+                    <div class="players-container">
+                        <div class="players-header">
+                            <h2><i class="fas fa-users"></i> NFL Players</h2>
+                            <div class="players-filters">
+                                <select class="filter-select" id="position-filter">
+                                    <option value="">All Positions</option>
+                                    <option value="QB">Quarterbacks</option>
+                                    <option value="RB">Running Backs</option>
+                                    <option value="WR">Wide Receivers</option>
+                                    <option value="TE">Tight Ends</option>
+                                    <option value="Defense">Defense</option>
+                                </select>
+                                <select class="filter-select" id="team-filter">
+                                    <option value="">All Teams</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="players-grid" id="players-grid">
+                            <!-- Players will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics View -->
+                <div class="view" id="statistics-view">
+                    <div class="statistics-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-chart-bar"></i> NFL Statistics</h2>
+                            <div class="section-actions">
+                                <select class="filter-select" id="stats-category-filter">
+                                    <option value="offense">Offensive Stats</option>
+                                    <option value="defense">Defensive Stats</option>
+                                    <option value="team">Team Stats</option>
+                                    <option value="season">Season Leaders</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="stats-grid" id="stats-grid">
+                            <!-- Statistics will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historical View -->
+                <div class="view" id="historical-view">
+                    <div class="historical-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-history"></i> NFL History</h2>
+                            <div class="section-actions">
+                                <select class="filter-select" id="history-filter">
+                                    <option value="championships">Championships</option>
+                                    <option value="records">All-Time Records</option>
+                                    <option value="trends">Historical Trends</option>
+                                    <option value="playoffs">Playoff History</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="historical-grid" id="historical-grid">
+                            <!-- Historical data will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monte Carlo View -->
+                <div class="view" id="monte-carlo-view">
+                    <div class="monte-carlo-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-dice"></i> Monte Carlo Simulations</h2>
+                            <div class="section-actions">
+                                <button class="btn-primary" id="run-simulation">
+                                    <i class="fas fa-play"></i>
+                                    Run Simulation
+                                </button>
+                            </div>
+                        </div>
+                        <div class="simulation-grid" id="simulation-grid">
+                            <!-- Simulations will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ML Models View -->
+                <div class="view" id="ml-models-view">
+                    <div class="ml-models-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-brain"></i> Machine Learning Models</h2>
+                            <div class="section-actions">
+                                <select class="filter-select" id="model-type-filter">
+                                    <option value="all">All Models</option>
+                                    <option value="prediction">Prediction Models</option>
+                                    <option value="analysis">Analysis Models</option>
+                                    <option value="classification">Classification Models</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="models-grid" id="models-grid">
+                            <!-- ML Models will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts View -->
+                <div class="view" id="alerts-view">
+                    <div class="alerts-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-bell"></i> Alerts & Notifications</h2>
+                            <div class="section-actions">
+                                <button class="btn-secondary" id="clear-alerts">
+                                    <i class="fas fa-trash"></i>
+                                    Clear All
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alerts-grid" id="alerts-grid">
+                            <!-- Alerts will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- NO LOADING OVERLAY NEEDED -->
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notification-panel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="close-notifications" id="close-notifications">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notification-content">
+            <div class="notification-item">
+                <div class="notification-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="notification-text">
+                    <h4>Prediction Updated</h4>
+                    <p>Alabama vs Georgia probabilities refreshed</p>
+                    <span class="notification-time">2 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon info">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="notification-text">
+                    <h4>New Game Added</h4>
+                    <p>Michigan vs Texas scheduled for next week</p>
+                    <span class="notification-time">5 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="notification-text">
+                    <h4>Model Accuracy Alert</h4>
+                    <p>XGBoost model performance below threshold</p>
+                    <span class="notification-time">10 minutes ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="nfl-2024-data.js"></script>
+    <script src="live-nfl-games-today.js"></script>
+    <script src="comprehensive-nfl-app.js"></script>
+    
+    <script>
+        // Add NFL games loader
+        function loadRealNFLGames() {
+            if (window.footballApp) {
+                window.footballApp.loadRealNFLGames();
+            }
+        }
+        
+        // Make the app globally accessible
+        window.addEventListener('load', function() {
+            if (window.FootballAnalyticsPro) {
+                window.footballApp = new FootballAnalyticsPro();
+            }
+        });
+        
+        // Add enhanced styles for the advanced NFL UI
+        const style = document.createElement('style');
+        style.textContent = `
+            .live-indicator {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 12px;
+                font-weight: bold;
+                color: #28a745;
+            }
+            .pulse {
+                width: 8px;
+                height: 8px;
+                background: #28a745;
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+            }
+            @keyframes pulse {
+                0% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.5; transform: scale(1.2); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+            .game-network {
+                font-size: 12px;
+                opacity: 0.8;
+                font-weight: 500;
+            }
+            .prediction-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+                font-size: 14px;
+                font-weight: 600;
+            }
+            .venue-info, .location-info, .date-info {
+                font-size: 12px;
+                opacity: 0.7;
+                margin: 5px 0;
+            }
+            .game-card {
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255,255,255,0.1);
+                position: relative;
+                overflow: hidden;
+            }
+            .game-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+                border-color: rgba(255,255,255,0.2);
+            }
+            .game-card.live {
+                border-color: #28a745;
+                box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
+            }
+            .game-card.final {
+                border-color: #6c757d;
+                opacity: 0.9;
+            }
+            .live-pulse {
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                width: 12px;
+                height: 12px;
+                background: #28a745;
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+            }
+            .live-score {
+                color: #28a745;
+                font-weight: bold;
+                text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+                animation: scoreGlow 3s ease-in-out infinite;
+            }
+            @keyframes scoreGlow {
+                0%, 100% { 
+                    color: #28a745;
+                    text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+                }
+                50% { 
+                    color: #20c997;
+                    text-shadow: 0 0 15px rgba(32, 201, 151, 0.8);
+                }
+            }
+            .team.winner {
+                background: rgba(40, 167, 69, 0.2);
+                border-radius: 10px;
+                border: 1px solid #28a745;
+            }
+            .team.winner .team-score {
+                color: #28a745;
+                font-weight: bold;
+                font-size: 32px;
+            }
+            .game-time {
+                font-size: 14px;
+                color: #00d4ff;
+                margin-bottom: 5px;
+            }
+            .live-quarter {
+                background: rgba(40, 167, 69, 0.2);
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+                color: #28a745;
+                text-align: center;
+                margin: 5px 0;
+                border: 1px solid #28a745;
+            }
+            .betting-line {
+                font-size: 12px;
+                opacity: 0.8;
+                margin-top: 5px;
+            }
+            .team-score {
+                font-size: 28px;
+                font-weight: bold;
+                color: #00d4ff;
+                text-shadow: 0 0 10px rgba(0,212,255,0.3);
+            }
+            .prediction-fill {
+                background: linear-gradient(90deg, #007bff, #00d4ff, #28a745);
+                box-shadow: 0 0 10px rgba(0,212,255,0.5);
+            }
+            .game-status.live {
+                background: linear-gradient(45deg, #28a745, #20c997);
+                animation: pulse 2s infinite;
+            }
+            .game-status.scheduled {
+                background: linear-gradient(45deg, #007bff, #0056b3);
+            }
+            
+            /* Statistics View Styles */
+            .statistics-container, .historical-container, .monte-carlo-container, 
+            .ml-models-container, .alerts-container {
+                padding: 20px;
+            }
+            .stats-grid, .historical-grid, .simulation-grid, .models-grid, .alerts-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+            .stat-card, .historical-card, .simulation-card, .model-card, .alert-card {
+                background: rgba(255,255,255,0.05);
+                border-radius: 15px;
+                padding: 25px;
+                border: 1px solid rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+            }
+            .stat-card h3, .historical-card h3, .simulation-card h3, .model-card h3, .alert-card h3 {
+                margin-bottom: 20px;
+                color: #00d4ff;
+                font-size: 18px;
+            }
+            
+            /* Model Card Styles */
+            .model-stats {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 15px;
+            }
+            .model-stats .stat {
+                text-align: center;
+            }
+            .model-stats .label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.7;
+                margin-bottom: 5px;
+            }
+            .model-stats .value {
+                display: block;
+                font-size: 18px;
+                font-weight: bold;
+                color: #28a745;
+            }
+            .model-status {
+                padding: 8px 16px;
+                border-radius: 20px;
+                text-align: center;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            .model-status.active {
+                background: #28a745;
+                color: white;
+            }
+            .model-status:not(.active) {
+                background: rgba(255,255,255,0.1);
+                color: #ccc;
+            }
+            
+            /* Alert Styles */
+            .alert-list {
+                space-y: 15px;
+            }
+            .alert-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 15px;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+            }
+            .alert-item.success {
+                background: rgba(40,167,69,0.1);
+                border-left: 4px solid #28a745;
+            }
+            .alert-item.warning {
+                background: rgba(255,193,7,0.1);
+                border-left: 4px solid #ffc107;
+            }
+            .alert-item.info {
+                background: rgba(0,123,255,0.1);
+                border-left: 4px solid #007bff;
+            }
+            .alert-icon {
+                font-size: 20px;
+                margin-top: 2px;
+            }
+            .alert-content {
+                flex: 1;
+            }
+            .alert-title {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            .alert-desc {
+                font-size: 14px;
+                opacity: 0.8;
+                margin-bottom: 5px;
+            }
+            .alert-time {
+                font-size: 12px;
+                opacity: 0.6;
+            }
+            
+            /* Settings Styles */
+            .alert-settings, .setting-item {
+                margin-bottom: 15px;
+            }
+            .setting-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .toggle-switch {
+                width: 50px;
+                height: 25px;
+                appearance: none;
+                background: rgba(255,255,255,0.2);
+                border-radius: 25px;
+                position: relative;
+                cursor: pointer;
+            }
+            .toggle-switch:checked {
+                background: #007bff;
+            }
+            .toggle-switch::before {
+                content: '';
+                position: absolute;
+                width: 21px;
+                height: 21px;
+                border-radius: 50%;
+                background: white;
+                top: 2px;
+                left: 2px;
+                transition: transform 0.3s ease;
+            }
+            .toggle-switch:checked::before {
+                transform: translateX(25px);
+            }
+            
+            /* Real Data Content Styles */
+            .teams-grid, .players-grid, .stats-grid, .historical-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+            
+            .team-card, .player-card, .stat-card, .historical-card {
+                background: rgba(255,255,255,0.05);
+                border-radius: 15px;
+                padding: 20px;
+                border: 1px solid rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .team-card:hover, .player-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+                border-color: rgba(0,212,255,0.3);
+            }
+            
+            .team-header, .player-header {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .team-logo {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(45deg, #007bff, #00d4ff);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                color: white;
+                font-size: 14px;
+            }
+            
+            .player-number {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(45deg, #28a745, #20c997);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                color: white;
+                font-size: 16px;
+            }
+            
+            .team-name, .player-name {
+                font-size: 18px;
+                font-weight: bold;
+                color: #00d4ff;
+            }
+            
+            .team-location, .player-position {
+                font-size: 14px;
+                opacity: 0.8;
+                margin-top: 5px;
+            }
+            
+            .team-stats, .player-stats {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .team-stats .stat, .player-stats .stat {
+                text-align: center;
+                padding: 8px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 8px;
+            }
+            
+            .stat .label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.7;
+                margin-bottom: 5px;
+            }
+            
+            .stat .value {
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #00d4ff;
+            }
+            
+            .performance-stats {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+            
+            .perf-stat {
+                background: rgba(40,167,69,0.2);
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                border: 1px solid #28a745;
+            }
+            
+            .perf-stat span {
+                font-weight: bold;
+                color: #28a745;
+            }
+            
+            .team-actions, .section-actions {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .btn-small {
+                padding: 6px 12px;
+                font-size: 12px;
+                border: none;
+                border-radius: 5px;
+                background: #007bff;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-small:hover {
+                background: #0056b3;
+                transform: translateY(-1px);
+            }
+            
+            .filter-select {
+                padding: 8px 12px;
+                border: none;
+                border-radius: 5px;
+                background: rgba(255,255,255,0.1);
+                color: white;
+                cursor: pointer;
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            
+            .stat-list {
+                space-y: 10px;
+            }
+            
+            .stat-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .stat-item:last-child {
+                border-bottom: none;
+            }
+            
+            .stat-item .player {
+                font-weight: 500;
+            }
+            
+            .stat-item .value {
+                color: #00d4ff;
+                font-weight: bold;
+            }
+            
+            .trend-chart {
+                space-y: 15px;
+            }
+            
+            .trend-item {
+                margin-bottom: 15px;
+            }
+            
+            .trend-label {
+                display: block;
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            
+            .trend-bar {
+                width: 100%;
+                height: 8px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+                overflow: hidden;
+                margin-bottom: 5px;
+            }
+            
+            .trend-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #007bff, #00d4ff);
+                border-radius: 4px;
+                transition: width 0.3s ease;
+            }
+            
+            .trend-value {
+                font-size: 12px;
+                color: #00d4ff;
+                font-weight: bold;
+            }
+            
+            .championship-list {
+                space-y: 10px;
+            }
+            
+            .championship-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .championship-item:last-child {
+                border-bottom: none;
+            }
+            
+            .championship-item .year {
+                font-weight: bold;
+                color: #ffc107;
+            }
+            
+            .championship-item .champion {
+                flex: 1;
+                text-align: center;
+                font-weight: 500;
+            }
+            
+            .championship-item .score {
+                color: #28a745;
+                font-weight: bold;
+            }
+            
+            /* Teams and Players Grid Styles */
+            .teams-grid, .players-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+            .team-card, .player-card {
+                background: rgba(255,255,255,0.05);
+                border-radius: 15px;
+                padding: 25px;
+                border: 1px solid rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+            .team-card:hover, .player-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+                border-color: rgba(255,255,255,0.2);
+            }
+            .team-header, .player-header {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .team-logo-large {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(45deg, #007bff, #00d4ff);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 18px;
+                color: white;
+            }
+            .player-avatar {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(45deg, #28a745, #20c997);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                color: white;
+            }
+            .team-info h3, .player-info h3 {
+                margin: 0 0 5px 0;
+                color: #00d4ff;
+                font-size: 18px;
+            }
+            .team-info p, .player-info p {
+                margin: 2px 0;
+                opacity: 0.8;
+                font-size: 14px;
+            }
+            .team-stats, .player-stats {
+                display: flex;
+                justify-content: space-around;
+                margin: 20px 0;
+                padding: 15px;
+                background: rgba(0,123,255,0.1);
+                border-radius: 10px;
+            }
+            .team-stats .stat, .player-stats .stat {
+                text-align: center;
+            }
+            .stat-value {
+                font-size: 20px;
+                font-weight: bold;
+                color: #28a745;
+                display: block;
+            }
+            .stat-label {
+                font-size: 12px;
+                opacity: 0.7;
+                margin-top: 5px;
+            }
+            .team-venue, .player-details {
+                margin: 15px 0;
+                font-size: 14px;
+                opacity: 0.8;
+            }
+            .player-details {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .detail {
+                display: flex;
+                justify-content: space-between;
+                padding: 5px 0;
+            }
+            .detail .label {
+                opacity: 0.7;
+            }
+            .detail .value {
+                font-weight: bold;
+                color: #00d4ff;
+            }
+            .team-actions, .player-actions {
+                margin-top: 20px;
+                text-align: center;
+            }
+            .team-count, .player-count {
+                background: rgba(0,123,255,0.2);
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            .filter-select {
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            .filter-select option {
+                background: #1a1a2e;
+                color: white;
+            }
+            
+            /* Leaders and Records Styles */
+            .leaders-list, .h2h-records, .probability-list {
+                space-y: 10px;
+            }
+            .leader-item, .record-item, .prob-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .leader-item:last-child, .record-item:last-child, .prob-item:last-child {
+                border-bottom: none;
+            }
+            .player, .teams, .team {
+                font-weight: 500;
+            }
+            .stat, .record, .prob {
+                color: #00d4ff;
+                font-weight: bold;
+            }
+            
+            /* Predictions Styles */
+            .predictions-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+            .prediction-card {
+                background: rgba(255,255,255,0.05);
+                border-radius: 15px;
+                padding: 25px;
+                border: 1px solid rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+            }
+            .prediction-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .prediction-type {
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            .prediction-type.award {
+                background: #ffc107;
+                color: #000;
+            }
+            .prediction-type.championship {
+                background: #28a745;
+                color: #fff;
+            }
+            .prediction-type.playoffs {
+                background: #007bff;
+                color: #fff;
+            }
+            .prediction-type.season {
+                background: #6f42c1;
+                color: #fff;
+            }
+            .prediction-result {
+                font-size: 20px;
+                font-weight: bold;
+                color: #00d4ff;
+                margin-bottom: 15px;
+            }
+            .confidence-bar {
+                width: 100%;
+                height: 8px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+                overflow: hidden;
+                margin-bottom: 10px;
+            }
+            .confidence-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #28a745, #00d4ff);
+                border-radius: 4px;
+                transition: width 0.3s ease;
+            }
+            .confidence-text {
+                font-size: 14px;
+                font-weight: bold;
+                color: #28a745;
+                margin-bottom: 15px;
+            }
+            .prediction-reasoning {
+                font-size: 14px;
+                opacity: 0.8;
+                line-height: 1.4;
+            }
+            
+            /* Comparison Styles */
+            .team-comparison, .player-comparison {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 30px;
+                align-items: center;
+            }
+            .team-compare-card, .player-compare-card {
+                background: rgba(255,255,255,0.05);
+                border-radius: 15px;
+                padding: 25px;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            .team-compare-card h3, .player-compare-card h3 {
+                color: #00d4ff;
+                margin-bottom: 15px;
+            }
+            .team-stats-compare, .player-stats-compare {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .stat-compare {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .stat-compare:last-child {
+                border-bottom: none;
+            }
+            .stat-compare .stat-label {
+                opacity: 0.8;
+            }
+            .stat-compare .stat-value {
+                font-weight: bold;
+                color: #28a745;
+            }
+            .player-info-compare {
+                margin-bottom: 15px;
+                opacity: 0.8;
+            }
+            .vs-section {
+                text-align: center;
+            }
+            .vs-circle {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: linear-gradient(45deg, #007bff, #00d4ff);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 18px;
+                margin: 0 auto 15px;
+                color: white;
+            }
+            .win-probability {
+                font-size: 14px;
+                font-weight: bold;
+                color: #28a745;
+            }
+            
+            /* Records and Historical Styles */
+            .records-list, .trends-list {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .record-item, .trend-item {
+                padding: 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 10px;
+                border-left: 4px solid #00d4ff;
+            }
+            .record-title, .trend-title {
+                font-weight: bold;
+                color: #00d4ff;
+                margin-bottom: 5px;
+            }
+            .record-holder, .trend-description {
+                opacity: 0.8;
+                margin-bottom: 5px;
+            }
+            .record-value {
+                font-size: 18px;
+                font-weight: bold;
+                color: #28a745;
+            }
+            .trend-impact {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            .trend-impact.impact-high {
+                background: #dc3545;
+                color: white;
+            }
+            .trend-impact.impact-medium {
+                background: #ffc107;
+                color: #000;
+            }
+            .trend-impact.impact-low {
+                background: #28a745;
+                color: white;
+            }
+            .trend-impact.impact-very {
+                background: #6f42c1;
+                color: white;
+            }
+            
+            /* Simulation Styles */
+            .simulation-controls {
+                margin: 20px 0;
+                text-align: center;
+            }
+            .simulation-results {
+                margin-top: 20px;
+                padding: 15px;
+                background: rgba(0,123,255,0.1);
+                border-radius: 10px;
+                border: 1px solid rgba(0,123,255,0.3);
+            }
+            .sim-results-grid {
+                display: grid;
+                gap: 20px;
+            }
+            .sim-result h4 {
+                color: #00d4ff;
+                margin-bottom: 15px;
+            }
+            .prob-list, .win-projections, .draft-order {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .prob-item, .proj-item, .draft-pick {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 12px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 8px;
+            }
+            .prob-item .prob, .proj-item .wins, .draft-pick .prob {
+                font-weight: bold;
+                color: #28a745;
+            }
+            .draft-pick .pick-number {
+                font-weight: bold;
+                color: #ffc107;
+                margin-right: 10px;
+            }
+            
+            /* ML Model Interactive Styles */
+            .model-actions {
+                margin-top: 20px;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                padding-top: 15px;
+            }
+            .model-run-btn {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            .game-selector {
+                margin-top: 15px;
+                padding: 20px;
+                background: rgba(0,123,255,0.1);
+                border-radius: 10px;
+                border: 1px solid rgba(0,123,255,0.3);
+            }
+            .game-selector h4 {
+                color: #00d4ff;
+                margin-bottom: 15px;
+                font-size: 16px;
+            }
+            .game-select {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 5px;
+                background: rgba(255,255,255,0.1);
+                color: white;
+                font-size: 14px;
+            }
+            .game-select option {
+                background: #1a1a2e;
+                color: white;
+            }
+            .selector-actions {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .selector-actions button {
+                flex: 1;
+            }
+            .model-results {
+                margin-top: 20px;
+            }
+            .analysis-loading {
+                text-align: center;
+                padding: 20px;
+                color: #00d4ff;
+            }
+            .analysis-loading i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
+            .analysis-results {
+                background: rgba(255,255,255,0.05);
+                border-radius: 10px;
+                padding: 20px;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            .analysis-results h4 {
+                color: #00d4ff;
+                margin-bottom: 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding-bottom: 10px;
+            }
+            
+            /* Win Probability Analysis Styles */
+            .win-prob-analysis {
+                color: white;
+            }
+            .prob-breakdown {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .team-prob {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            .team-prob .team-name {
+                min-width: 150px;
+                font-weight: bold;
+            }
+            .prob-bar {
+                flex: 1;
+                height: 20px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .prob-fill {
+                height: 100%;
+                border-radius: 10px;
+                transition: width 0.3s ease;
+            }
+            .home-fill {
+                background: linear-gradient(90deg, #28a745, #20c997);
+            }
+            .away-fill {
+                background: linear-gradient(90deg, #007bff, #00d4ff);
+            }
+            .prob-value {
+                min-width: 50px;
+                text-align: right;
+                font-weight: bold;
+                color: #00d4ff;
+            }
+            .key-factors {
+                margin-bottom: 20px;
+            }
+            .key-factors h5 {
+                color: #00d4ff;
+                margin-bottom: 10px;
+            }
+            .key-factors ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            .key-factors li {
+                padding: 5px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .key-factors li:last-child {
+                border-bottom: none;
+            }
+            .confidence-score {
+                text-align: center;
+                font-size: 16px;
+                padding: 15px;
+                background: rgba(40,167,69,0.2);
+                border-radius: 10px;
+                border: 1px solid #28a745;
+            }
+            
+            /* Player Performance Analysis Styles */
+            .player-perf-analysis h5 {
+                color: #00d4ff;
+                margin-bottom: 15px;
+            }
+            .player-projections {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .player-projection {
+                padding: 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 10px;
+                border-left: 4px solid #28a745;
+            }
+            .player-projection .player-info {
+                margin-bottom: 10px;
+            }
+            .player-projection .player-team {
+                opacity: 0.7;
+                margin-left: 10px;
+            }
+            .projection-stats {
+                display: flex;
+                gap: 15px;
+            }
+            .projection-stats span {
+                background: rgba(0,123,255,0.2);
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: bold;
+                color: #00d4ff;
+            }
+            
+            /* Playoff Probability Analysis Styles */
+            .playoff-impact {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+            .team-impact {
+                padding: 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            .team-impact strong {
+                color: #00d4ff;
+                display: block;
+                margin-bottom: 10px;
+            }
+            .positive {
+                color: #28a745;
+                font-weight: bold;
+            }
+            .negative {
+                color: #dc3545;
+                font-weight: bold;
+            }
+            .season-context {
+                padding: 15px;
+                background: rgba(255,193,7,0.1);
+                border-radius: 10px;
+                border: 1px solid #ffc107;
+            }
+            .season-context h5 {
+                color: #ffc107;
+                margin-bottom: 10px;
+            }
+            
+            /* MVP Tracker Analysis Styles */
+            .mvp-candidates {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .mvp-candidate {
+                padding: 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 10px;
+                border-left: 4px solid #ffc107;
+            }
+            .mvp-candidate .candidate-info {
+                margin-bottom: 8px;
+            }
+            .mvp-candidate .candidate-team {
+                opacity: 0.7;
+                margin-left: 10px;
+            }
+            .mvp-odds {
+                margin-bottom: 5px;
+            }
+            .odds-value {
+                color: #ffc107;
+                font-weight: bold;
+            }
+            .performance-impact {
+                font-size: 14px;
+                opacity: 0.8;
+                font-style: italic;
+            }
+            
+            /* Injury Risk Analysis Styles */
+            .risk-factors {
+                margin-bottom: 20px;
+            }
+            .general-risk {
+                padding: 15px;
+                background: rgba(40,167,69,0.1);
+                border-radius: 10px;
+                border: 1px solid #28a745;
+            }
+            .risk-level {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+                margin-left: 10px;
+            }
+            .risk-level.low {
+                background: #28a745;
+                color: white;
+            }
+            .risk-level.medium {
+                background: #ffc107;
+                color: #000;
+            }
+            .risk-level.high {
+                background: #dc3545;
+                color: white;
+            }
+            .player-risks {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .player-risk {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 8px;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            .player-risk .player-team {
+                opacity: 0.7;
+                margin-left: 10px;
+            }
+            .risk-assessment {
+                text-align: right;
+            }
+            .risk-score {
+                display: block;
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+            .risk-category {
+                padding: 2px 6px;
+                border-radius: 10px;
+                font-size: 10px;
+                font-weight: bold;
+            }
+            .risk-category.low {
+                background: #28a745;
+                color: white;
+            }
+            .risk-category.medium {
+                background: #ffc107;
+                color: #000;
+            }
+            .prevention-tips {
+                padding: 15px;
+                background: rgba(0,123,255,0.1);
+                border-radius: 10px;
+                border: 1px solid rgba(0,123,255,0.3);
+            }
+            .prevention-tips h5 {
+                color: #007bff;
+                margin-bottom: 10px;
+            }
+            
+            /* Generic Analysis Styles */
+            .generic-analysis .model-output {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+                margin: 20px 0;
+            }
+            .metric {
+                text-align: center;
+                padding: 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            .metric-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.7;
+                margin-bottom: 5px;
+            }
+            .metric-value {
+                display: block;
+                font-size: 18px;
+                font-weight: bold;
+                color: #00d4ff;
+            }
+            .recommendations {
+                margin-top: 20px;
+            }
+            .recommendations h5 {
+                color: #00d4ff;
+                margin-bottom: 10px;
+            }
+            .recommendations ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            .recommendations li {
+                padding: 8px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .recommendations li:last-child {
+                border-bottom: none;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add critical view switching CSS
+        const viewCSS = document.createElement('style');
+        viewCSS.textContent = `
+            .view {
+                display: none;
+                width: 100%;
+                height: 100%;
+                overflow-y: auto;
+            }
+            .view.active {
+                display: block !important;
+            }
+            .menu-item {
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .menu-item:hover {
+                background: rgba(255,255,255,0.1);
+                transform: translateX(5px);
+            }
+            .menu-item.active {
+                background: rgba(0,123,255,0.2);
+                border-left: 3px solid #007bff;
+            }
+        `;
+        document.head.appendChild(viewCSS);
+        
+        // Extend the football app with NFL functionality
+        if (window.footballApp) {
+            window.footballApp.loadRealNFLGames = async function() {
+                try {
+                    console.log('🏈 Loading real NFL preseason games...');
+                    
+                    const response = await fetch('http://localhost:3000/api/v1/nfl/games');
+                    const data = await response.json();
+                    
+                    if (data.success && data.data.length > 0) {
+                        console.log(`✅ Loaded ${data.data.length} real NFL games`);
+                        
+                        // Update the games display
+                        this.displayNFLGames(data.data);
+                        
+                        // Show success message
+                        this.showNotification(`Loaded ${data.data.length} real NFL preseason games with ML predictions!`, 'success');
+                    } else {
+                        console.log('❌ No NFL games available');
+                        this.showNotification('No NFL preseason games available at the moment', 'warning');
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to load NFL games:', error);
+                    this.showNotification('Failed to load NFL games: ' + error.message, 'error');
+                }
+            };
+            
+            window.footballApp.displayNFLGames = function(games) {
+                // Find the live games container
+                const liveGamesGrid = document.getElementById('live-games-grid');
+                if (!liveGamesGrid) return;
+                
+                // Clear existing content
+                liveGamesGrid.innerHTML = '';
+                
+                // Add NFL games header
+                const headerHtml = `
+                    <div class="nfl-header" style="grid-column: 1 / -1; margin-bottom: 20px;">
+                        <h3 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-football-ball"></i>
+                            Real NFL Preseason Games
+                            <span class="live-indicator" style="margin-left: auto;">
+                                <span class="pulse"></span>
+                                <span>LIVE DATA</span>
+                            </span>
+                        </h3>
+                    </div>
+                `;
+                liveGamesGrid.insertAdjacentHTML('beforeend', headerHtml);
+                
+                // Add each game
+                games.forEach(game => {
+                    const gameHtml = `
+                        <div class="game-card liquid-glass nfl-game">
+                            <div class="game-header">
+                                <div class="game-status ${game.status.toLowerCase()}">${game.status} - ${game.gameType}</div>
+                                <div class="game-network">${game.tvNetwork}</div>
+                            </div>
+                            <div class="game-teams">
+                                <div class="team">
+                                    <div class="team-logo">${game.awayTeam?.abbreviation || 'AWAY'}</div>
+                                    <div class="team-name">${game.awayTeam?.displayName || 'Away Team'}</div>
+                                    <div class="team-score">${game.awayScore}</div>
+                                </div>
+                                <div class="vs">VS</div>
+                                <div class="team">
+                                    <div class="team-logo">${game.homeTeam?.abbreviation || 'HOME'}</div>
+                                    <div class="team-name">${game.homeTeam?.displayName || 'Home Team'}</div>
+                                    <div class="team-score">${game.homeScore}</div>
+                                </div>
+                            </div>
+                            <div class="game-prediction">
+                                <div class="prediction-bar">
+                                    <div class="prediction-fill" style="width: ${(game.predictions?.homeTeamWinProbability || 0.5) * 100}%"></div>
+                                </div>
+                                <div class="prediction-text">
+                                    ${game.homeTeam?.displayName || 'Home'} ${Math.round((game.predictions?.homeTeamWinProbability || 0.5) * 100)}% win probability
+                                </div>
+                                <div class="prediction-confidence">
+                                    Confidence: ${Math.round((game.predictions?.confidence || 0.8) * 100)}%
+                                </div>
+                            </div>
+                            <div class="game-details">
+                                <div class="venue">${game.venue}</div>
+                                <div class="location">${game.city}, ${game.state}</div>
+                                <div class="date">${new Date(game.scheduledTime).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                    `;
+                    liveGamesGrid.insertAdjacentHTML('beforeend', gameHtml);
+                });
+            };
+            
+            window.footballApp.showNotification = function(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 20px;
+                    background: ${type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : type === 'error' ? '#dc3545' : '#007bff'};
+                    color: white;
+                    border-radius: 5px;
+                    z-index: 10000;
+                    max-width: 400px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 5000);
+            };
+        }
+    </script>
+</body>
+</html>

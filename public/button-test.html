@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #0a0a0a;
+            color: white;
+        }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .log {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Functionality Test</h1>
+    
+    <div>
+        <button class="test-button" id="test-btn-1">Test Button 1</button>
+        <button class="test-button" id="test-btn-2">Test Button 2</button>
+        <button class="test-button" onclick="testClick('inline')">Inline Click</button>
+    </div>
+    
+    <div class="log" id="log"></div>
+    
+    <div>
+        <h2>Login Form Test</h2>
+        <form id="test-form">
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit" class="test-button">Submit</button>
+        </form>
+    </div>
+    
+    <div>
+        <h2>Social Auth Test</h2>
+        <button class="test-button btn-social google" id="google-test">Google</button>
+        <button class="test-button btn-social microsoft" id="microsoft-test">Microsoft</button>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function testClick(source) {
+            log(`✅ Button clicked from ${source}`);
+        }
+        
+        // Test different event attachment methods
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 DOM loaded, setting up tests...');
+            
+            // Method 1: getElementById + addEventListener
+            const btn1 = document.getElementById('test-btn-1');
+            if (btn1) {
+                btn1.addEventListener('click', () => {
+                    log('✅ Button 1 clicked via addEventListener');
+                });
+                log('✅ Button 1 event listener attached');
+            } else {
+                log('❌ Button 1 not found');
+            }
+            
+            // Method 2: querySelector + onclick
+            const btn2 = document.querySelector('#test-btn-2');
+            if (btn2) {
+                btn2.onclick = () => {
+                    log('✅ Button 2 clicked via onclick');
+                };
+                log('✅ Button 2 onclick handler attached');
+            } else {
+                log('❌ Button 2 not found');
+            }
+            
+            // Method 3: Form submission
+            const form = document.getElementById('test-form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    log('✅ Form submitted');
+                });
+                log('✅ Form event listener attached');
+            }
+            
+            // Method 4: Social buttons
+            const googleBtn = document.getElementById('google-test');
+            const microsoftBtn = document.getElementById('microsoft-test');
+            
+            if (googleBtn) {
+                googleBtn.addEventListener('click', () => {
+                    log('✅ Google button clicked');
+                });
+                log('✅ Google button event listener attached');
+            }
+            
+            if (microsoftBtn) {
+                microsoftBtn.addEventListener('click', () => {
+                    log('✅ Microsoft button clicked');
+                });
+                log('✅ Microsoft button event listener attached');
+            }
+            
+            // Test button properties
+            const allButtons = document.querySelectorAll('button');
+            log(`Found ${allButtons.length} buttons total`);
+            
+            allButtons.forEach((btn, index) => {
+                const style = getComputedStyle(btn);
+                log(`Button ${index}: display=${style.display}, pointerEvents=${style.pointerEvents}, zIndex=${style.zIndex}`);
+            });
+        });
+        
+        // Global click handler for debugging
+        document.addEventListener('click', (e) => {
+            log(`🖱️ Global click detected on: ${e.target.tagName} ${e.target.id ? '#' + e.target.id : ''} ${e.target.className ? '.' + e.target.className.split(' ').join('.') : ''}`);
+        });
+    </script>
+</body>
+</html>

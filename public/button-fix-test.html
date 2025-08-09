@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Fix Test</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Button Functionality Test</h1>
+    
+    <div>
+        <h2>Test 1: Basic Button Click</h2>
+        <button class="test-btn" onclick="testBasicClick()">Click Me</button>
+        <div id="basic-result" class="result">Waiting for click...</div>
+    </div>
+    
+    <div>
+        <h2>Test 2: Football App Methods</h2>
+        <button class="test-btn" onclick="testFootballApp()">Test Football App</button>
+        <div id="app-result" class="result">Waiting for test...</div>
+    </div>
+    
+    <div>
+        <h2>Test 3: Notification Button</h2>
+        <button class="test-btn" onclick="testNotifications()">Test Notifications</button>
+        <div id="notification-result" class="result">Waiting for test...</div>
+    </div>
+    
+    <div>
+        <h2>Debug Information</h2>
+        <div id="debug-info" class="result">Loading debug info...</div>
+    </div>
+    
+    <script>
+        function testBasicClick() {
+            document.getElementById('basic-result').innerHTML = '<span class="success">✅ Basic click works!</span>';
+            console.log('Basic click test passed');
+        }
+        
+        function testFootballApp() {
+            const result = document.getElementById('app-result');
+            if (window.footballApp) {
+                result.innerHTML = '<span class="success">✅ Football app exists!</span>';
+                
+                // Test refresh method
+                if (typeof window.footballApp.refreshData === 'function') {
+                    result.innerHTML += '<br><span class="success">✅ refreshData method exists</span>';
+                    try {
+                        window.footballApp.refreshData();
+                        result.innerHTML += '<br><span class="success">✅ refreshData executed successfully</span>';
+                    } catch (error) {
+                        result.innerHTML += '<br><span class="error">❌ refreshData error: ' + error.message + '</span>';
+                    }
+                } else {
+                    result.innerHTML += '<br><span class="error">❌ refreshData method missing</span>';
+                }
+            } else {
+                result.innerHTML = '<span class="error">❌ Football app not found!</span>';
+            }
+        }
+        
+        function testNotifications() {
+            const result = document.getElementById('notification-result');
+            if (window.footballApp && typeof window.footballApp.toggleNotificationPanel === 'function') {
+                try {
+                    window.footballApp.toggleNotificationPanel();
+                    result.innerHTML = '<span class="success">✅ Notification toggle executed</span>';
+                } catch (error) {
+                    result.innerHTML = '<span class="error">❌ Notification error: ' + error.message + '</span>';
+                }
+            } else {
+                result.innerHTML = '<span class="error">❌ Notification method not found</span>';
+            }
+        }
+        
+        // Load debug info
+        setTimeout(() => {
+            const debugInfo = document.getElementById('debug-info');
+            const info = [];
+            
+            info.push(`window.footballApp exists: ${!!window.footballApp}`);
+            
+            if (window.footballApp) {
+                const methods = ['refreshData', 'toggleNotificationPanel', 'runMonteCarloSimulation', 'retrainModels', 'createAlert'];
+                methods.forEach(method => {
+                    info.push(`${method}: ${typeof window.footballApp[method]}`);
+                });
+            }
+            
+            info.push(`DOM ready state: ${document.readyState}`);
+            info.push(`Current URL: ${window.location.href}`);
+            
+            debugInfo.innerHTML = info.join('<br>');
+        }, 1000);
+        
+        // Override console methods to show in page
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            showConsoleMessage(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            showConsoleMessage(args.join(' '), 'error');
+        };
+        
+        function showConsoleMessage(message, type) {
+            const logDiv = document.createElement('div');
+            logDiv.textContent = message;
+            logDiv.style.color = type === 'error' ? '#dc3545' : '#28a745';
+            logDiv.style.fontSize = '12px';
+            logDiv.style.marginTop = '5px';
+            logDiv.style.padding = '5px';
+            logDiv.style.background = 'rgba(255,255,255,0.1)';
+            logDiv.style.borderRadius = '3px';
+            document.body.appendChild(logDiv);
+        }
+    </script>
+    
+    <!-- Load the main app -->
+    <script src="app.js"></script>
+</body>
+</html>
