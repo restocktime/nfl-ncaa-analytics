@@ -2900,30 +2900,61 @@
                 const yesterdayStr = yesterday.toISOString().split('T')[0];
 
                 // Generate sample prediction history including yesterday's picks
-                const sampleHistory = [
-                    // Yesterday's game picks (for display in performance tracker)
-                    { type: 'game', homeTeam: 'Chiefs', awayTeam: 'Bills', date: yesterdayStr, correct: true, confidence: 87 },
-                    { type: 'game', homeTeam: 'Cowboys', awayTeam: 'Eagles', date: yesterdayStr, correct: true, confidence: 74 },
-                    { type: 'game', homeTeam: '49ers', awayTeam: 'Rams', date: yesterdayStr, correct: false, confidence: 69 },
-                    { type: 'game', homeTeam: 'Ravens', awayTeam: 'Steelers', date: yesterdayStr, correct: true, confidence: 82 },
-                    
-                    // Yesterday's player props (for display in performance tracker)
-                    { type: 'player-prop', player: 'Josh Allen', position: 'QB', team: 'BUF', propType: 'Passing Yards', prediction: 267, unit: 'yards', date: yesterdayStr, correct: true, actual: 274, confidence: 83, seasonContext: 'preseason' },
-                    { type: 'player-prop', player: 'Saquon Barkley', position: 'RB', team: 'PHI', propType: 'Rushing Yards', prediction: 89, unit: 'yards', date: yesterdayStr, correct: true, actual: 94, confidence: 76, seasonContext: 'preseason' },
-                    { type: 'player-prop', player: 'CeeDee Lamb', position: 'WR', team: 'DAL', propType: 'Receiving Yards', prediction: 98, unit: 'yards', date: yesterdayStr, correct: false, actual: 67, confidence: 72, seasonContext: 'preseason' },
-                ];
+                const isCurrentlyPreseason = this.isPreseason();
+                
+                const sampleHistory = [];
+                
+                // Only add yesterday's picks if it makes sense contextually
+                if (isCurrentlyPreseason) {
+                    // Realistic preseason games from yesterday (August 8th, 2025)
+                    sampleHistory.push(
+                        // Preseason Week 1 games that would actually happen
+                        { type: 'game', homeTeam: 'Bears', awayTeam: 'Titans', date: yesterdayStr, correct: true, confidence: 76, context: 'Preseason Week 1' },
+                        { type: 'game', homeTeam: 'Bengals', awayTeam: 'Buccaneers', date: yesterdayStr, correct: false, confidence: 68, context: 'Preseason Week 1' },
+                        { type: 'game', homeTeam: 'Giants', awayTeam: 'Lions', date: yesterdayStr, correct: true, confidence: 71, context: 'Preseason Week 1' },
+                        
+                        // Realistic preseason player props (much lower numbers)
+                        { type: 'player-prop', player: 'Caleb Williams', position: 'QB', team: 'CHI', propType: 'Passing Yards', prediction: 125, unit: 'yards', date: yesterdayStr, correct: true, actual: 134, confidence: 73, seasonContext: 'preseason' },
+                        { type: 'player-prop', player: 'Rome Odunze', position: 'WR', team: 'CHI', propType: 'Receiving Yards', prediction: 45, unit: 'yards', date: yesterdayStr, correct: true, actual: 52, confidence: 69, seasonContext: 'preseason' },
+                        { type: 'player-prop', player: 'Joe Burrow', position: 'QB', team: 'CIN', propType: 'Completions', prediction: 8, unit: 'completions', date: yesterdayStr, correct: false, actual: 6, confidence: 65, seasonContext: 'preseason' }
+                    );
+                } else {
+                    // Regular season picks (only show if we're actually in regular season)
+                    sampleHistory.push(
+                        { type: 'game', homeTeam: 'Chiefs', awayTeam: 'Ravens', date: yesterdayStr, correct: true, confidence: 87 },
+                        { type: 'game', homeTeam: 'Bills', awayTeam: 'Dolphins', date: yesterdayStr, correct: true, confidence: 74 },
+                        { type: 'game', homeTeam: '49ers', awayTeam: 'Rams', date: yesterdayStr, correct: false, confidence: 69 },
+                        
+                        // Regular season player props
+                        { type: 'player-prop', player: 'Josh Allen', position: 'QB', team: 'BUF', propType: 'Passing Yards', prediction: 267, unit: 'yards', date: yesterdayStr, correct: true, actual: 274, confidence: 83, seasonContext: 'regular' },
+                        { type: 'player-prop', player: 'Tyreek Hill', position: 'WR', team: 'MIA', propType: 'Receiving Yards', prediction: 89, unit: 'yards', date: yesterdayStr, correct: true, actual: 94, confidence: 76, seasonContext: 'regular' },
+                        { type: 'player-prop', player: 'CeeDee Lamb', position: 'WR', team: 'DAL', propType: 'Receiving Yards', prediction: 98, unit: 'yards', date: yesterdayStr, correct: false, actual: 67, confidence: 72, seasonContext: 'regular' }
+                    );
+                }
 
                 // Add historical predictions to reach 247 total (with 210 correct = 85.2% accuracy)
-                const teamPairs = [
+                const teamPairs = isCurrentlyPreseason ? [
+                    // Realistic preseason matchups (often cross-conference)
+                    ['Bears', 'Titans'], ['Bengals', 'Buccaneers'], ['Giants', 'Lions'],
+                    ['Cowboys', 'Chargers'], ['Patriots', 'Panthers'], ['Steelers', 'Texans'],
+                    ['Packers', 'Broncos'], ['49ers', 'Saints'], ['Ravens', 'Eagles'],
+                    ['Jets', 'Commanders'], ['Dolphins', 'Falcons'], ['Browns', 'Seahawks']
+                ] : [
+                    // Regular season divisional/conference matchups
                     ['Packers', 'Lions'], ['Bengals', 'Browns'], ['Dolphins', 'Jets'], 
                     ['Titans', 'Colts'], ['Broncos', 'Chargers'], ['Cardinals', 'Seahawks'],
                     ['Saints', 'Falcons'], ['Panthers', 'Buccaneers'], ['Giants', 'Commanders'],
-                    ['Bears', 'Vikings'], ['Raiders', 'Broncos'], ['Texans', 'Jaguars']
+                    ['Bears', 'Vikings'], ['Raiders', 'Chiefs'], ['Texans', 'Jaguars']
                 ];
 
                 // Generate 240 more historical picks (mix of games and player props)
                 const propTypes = ['Passing Yards', 'Rushing Yards', 'Receiving Yards', 'Receptions', 'Touchdowns'];
-                const playerNames = ['Josh Allen', 'Dak Prescott', 'Saquon Barkley', 'Derrick Henry', 'CeeDee Lamb', 'Tyreek Hill'];
+                const playerNames = isCurrentlyPreseason ? [
+                    // Mix of veterans and rookies who get preseason action
+                    'Caleb Williams', 'Drake Maye', 'Jayden Daniels', 'Bo Nix', 'Rome Odunze', 'Malik Nabers'
+                ] : [
+                    'Josh Allen', 'Dak Prescott', 'Saquon Barkley', 'Derrick Henry', 'CeeDee Lamb', 'Tyreek Hill'
+                ];
                 
                 for (let i = 0; i < 240; i++) {
                     const date = new Date();
@@ -2948,25 +2979,58 @@
                         // Player prop prediction
                         const player = playerNames[i % playerNames.length];
                         const propType = propTypes[i % propTypes.length];
-                        const prediction = propType === 'Touchdowns' ? Math.floor(Math.random() * 3) : 
-                                         propType === 'Receptions' ? 4 + Math.floor(Math.random() * 8) :
-                                         150 + Math.floor(Math.random() * 200);
+                        
+                        // Adjust predictions based on season context
+                        let basePrediction;
+                        if (isCurrentlyPreseason) {
+                            // Much lower preseason predictions
+                            basePrediction = propType === 'Touchdowns' ? Math.floor(Math.random() * 2) : 
+                                           propType === 'Receptions' ? 2 + Math.floor(Math.random() * 4) :
+                                           propType === 'Passing Yards' ? 80 + Math.floor(Math.random() * 120) :
+                                           30 + Math.floor(Math.random() * 80);
+                        } else {
+                            // Regular season predictions
+                            basePrediction = propType === 'Touchdowns' ? Math.floor(Math.random() * 3) : 
+                                           propType === 'Receptions' ? 4 + Math.floor(Math.random() * 8) :
+                                           150 + Math.floor(Math.random() * 200);
+                        }
+                        
                         const actual = isCorrect ? 
-                            prediction + Math.floor(Math.random() * 21) - 10 : // Correct: ±10 from prediction
-                            prediction + (Math.random() > 0.5 ? 1 : -1) * (20 + Math.floor(Math.random() * 30)); // Wrong: ±20-50 from prediction
+                            basePrediction + Math.floor(Math.random() * 21) - 10 : // Correct: ±10 from prediction
+                            basePrediction + (Math.random() > 0.5 ? 1 : -1) * (20 + Math.floor(Math.random() * 30)); // Wrong: ±20-50 from prediction
+                        
+                        // Map players to teams and positions contextually
+                        let playerTeam, playerPosition;
+                        if (isCurrentlyPreseason) {
+                            // Rookie/preseason player mappings
+                            const playerMap = {
+                                'Caleb Williams': { team: 'CHI', position: 'QB' },
+                                'Drake Maye': { team: 'NE', position: 'QB' },
+                                'Jayden Daniels': { team: 'WAS', position: 'QB' },
+                                'Bo Nix': { team: 'DEN', position: 'QB' },
+                                'Rome Odunze': { team: 'CHI', position: 'WR' },
+                                'Malik Nabers': { team: 'NYG', position: 'WR' }
+                            };
+                            playerTeam = playerMap[player]?.team || 'CHI';
+                            playerPosition = playerMap[player]?.position || 'WR';
+                        } else {
+                            // Regular season player mappings
+                            playerPosition = player.includes('Allen') || player.includes('Dak') ? 'QB' : 
+                                           player.includes('Saquon') || player.includes('Derrick') ? 'RB' : 'WR';
+                            playerTeam = player.includes('Allen') ? 'BUF' : 
+                                        player.includes('Dak') ? 'DAL' :
+                                        player.includes('Saquon') ? 'PHI' :
+                                        player.includes('Derrick') ? 'BAL' :
+                                        player.includes('CeeDee') ? 'DAL' : 'MIA';
+                        }
                         
                         sampleHistory.push({
                             type: 'player-prop',
                             player: player,
-                            position: player.includes('Allen') || player.includes('Dak') ? 'QB' : 
-                                     player.includes('Saquon') || player.includes('Derrick') ? 'RB' : 'WR',
-                            team: player.includes('Allen') ? 'BUF' : 
-                                  player.includes('Dak') ? 'DAL' :
-                                  player.includes('Saquon') ? 'PHI' :
-                                  player.includes('Derrick') ? 'BAL' :
-                                  player.includes('CeeDee') ? 'DAL' : 'MIA',
+                            position: playerPosition,
+                            team: playerTeam,
                             propType: propType,
-                            prediction: prediction,
+                            prediction: basePrediction,
                             unit: propType === 'Touchdowns' ? 'touchdowns' : 
                                   propType === 'Receptions' ? 'receptions' : 'yards',
                             date: dateStr,
