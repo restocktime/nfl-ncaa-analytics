@@ -1428,7 +1428,7 @@
                 min-width: 48px;
             }
         }
-    </style>
+        /* Live Picks Styling */\n        .game-matchup {\n            font-weight: 600;\n            font-size: 1.1rem;\n            margin-bottom: 0.25rem;\n        }\n\n        .live-score {\n            font-size: 1.25rem;\n            font-weight: 700;\n            color: #10b981;\n            font-family: 'JetBrains Mono', monospace;\n        }\n\n        .probability-winning {\n            color: #10b981;\n            font-weight: 700;\n        }\n\n        .probability-losing {\n            color: #ef4444;\n            font-weight: 700;\n        }\n\n        .probability-pending {\n            color: #f59e0b;\n            font-weight: 700;\n        }\n    </style>
 </head>
 
 <body>
@@ -2718,9 +2718,33 @@
                 }
 
                 container.innerHTML = livePicksWithGames.map(pick => {
-                    // Use simulated live scores
                     const homeScore = pick.homeScore || 0;
                     const awayScore = pick.awayScore || 0;
+                    
+                    // Calculate live probability based on current score situation
+                    let liveProbability = pick.confidence || 65; // Start with original confidence
+                    
+                    // Adjust probability based on current game situation
+                    if (pick.predictedWinner && pick.homeTeam && pick.awayTeam) {
+                        const scoreDiff = Math.abs(homeScore - awayScore);
+                        if (pick.predictedWinner === pick.homeTeam) {
+                            if (homeScore > awayScore) {
+                                // Our pick is winning, increase confidence
+                                liveProbability = Math.min(95, liveProbability + (scoreDiff * 2));
+                            } else if (homeScore < awayScore) {
+                                // Our pick is losing, decrease confidence  
+                                liveProbability = Math.max(15, liveProbability - (scoreDiff * 3));
+                            }
+                        } else if (pick.predictedWinner === pick.awayTeam) {
+                            if (awayScore > homeScore) {
+                                // Our pick is winning, increase confidence
+                                liveProbability = Math.min(95, liveProbability + (scoreDiff * 2));
+                            } else if (awayScore < homeScore) {
+                                // Our pick is losing, decrease confidence
+                                liveProbability = Math.max(15, liveProbability - (scoreDiff * 3));
+                            }
+                        }
+                    }
 
                     // Determine if pick is winning/losing based on predicted winner
                     let status = 'pending';
@@ -2735,7 +2759,10 @@
                     return `
                         <div class="live-pick-card">
                             <div class="pick-header">
-                                <div class="pick-teams">${pick.awayTeam} @ ${pick.homeTeam}</div>
+                                <div class="pick-teams">
+                                    <div class="game-matchup">${pick.awayTeam} @ ${pick.homeTeam}</div>
+                                    <div class="live-score">${awayScore} - ${homeScore} ${pick.clock || ''}</div>
+                                </div>
                                 <div class="pick-status status-${status}">
                                     ${status === 'winning' ? 'WINNING' : status === 'losing' ? 'LOSING' : 'IN PLAY'}
                                 </div>
@@ -2746,7 +2773,13 @@
                                     <div class="pick-detail-value">${pick.predictedWinner || 'TBD'}</div>
                                 </div>
                                 <div class="pick-detail">
-                                    <div class="pick-detail-label">Confidence</div>
+                                    <div class="pick-detail-label">Live Probability</div>
+                                    <div class="pick-detail-value">
+                                        <span class="probability-${status}">${Math.round(liveProbability)}%</span>
+                                    </div>
+                                </div>
+                                <div class="pick-detail">
+                                    <div class="pick-detail-label">Original Confidence</div>
                                     <div class="pick-detail-value">${pick.confidence || 0}%</div>
                                 </div>
                                 <div class="pick-detail">
@@ -2900,7 +2933,28 @@
                     return;
                 }
 
-                const topPredictions = this.predictions.slice(0, 3);
+                // Filter out games that are currently live - they should be in Live Picks instead
+                const liveGameNames = this.games.filter(game => {
+                    const status = game.status.type.name;
+                    return status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
+                }).map(game => {
+                    const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                    return {
+                        home: homeTeam?.team.displayName,
+                        away: awayTeam?.team.displayName
+                    };
+                });
+
+                const upcomingPredictions = this.predictions.filter(pred => {
+                    // Only show predictions for games that are NOT currently live
+                    return !liveGameNames.some(liveGame => 
+                        (pred.homeTeam === liveGame.home || pred.homeTeam === liveGame.homeShort) &&
+                        (pred.awayTeam === liveGame.away || pred.awayTeam === liveGame.awayShort)
+                    );
+                });
+
+                const topPredictions = upcomingPredictions.slice(0, 3);
                 
                 container.innerHTML = topPredictions.map(pred => `
                     <div class="game-card" style="margin-bottom: 1rem;">
