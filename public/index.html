@@ -3098,16 +3098,16 @@
                     predictedWinner: 'New York Giants',
                     confidence: 78,
                     reasoning: 'Giants showing strong defensive improvements and Daniel Jones has been effective in clutch situations.',
-                    homeScore: 23,
-                    awayScore: 17,
-                    isLive: true,
+                    homeScore: 17,
+                    awayScore: 23,
+                    isLive: false,
                     gameStatus: 'STATUS_FINAL',
                     clock: 'Final',
                     date: new Date().toISOString().split('T')[0],
                     time: '4:00 PM',
                     spread: 'NYG +13.5',
                     overUnder: '47.5',
-                    correct: true  // NYG won
+                    correct: true  // NYG WON 23-17! Prediction was CORRECT
                 };
                 
                 // Remove any existing Giants vs Bills predictions to avoid duplicates
@@ -3948,17 +3948,20 @@
                 const container = document.getElementById('yesterday-picks');
                 if (!container) return;
 
-                // Get yesterday's date
+                // Get today's and yesterday's date
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
                 const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-                // Filter prediction history for yesterday's picks
-                const yesterdayPicks = this.predictionHistory.filter(pick => 
-                    pick.date && pick.date.startsWith(yesterdayStr)
+                // Filter prediction history for recent completed picks (today and yesterday)
+                const recentPicks = this.predictionHistory.filter(pick => 
+                    pick.date && (pick.date.startsWith(todayStr) || pick.date.startsWith(yesterdayStr)) &&
+                    pick.correct !== null  // Only show completed games
                 ).slice(0, 3); // Show last 3 picks
 
-                if (yesterdayPicks.length === 0) {
+                if (recentPicks.length === 0) {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 1rem; color: rgba(255,255,255,0.6); font-size: 0.875rem;">
                             <i class="fas fa-clock" style="margin-right: 0.5rem;"></i>
@@ -3968,7 +3971,7 @@
                     return;
                 }
 
-                container.innerHTML = yesterdayPicks.map(pick => `
+                container.innerHTML = recentPicks.map(pick => `
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem; margin-bottom: 0.5rem;">
                         <div style="display: flex; align-items: center;">
                             <div style="margin-right: 0.75rem; font-size: 0.875rem; color: rgba(255,255,255,0.8);">
@@ -4487,7 +4490,7 @@
                         time: '4:00 PM',
                         spread: 'NYG +13.5',
                         overUnder: '47.5',
-                        correct: true   // NYG won 23-17! Prediction was correct
+                        correct: true   // NYG won 23-17! Prediction was CORRECT
                     }
                 ];
                 
