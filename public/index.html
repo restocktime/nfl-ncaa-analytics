@@ -284,6 +284,16 @@
             opacity: 1;
         }
 
+        .clickable-card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clickable-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        }
+
         .card-header {
             display: flex;
             align-items: center;
@@ -4033,9 +4043,9 @@
                 container.innerHTML = `
                     <div class="grid grid-2">
                         ${this.news.slice(0, 8).map(article => `
-                            <div class="card">
+                            <div class="card clickable-card" onclick="window.open('${article.links?.web?.href || article.link || '#'}', '_blank')">
                                 <div class="card-header">
-                                    <h3 class="card-title" style="line-height: 1.4;">${article.headline}</h3>
+                                    <h3 class="card-title" style="line-height: 1.4; color: var(--primary-color);">${article.headline}</h3>
                                 </div>
                                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
                                     ${article.description || 'Read the full article for more details...'}
@@ -4045,9 +4055,10 @@
                                         <i class="fas fa-clock" style="margin-right: 0.25rem;"></i>
                                         ${new Date(article.published).toLocaleDateString()}
                                     </div>
-                                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                                        Read More
-                                    </a>
+                                    <div class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem; pointer-events: none;">
+                                        <i class="fas fa-external-link-alt" style="margin-right: 0.25rem;"></i>
+                                        Read Article
+                                    </div>
                                 </div>
                             </div>
                         `).join('')}
