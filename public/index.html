@@ -2866,24 +2866,22 @@
                     };
                 }).filter(Boolean);
 
-                // Add Giants vs Bills live game prediction
+                // Add Giants vs Bills live game prediction (NYG to win)
                 const giantsBillsLivePick = {
                     homeTeam: 'Buffalo Bills',
                     awayTeam: 'New York Giants',
-                    predictedWinner: 'Buffalo Bills',
-                    confidence: 82,
-                    homeScore: 21,
-                    awayScore: 7,
-                    clock: 'Q2 6:34',
+                    predictedWinner: 'New York Giants',
+                    confidence: 78,
+                    homeScore: 14,
+                    awayScore: 10,
+                    clock: 'Q3 2:15',
                     gameStatus: 'STATUS_IN_PROGRESS',
-                    reasoning: 'Bills have superior offense and home field advantage. Josh Allen advantage over Daniel Jones.',
+                    reasoning: 'Giants showing strong defensive improvements and Daniel Jones has been effective in clutch situations.',
                     isLive: true
                 };
                 
-                // Always show the Giants vs Bills game if no other live picks
-                if (livePicksWithGames.length === 0) {
-                    livePicksWithGames = [giantsBillsLivePick];
-                }
+                // Always show the Giants vs Bills game
+                livePicksWithGames.push(giantsBillsLivePick);
                 
                 if (livePicksWithGames.length === 0) {
                     container.innerHTML = `
