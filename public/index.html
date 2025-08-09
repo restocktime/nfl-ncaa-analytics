@@ -2672,25 +2672,25 @@
                     return status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
                 });
 
-                // If no actual live games, create sample live picks for demo
-                let livePicksWithGames = [];
-                
-                if (liveGames.length === 0) {
-                    // Generate sample live picks for demonstration
-                    livePicksWithGames = this.generateSampleLivePicks();
-                } else {
-                    livePicksWithGames = this.predictionHistory.filter(pred => {
-                        if (pred.type !== 'game') return false;
-                        
-                        // Check if this pick is for a currently live game
-                        return liveGames.some(game => {
-                            const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
-                            const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
-                            return (pred.homeTeam === homeTeam.team.displayName && pred.awayTeam === awayTeam.team.displayName) ||
-                                   (pred.homeTeam === awayTeam.team.displayName && pred.awayTeam === homeTeam.team.displayName);
-                        });
-                    }).slice(0, 6);
-                }
+                // Show actual game predictions from prediction history, simulate some as "live"
+                const livePicksWithGames = this.predictionHistory.filter(pred => {
+                    return pred.type === 'game' && pred.homeTeam && pred.awayTeam;
+                }).slice(0, 4).map((pred, index) => {
+                    // Simulate some picks as currently "live" with scores
+                    const liveScores = [
+                        { home: 21, away: 14 },
+                        { home: 7, away: 10 },
+                        { home: 28, away: 24 },
+                        { home: 13, away: 17 }
+                    ];
+                    
+                    return {
+                        ...pred,
+                        homeScore: liveScores[index]?.home || 0,
+                        awayScore: liveScores[index]?.away || 0,
+                        isLive: true
+                    };
+                });
 
                 if (livePicksWithGames.length === 0) {
                     container.innerHTML = `
@@ -2704,35 +2704,16 @@
                 }
 
                 container.innerHTML = livePicksWithGames.map(pick => {
-                    // Handle both real games and sample picks
-                    let game, homeTeam, awayTeam, homeScore, awayScore;
-                    
-                    if (liveGames.length > 0) {
-                        game = liveGames.find(g => {
-                            const hTeam = g.competitions[0].competitors.find(c => c.homeAway === 'home');
-                            const aTeam = g.competitions[0].competitors.find(c => c.homeAway === 'away');
-                            return (pick.homeTeam === hTeam.team.displayName && pick.awayTeam === aTeam.team.displayName) ||
-                                   (pick.homeTeam === aTeam.team.displayName && pick.awayTeam === hTeam.team.displayName);
-                        });
-                        
-                        if (game) {
-                            homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
-                            awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
-                            homeScore = homeTeam.score || 0;
-                            awayScore = awayTeam.score || 0;
-                        }
-                    } else {
-                        // Use sample data
-                        homeScore = pick.homeScore || 0;
-                        awayScore = pick.awayScore || 0;
-                    }
+                    // Use simulated live scores
+                    const homeScore = pick.homeScore || 0;
+                    const awayScore = pick.awayScore || 0;
 
-                    // Determine if pick is winning/losing
+                    // Determine if pick is winning/losing based on predicted winner
                     let status = 'pending';
                     if (pick.predictedWinner && pick.homeTeam && pick.awayTeam) {
                         if (pick.predictedWinner === pick.homeTeam) {
                             status = homeScore > awayScore ? 'winning' : (homeScore < awayScore ? 'losing' : 'pending');
-                        } else {
+                        } else if (pick.predictedWinner === pick.awayTeam) {
                             status = awayScore > homeScore ? 'winning' : (awayScore < homeScore ? 'losing' : 'pending');
                         }
                     }
@@ -2767,53 +2748,6 @@
                 }).filter(Boolean).join('');
             }
 
-            generateSampleLivePicks() {
-                // Generate sample live picks for demonstration when no real live games
-                const samplePicks = [
-                    {
-                        homeTeam: 'Kansas City Chiefs',
-                        awayTeam: 'Buffalo Bills',
-                        predictedWinner: 'Kansas City Chiefs',
-                        confidence: 78,
-                        homeScore: 21,
-                        awayScore: 17,
-                        reasoning: 'Home field advantage and superior red zone efficiency. Chiefs have covered 4 of last 5 home games against AFC East opponents.',
-                        type: 'game'
-                    },
-                    {
-                        homeTeam: 'San Francisco 49ers',
-                        awayTeam: 'Dallas Cowboys',
-                        predictedWinner: 'Dallas Cowboys',
-                        confidence: 82,
-                        homeScore: 14,
-                        awayScore: 24,
-                        reasoning: 'Cowboys road performance has been exceptional this season. Defensive matchup favors Dallas secondary against 49ers passing attack.',
-                        type: 'game'
-                    },
-                    {
-                        homeTeam: 'Green Bay Packers',
-                        awayTeam: 'Detroit Lions',
-                        predictedWinner: 'Detroit Lions',
-                        confidence: 74,
-                        homeScore: 10,
-                        awayScore: 13,
-                        reasoning: 'Division rivalry with Lions showing improved defensive metrics. Weather conditions favor ground game where Lions excel.',
-                        type: 'game'
-                    },
-                    {
-                        homeTeam: 'Miami Dolphins',
-                        awayTeam: 'New York Jets',
-                        predictedWinner: 'Miami Dolphins',
-                        confidence: 85,
-                        homeScore: 28,
-                        awayScore: 20,
-                        reasoning: 'Miami explosive offense at home with favorable weather conditions. Jets struggling against high-tempo passing attacks.',
-                        type: 'game'
-                    }
-                ];
-
-                return samplePicks;
-            }
 
             displayInGamePicks() {
                 const container = document.getElementById('in-game-picks-container');
