@@ -5764,10 +5764,9 @@
             }
         });
 
-        // Check if already has access
-        if (localStorage.getItem('nfl-access') === 'granted') {
-            document.getElementById('passwordOverlay').style.display = 'none';
-        }
+        // Auto-grant access and hide password
+        localStorage.setItem('nfl-access', 'granted');
+        document.getElementById('passwordOverlay').style.display = 'none';
 
         // Function to reset password (for testing)
         function resetPassword() {
