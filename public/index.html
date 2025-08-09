@@ -1858,6 +1858,9 @@
                                 <button onclick="footballApp.checkAndUpdateFinishedGameResults()" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
                                     <i class="fas fa-sync"></i> DEBUG
                                 </button>
+                                <button onclick="footballApp.debugPredictions()" class="btn btn-sm btn-info" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin-left: 0.25rem;">
+                                    <i class="fas fa-search"></i> SHOW DATA
+                                </button>
                             </div>
                         </div>
                         <div class="stats-grid">
@@ -4235,6 +4238,32 @@
                 }
             }
 
+            debugPredictions() {
+                console.log('🔍 ===== PREDICTION DEBUG REPORT =====');
+                console.log('📋 Current prediction history:', this.predictionHistory);
+                console.log('📊 Total predictions:', this.predictionHistory.length);
+                
+                // Show all predictions with details
+                this.predictionHistory.forEach((pred, index) => {
+                    console.log(`${index + 1}. ${pred.awayTeam} @ ${pred.homeTeam} - Predicted: ${pred.predictedWinner} - Status: ${pred.correct === null ? 'PENDING' : (pred.correct ? 'WIN ✅' : 'LOSS ❌')}`);
+                });
+                
+                // Check finished games available
+                const finishedGames = this.games.filter(game => game.status.type.name === 'STATUS_FINAL');
+                console.log('🏁 Available finished games:', finishedGames.length);
+                finishedGames.forEach(game => {
+                    const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                    console.log(`   ${awayTeam.team.displayName} ${awayTeam.score} - ${homeTeam.team.displayName} ${homeTeam.score} FINAL`);
+                });
+                
+                // Show localStorage raw data
+                const stored = localStorage.getItem('nfl-prediction-history');
+                console.log('💾 Raw localStorage data:', stored);
+                
+                alert('Check browser console for detailed prediction data!');
+            }
+
             displayYesterdayPicks() {
                 const container = document.getElementById('yesterday-picks');
                 if (!container) return;
@@ -4764,8 +4793,30 @@
 
             loadPredictionHistory() {
                 const saved = localStorage.getItem('nfl-prediction-history');
+                console.log('🔍 CHECKING REAL PREDICTIONS IN LOCALSTORAGE:', saved);
+                
                 if (saved) {
-                    return JSON.parse(saved);
+                    const predictions = JSON.parse(saved);
+                    console.log('📋 LOADED REAL PREDICTIONS:', predictions);
+                    
+                    // Check specifically for NYG vs Bills prediction
+                    const nygPrediction = predictions.find(p => 
+                        (p.homeTeam && p.awayTeam) && (
+                            (p.homeTeam.includes('Giants') && p.awayTeam.includes('Bills')) ||
+                            (p.homeTeam.includes('Bills') && p.awayTeam.includes('Giants')) ||
+                            (p.homeTeam.includes('NYG') || p.awayTeam.includes('NYG')) ||
+                            (p.homeTeam.includes('BUF') || p.awayTeam.includes('BUF'))
+                        )
+                    );
+                    
+                    if (nygPrediction) {
+                        console.log('🎯 FOUND NYG vs BILLS PREDICTION:', nygPrediction);
+                        console.log('   Status:', nygPrediction.correct === null ? 'PENDING' : (nygPrediction.correct ? 'WIN' : 'LOSS'));
+                    } else {
+                        console.log('❌ NYG vs Bills prediction NOT FOUND in stored predictions');
+                    }
+                    
+                    return predictions;
                 }
 
                 // Generate yesterday's date
