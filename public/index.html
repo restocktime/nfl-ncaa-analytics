@@ -2830,58 +2830,88 @@
                 const container = document.getElementById('live-game-picks-container');
                 if (!container) return;
 
+                console.log('🔍 Searching for live games and matching predictions...');
+
                 // Get current live games that we have picks for
                 const liveGames = this.games.filter(game => {
                     const status = game.status.type.name;
-                    return status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
+                    const isLive = status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
+                    
+                    if (isLive) {
+                        const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                        const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                        console.log(`🏈 Live game found: ${awayTeam?.team.displayName} @ ${homeTeam?.team.displayName}`);
+                    }
+                    
+                    return isLive;
                 });
 
-                // Find our predictions that match live games
-                const livePicksWithGames = liveGames.map(game => {
-                    // Find matching prediction from our history
-                    const matchingPrediction = this.predictionHistory.find(pred => {
-                        if (pred.type !== 'game') return false;
-                        
+                console.log(`📊 Found ${liveGames.length} live games, checking against ${this.predictionHistory.length} predictions`);
+
+                // Find ALL predictions that match live games (automatic detection)
+                const livePicksWithGames = [];
+                
+                // Check each prediction against live games
+                this.predictionHistory.forEach(pred => {
+                    if (pred.type !== 'game') return;
+                    
+                    // Find matching live game for this prediction
+                    const matchingGame = liveGames.find(game => {
                         const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
                         const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
                         
-                        return (pred.homeTeam === homeTeam?.team.displayName || 
-                               pred.homeTeam === homeTeam?.team.shortDisplayName) &&
-                               (pred.awayTeam === awayTeam?.team.displayName || 
-                               pred.awayTeam === awayTeam?.team.shortDisplayName);
+                        // Flexible team name matching
+                        const homeTeamNames = [
+                            homeTeam?.team.displayName, 
+                            homeTeam?.team.shortDisplayName, 
+                            homeTeam?.team.abbreviation,
+                            homeTeam?.team.location,
+                            homeTeam?.team.name
+                        ].filter(Boolean);
+                        
+                        const awayTeamNames = [
+                            awayTeam?.team.displayName, 
+                            awayTeam?.team.shortDisplayName, 
+                            awayTeam?.team.abbreviation,
+                            awayTeam?.team.location,
+                            awayTeam?.team.name
+                        ].filter(Boolean);
+                        
+                        // Check if prediction teams match any variation of live game teams
+                        const homeMatch = homeTeamNames.some(name => 
+                            pred.homeTeam.includes(name) || name.includes(pred.homeTeam) || 
+                            pred.homeTeam.toLowerCase().includes(name.toLowerCase()) || 
+                            name.toLowerCase().includes(pred.homeTeam.toLowerCase())
+                        );
+                        
+                        const awayMatch = awayTeamNames.some(name => 
+                            pred.awayTeam.includes(name) || name.includes(pred.awayTeam) ||
+                            pred.awayTeam.toLowerCase().includes(name.toLowerCase()) || 
+                            name.toLowerCase().includes(pred.awayTeam.toLowerCase())
+                        );
+                        
+                        return homeMatch && awayMatch;
                     });
                     
-                    if (!matchingPrediction) return null;
-                    
-                    const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
-                    const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
-                    
-                    return {
-                        ...matchingPrediction,
-                        homeScore: parseInt(homeTeam?.score) || 0,
-                        awayScore: parseInt(awayTeam?.score) || 0,
-                        isLive: true,
-                        gameStatus: game.status.type.name,
-                        clock: game.status.displayClock
-                    };
-                }).filter(Boolean);
+                    if (matchingGame) {
+                        const homeTeam = matchingGame.competitions[0].competitors.find(c => c.homeAway === 'home');
+                        const awayTeam = matchingGame.competitions[0].competitors.find(c => c.homeAway === 'away');
+                        
+                        console.log(`✅ Found matching prediction: ${pred.awayTeam} @ ${pred.homeTeam} -> ${pred.predictedWinner}`);
+                        
+                        livePicksWithGames.push({
+                            ...pred,
+                            homeScore: parseInt(homeTeam?.score) || 0,
+                            awayScore: parseInt(awayTeam?.score) || 0,
+                            isLive: true,
+                            gameStatus: matchingGame.status.type.name,
+                            clock: matchingGame.status.displayClock || 'Live',
+                            liveGameData: matchingGame
+                        });
+                    }
+                });
 
-                // Add Giants vs Bills live game prediction (NYG to win)
-                const giantsBillsLivePick = {
-                    homeTeam: 'Buffalo Bills',
-                    awayTeam: 'New York Giants',
-                    predictedWinner: 'New York Giants',
-                    confidence: 78,
-                    homeScore: 14,
-                    awayScore: 10,
-                    clock: 'Q3 2:15',
-                    gameStatus: 'STATUS_IN_PROGRESS',
-                    reasoning: 'Giants showing strong defensive improvements and Daniel Jones has been effective in clutch situations.',
-                    isLive: true
-                };
-                
-                // Always show the Giants vs Bills game
-                livePicksWithGames.push(giantsBillsLivePick);
+                console.log(`🎯 Found ${livePicksWithGames.length} predictions with matching live games`);
                 
                 if (livePicksWithGames.length === 0) {
                     container.innerHTML = `
@@ -4242,12 +4272,12 @@
                         type: 'game',
                         homeTeam: 'Buffalo Bills',
                         awayTeam: 'New York Giants',
-                        predictedWinner: 'Buffalo Bills',
-                        confidence: 82,
-                        reasoning: 'Bills have superior offense and home field advantage. Josh Allen advantage over Daniel Jones.',
+                        predictedWinner: 'New York Giants',
+                        confidence: 78,
+                        reasoning: 'Giants showing strong defensive improvements and Daniel Jones has been effective in clutch situations.',
                         date: new Date().toISOString().split('T')[0],
-                        time: new Date().toLocaleTimeString(),
-                        spread: 'BUF -13.5',
+                        time: '4:00 PM',
+                        spread: 'NYG +13.5',
                         overUnder: '47.5',
                         correct: null  // Game in progress
                     }
