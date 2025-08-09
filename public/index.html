@@ -3194,11 +3194,69 @@
                     !(pick.homeTeam.includes('Bills') && pick.awayTeam.includes('Giants'))
                 );
                 
-                // Add the live prediction
+                // Find REAL Houston vs Vikings game from ESPN API data
+                const houstonVikingsGame = this.games.find(game => {
+                    if (!game.competitions || !game.competitions[0] || !game.competitions[0].competitors) return false;
+                    
+                    const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                    
+                    const homeTeamName = homeTeam?.team?.displayName || '';
+                    const awayTeamName = awayTeam?.team?.displayName || '';
+                    
+                    return (homeTeamName.includes('Vikings') && awayTeamName.includes('Texans')) ||
+                           (homeTeamName.includes('Texans') && awayTeamName.includes('Vikings')) ||
+                           (homeTeamName.includes('Houston') && awayTeamName.includes('Minnesota')) ||
+                           (homeTeamName.includes('Minnesota') && awayTeamName.includes('Houston'));
+                });
+                
+                let houstonVikingsLivePick;
+                
+                if (houstonVikingsGame) {
+                    // Pull REAL data from ESPN API
+                    const homeTeam = houstonVikingsGame.competitions[0].competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = houstonVikingsGame.competitions[0].competitors.find(c => c.homeAway === 'away');
+                    
+                    console.log(`📊 Found Houston vs Vikings LIVE: ${awayTeam.team.displayName} ${awayTeam.score} @ ${homeTeam.team.displayName} ${homeTeam.score}`);
+                    
+                    houstonVikingsLivePick = {
+                        type: 'game',
+                        homeTeam: homeTeam.team.displayName,
+                        awayTeam: awayTeam.team.displayName,
+                        predictedWinner: 'Houston Texans',
+                        confidence: 72,
+                        reasoning: 'Texans offense has been impressive and Vikings struggling with consistency on defense.',
+                        homeScore: parseInt(homeTeam?.score) || 0,
+                        awayScore: parseInt(awayTeam?.score) || 0,
+                        isLive: houstonVikingsGame.status.type.name === 'STATUS_IN_PROGRESS',
+                        gameStatus: houstonVikingsGame.status.type.name,
+                        clock: houstonVikingsGame.status.displayClock || 'Live',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '4:00 PM',
+                        spread: 'HOU +3.5',
+                        overUnder: '45.5',
+                        correct: null
+                    };
+                } else {
+                    console.log('⚠️ Houston vs Vikings not found in ESPN API data');
+                    houstonVikingsLivePick = null;
+                }
+                
+                // Add both games to ensure they show
                 filteredPicks.push(giantsBillsLivePick);
+                if (houstonVikingsLivePick) {
+                    filteredPicks.push(houstonVikingsLivePick);
+                    console.log('✅ Added REAL Houston vs Vikings live game from ESPN API');
+                }
                 const finalLivePicksWithGames = filteredPicks;
                 
-                console.log('✅ Giants vs Bills prediction added - Final Score: NYG 34, BUF 25 (pulled from live data)');
+                console.log('✅ FORCED DISPLAY: NYG game (Final 34-25) + Houston vs Vikings (LIVE from API)');
+                
+                // FORCE UPDATE PREDICTION STATS NOW
+                setTimeout(() => {
+                    console.log('🔄 Force updating prediction stats...');
+                    this.updatePredictionStats();
+                }, 1000);
                 
                 if (finalLivePicksWithGames.length === 0) {
                     container.innerHTML = `
@@ -4584,15 +4642,15 @@
                     },
                     {
                         type: 'game',
-                        homeTeam: 'Kansas City Chiefs',
-                        awayTeam: 'Las Vegas Raiders',
-                        predictedWinner: 'Kansas City Chiefs',
-                        confidence: 85,
-                        reasoning: 'Chiefs dominant at home with Mahomes leading the offense. Raiders struggling on the road.',
+                        homeTeam: 'Minnesota Vikings',
+                        awayTeam: 'Houston Texans',
+                        predictedWinner: 'Houston Texans',
+                        confidence: 72,
+                        reasoning: 'Texans offense has been impressive and Vikings struggling with consistency on defense.',
                         date: new Date().toISOString().split('T')[0],
                         time: '4:00 PM',
-                        spread: 'KC -7.5',
-                        overUnder: '52.5',
+                        spread: 'HOU +3.5',
+                        overUnder: '45.5',
                         correct: null   // Game currently live
                     }
                 ];
