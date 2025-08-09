@@ -4003,12 +4003,23 @@
                 const correctEl = document.getElementById('correct-predictions');
                 const streakEl = document.getElementById('win-streak');
 
-                if (totalEl) totalEl.textContent = this.predictionHistory.length;
+                const total = this.predictionHistory.length;
+                const correct = this.predictionHistory.filter(p => p.correct === true).length;
+                const incorrect = this.predictionHistory.filter(p => p.correct === false).length;
+                const pending = this.predictionHistory.filter(p => p.correct === null).length;
+                
+                console.log(`📊 Prediction Stats: Total: ${total}, Correct: ${correct}, Incorrect: ${incorrect}, Pending: ${pending}`);
+                
+                // Force save to localStorage to persist the NYG result
+                this.savePredictionHistory();
+
+                if (totalEl) totalEl.textContent = total;
                 if (correctEl) {
-                    const correct = this.predictionHistory.filter(p => p.correct).length;
                     correctEl.textContent = correct;
                 }
                 if (streakEl) streakEl.textContent = this.calculateWinStreak();
+                
+                console.log(`✅ Updated Prediction Performance: ${correct}/${total} correct`);
             }
 
             calculateWinStreak() {
@@ -4566,10 +4577,23 @@
                         confidence: 78,
                         reasoning: 'Giants showing strong defensive improvements and Daniel Jones has been effective in clutch situations.',
                         date: new Date().toISOString().split('T')[0],
-                        time: '4:00 PM',
+                        time: '1:00 PM',
                         spread: 'NYG +13.5',
                         overUnder: '47.5',
-                        correct: true   // NYG won 23-17! Prediction was CORRECT
+                        correct: true   // NYG won 34-25! Prediction was CORRECT
+                    },
+                    {
+                        type: 'game',
+                        homeTeam: 'Kansas City Chiefs',
+                        awayTeam: 'Las Vegas Raiders',
+                        predictedWinner: 'Kansas City Chiefs',
+                        confidence: 85,
+                        reasoning: 'Chiefs dominant at home with Mahomes leading the offense. Raiders struggling on the road.',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '4:00 PM',
+                        spread: 'KC -7.5',
+                        overUnder: '52.5',
+                        correct: null   // Game currently live
                     }
                 ];
                 
