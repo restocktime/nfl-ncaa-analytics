@@ -5375,32 +5375,28 @@ body {
     .app-container {
         min-height: 100vh;
         padding: 0;
+        display: flex;
+        flex-direction: column;
     }
     
-    .app-header {
-        padding: var(--mobile-padding);
-        flex-wrap: wrap;
-        gap: var(--space-sm);
+    .mobile-header {
+        display: flex !important;
         position: sticky;
         top: 0;
         z-index: 100;
+        background: var(--surface);
         backdrop-filter: blur(10px);
         border-bottom: 1px solid var(--border);
+        padding: var(--space-md);
     }
     
-    .header-brand {
+    .main-content {
         flex: 1;
-        min-width: 200px;
-    }
-    
-    .header-actions {
-        flex-wrap: wrap;
-        gap: var(--space-sm);
-    }
-    
-    .app-main {
         padding: var(--mobile-padding);
         margin: 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
     
     /* Cards and Components */
