@@ -4091,33 +4091,44 @@
                 const streakEl = document.getElementById('win-streak');
                 const accuracyEl = document.getElementById('accuracy-display');
 
-                const total = this.predictionHistory.length;
-                const correct = this.predictionHistory.filter(p => p.correct === true).length;
-                const incorrect = this.predictionHistory.filter(p => p.correct === false).length;
-                const pending = this.predictionHistory.filter(p => p.correct === null).length;
+                // Filter out preseason predictions from main stats
+                const regularSeasonPredictions = this.predictionHistory.filter(p => 
+                    !p.seasonContext || p.seasonContext !== 'preseason'
+                );
+
+                const total = regularSeasonPredictions.length;
+                const correct = regularSeasonPredictions.filter(p => p.correct === true).length;
+                const incorrect = regularSeasonPredictions.filter(p => p.correct === false).length;
+                const pending = regularSeasonPredictions.filter(p => p.correct === null).length;
                 const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
                 
-                console.log(`📊 Prediction Stats: Total: ${total}, Correct: ${correct}, Incorrect: ${incorrect}, Pending: ${pending}, Accuracy: ${accuracy}%`);
+                const preseasonCount = this.predictionHistory.filter(p => p.seasonContext === 'preseason').length;
+                
+                console.log(`📊 Prediction Stats (Regular Season Only): Total: ${total}, Correct: ${correct}, Incorrect: ${incorrect}, Pending: ${pending}, Accuracy: ${accuracy}%`);
+                console.log(`🏈 Preseason predictions excluded: ${preseasonCount}`);
                 
                 // Force save to localStorage to persist results
                 this.savePredictionHistory();
 
                 if (totalEl) totalEl.textContent = total;
                 if (correctEl) correctEl.textContent = correct;
-                if (streakEl) streakEl.textContent = this.calculateWinStreak();
+                if (streakEl) streakEl.textContent = this.calculateWinStreak(regularSeasonPredictions);
                 if (accuracyEl) accuracyEl.textContent = `${accuracy}% Accuracy`;
                 
-                console.log(`✅ Updated Prediction Performance: ${correct}/${total} correct (${accuracy}%)`);
+                console.log(`✅ Updated Prediction Performance: ${correct}/${total} correct (${accuracy}%) - Preseason excluded`);
             }
 
-            calculateWinStreak() {
+            calculateWinStreak(predictions = null) {
+                const predictionsList = predictions || this.predictionHistory;
                 let streak = 0;
-                for (let i = this.predictionHistory.length - 1; i >= 0; i--) {
-                    if (this.predictionHistory[i].correct) {
+                
+                for (let i = predictionsList.length - 1; i >= 0; i--) {
+                    if (predictionsList[i].correct === true) {
                         streak++;
-                    } else {
-                        break;
+                    } else if (predictionsList[i].correct === false) {
+                        break; // Stop counting at first loss, ignore pending predictions
                     }
+                    // Continue if correct === null (pending)
                 }
                 return streak;
             }
