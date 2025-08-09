@@ -751,8 +751,11 @@
 
 <body>
     <div class="app-container">
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        
         <!-- Premium Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <div class="logo-icon">
                     <i class="fas fa-football-ball"></i>
@@ -809,6 +812,24 @@
                 </ul>
             </nav>
         </aside>
+
+        <!-- Mobile Header -->
+        <header class="mobile-header" style="display: none;">
+            <div class="mobile-header-content">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <i class="fas fa-football-ball"></i>
+                    <span>NFL Analytics Pro</span>
+                </div>
+                <div class="mobile-header-actions">
+                    <button class="btn btn-sm btn-primary">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -1435,8 +1456,75 @@
                         // Update active nav
                         navLinks.forEach(l => l.classList.remove('active'));
                         link.classList.add('active');
+                        
+                        // Close mobile menu on selection
+                        this.closeMobileMenu();
                     });
                 });
+                
+                // Setup mobile menu functionality
+                this.setupMobileMenu();
+            }
+            
+            setupMobileMenu() {
+                const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+                const sidebar = document.getElementById('sidebar');
+                const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+                
+                if (!mobileMenuToggle || !sidebar || !mobileMenuOverlay) return;
+                
+                // Toggle mobile menu
+                mobileMenuToggle.addEventListener('click', () => {
+                    this.toggleMobileMenu();
+                });
+                
+                // Close menu when clicking overlay
+                mobileMenuOverlay.addEventListener('click', () => {
+                    this.closeMobileMenu();
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeMobileMenu();
+                    }
+                });
+                
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 1024) {
+                        this.closeMobileMenu();
+                    }
+                });
+            }
+            
+            toggleMobileMenu() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('mobileMenuOverlay');
+                
+                if (sidebar.classList.contains('open')) {
+                    this.closeMobileMenu();
+                } else {
+                    this.openMobileMenu();
+                }
+            }
+            
+            openMobileMenu() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('mobileMenuOverlay');
+                
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            closeMobileMenu() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('mobileMenuOverlay');
+                
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
 
             setupSearchFilters() {
