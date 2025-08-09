@@ -908,6 +908,10 @@
             display: none;
         }
 
+        .mobile-header {
+            display: none;
+        }
+
         /* Mobile Fixes */
         @media screen and (max-width: 1024px) {
             /* Show mobile header, hide desktop sidebar positioning */
@@ -918,7 +922,7 @@
                 padding: 1rem;
                 position: sticky;
                 top: 0;
-                z-index: 999;
+                z-index: 1000;
             }
             
             .mobile-header-content {
@@ -983,7 +987,7 @@
                 left: -300px;
                 top: 0;
                 height: 100vh;
-                z-index: 999;
+                z-index: 1001;
                 transition: left 0.3s ease;
                 width: 280px;
             }
@@ -1506,7 +1510,7 @@
         </aside>
 
         <!-- Mobile Header -->
-        <header class="mobile-header" style="display: none;">
+        <header class="mobile-header">
             <div class="mobile-header-content">
                 <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
                     <i class="fas fa-bars"></i>
@@ -2672,25 +2676,35 @@
                     return status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
                 });
 
-                // Show actual game predictions from prediction history, simulate some as "live"
-                const livePicksWithGames = this.predictionHistory.filter(pred => {
-                    return pred.type === 'game' && pred.homeTeam && pred.awayTeam;
-                }).slice(0, 4).map((pred, index) => {
-                    // Simulate some picks as currently "live" with scores
-                    const liveScores = [
-                        { home: 21, away: 14 },
-                        { home: 7, away: 10 },
-                        { home: 28, away: 24 },
-                        { home: 13, away: 17 }
-                    ];
+                // Find our predictions that match live games
+                const livePicksWithGames = liveGames.map(game => {
+                    // Find matching prediction from our history
+                    const matchingPrediction = this.predictionHistory.find(pred => {
+                        if (pred.type !== 'game') return false;
+                        
+                        const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                        const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
+                        
+                        return (pred.homeTeam === homeTeam?.team.displayName || 
+                               pred.homeTeam === homeTeam?.team.shortDisplayName) &&
+                               (pred.awayTeam === awayTeam?.team.displayName || 
+                               pred.awayTeam === awayTeam?.team.shortDisplayName);
+                    });
+                    
+                    if (!matchingPrediction) return null;
+                    
+                    const homeTeam = game.competitions[0].competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = game.competitions[0].competitors.find(c => c.homeAway === 'away');
                     
                     return {
-                        ...pred,
-                        homeScore: liveScores[index]?.home || 0,
-                        awayScore: liveScores[index]?.away || 0,
-                        isLive: true
+                        ...matchingPrediction,
+                        homeScore: parseInt(homeTeam?.score) || 0,
+                        awayScore: parseInt(awayTeam?.score) || 0,
+                        isLive: true,
+                        gameStatus: game.status.type.name,
+                        clock: game.status.displayClock
                     };
-                });
+                }).filter(Boolean);
 
                 if (livePicksWithGames.length === 0) {
                     container.innerHTML = `
