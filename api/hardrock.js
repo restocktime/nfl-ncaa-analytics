@@ -1,19 +1,18 @@
 /**
- * Vercel API Endpoint for Hard Rock Bet Data
- * Bypasses CORS restrictions and provides reliable data fetching
+ * Minimal Node 20 Serverless Handler for Hard Rock API
+ * Responds to health/events/live endpoints with mock JSON and proper CORS
  */
-
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
+    
     // Handle preflight OPTIONS request
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
-
+    
     // Only allow GET requests
     if (req.method !== 'GET') {
         return res.status(405).json({
@@ -22,158 +21,86 @@ export default async function handler(req, res) {
             timestamp: new Date().toISOString()
         });
     }
-
-    const { action = 'events', eventId } = req.query;
-
+    
+    const { action = 'events' } = req.query;
+    
     // Handle health check endpoint
     if (action === 'health') {
         return res.status(200).json({
             success: true,
             status: 'healthy',
-            service: 'Hard Rock Bet API Proxy',
-            version: '1.0.0',
+            service: 'Hard Rock API Mock',
+            version: '2.0.0',
+            runtime: 'Node.js 20',
             timestamp: new Date().toISOString(),
-            endpoints: ['events', 'live', 'odds'],
-            deployment: {
-                vercel: true,
-                runtime: 'Node.js 18',
-                region: process.env.VERCEL_REGION || 'unknown'
-            }
+            endpoints: ['health', 'events', 'live']
         });
     }
-
-    // Hard Rock Bet API endpoints
-    const hardRockEndpoints = {
-        events: 'https://app.hardrock.bet/api/sportsbook/v3/sports/american_football/leagues/691198679103111169/events',
-        odds: `https://app.hardrock.bet/api/sportsbook/v3/sports/american_football/leagues/691198679103111169/events/${eventId}/markets`,
-        live: 'https://app.hardrock.bet/api/sportsbook/v3/sports/american_football/leagues/691198679103111169/events/live'
-    };
-
-    // Validate action
-    if (!hardRockEndpoints[action] && action !== 'health') {
-        return res.status(400).json({
-            success: false,
-            error: `Invalid action. Use: ${Object.keys(hardRockEndpoints).join(', ')}, health`,
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    // For odds action, eventId is required
-    if (action === 'odds' && !eventId) {
-        return res.status(400).json({
-            success: false,
-            error: 'Event ID required for odds endpoint',
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    try {
-        console.log(`[HardRock API] Fetching ${action}${eventId ? ` for event ${eventId}` : ''}`);
-
-        const url = action === 'odds' 
-            ? `https://app.hardrock.bet/api/sportsbook/v3/sports/american_football/leagues/691198679103111169/events/${eventId}/markets`
-            : hardRockEndpoints[action];
-
-        // Fetch from Hard Rock Bet with appropriate headers
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-                'Origin': 'https://app.hardrock.bet',
-                'Referer': 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'same-origin'
-            }
-        });
-
-        if (!response.ok) {
-            console.error(`[HardRock API] HTTP ${response.status}: ${response.statusText}`);
-            
-            // Provide different error messages based on status
-            let errorMessage = `Hard Rock Bet API returned ${response.status}`;
-            if (response.status === 404) {
-                errorMessage = 'Hard Rock Bet endpoint not found - may be temporarily unavailable';
-            } else if (response.status === 403) {
-                errorMessage = 'Hard Rock Bet access forbidden - API may be blocked';
-            } else if (response.status === 429) {
-                errorMessage = 'Hard Rock Bet rate limit exceeded - try again later';
-            } else if (response.status >= 500) {
-                errorMessage = 'Hard Rock Bet server error - try again later';
-            }
-
-            return res.status(response.status).json({
-                success: false,
-                error: errorMessage,
-                httpStatus: response.status,
-                action: action,
-                timestamp: new Date().toISOString()
-            });
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.warn(`[HardRock API] Unexpected content type: ${contentType}`);
-            
-            return res.status(500).json({
-                success: false,
-                error: 'Hard Rock Bet returned non-JSON response',
-                contentType: contentType,
-                action: action,
-                timestamp: new Date().toISOString()
-            });
-        }
-
-        const data = await response.json();
-        
-        console.log(`[HardRock API] Success: ${action} - ${Array.isArray(data) ? data.length : 'non-array'} items`);
-
-        // Cache headers for better performance (5 minutes for events, 1 minute for live)
-        const cacheMaxAge = action === 'live' ? 60 : 300;
-        res.setHeader('Cache-Control', `public, max-age=${cacheMaxAge}, s-maxage=${cacheMaxAge}`);
-        res.setHeader('Expires', new Date(Date.now() + cacheMaxAge * 1000).toUTCString());
-
-        // Return successful response
+    
+    // Handle events endpoint
+    if (action === 'events') {
         return res.status(200).json({
             success: true,
-            action: action,
-            provider: 'hardrock',
-            data: data,
-            metadata: {
-                itemCount: Array.isArray(data) ? data.length : 1,
-                timestamp: new Date().toISOString(),
-                cacheMaxAge: cacheMaxAge,
-                endpoint: action
-            }
-        });
-
-    } catch (error) {
-        console.error(`[HardRock API] Error:`, error);
-
-        // Provide helpful error messages
-        let errorMessage = 'Failed to fetch data from Hard Rock Bet';
-        if (error.code === 'ENOTFOUND') {
-            errorMessage = 'Hard Rock Bet domain not found - DNS issue';
-        } else if (error.code === 'ECONNREFUSED') {
-            errorMessage = 'Hard Rock Bet connection refused';
-        } else if (error.code === 'ETIMEDOUT') {
-            errorMessage = 'Hard Rock Bet request timeout';
-        } else if (error.name === 'AbortError') {
-            errorMessage = 'Hard Rock Bet request aborted';
-        } else if (error.message.includes('JSON')) {
-            errorMessage = 'Hard Rock Bet returned invalid JSON';
-        }
-
-        return res.status(500).json({
-            success: false,
-            error: errorMessage,
-            action: action,
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            action: 'events',
+            data: [
+                {
+                    id: 'event_001',
+                    name: 'Kansas City Chiefs vs Buffalo Bills',
+                    league: 'NFL',
+                    date: '2025-01-26T20:00:00Z',
+                    status: 'scheduled',
+                    teams: {
+                        home: { name: 'Buffalo Bills', abbreviation: 'BUF' },
+                        away: { name: 'Kansas City Chiefs', abbreviation: 'KC' }
+                    }
+                },
+                {
+                    id: 'event_002', 
+                    name: 'Philadelphia Eagles vs Washington Commanders',
+                    league: 'NFL',
+                    date: '2025-01-26T16:30:00Z',
+                    status: 'scheduled',
+                    teams: {
+                        home: { name: 'Philadelphia Eagles', abbreviation: 'PHI' },
+                        away: { name: 'Washington Commanders', abbreviation: 'WAS' }
+                    }
+                }
+            ],
             timestamp: new Date().toISOString()
         });
     }
+    
+    // Handle live endpoint
+    if (action === 'live') {
+        return res.status(200).json({
+            success: true,
+            action: 'live',
+            data: [
+                {
+                    id: 'live_001',
+                    name: 'Live Game Example',
+                    league: 'NFL',
+                    status: 'in_progress',
+                    quarter: 2,
+                    timeRemaining: '08:15',
+                    score: {
+                        home: 14,
+                        away: 10
+                    },
+                    teams: {
+                        home: { name: 'Home Team', abbreviation: 'HOME' },
+                        away: { name: 'Away Team', abbreviation: 'AWAY' }
+                    }
+                }
+            ],
+            timestamp: new Date().toISOString()
+        });
+    }
+    
+    // Invalid action
+    return res.status(400).json({
+        success: false,
+        error: 'Invalid action. Use: health, events, or live',
+        timestamp: new Date().toISOString()
+    });
 }
