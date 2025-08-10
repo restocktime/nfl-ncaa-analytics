@@ -1,6 +1,10 @@
 {
+  "version": 2,
   "functions": {
-    "api/**/*.js": {
+    "api/hardrock.js": {
+      "runtime": "nodejs20.x"
+    },
+    "api/test.js": {
       "runtime": "nodejs20.x"
     }
   },
