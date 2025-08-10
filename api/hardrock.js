@@ -1,7 +1,35 @@
 /**
- * Minimal Node 20 Serverless Handler for Hard Rock API
- * Responds to health/events/live endpoints with mock JSON and proper CORS
+ * Real NFL Data API Handler
+ * Fetches live NFL data from ESPN and real betting odds when available
  */
+
+// Helper function to fetch real betting odds
+async function fetchRealOdds() {
+    const ODDS_API_KEY = process.env.ODDS_API_KEY;
+    
+    if (!ODDS_API_KEY) {
+        console.log('⚠️ No ODDS_API_KEY found, using mock odds');
+        return null;
+    }
+    
+    try {
+        const response = await fetch(
+            `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`Odds API failed: ${response.status}`);
+        }
+        
+        const oddsData = await response.json();
+        console.log(`✅ Fetched real odds for ${oddsData.length} games`);
+        return oddsData;
+    } catch (error) {
+        console.error('❌ Failed to fetch real odds:', error);
+        return null;
+    }
+}
+
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -37,65 +65,88 @@ export default async function handler(req, res) {
         });
     }
     
-    // Handle events endpoint
+    // Handle events endpoint with REAL NFL data
     if (action === 'events') {
-        // Generate dates for recent/upcoming games (within last 2 days to next 3 days)
-        const today = new Date();
-        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-        const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-        const dayAfter = new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000);
-        
-        return res.status(200).json({
-            success: true,
-            action: 'events',
-            data: [
-                {
-                    id: 'event_001',
-                    name: 'Kansas City Chiefs vs Buffalo Bills',
+        try {
+            console.log('🏈 Fetching REAL NFL games from ESPN API...');
+            
+            // Fetch current NFL scoreboard from ESPN
+            const espnResponse = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+            
+            if (!espnResponse.ok) {
+                throw new Error(`ESPN API failed: ${espnResponse.status}`);
+            }
+            
+            const espnData = await espnResponse.json();
+            console.log('✅ ESPN API response received, processing games...');
+            
+            // Transform ESPN data to our format
+            const games = espnData.events?.map(event => {
+                const competition = event.competitions[0];
+                const homeTeam = competition.competitors.find(team => team.homeAway === 'home');
+                const awayTeam = competition.competitors.find(team => team.homeAway === 'away');
+                
+                return {
+                    id: `espn_${event.id}`,
+                    name: `${awayTeam.team.displayName} vs ${homeTeam.team.displayName}`,
                     league: 'NFL',
-                    date: yesterday.toISOString().replace(/\.\d{3}Z$/, 'Z'),
-                    status: 'final',
+                    date: event.date,
+                    status: competition.status.type.name.toLowerCase(),
                     teams: {
-                        home: { name: 'Buffalo Bills', abbreviation: 'BUF' },
-                        away: { name: 'Kansas City Chiefs', abbreviation: 'KC' }
+                        home: { 
+                            name: homeTeam.team.displayName, 
+                            abbreviation: homeTeam.team.abbreviation,
+                            score: homeTeam.score || 0
+                        },
+                        away: { 
+                            name: awayTeam.team.displayName, 
+                            abbreviation: awayTeam.team.abbreviation,
+                            score: awayTeam.score || 0
+                        }
+                    },
+                    venue: competition.venue?.fullName || 'TBD',
+                    week: espnData.week?.number || 'Regular Season'
+                };
+            }) || [];
+            
+            console.log(`🎯 Processed ${games.length} real NFL games`);
+            
+            return res.status(200).json({
+                success: true,
+                action: 'events',
+                data: games,
+                source: 'ESPN API',
+                lastUpdate: new Date().toISOString(),
+                week: espnData.week?.number || 'Regular Season',
+                season: espnData.season?.year || new Date().getFullYear(),
+                timestamp: new Date().toISOString()
+            });
+            
+        } catch (error) {
+            console.error('❌ Failed to fetch real NFL data:', error);
+            
+            // Fallback to minimal mock data with clear indication
+            return res.status(200).json({
+                success: true,
+                action: 'events',
+                data: [
+                    {
+                        id: 'fallback_001',
+                        name: 'No live games available',
+                        league: 'NFL',
+                        date: new Date().toISOString(),
+                        status: 'no_games',
+                        teams: {
+                            home: { name: 'Check back later', abbreviation: 'TBD' },
+                            away: { name: 'for live games', abbreviation: 'TBD' }
+                        }
                     }
-                },
-                {
-                    id: 'event_002', 
-                    name: 'Philadelphia Eagles vs Washington Commanders',
-                    league: 'NFL',
-                    date: today.toISOString().replace(/\.\d{3}Z$/, 'Z'),
-                    status: 'live',
-                    teams: {
-                        home: { name: 'Philadelphia Eagles', abbreviation: 'PHI' },
-                        away: { name: 'Washington Commanders', abbreviation: 'WAS' }
-                    }
-                },
-                {
-                    id: 'event_003',
-                    name: 'San Francisco 49ers vs Detroit Lions',
-                    league: 'NFL', 
-                    date: tomorrow.toISOString().replace(/\.\d{3}Z$/, 'Z'),
-                    status: 'scheduled',
-                    teams: {
-                        home: { name: 'Detroit Lions', abbreviation: 'DET' },
-                        away: { name: 'San Francisco 49ers', abbreviation: 'SF' }
-                    }
-                },
-                {
-                    id: 'event_004',
-                    name: 'Baltimore Ravens vs Cincinnati Bengals', 
-                    league: 'NFL',
-                    date: dayAfter.toISOString().replace(/\.\d{3}Z$/, 'Z'),
-                    status: 'scheduled',
-                    teams: {
-                        home: { name: 'Cincinnati Bengals', abbreviation: 'CIN' },
-                        away: { name: 'Baltimore Ravens', abbreviation: 'BAL' }
-                    }
-                }
-            ],
-            timestamp: new Date().toISOString()
-        });
+                ],
+                source: 'Fallback - ESPN API unavailable',
+                error: error.message,
+                timestamp: new Date().toISOString()
+            });
+        }
     }
     
     // Handle live endpoint

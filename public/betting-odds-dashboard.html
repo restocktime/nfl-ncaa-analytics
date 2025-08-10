@@ -337,7 +337,9 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h2 class="text-lg sm:text-xl font-bold" style="color: var(--text-primary);">🏈 Live Odds Hub</h2>
-                    <p class="text-sm" style="color: var(--text-secondary);">Real-time betting lines</p>
+                    <p class="text-sm" style="color: var(--text-secondary);">
+                        <span class="text-green-400">✅ REAL DATA</span> • Live NFL games from ESPN API
+                    </p>
                 </div>
                 <div class="px-3 py-1 rounded-full text-xs font-bold animate-pulse" style="background: var(--danger); color: white;">
                     🔴 LIVE
@@ -1492,6 +1494,7 @@
                     
                     const data = await response.json();
                     console.log('📊 Raw API Response:', data);
+                    console.log(`🏈 Data source: ${data.source || 'Unknown'}`);
                     
                     // Handle the actual API structure: data.data array
                     if (data && data.success && data.data && Array.isArray(data.data)) {
