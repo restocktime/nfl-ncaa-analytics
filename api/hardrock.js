@@ -39,6 +39,12 @@ export default async function handler(req, res) {
     
     // Handle events endpoint
     if (action === 'events') {
+        // Generate dates for recent/upcoming games (within last 2 days to next 3 days)
+        const today = new Date();
+        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+        const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        const dayAfter = new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000);
+        
         return res.status(200).json({
             success: true,
             action: 'events',
@@ -47,8 +53,8 @@ export default async function handler(req, res) {
                     id: 'event_001',
                     name: 'Kansas City Chiefs vs Buffalo Bills',
                     league: 'NFL',
-                    date: '2025-01-26T20:00:00Z',
-                    status: 'scheduled',
+                    date: yesterday.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+                    status: 'final',
                     teams: {
                         home: { name: 'Buffalo Bills', abbreviation: 'BUF' },
                         away: { name: 'Kansas City Chiefs', abbreviation: 'KC' }
@@ -58,11 +64,33 @@ export default async function handler(req, res) {
                     id: 'event_002', 
                     name: 'Philadelphia Eagles vs Washington Commanders',
                     league: 'NFL',
-                    date: '2025-01-26T16:30:00Z',
-                    status: 'scheduled',
+                    date: today.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+                    status: 'live',
                     teams: {
                         home: { name: 'Philadelphia Eagles', abbreviation: 'PHI' },
                         away: { name: 'Washington Commanders', abbreviation: 'WAS' }
+                    }
+                },
+                {
+                    id: 'event_003',
+                    name: 'San Francisco 49ers vs Detroit Lions',
+                    league: 'NFL', 
+                    date: tomorrow.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+                    status: 'scheduled',
+                    teams: {
+                        home: { name: 'Detroit Lions', abbreviation: 'DET' },
+                        away: { name: 'San Francisco 49ers', abbreviation: 'SF' }
+                    }
+                },
+                {
+                    id: 'event_004',
+                    name: 'Baltimore Ravens vs Cincinnati Bengals', 
+                    league: 'NFL',
+                    date: dayAfter.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+                    status: 'scheduled',
+                    teams: {
+                        home: { name: 'Cincinnati Bengals', abbreviation: 'CIN' },
+                        away: { name: 'Baltimore Ravens', abbreviation: 'BAL' }
                     }
                 }
             ],
