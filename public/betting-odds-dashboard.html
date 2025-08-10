@@ -530,16 +530,18 @@
                             }
                         }));
                         
+                        const totalBets = games.length * 3; // 3 bet types per game
+                        
                         return {
                             success: [{
                                 provider: 'hardrock',
-                                name: 'Hard Rock Bet',
+                                name: 'Hard Rock Bet (Upcoming Games)',
                                 games: games,
-                                bets: games.length * 3 // 3 bet types per game
+                                bets: totalBets
                             }],
                             failed: [],
                             totalGames: games.length,
-                            totalBets: games.length * 3
+                            totalBets: totalBets
                         };
                     } else {
                         throw new Error('No games available');
