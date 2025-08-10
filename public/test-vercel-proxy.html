@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Vercel Proxy Test</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            background: rgba(45, 47, 95, 0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            background: #2d3748;
+            color: white;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        
+        .result {
+            background: #2d3748;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+        .warning { border-left: 4px solid #f59e0b; }
+        
+        .step {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Vercel Proxy Test</h1>
+        <p>Test the Sleeper API Vercel proxy deployment</p>
+        
+        <!-- Proxy URL Configuration -->
+        <div class="test-section">
+            <h3>🔧 Proxy Configuration</h3>
+            <p>Enter your deployed Vercel proxy URL:</p>
+            <input 
+                type="text" 
+                id="proxyUrl" 
+                class="url-input" 
+                placeholder="https://your-proxy.vercel.app"
+                value="https://sleeper-api-proxy.vercel.app"
+            >
+            <p style="font-size: 14px; color: #cbd5e1;">
+                After deploying to Vercel, replace the URL above with your actual deployment URL
+            </p>
+        </div>
+        
+        <!-- Step-by-step Testing -->
+        <div class="test-section">
+            <h3>🧪 Test All Endpoints</h3>
+            
+            <div class="step">
+                <h4>Step 1: Test User Endpoint</h4>
+                <input type="text" id="testUsername" value="restocktime" style="padding: 8px; width: 200px; margin-right: 10px;">
+                <button onclick="testUserEndpoint()">🔍 Test User Lookup</button>
+                <div id="userResult"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Step 2: Test Leagues Endpoint</h4>
+                <button onclick="testLeaguesEndpoint()" id="leaguesBtn" disabled>🏆 Test Leagues</button>
+                <div id="leaguesResult"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Step 3: Test Rosters Endpoint</h4>
+                <button onclick="testRostersEndpoint()" id="rostersBtn" disabled>📋 Test Rosters</button>
+                <div id="rostersResult"></div>
+            </div>
+        </div>
+        
+        <!-- Full Integration Test -->
+        <div class="test-section">
+            <h3>🎯 Full Integration Test</h3>
+            <p>Test the complete flow: User → Leagues → Rosters → My Roster</p>
+            <button onclick="fullIntegrationTest()">🚀 Run Full Test</button>
+            <div id="integrationResult"></div>
+        </div>
+        
+        <!-- Deployment Instructions -->
+        <div class="test-section">
+            <h3>📚 Deployment Instructions</h3>
+            <div style="font-size: 14px; line-height: 1.6;">
+                <p><strong>1. Create GitHub Repository:</strong></p>
+                <pre style="background: #1a202c; padding: 10px; border-radius: 4px; overflow-x: auto;">cd sleeper-api-proxy
+git init
+git add .
+git commit -m "Initial commit: Sleeper API proxy"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/sleeper-api-proxy.git
+git push -u origin main</pre>
+                
+                <p><strong>2. Deploy to Vercel:</strong></p>
+                <ul>
+                    <li>Go to <a href="https://vercel.com" target="_blank" style="color: #60a5fa;">vercel.com</a></li>
+                    <li>Click "New Project"</li>
+                    <li>Import your GitHub repository</li>
+                    <li>Deploy with default settings</li>
+                </ul>
+                
+                <p><strong>3. Update the proxy URL above with your deployment URL</strong></p>
+                <p><strong>4. Run the tests to verify everything works</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentUser = null;
+        let currentLeagues = null;
+        
+        function getProxyUrl() {
+            return document.getElementById('proxyUrl').value.trim() || 'https://sleeper-api-proxy.vercel.app';
+        }
+        
+        async function testUserEndpoint() {
+            const username = document.getElementById('testUsername').value.trim();
+            const proxyUrl = getProxyUrl();
+            const resultDiv = document.getElementById('userResult');
+            
+            if (!username) {
+                log(resultDiv, 'Please enter a username', 'error');
+                return;
+            }
+            
+            log(resultDiv, `Testing: ${proxyUrl}/api/sleeper/user/${username}`, 'warning');
+            
+            try {
+                const response = await fetch(`${proxyUrl}/api/sleeper/user/${encodeURIComponent(username)}`);
+                const data = await response.json();
+                
+                if (response.ok && !data.error) {
+                    currentUser = data;
+                    log(resultDiv, `✅ Success!\nUser: ${data.display_name || data.username}\nUser ID: ${data.user_id}\nAvatar: ${data.avatar || 'None'}`, 'success');
+                    document.getElementById('leaguesBtn').disabled = false;
+                } else {
+                    log(resultDiv, `❌ Error: ${data.error || 'Unknown error'}\nStatus: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Fetch Error: ${error.message}\n\nPossible causes:\n- Proxy not deployed yet\n- Wrong proxy URL\n- CORS issues`, 'error');
+            }
+        }
+        
+        async function testLeaguesEndpoint() {
+            if (!currentUser) {
+                log(document.getElementById('leaguesResult'), 'Run user test first', 'error');
+                return;
+            }
+            
+            const proxyUrl = getProxyUrl();
+            const resultDiv = document.getElementById('leaguesResult');
+            
+            log(resultDiv, `Testing: ${proxyUrl}/api/sleeper/leagues/${currentUser.user_id}`, 'warning');
+            
+            try {
+                const response = await fetch(`${proxyUrl}/api/sleeper/leagues/${currentUser.user_id}`);
+                const data = await response.json();
+                
+                if (response.ok && !data.error) {
+                    currentLeagues = Array.isArray(data) ? data : [];
+                    log(resultDiv, `✅ Success!\nFound ${currentLeagues.length} leagues:\n${currentLeagues.map(l => `- ${l.name} (${l.total_rosters} teams)`).join('\n')}`, 'success');
+                    document.getElementById('rostersBtn').disabled = currentLeagues.length === 0;
+                } else {
+                    log(resultDiv, `❌ Error: ${data.error || 'Unknown error'}\nStatus: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Fetch Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testRostersEndpoint() {
+            if (!currentLeagues || currentLeagues.length === 0) {
+                log(document.getElementById('rostersResult'), 'Run leagues test first', 'error');
+                return;
+            }
+            
+            const proxyUrl = getProxyUrl();
+            const resultDiv = document.getElementById('rostersResult');
+            const firstLeague = currentLeagues[0];
+            
+            log(resultDiv, `Testing: ${proxyUrl}/api/sleeper/rosters/${firstLeague.league_id}`, 'warning');
+            
+            try {
+                const response = await fetch(`${proxyUrl}/api/sleeper/rosters/${firstLeague.league_id}`);
+                const data = await response.json();
+                
+                if (response.ok && !data.error) {
+                    const rosters = Array.isArray(data) ? data : [];
+                    const myRoster = rosters.find(r => r.owner_id === currentUser.user_id);
+                    
+                    log(resultDiv, `✅ Success!\nLeague: ${firstLeague.name}\nTotal Rosters: ${rosters.length}\nMy Roster: ${myRoster ? `Found with ${myRoster.players?.length || 0} players` : 'Not found'}`, 'success');
+                } else {
+                    log(resultDiv, `❌ Error: ${data.error || 'Unknown error'}\nStatus: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Fetch Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function fullIntegrationTest() {
+            const resultDiv = document.getElementById('integrationResult');
+            log(resultDiv, '🚀 Starting full integration test...', 'warning');
+            
+            // Reset state
+            currentUser = null;
+            currentLeagues = null;
+            
+            // Test all endpoints in sequence
+            await testUserEndpoint();
+            if (currentUser) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await testLeaguesEndpoint();
+                if (currentLeagues && currentLeagues.length > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await testRostersEndpoint();
+                    
+                    log(resultDiv, `🎯 FULL INTEGRATION SUCCESS!\n\n✅ All three endpoints working\n✅ User: ${currentUser.display_name}\n✅ Leagues: ${currentLeagues.length}\n✅ Proxy URL: ${getProxyUrl()}\n\n🚀 Your Vercel proxy is ready for production!`, 'success');
+                } else {
+                    log(resultDiv, '⚠️ Integration partially successful - no leagues found for user', 'warning');
+                }
+            } else {
+                log(resultDiv, '❌ Integration failed at user lookup step', 'error');
+            }
+        }
+        
+        function log(element, message, type) {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = new Date().toLocaleTimeString() + ':\n' + message;
+            element.appendChild(div);
+            element.scrollTop = element.scrollHeight;
+        }
+        
+        // Auto-focus on page load
+        window.addEventListener('load', function() {
+            document.getElementById('testUsername').focus();
+        });
+    </script>
+</body>
+</html>

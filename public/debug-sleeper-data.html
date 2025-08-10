@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Sleeper Data</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            background: #1a1a2e; 
+            color: #eee; 
+            padding: 20px; 
+        }
+        .data-section {
+            background: #16213e;
+            border: 1px solid #333;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .data-title {
+            color: #6366f1;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        pre {
+            background: #0f0f23;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .info { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5b5ad6; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Sleeper Data Debug Tool</h1>
+    <p>This tool helps diagnose why Sleeper roster data isn't loading in the Fantasy Hub</p>
+
+    <button onclick="checkAllData()">🔍 Check All Data</button>
+    <button onclick="clearAllData()">🗑️ Clear All Data</button>
+    <button onclick="testSleeperAPI()">🧪 Test Sleeper API</button>
+    <button onclick="window.location.href='fantasy-hub.html'">🏈 Go to Fantasy Hub</button>
+
+    <div id="status"></div>
+    <div id="dataDisplay"></div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function displayData(title, data) {
+            const dataDisplay = document.getElementById('dataDisplay');
+            const dataSection = document.createElement('div');
+            dataSection.className = 'data-section';
+            dataSection.innerHTML = `
+                <div class="data-title">${title}</div>
+                <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+            `;
+            dataDisplay.appendChild(dataSection);
+        }
+
+        async function checkAllData() {
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = ''; // Clear previous results
+            
+            showStatus('🔍 Checking all stored data...', 'info');
+
+            // Check localStorage for fantasy roster data
+            console.log('📋 Checking localStorage for fantasy roster data...');
+            
+            const userFantasyRoster = localStorage.getItem('userFantasyRoster');
+            const fantasyRosterManual = localStorage.getItem('fantasy-roster-manual');
+            const allLocalStorageKeys = Object.keys(localStorage);
+
+            displayData('🏈 userFantasyRoster (Main Key)', 
+                userFantasyRoster ? JSON.parse(userFantasyRoster) : 'Not found');
+            
+            displayData('📋 fantasy-roster-manual (Alternative Key)', 
+                fantasyRosterManual ? JSON.parse(fantasyRosterManual) : 'Not found');
+            
+            displayData('🗂️ All localStorage Keys', allLocalStorageKeys);
+
+            // Check if Fantasy APIs are loaded
+            console.log('🔧 Checking Fantasy API integration...');
+            
+            const apiStatus = {
+                fantasyAPIIntegration: !!window.fantasyAPIIntegration,
+                fantasyRosterManager: !!window.fantasyRosterManager,
+                fantasyDataService: !!window.fantasyDataService
+            };
+            
+            displayData('🔗 Fantasy APIs Status', apiStatus);
+
+            // If Fantasy Roster Manager is available, check its data
+            if (window.fantasyRosterManager) {
+                console.log('👥 Checking Fantasy Roster Manager data...');
+                
+                const rosterManagerData = {
+                    currentUser: window.fantasyRosterManager.currentUser,
+                    userRosterKeys: Array.from(window.fantasyRosterManager.userRosters.keys()),
+                    userRostersCount: window.fantasyRosterManager.userRosters.size
+                };
+                
+                displayData('👥 Fantasy Roster Manager Status', rosterManagerData);
+                
+                // Try to get current roster
+                const currentRoster = window.fantasyRosterManager.getUserRoster();
+                displayData('🎯 Current Roster from Manager', currentRoster || 'No current roster found');
+            }
+
+            // Check if API Integration has connections
+            if (window.fantasyAPIIntegration) {
+                console.log('🔗 Checking API Integration connections...');
+                
+                const connections = window.fantasyAPIIntegration.getConnectedPlatforms();
+                const connectionStatus = window.fantasyAPIIntegration.getConnectionStatus();
+                
+                displayData('🔌 Connected Platforms', connections);
+                displayData('📊 Connection Status', connectionStatus);
+            }
+
+            // Summary and recommendations
+            let summary = [];
+            let hasRosterData = false;
+            
+            if (userFantasyRoster) {
+                const roster = JSON.parse(userFantasyRoster);
+                summary.push(`✅ Found userFantasyRoster with ${roster.roster?.length || 0} players`);
+                summary.push(`📋 Team: ${roster.teamName || 'Unknown'}`);
+                summary.push(`🏟️ Platform: ${roster.platform || 'Unknown'}`);
+                hasRosterData = true;
+            } else if (fantasyRosterManual) {
+                summary.push('⚠️ Found fantasy-roster-manual but not userFantasyRoster');
+                summary.push('💡 This might be why Fantasy Hub shows "Loading..."');
+            } else {
+                summary.push('❌ No roster data found in localStorage');
+            }
+
+            if (window.fantasyRosterManager && !window.fantasyRosterManager.currentUser) {
+                summary.push('⚠️ Fantasy Roster Manager has no current user set');
+            }
+
+            if (!window.fantasyAPIIntegration) {
+                summary.push('❌ Fantasy API Integration not loaded');
+            }
+
+            const recommendations = [];
+            if (!hasRosterData) {
+                recommendations.push('1. Connect to Sleeper and import roster data');
+                recommendations.push('2. Or build a manual roster');
+            } else if (window.fantasyRosterManager && !window.fantasyRosterManager.currentUser) {
+                recommendations.push('1. Fantasy Hub should sync with localStorage data');
+                recommendations.push('2. Check handleRosterImport function');
+            }
+
+            displayData('📋 Summary', summary.join('\n'));
+            displayData('💡 Recommendations', recommendations.join('\n'));
+
+            showStatus(`🔍 Data check complete. Found ${hasRosterData ? 'roster data' : 'no roster data'}.`, 
+                hasRosterData ? 'success' : 'warning');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Clear all fantasy roster data? This cannot be undone.')) {
+                localStorage.removeItem('userFantasyRoster');
+                localStorage.removeItem('fantasy-roster-manual');
+                
+                showStatus('🗑️ All fantasy data cleared', 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('dataDisplay').innerHTML = '';
+                }, 1000);
+            }
+        }
+
+        async function testSleeperAPI() {
+            showStatus('🧪 Testing Sleeper API via proxy...', 'info');
+            
+            try {
+                // Test the Vercel proxy
+                const proxyUrl = 'https://sleeper-api-proxy.vercel.app/api/sleeper';
+                const response = await fetch(`${proxyUrl}/state/nfl`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayData('🧪 Sleeper API Test Result', {
+                        status: 'SUCCESS',
+                        proxyUrl: proxyUrl,
+                        responseStatus: response.status,
+                        dataReceived: !!data,
+                        sampleData: data
+                    });
+                    showStatus('✅ Sleeper API is working via proxy', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                displayData('🧪 Sleeper API Test Result', {
+                    status: 'FAILED',
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+                showStatus(`❌ Sleeper API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run check on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showStatus('🔍 Debug tool loaded. Click "Check All Data" to diagnose issues.', 'info');
+        });
+    </script>
+</body>
+</html>

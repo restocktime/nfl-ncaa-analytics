@@ -144,8 +144,22 @@ class FantasyAPIIntegration {
             const playerCount = userRoster.players ? userRoster.players.length : 0;
             console.log(`Found roster with ${playerCount} players`);
             
-            // Convert to fantasy system format
-            const fantasyRosterFormat = this.convertSleeperToFantasyFormat(userRoster, leagueId, userId);
+            // Get league data and user data for better conversion
+            console.log(`🔄 Getting league and player data for better roster conversion...`);
+            const [leagueData, allPlayers] = await Promise.all([
+                this.getSleeperLeague(leagueId),
+                this.getSleeperPlayers()
+            ]);
+            
+            // Get user data
+            const connection = this.userConnections.get('sleeper');
+            const userData = {
+                user_id: userId,
+                display_name: connection?.username || 'Sleeper User'
+            };
+            
+            // Use the better conversion function with player data
+            const fantasyRosterFormat = this.convertSleeperRoster(userRoster, leagueData, userData, allPlayers);
             
             const result = {
                 success: true,
@@ -161,12 +175,57 @@ class FantasyAPIIntegration {
                     'Roster found but no players (empty roster or draft not complete)'
             };
             
-            console.log(`✅ Retrieved roster: ${result.message}`);
+            console.log(`✅ Retrieved roster with real player data: ${result.message}`);
             return result;
             
         } catch (error) {
             console.error('❌ Error getting Sleeper roster:', error);
             throw error;
+        }
+    }
+
+    // Get league data
+    async getSleeperLeague(leagueId) {
+        try {
+            const response = await fetch(`${this.apis.sleeper.baseUrl}/league/${leagueId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch league data: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.warn('⚠️ Could not fetch league data, using defaults:', error.message);
+            return {
+                league_id: leagueId,
+                name: 'Sleeper League',
+                season: new Date().getFullYear().toString()
+            };
+        }
+    }
+
+    // Get all NFL players from Sleeper
+    async getSleeperPlayers() {
+        try {
+            console.log('📋 Fetching Sleeper NFL player database...');
+            
+            // Try the direct Sleeper API first (no proxy needed for players)
+            let response;
+            try {
+                response = await fetch('https://api.sleeper.app/v1/players/nfl');
+            } catch (corsError) {
+                console.log('Direct API failed, trying proxy...');
+                response = await fetch(`${this.apis.sleeper.baseUrl}/players/nfl`);
+            }
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch players: ${response.status}`);
+            }
+            
+            const players = await response.json();
+            console.log(`✅ Loaded ${Object.keys(players).length} NFL players from Sleeper`);
+            return players;
+        } catch (error) {
+            console.warn('⚠️ Could not fetch player data, using fallback conversion:', error.message);
+            return {};
         }
     }
 
@@ -209,29 +268,49 @@ class FantasyAPIIntegration {
         const playerList = roster.players || [];
         const starters = roster.starters || [];
         
-        const convertedPlayers = playerList.map(playerId => {
+        console.log(`🔄 Converting roster with ${playerList.length} players, ${Object.keys(allPlayers).length} in player database`);
+        
+        const convertedPlayers = playerList.map((playerId, index) => {
             const player = allPlayers[playerId];
-            if (!player) return null;
-            
             const isStarter = starters.includes(playerId);
             
-            return {
-                playerId: playerId,
-                name: `${player.first_name} ${player.last_name}`,
-                team: player.team || 'FA',
-                position: player.fantasy_positions?.[0] || player.position,
-                draftRound: Math.floor(Math.random() * 16) + 1, // Sleeper doesn't provide this
-                draftPick: Math.floor(Math.random() * 200) + 1,
-                status: isStarter ? 'starter' : 'bench',
-                injury: player.injury_status || 'Healthy',
-                sleeperData: {
-                    age: player.age,
-                    height: player.height,
-                    weight: player.weight,
-                    yearsExp: player.years_exp
-                }
-            };
-        }).filter(player => player !== null);
+            // If we have player data, use it; otherwise create fallback
+            if (player) {
+                return {
+                    playerId: playerId,
+                    name: `${player.first_name} ${player.last_name}`,
+                    team: player.team || 'FA',
+                    position: player.fantasy_positions?.[0] || player.position || 'FLEX',
+                    draftRound: Math.floor(Math.random() * 16) + 1,
+                    draftPick: Math.floor(Math.random() * 200) + 1,
+                    status: isStarter ? 'starter' : 'bench',
+                    injury: player.injury_status || 'Healthy',
+                    sleeperData: {
+                        age: player.age,
+                        height: player.height,
+                        weight: player.weight,
+                        yearsExp: player.years_exp
+                    }
+                };
+            } else {
+                // Fallback when player data is not available
+                console.log(`⚠️ No player data for ID ${playerId}, using fallback`);
+                return {
+                    playerId: playerId,
+                    name: `Player ${playerId}`,
+                    team: 'UNK',
+                    position: 'FLEX',
+                    draftRound: Math.floor(Math.random() * 16) + 1,
+                    draftPick: Math.floor(Math.random() * 200) + 1,
+                    status: isStarter ? 'starter' : 'bench',
+                    injury: 'Healthy',
+                    sleeperData: {
+                        playerId: playerId,
+                        fallback: true
+                    }
+                };
+            }
+        });
 
         return {
             userId: `sleeper_${user.user_id}`,

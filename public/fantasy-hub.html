@@ -595,6 +595,7 @@
   </head>
   <body>
     <a href="index.html" class="back-btn">← Back to NFL Analytics</a>
+    <a href="debug-sleeper-data.html" class="back-btn" style="top: 60px; background: rgba(239, 68, 68, 0.8);">🔍 Debug Data</a>
 
     <div class="container">
       <div class="header">
@@ -699,8 +700,8 @@
         <h2>📊 Fantasy Dashboard</h2>
         <div class="feature-grid">
           <div class="feature-card">
-            <h4>Loading Your Optimal Lineup...</h4>
-            <p>🔄 Fetching your roster data...</p>
+            <h4 id="lineup-card-title">Loading Your Optimal Lineup...</h4>
+            <p id="lineup-card-content">🔄 Fetching your roster data...</p>
           </div>
           <div class="feature-card">
             <h4>This Week's Matchups</h4>
@@ -1029,17 +1030,139 @@
       async function checkUserRoster() {
         console.log('🔍 Checking for user roster...');
         
+        // Check all possible localStorage keys
         const userRoster = localStorage.getItem('userFantasyRoster');
+        const manualRoster = localStorage.getItem('fantasy-roster-manual');
         const connectedPlatforms = window.fantasyAPIIntegration ? 
           window.fantasyAPIIntegration.getConnectedPlatforms() : [];
         
-        if (!userRoster && connectedPlatforms.length === 0) {
+        console.log('📋 Roster data check:', {
+          userFantasyRoster: !!userRoster,
+          fantasyRosterManual: !!manualRoster,
+          connectedPlatforms: connectedPlatforms.length,
+          localStorageKeys: Object.keys(localStorage).filter(key => key.includes('roster') || key.includes('fantasy'))
+        });
+        
+        let rosterToUse = null;
+        
+        // Priority: userFantasyRoster first, then manual roster
+        if (userRoster) {
+          try {
+            rosterToUse = JSON.parse(userRoster);
+            console.log(`✅ Found userFantasyRoster: ${rosterToUse.teamName} (${rosterToUse.roster?.length || 0} players)`);
+          } catch (e) {
+            console.error('❌ Error parsing userFantasyRoster:', e);
+          }
+        } else if (manualRoster) {
+          try {
+            const manual = JSON.parse(manualRoster);
+            console.log('📋 Found manual roster data, converting to standard format...');
+            // Convert manual roster format if needed
+            rosterToUse = convertManualRosterFormat(manual);
+          } catch (e) {
+            console.error('❌ Error parsing manual roster:', e);
+          }
+        }
+        
+        if (!rosterToUse && connectedPlatforms.length === 0) {
           // No roster and no connections - show setup message
+          console.log('⚠️ No roster data found and no platforms connected');
           showRosterSetupMessage();
-        } else if (userRoster) {
-          const roster = JSON.parse(userRoster);
-          console.log(`✅ Found user roster: ${roster.teamName} (${roster.roster.length} players)`);
-          updateUserInfo(roster);
+        } else if (rosterToUse) {
+          console.log(`🎯 Using roster: ${rosterToUse.teamName} from ${rosterToUse.platform || 'unknown'}`);
+          updateUserInfo(rosterToUse);
+          
+          // Update the roster manager with the imported data
+          if (window.fantasyRosterManager && rosterToUse) {
+            console.log('🔄 Syncing roster with roster manager...');
+            // Clear any existing user roster and set the new one
+            window.fantasyRosterManager.userRosters.clear();
+            window.fantasyRosterManager.userRosters.set(rosterToUse.userId, rosterToUse);
+            window.fantasyRosterManager.currentUser = rosterToUse.userId;
+            console.log(`✅ Roster manager updated with: ${rosterToUse.teamName}`);
+            
+            // Force reload dashboard data immediately
+            setTimeout(() => {
+              console.log('🔄 Force reloading dashboard with roster data...');
+              loadDashboardData();
+              forceLoadRosterData();
+            }, 500);
+          }
+        } else {
+          console.log('⚠️ Connected platforms found but no roster data - may need to import roster');
+        }
+        
+        // Listen for localStorage changes (roster imports)
+        window.addEventListener('storage', handleRosterImport);
+        // Also listen for custom events from import pages
+        window.addEventListener('rosterImported', handleRosterImport);
+      }
+
+      // Convert manual roster format to standard format
+      function convertManualRosterFormat(manualData) {
+        // If it's already in the right format, return it
+        if (manualData.roster && manualData.teamName) {
+          return manualData;
+        }
+        
+        // Convert various manual formats
+        const players = [];
+        if (typeof manualData === 'object') {
+          Object.entries(manualData).forEach(([key, value]) => {
+            if (key !== 'sleeperUser' && key !== 'sleeperUserId' && typeof value === 'string') {
+              players.push({
+                playerId: key,
+                name: value,
+                position: 'FLEX',
+                team: 'UNK',
+                status: 'bench'
+              });
+            }
+          });
+        }
+        
+        return {
+          userId: 'manual_' + Date.now(),
+          teamName: manualData.sleeperUser || 'Manual Team',
+          platform: 'manual',
+          roster: players,
+          record: { wins: 0, losses: 0, ties: 0 },
+          pointsFor: 0,
+          pointsAgainst: 0,
+          playoffSeed: 1,
+          importedFrom: 'manual',
+          importDate: new Date().toISOString()
+        };
+      }
+
+      function handleRosterImport(event) {
+        console.log('📥 Detected roster import event:', event.type);
+        
+        // Check if a new roster was imported
+        const userRoster = localStorage.getItem('userFantasyRoster');
+        if (userRoster) {
+          try {
+            const roster = JSON.parse(userRoster);
+            console.log(`🎯 New roster detected: ${roster.teamName} (${roster.roster?.length || 0} players)`);
+            
+            // Update the roster manager immediately
+            if (window.fantasyRosterManager) {
+              window.fantasyRosterManager.userRosters.clear();
+              window.fantasyRosterManager.userRosters.set(roster.userId, roster);
+              window.fantasyRosterManager.currentUser = roster.userId;
+              console.log(`✅ Updated roster manager with imported data`);
+              
+              // Update UI immediately
+              updateUserInfo(roster);
+              loadDashboardData();
+              forceLoadRosterData();
+              
+              // Show success notification
+              updateStatus(`✅ Roster imported: ${roster.teamName} (${roster.roster?.length || 0} players)`, 'success');
+            }
+          } catch (error) {
+            console.error('❌ Error processing imported roster:', error);
+          }
         }
       }
 
@@ -1819,36 +1942,69 @@
       }
 
       function forceLoadRosterData() {
-        // Force load roster data immediately
-        const rosterManager = window.fantasyRosterManager;
-        if (!rosterManager) return;
+        // Check for imported roster first
+        const importedRoster = localStorage.getItem('userFantasyRoster');
+        let roster = null;
+        
+        if (importedRoster) {
+          try {
+            roster = JSON.parse(importedRoster);
+            console.log(`📥 Using imported roster: ${roster.teamName} (${roster.roster?.length || 0} players)`);
+            
+            // Sync with roster manager if available
+            if (window.fantasyRosterManager) {
+              window.fantasyRosterManager.userRosters.clear();
+              window.fantasyRosterManager.userRosters.set(roster.userId, roster);
+              window.fantasyRosterManager.currentUser = roster.userId;
+            }
+          } catch (e) {
+            console.error('❌ Error parsing imported roster:', e);
+            roster = null;
+          }
+        }
+        
+        // Fallback to roster manager
+        if (!roster && window.fantasyRosterManager) {
+          roster = window.fantasyRosterManager.getUserRoster();
+        }
+        
+        if (!roster) {
+          console.log('⚠️ No roster data available');
+          loadFallbackData();
+          return;
+        }
 
-        const roster = rosterManager.getUserRoster();
-        if (!roster) return;
-
-        console.log(`🎯 Loading data for: ${roster.teamName}`);
+        console.log(`🎯 Loading data for: ${roster.teamName} (${roster.roster?.length || 0} players)`);
 
         // Update dashboard immediately with roster data
         const lineupCard = document.querySelector('#dashboard .feature-card');
         if (lineupCard) {
           let html = `<h4>${roster.teamName} - Your Team</h4>`;
-          html += `<p><strong>Record:</strong> ${roster.record.wins}-${roster.record.losses}</p>`;
-          html += `<p><strong>Playoff Seed:</strong> #${roster.playoffSeed}</p>`;
-          html += `<p><strong>Points For:</strong> ${roster.pointsFor}</p>`;
+          html += `<p><strong>Record:</strong> ${roster.record?.wins || 0}-${roster.record?.losses || 0}</p>`;
+          html += `<p><strong>Playoff Seed:</strong> #${roster.playoffSeed || 1}</p>`;
+          html += `<p><strong>Points For:</strong> ${roster.pointsFor || 0}</p>`;
           
           // Show starting lineup
-          const starters = roster.roster.filter(p => p.status === 'starter' || p.status === 'flex');
-          html += `<p><strong>Starters:</strong></p>`;
-          starters.slice(0, 4).forEach(player => {
-            html += `<p>• ${player.name} (${player.position}, ${player.team})</p>`;
-          });
+          if (roster.roster && roster.roster.length > 0) {
+            const starters = roster.roster.filter(p => p.status === 'starter' || p.status === 'flex');
+            html += `<p><strong>Starters (${starters.length}):</strong></p>`;
+            starters.slice(0, 4).forEach(player => {
+              html += `<p>• ${player.name} (${player.position}, ${player.team})</p>`;
+            });
+            
+            if (starters.length > 4) {
+              html += `<p style="color: #94a3b8; font-size: 0.9em;">...and ${starters.length - 4} more players</p>`;
+            }
+          } else {
+            html += `<p style="color: #f59e0b;">⚠️ No players found in roster</p>`;
+          }
           
           lineupCard.innerHTML = html;
         }
 
         // Update injury watch with real data
         const injuryCard = document.querySelector('#dashboard .feature-card:nth-child(3)');
-        if (injuryCard) {
+        if (injuryCard && roster.roster) {
           const injured = roster.roster.filter(p => p.injury && p.injury !== 'Healthy');
           let injuryHTML = '<h4>Injury Watch (Your Players)</h4>';
           

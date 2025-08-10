@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy ESPN Fantasy Connection</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+    
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1b3a;
+            --bg-card: rgba(30, 30, 63, 0.6);
+            --accent-primary: #6366f1;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-primary), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .method-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .method-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .method-card.active {
+            border-color: var(--accent-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .method-icon {
+            font-size: 2rem;
+        }
+
+        .method-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .input-group.active {
+            display: flex;
+        }
+
+        .input-field {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, var(--accent-success), #059669);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .status.success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .status.info { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+
+        .team-selector {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .team-selector.active {
+            display: block;
+        }
+
+        .team-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .team-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .team-item:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--accent-primary);
+        }
+
+        .team-item.selected {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--accent-success);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--accent-primary);
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href="connect-accounts.html" class="back-btn">← Back to Connections</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🏀 Easy ESPN Fantasy Connection</h1>
+            <p>Multiple ways to connect - choose the easiest method for you</p>
+        </div>
+
+        <!-- Method 1: URL Parsing (Easiest) -->
+        <div class="method-card" onclick="selectMethod('url')" id="urlMethod">
+            <div class="method-header">
+                <div class="method-icon">🔗</div>
+                <div class="method-title">Copy & Paste URL (Easiest)</div>
+                <div style="margin-left: auto; color: var(--accent-success); font-weight: bold;">RECOMMENDED</div>
+            </div>
+            <div class="method-description">
+                Just copy your ESPN Fantasy league URL and paste it here. Works for both public and private leagues.
+            </div>
+            <div class="input-group" id="urlInputs">
+                <input type="text" class="input-field" id="espnUrl" placeholder="Paste your ESPN Fantasy league URL here...">
+                <div class="help-text">
+                    Example: https://fantasy.espn.com/football/league?leagueId=123456&seasonId=2024<br>
+                    You can find this URL by going to your ESPN Fantasy league page and copying from the address bar.
+                </div>
+                <button class="connect-btn" onclick="connectViaURL()">Connect via URL</button>
+                <div id="urlStatus"></div>
+            </div>
+        </div>
+
+        <!-- Method 2: Public League (Simple) -->
+        <div class="method-card" onclick="selectMethod('public')" id="publicMethod">
+            <div class="method-header">
+                <div class="method-icon">🌐</div>
+                <div class="method-title">Public League (No Login Required)</div>
+            </div>
+            <div class="method-description">
+                For public leagues, just enter your League ID. No cookies or login required.
+            </div>
+            <div class="input-group" id="publicInputs">
+                <input type="text" class="input-field" id="publicLeagueId" placeholder="League ID (e.g., 123456789)">
+                <input type="text" class="input-field" id="publicSeasonId" placeholder="Season (optional, defaults to 2024)" value="2024">
+                <div class="help-text">
+                    Find your League ID in your ESPN Fantasy URL or league settings page.
+                </div>
+                <button class="connect-btn" onclick="connectPublicLeague()">Connect Public League</button>
+                <div id="publicStatus"></div>
+            </div>
+        </div>
+
+        <!-- Method 3: Private League with Cookies -->
+        <div class="method-card" onclick="selectMethod('private')" id="privateMethod">
+            <div class="method-header">
+                <div class="method-icon">🍪</div>
+                <div class="method-title">Private League (With Login)</div>
+            </div>
+            <div class="method-description">
+                For private leagues, you'll need to provide your login cookies. We'll guide you through it.
+            </div>
+            <div class="input-group" id="privateInputs">
+                <input type="text" class="input-field" id="privateLeagueId" placeholder="League ID (e.g., 123456789)">
+                <input type="text" class="input-field" id="privateSeasonId" placeholder="Season (optional, defaults to 2024)" value="2024">
+                <textarea class="input-field" id="espnCookies" placeholder="Paste your ESPN cookies here (we'll show you how)" rows="3"></textarea>
+                <div class="help-text">
+                    <strong>How to get cookies:</strong><br>
+                    1. Login to ESPN Fantasy in your browser<br>
+                    2. Press F12 to open Developer Tools<br>
+                    3. Go to Application → Cookies → espn.com<br>
+                    4. Copy the values for "espn_s2" and "SWID"<br>
+                    5. Paste them here like: espn_s2=ABC123; SWID=XYZ789
+                </div>
+                <button class="connect-btn" onclick="connectPrivateLeague()">Connect Private League</button>
+                <div id="privateStatus"></div>
+            </div>
+        </div>
+
+        <!-- Team Selection (appears after successful connection) -->
+        <div class="team-selector" id="teamSelector">
+            <h3>Select Your Team:</h3>
+            <div class="team-list" id="teamList"></div>
+            <button class="connect-btn" onclick="importSelectedTeam()" id="importTeamBtn" style="display: none;">Import Selected Team</button>
+            <div id="teamStatus"></div>
+        </div>
+    </div>
+
+    <!-- Load the better ESPN integration -->
+    <script src="espn-better-integration.js"></script>
+    
+    <script>
+        let espnIntegration;
+        let selectedMethod = null;
+        let currentLeagueData = null;
+        let selectedTeam = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            espnIntegration = new ESPNBetterIntegration();
+            console.log('✅ ESPN Better Integration ready');
+        });
+
+        function selectMethod(method) {
+            // Clear previous selections
+            document.querySelectorAll('.method-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelectorAll('.input-group').forEach(group => {
+                group.classList.remove('active');
+            });
+
+            // Activate selected method
+            selectedMethod = method;
+            document.getElementById(`${method}Method`).classList.add('active');
+            document.getElementById(`${method}Inputs`).classList.add('active');
+
+            // Hide team selector
+            document.getElementById('teamSelector').classList.remove('active');
+        }
+
+        async function connectViaURL() {
+            const urlInput = document.getElementById('espnUrl');
+            const statusDiv = document.getElementById('urlStatus');
+            const connectBtn = event.target;
+            
+            const espnUrl = urlInput.value.trim();
+            if (!espnUrl) {
+                showStatus(statusDiv, 'error', 'Please paste your ESPN Fantasy URL');
+                return;
+            }
+
+            connectBtn.disabled = true;
+            connectBtn.textContent = 'Connecting...';
+            showStatus(statusDiv, 'info', 'Parsing URL and connecting...');
+
+            try {
+                const result = await espnIntegration.connectViaURL(espnUrl);
+                currentLeagueData = result;
+                
+                showStatus(statusDiv, 'success', result.message);
+                connectBtn.textContent = 'Connected ✅';
+                
+                // Load teams for selection
+                await loadTeamSelection(result.leagueId, result.seasonId);
+                
+            } catch (error) {
+                showStatus(statusDiv, 'error', `Connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = 'Connect via URL';
+            }
+        }
+
+        async function connectPublicLeague() {
+            const leagueIdInput = document.getElementById('publicLeagueId');
+            const seasonIdInput = document.getElementById('publicSeasonId');
+            const statusDiv = document.getElementById('publicStatus');
+            const connectBtn = event.target;
+            
+            const leagueId = leagueIdInput.value.trim();
+            if (!leagueId) {
+                showStatus(statusDiv, 'error', 'Please enter League ID');
+                return;
+            }
+
+            const seasonId = seasonIdInput.value.trim() || '2024';
+
+            connectBtn.disabled = true;
+            connectBtn.textContent = 'Connecting...';
+            showStatus(statusDiv, 'info', 'Connecting to public league...');
+
+            try {
+                const result = await espnIntegration.connectPublicLeague(leagueId, seasonId);
+                currentLeagueData = result;
+                
+                showStatus(statusDiv, 'success', result.message);
+                connectBtn.textContent = 'Connected ✅';
+                
+                // Load teams for selection
+                await loadTeamSelection(leagueId, seasonId);
+                
+            } catch (error) {
+                showStatus(statusDiv, 'error', `Connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = 'Connect Public League';
+            }
+        }
+
+        async function connectPrivateLeague() {
+            const leagueIdInput = document.getElementById('privateLeagueId');
+            const seasonIdInput = document.getElementById('privateSeasonId');
+            const cookiesInput = document.getElementById('espnCookies');
+            const statusDiv = document.getElementById('privateStatus');
+            const connectBtn = event.target;
+            
+            const leagueId = leagueIdInput.value.trim();
+            const cookies = cookiesInput.value.trim();
+            
+            if (!leagueId) {
+                showStatus(statusDiv, 'error', 'Please enter League ID');
+                return;
+            }
+
+            const seasonId = seasonIdInput.value.trim() || '2024';
+
+            connectBtn.disabled = true;
+            connectBtn.textContent = 'Connecting...';
+            showStatus(statusDiv, 'info', 'Connecting to private league...');
+
+            try {
+                const result = await espnIntegration.connectWithSimplifiedAuth(leagueId, seasonId, cookies);
+                currentLeagueData = result;
+                
+                showStatus(statusDiv, 'success', result.message);
+                connectBtn.textContent = 'Connected ✅';
+                
+                // Load teams for selection
+                await loadTeamSelection(leagueId, seasonId);
+                
+            } catch (error) {
+                showStatus(statusDiv, 'error', `Connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = 'Connect Private League';
+            }
+        }
+
+        async function loadTeamSelection(leagueId, seasonId) {
+            const teamSelector = document.getElementById('teamSelector');
+            const teamList = document.getElementById('teamList');
+            const teamStatus = document.getElementById('teamStatus');
+            
+            try {
+                showStatus(teamStatus, 'info', 'Loading league teams...');
+                
+                const teams = await espnIntegration.getLeagueTeams(leagueId, seasonId);
+                
+                if (teams.length === 0) {
+                    throw new Error('No teams found in league');
+                }
+
+                // Display teams
+                teamList.innerHTML = '';
+                teams.forEach(team => {
+                    const teamDiv = document.createElement('div');
+                    teamDiv.className = 'team-item';
+                    teamDiv.onclick = () => selectTeam(team.id, teamDiv);
+                    teamDiv.innerHTML = `
+                        <div style="font-weight: 600; margin-bottom: 5px;">${team.name}</div>
+                        <div style="font-size: 0.9em; color: var(--text-secondary);">${team.record} • ${team.points} pts</div>
+                    `;
+                    teamList.appendChild(teamDiv);
+                });
+
+                teamSelector.classList.add('active');
+                showStatus(teamStatus, 'success', `Found ${teams.length} teams. Select yours to import roster.`);
+                
+            } catch (error) {
+                showStatus(teamStatus, 'error', `Error loading teams: ${error.message}`);
+            }
+        }
+
+        function selectTeam(teamId, teamDiv) {
+            // Clear previous selection
+            document.querySelectorAll('.team-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select new team
+            teamDiv.classList.add('selected');
+            selectedTeam = teamId;
+            
+            // Show import button
+            document.getElementById('importTeamBtn').style.display = 'block';
+        }
+
+        async function importSelectedTeam() {
+            if (!selectedTeam || !currentLeagueData) {
+                alert('Please select a team first');
+                return;
+            }
+
+            const importBtn = document.getElementById('importTeamBtn');
+            const teamStatus = document.getElementById('teamStatus');
+            
+            importBtn.disabled = true;
+            importBtn.textContent = 'Importing...';
+            showStatus(teamStatus, 'info', 'Importing roster data...');
+
+            try {
+                const result = await espnIntegration.getTeamRoster(
+                    currentLeagueData.leagueId, 
+                    currentLeagueData.seasonId, 
+                    selectedTeam
+                );
+
+                // Save to localStorage
+                localStorage.setItem('userFantasyRoster', JSON.stringify(result.fantasyRoster));
+                console.log('💾 Saved ESPN roster:', result.fantasyRoster);
+
+                // Notify other windows/tabs
+                window.dispatchEvent(new CustomEvent('rosterImported', { 
+                    detail: { roster: result.fantasyRoster } 
+                }));
+
+                showStatus(teamStatus, 'success', `✅ ${result.message} (${result.playerCount} players)`);
+                
+                // Show navigation options
+                setTimeout(() => {
+                    teamStatus.innerHTML = `
+                        <div class="status success">
+                            <p>✅ ${result.message} (${result.playerCount} players)</p>
+                            <div style="margin-top: 15px;">
+                                <button onclick="window.location.href='fantasy-hub.html'" 
+                                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px; font-weight: 500;">
+                                    🏈 Go to Fantasy Hub
+                                </button>
+                                <button onclick="location.reload()" 
+                                    style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                                    📊 Import Another Team
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }, 1000);
+
+            } catch (error) {
+                showStatus(teamStatus, 'error', `Import failed: ${error.message}`);
+                importBtn.disabled = false;
+                importBtn.textContent = 'Import Selected Team';
+            }
+        }
+
+        function showStatus(element, type, message) {
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

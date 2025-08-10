@@ -518,7 +518,7 @@
             <div class="platform-card" id="espnCard">
                 <div class="platform-logo">🏀</div>
                 <h3>ESPN Fantasy Football</h3>
-                <p>Connect using league ID and cookies</p>
+                <p>Multiple easy connection methods available</p>
                 
                 <div class="input-group">
                     <input type="text" id="espnLeagueId" placeholder="ESPN League ID">
@@ -526,16 +526,22 @@
                     <input type="text" id="espnSWID" placeholder="SWID Cookie (for private leagues)">
                 </div>
                 
-                <button class="connect-btn" id="espnConnectBtn" onclick="connectESPN()">
-                    Connect ESPN League
-                </button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="connect-btn" onclick="window.location.href='espn-easy-connect.html'" 
+                        style="background: linear-gradient(135deg, #10b981, #059669); flex: 1;">
+                        🚀 Easy ESPN Connect
+                    </button>
+                    <button class="connect-btn" id="espnConnectBtn" onclick="connectESPN()" 
+                        style="background: linear-gradient(135deg, #6366f1, #8b5cf6); flex: 1;">
+                        Advanced Connect
+                    </button>
+                </div>
                 
                 <div class="instructions">
-                    <strong>How to get cookies (private leagues):</strong>
-                    <br>• Login to ESPN Fantasy
-                    <br>• Open browser Dev Tools (F12)
-                    <br>• Go to Application → Cookies → espn.com
-                    <br>• Copy espn_s2 and SWID values
+                    <strong>Connection Options:</strong>
+                    <br>• <span style="color: #10b981;">🚀 Easy ESPN Connect:</span> Just paste your ESPN URL - works for most leagues
+                    <br>• <span style="color: #6366f1;">Advanced Connect:</span> Manual setup with League ID and cookies
+                    <br>• <strong>Recommended:</strong> Try Easy Connect first - it's much simpler!
                 </div>
                 
                 <div id="espnStatus"></div>
@@ -786,15 +792,63 @@
                 // Save the fantasy system format to localStorage
                 if (roster.fantasyRoster) {
                     localStorage.setItem('userFantasyRoster', JSON.stringify(roster.fantasyRoster));
-                    console.log(`💾 Saved fantasy roster format:`, roster.fantasyRoster);
+                    console.log(`💾 Saved fantasy roster format:`, {
+                        teamName: roster.fantasyRoster.teamName,
+                        playerCount: roster.fantasyRoster.roster?.length || 0,
+                        platform: roster.fantasyRoster.platform,
+                        userId: roster.fantasyRoster.userId
+                    });
+                    console.log(`🔍 Full roster data:`, roster.fantasyRoster);
                 } else {
                     // Fallback - save the original data
+                    console.log(`⚠️ No fantasyRoster found, saving raw roster data:`, roster);
                     localStorage.setItem('userFantasyRoster', JSON.stringify(roster));
                 }
                 
+                // Notify other windows/tabs that roster was imported
+                try {
+                    // Dispatch custom event for same-page listeners
+                    window.dispatchEvent(new CustomEvent('rosterImported', { 
+                        detail: { roster: roster.fantasyRoster || roster } 
+                    }));
+                    
+                    // Also trigger storage event manually for same-page detection
+                    window.dispatchEvent(new StorageEvent('storage', {
+                        key: 'userFantasyRoster',
+                        newValue: JSON.stringify(roster.fantasyRoster || roster),
+                        url: window.location.href
+                    }));
+                    
+                    console.log('📡 Broadcasted roster import event');
+                } catch (e) {
+                    console.log('📡 Event broadcast failed (non-critical):', e.message);
+                }
+                
                 if (roster.success && roster.playerCount > 0) {
-                    showStatus('sleeperStatus', 'success', 
-                        `✅ Imported ${roster.playerCount} players from league ${roster.leagueId}!`);
+                    const successMessage = `✅ Imported ${roster.playerCount} players from league ${roster.leagueId}!`;
+                    showStatus('sleeperStatus', 'success', successMessage);
+                    
+                    // Show success with navigation options
+                    setTimeout(() => {
+                        const statusDiv = document.getElementById('sleeperStatus');
+                        if (statusDiv) {
+                            statusDiv.innerHTML = `
+                                <div class="success-message">
+                                    <p>${successMessage}</p>
+                                    <div style="margin-top: 15px;">
+                                        <button onclick="goToFantasyHub()" 
+                                            style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px; font-weight: 500;">
+                                            🏈 Go to Fantasy Hub
+                                        </button>
+                                        <button onclick="importAnotherRoster()" 
+                                            style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                                            📊 Import Another League
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }, 1000);
                 } else if (roster.success && roster.playerCount === 0) {
                     showStatus('sleeperStatus', 'warning', 
                         `⚠️ Roster imported but no players found. ${roster.message}`);
@@ -946,7 +1000,8 @@
             const connectedPlatforms = apiIntegration ? apiIntegration.getConnectedPlatforms() : [];
             
             if (savedRoster || connectedPlatforms.length > 0) {
-                window.location.href = 'fantasy-hub.html';
+                // Force refresh the Fantasy Hub to detect new data
+                window.location.href = 'fantasy-hub.html?refresh=' + Date.now();
             } else {
                 // Show informative message instead of generic alert
                 const resultsDiv = document.getElementById('apiTestResults');

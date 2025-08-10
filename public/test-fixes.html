@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test API & Icon Fixes</title>
+    
+    <!-- Font Awesome with multiple fallbacks -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            background: rgba(45, 47, 95, 0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .icon-test {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        
+        .result {
+            background: #2d3748;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+        
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+        
+        /* Icon fallback system */
+        .icon-fallback-active .fa-chart-line:before { content: "📈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-fire:before { content: "🔥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-crystal-ball:before { content: "🔮"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-user-friends:before { content: "👥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-trophy:before { content: "🏆"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-football:before { content: "🏈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-cog:before { content: "⚙️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .icon-fallback-active .fa-play:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        
+        /* Force override any Font Awesome fonts that fail to load */
+        .icon-replacement {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test API & Icon Fixes</h1>
+        <p>Testing both the API connection fixes and icon display fixes on deployed site.</p>
+        
+        <!-- Icon Tests -->
+        <div class="test-section">
+            <h3>🎨 Icon Display Tests</h3>
+            <p>Testing various icon display methods:</p>
+            
+            <div class="icon-test">
+                <span>Font Awesome Original:</span>
+                <i class="fas fa-chart-line"></i>
+                <i class="fas fa-fire"></i>
+                <i class="fas fa-crystal-ball"></i>
+                <i class="fas fa-user-friends"></i>
+                <i class="fas fa-trophy"></i>
+                <i class="fas fa-football"></i>
+                <i class="fas fa-cog"></i>
+                <i class="fas fa-play"></i>
+            </div>
+            
+            <div class="icon-test" id="replacedIcons" style="display: none;">
+                <span>After JavaScript Replacement:</span>
+                <i class="fas fa-chart-line"></i>
+                <i class="fas fa-fire"></i>
+                <i class="fas fa-crystal-ball"></i>
+                <i class="fas fa-user-friends"></i>
+                <i class="fas fa-trophy"></i>
+                <i class="fas fa-football"></i>
+                <i class="fas fa-cog"></i>
+                <i class="fas fa-play"></i>
+            </div>
+            
+            <button onclick="testIcons()">🔄 Test Icon Replacement</button>
+            <button onclick="activateFallbacks()">🛡️ Activate CSS Fallbacks</button>
+            
+            <div id="iconResult"></div>
+        </div>
+        
+        <!-- API Connection Tests -->
+        <div class="test-section">
+            <h3>🔌 API Connection Tests</h3>
+            <p>Testing API connections through server-side proxy:</p>
+            
+            <div style="margin: 15px 0;">
+                <label>Username:</label>
+                <input type="text" id="testUsername" value="restocktime" style="padding: 8px; margin-left: 10px; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
+            
+            <button onclick="testSleeperDirect()">🔗 Test Direct Sleeper URL</button>
+            <button onclick="testSleeperProxy()">🛡️ Test Server Proxy</button>
+            <button onclick="testAllMethods()">🚀 Test All Methods</button>
+            
+            <div id="apiResult"></div>
+        </div>
+        
+        <!-- Integration Test -->
+        <div class="test-section">
+            <h3>🎯 Full Integration Test</h3>
+            <p>Test the complete system as it would work on the deployed site:</p>
+            
+            <button onclick="fullIntegrationTest()">🧪 Run Full Test</button>
+            
+            <div id="integrationResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Test Results Summary</h3>
+            <div id="testSummary">
+                <p>Run the tests above to see results...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let testResults = {
+            icons: null,
+            api: null,
+            integration: null
+        };
+        
+        // Icon replacement functions
+        function testIcons() {
+            log('iconResult', '🔄 Testing icon replacement...', 'warning');
+            
+            const iconMap = {
+                'fa-chart-line': '📈',
+                'fa-fire': '🔥',
+                'fa-crystal-ball': '🔮',
+                'fa-user-friends': '👥',
+                'fa-trophy': '🏆',
+                'fa-football': '🏈',
+                'fa-cog': '⚙️',
+                'fa-play': '▶️'
+            };
+            
+            const testSection = document.getElementById('replacedIcons');
+            const icons = testSection.querySelectorAll('i[class*="fa-"]');
+            
+            icons.forEach(icon => {
+                const classList = Array.from(icon.classList);
+                let emoji = '';
+                
+                for (const className of classList) {
+                    if (iconMap[className]) {
+                        emoji = iconMap[className];
+                        break;
+                    }
+                }
+                
+                if (emoji) {
+                    icon.innerHTML = emoji;
+                    icon.className = 'icon-replacement';
+                }
+            });
+            
+            testSection.style.display = 'flex';
+            log('iconResult', '✅ Icon replacement completed. Check the "After JavaScript Replacement" row above.', 'success');
+            testResults.icons = true;
+            updateSummary();
+        }
+        
+        function activateFallbacks() {
+            log('iconResult', '🛡️ Activating CSS fallback system...', 'warning');
+            document.body.classList.add('icon-fallback-active');
+            
+            setTimeout(() => {
+                log('iconResult', '✅ CSS fallbacks activated. Icons should now show as emojis via CSS.', 'success');
+            }, 500);
+        }
+        
+        // API test functions
+        async function testSleeperDirect() {
+            const username = document.getElementById('testUsername').value;
+            log('apiResult', `🔗 Testing direct Sleeper API for username: ${username}`, 'warning');
+            
+            try {
+                const response = await fetch(`https://api.sleeper.app/v1/user/${username}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    log('apiResult', `✅ Direct API Success!\nUser: ${data.display_name || data.username}\nUser ID: ${data.user_id}`, 'success');
+                    testResults.api = true;
+                } else {
+                    log('apiResult', `❌ Direct API Failed: ${response.status} ${response.statusText}`, 'error');
+                    testResults.api = false;
+                }
+            } catch (error) {
+                log('apiResult', `❌ Direct API Error: ${error.message}`, 'error');
+                testResults.api = false;
+            }
+            updateSummary();
+        }
+        
+        async function testSleeperProxy() {
+            const username = document.getElementById('testUsername').value;
+            log('apiResult', `🛡️ Testing server-side proxy for username: ${username}`, 'warning');
+            
+            try {
+                const response = await fetch(`api-sleeper.php?username=${encodeURIComponent(username)}&action=user`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.error) {
+                        log('apiResult', `❌ Proxy returned error: ${data.message}`, 'error');
+                        testResults.api = false;
+                    } else {
+                        log('apiResult', `✅ Server Proxy Success!\nUser: ${data.display_name || data.username}\nUser ID: ${data.user_id}`, 'success');
+                        testResults.api = true;
+                    }
+                } else {
+                    log('apiResult', `❌ Proxy Failed: ${response.status} ${response.statusText}`, 'error');
+                    testResults.api = false;
+                }
+            } catch (error) {
+                log('apiResult', `❌ Proxy Error: ${error.message}`, 'error');
+                testResults.api = false;
+            }
+            updateSummary();
+        }
+        
+        async function testAllMethods() {
+            log('apiResult', '🚀 Testing all API connection methods...', 'warning');
+            
+            await testSleeperDirect();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await testSleeperProxy();
+        }
+        
+        async function fullIntegrationTest() {
+            log('integrationResult', '🧪 Running full integration test...', 'warning');
+            
+            // Test icons first
+            testIcons();
+            activateFallbacks();
+            
+            // Wait a moment
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test API
+            await testSleeperProxy();
+            
+            // Final assessment
+            setTimeout(() => {
+                if (testResults.icons && testResults.api) {
+                    log('integrationResult', `✅ FULL INTEGRATION SUCCESS!\n\n🎨 Icons: Working (replaced with emojis)\n🔌 API: Working (via server proxy)\n\nThe deployed site should now work correctly!`, 'success');
+                    testResults.integration = true;
+                } else {
+                    log('integrationResult', `⚠️ Integration Issues Detected:\n\n🎨 Icons: ${testResults.icons ? '✅ Working' : '❌ Failed'}\n🔌 API: ${testResults.api ? '✅ Working' : '❌ Failed'}\n\nSome fixes may be needed.`, 'error');
+                    testResults.integration = false;
+                }
+                updateSummary();
+            }, 1000);
+        }
+        
+        function log(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            element.appendChild(div);
+        }
+        
+        function updateSummary() {
+            const summary = document.getElementById('testSummary');
+            summary.innerHTML = `
+                <h4>📊 Current Test Status</h4>
+                <p>🎨 Icon System: ${testResults.icons === null ? '⏳ Not tested' : testResults.icons ? '✅ Working' : '❌ Failed'}</p>
+                <p>🔌 API System: ${testResults.api === null ? '⏳ Not tested' : testResults.api ? '✅ Working' : '❌ Failed'}</p>
+                <p>🎯 Integration: ${testResults.integration === null ? '⏳ Not tested' : testResults.integration ? '✅ Working' : '❌ Failed'}</p>
+            `;
+        }
+        
+        // Auto-run basic tests on page load
+        window.addEventListener('load', function() {
+            log('integrationResult', '🚀 Test page loaded. Ready to test fixes!', 'success');
+            updateSummary();
+        });
+    </script>
+</body>
+</html>
