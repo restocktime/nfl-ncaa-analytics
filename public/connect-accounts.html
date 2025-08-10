@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Connect Your Fantasy Accounts</title>
+    <style>
+        body {
+            background-color: #0a0e1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            background-color: #1a202c;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .platform-card {
+            background-color: #1a202c;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+        .platform-card.connected {
+            border-color: #4ade80;
+            background-color: #1a2e1a;
+        }
+        .platform-card h3 {
+            color: #667eea;
+            margin: 0 0 15px 0;
+        }
+        .platform-logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .connect-btn {
+            background-color: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            width: 100%;
+        }
+        .connect-btn:hover {
+            background-color: #5a67d8;
+        }
+        .connect-btn:disabled {
+            background-color: #4a5568;
+            cursor: not-allowed;
+        }
+        .connected-btn {
+            background-color: #4ade80;
+            color: white;
+        }
+        .disconnect-btn {
+            background-color: #e53e3e;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 4px;
+            color: white;
+            box-sizing: border-box;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .status.success {
+            background-color: #1a2e1a;
+            border: 1px solid #4ade80;
+            color: #4ade80;
+        }
+        .status.error {
+            background-color: #2e1a1a;
+            border: 1px solid #e53e3e;
+            color: #e53e3e;
+        }
+        .status.info {
+            background-color: #1a1e2e;
+            border: 1px solid #667eea;
+            color: #667eea;
+        }
+        .connected-accounts {
+            background-color: #1a202c;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .league-selector {
+            background-color: #2d3748;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .league-selector select {
+            width: 100%;
+            padding: 8px;
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 4px;
+            color: white;
+        }
+        .sync-btn {
+            background-color: #f59e0b;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .instructions {
+            background-color: #2d3748;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #1a202c;
+            color: white;
+            padding: 15px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <a href="fantasy-hub.html" class="back-btn">← Back to Fantasy Hub</a>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Connect Your Fantasy Accounts</h1>
+            <p>Import your rosters directly from Yahoo, Sleeper, or ESPN</p>
+        </div>
+
+        <div class="connected-accounts" id="connectedAccounts">
+            <h3>📊 Connection Status</h3>
+            <div id="connectionStatus">
+                <p>Loading connection status...</p>
+            </div>
+        </div>
+
+        <div class="platform-grid">
+            <!-- Sleeper Integration -->
+            <div class="platform-card" id="sleeperCard">
+                <div class="platform-logo">😴</div>
+                <h3>Sleeper</h3>
+                <p>Connect using your Sleeper username</p>
+                
+                <div class="input-group">
+                    <input type="text" id="sleeperUsername" placeholder="Your Sleeper username">
+                </div>
+                
+                <button class="connect-btn" id="sleeperConnectBtn" onclick="connectSleeper()">
+                    Connect Sleeper Account
+                </button>
+                
+                <div class="league-selector" id="sleeperLeagues" style="display: none;">
+                    <h4>Select League:</h4>
+                    <select id="sleeperLeagueSelect"></select>
+                    <button class="connect-btn" onclick="importSleeperRoster()">Import Roster</button>
+                </div>
+                
+                <div class="instructions">
+                    <strong>Instructions:</strong>
+                    <br>• Enter your Sleeper username (not email)
+                    <br>• No authentication required
+                    <br>• Select which league to import
+                </div>
+                
+                <div id="sleeperStatus"></div>
+            </div>
+
+            <!-- Yahoo Fantasy Integration -->
+            <div class="platform-card" id="yahooCard">
+                <div class="platform-logo">🟡</div>
+                <h3>Yahoo Fantasy Sports</h3>
+                <p>Connect using OAuth (requires setup)</p>
+                
+                <div class="input-group">
+                    <input type="text" id="yahooConsumerKey" placeholder="Yahoo Consumer Key">
+                    <input type="text" id="yahooConsumerSecret" placeholder="Yahoo Consumer Secret">
+                </div>
+                
+                <button class="connect-btn" id="yahooConnectBtn" onclick="connectYahoo()">
+                    Setup Yahoo Connection
+                </button>
+                
+                <div class="instructions">
+                    <strong>Setup Required:</strong>
+                    <br>• Create app at <a href="https://developer.yahoo.com/apps" target="_blank" style="color: #667eea;">developer.yahoo.com/apps</a>
+                    <br>• Get Consumer Key & Secret
+                    <br>• OAuth 2.0 flow required
+                    <br>• Access private league data
+                </div>
+                
+                <div id="yahooStatus"></div>
+            </div>
+
+            <!-- ESPN Fantasy Integration -->
+            <div class="platform-card" id="espnCard">
+                <div class="platform-logo">🏀</div>
+                <h3>ESPN Fantasy Football</h3>
+                <p>Connect using league ID and cookies</p>
+                
+                <div class="input-group">
+                    <input type="text" id="espnLeagueId" placeholder="ESPN League ID">
+                    <input type="text" id="espnS2" placeholder="ESPN S2 Cookie (for private leagues)">
+                    <input type="text" id="espnSWID" placeholder="SWID Cookie (for private leagues)">
+                </div>
+                
+                <button class="connect-btn" id="espnConnectBtn" onclick="connectESPN()">
+                    Connect ESPN League
+                </button>
+                
+                <div class="instructions">
+                    <strong>How to get cookies (private leagues):</strong>
+                    <br>• Login to ESPN Fantasy
+                    <br>• Open browser Dev Tools (F12)
+                    <br>• Go to Application → Cookies → espn.com
+                    <br>• Copy espn_s2 and SWID values
+                </div>
+                
+                <div id="espnStatus"></div>
+            </div>
+        </div>
+
+        <div class="connected-accounts">
+            <button class="sync-btn" onclick="syncAllAccounts()">
+                🔄 Sync All Connected Accounts
+            </button>
+            
+            <button class="sync-btn" onclick="goToFantasyHub()" style="background-color: #4ade80;">
+                ✅ Continue to Fantasy Hub
+            </button>
+        </div>
+    </div>
+
+    <!-- Load API Integration Service -->
+    <script src="fantasy-api-integration.js"></script>
+    
+    <script>
+        let apiIntegration;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize API integration
+            if (window.fantasyAPIIntegration) {
+                apiIntegration = window.fantasyAPIIntegration;
+                console.log('✅ API Integration service loaded');
+                updateConnectionStatus();
+            } else {
+                console.error('❌ API Integration service not found');
+                showStatus('error', 'API service failed to load');
+            }
+        });
+
+        async function connectSleeper() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                showStatus('sleeperStatus', 'error', 'Please enter your Sleeper username');
+                return;
+            }
+
+            const connectBtn = document.getElementById('sleeperConnectBtn');
+            connectBtn.disabled = true;
+            connectBtn.textContent = 'Connecting...';
+            
+            showStatus('sleeperStatus', 'info', 'Connecting to Sleeper...');
+
+            try {
+                const result = await apiIntegration.connectToSleeper(username);
+                
+                if (result.success) {
+                    showStatus('sleeperStatus', 'success', result.message);
+                    
+                    // Show leagues
+                    displaySleeperLeagues(result.leagues);
+                    
+                    // Update UI
+                    const card = document.getElementById('sleeperCard');
+                    card.classList.add('connected');
+                    connectBtn.textContent = 'Connected ✅';
+                    connectBtn.classList.add('connected-btn');
+                    
+                    updateConnectionStatus();
+                    
+                } else {
+                    showStatus('sleeperStatus', 'error', result.message);
+                    connectBtn.disabled = false;
+                    connectBtn.textContent = 'Connect Sleeper Account';
+                }
+            } catch (error) {
+                showStatus('sleeperStatus', 'error', `Connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = 'Connect Sleeper Account';
+            }
+        }
+
+        function displaySleeperLeagues(leagues) {
+            const leagueSelector = document.getElementById('sleeperLeagues');
+            const leagueSelect = document.getElementById('sleeperLeagueSelect');
+            
+            leagueSelect.innerHTML = '<option value="">Select a league...</option>';
+            
+            leagues.forEach(league => {
+                const option = document.createElement('option');
+                option.value = league.league_id;
+                option.textContent = `${league.name} (${league.total_rosters} teams)`;
+                leagueSelect.appendChild(option);
+            });
+            
+            leagueSelector.style.display = 'block';
+        }
+
+        async function importSleeperRoster() {
+            const leagueSelect = document.getElementById('sleeperLeagueSelect');
+            const selectedLeague = leagueSelect.value;
+            
+            if (!selectedLeague) {
+                showStatus('sleeperStatus', 'error', 'Please select a league first');
+                return;
+            }
+
+            showStatus('sleeperStatus', 'info', 'Importing roster data...');
+
+            try {
+                const connection = apiIntegration.userConnections.get('sleeper');
+                const roster = await apiIntegration.getSleeperLeagueRoster(
+                    selectedLeague, 
+                    connection.userId
+                );
+                
+                // Save to localStorage
+                localStorage.setItem('userFantasyRoster', JSON.stringify(roster));
+                
+                showStatus('sleeperStatus', 'success', 
+                    `✅ Imported ${roster.roster.length} players from ${roster.leagueName}!`);
+                
+            } catch (error) {
+                showStatus('sleeperStatus', 'error', `Import failed: ${error.message}`);
+            }
+        }
+
+        async function connectYahoo() {
+            const consumerKey = document.getElementById('yahooConsumerKey').value.trim();
+            const consumerSecret = document.getElementById('yahooConsumerSecret').value.trim();
+            
+            if (!consumerKey) {
+                showStatus('yahooStatus', 'error', 'Please enter Yahoo Consumer Key');
+                return;
+            }
+
+            const result = apiIntegration.simulateYahooConnection({
+                consumerKey: consumerKey,
+                consumerSecret: consumerSecret
+            });
+
+            if (result.success) {
+                showStatus('yahooStatus', 'success', result.message);
+                showStatus('yahooStatus', 'info', result.nextStep);
+                
+                const card = document.getElementById('yahooCard');
+                card.classList.add('connected');
+                
+                updateConnectionStatus();
+            } else {
+                showStatus('yahooStatus', 'error', result.message);
+            }
+        }
+
+        async function connectESPN() {
+            const leagueId = document.getElementById('espnLeagueId').value.trim();
+            const espnS2 = document.getElementById('espnS2').value.trim();
+            const swid = document.getElementById('espnSWID').value.trim();
+            
+            if (!leagueId) {
+                showStatus('espnStatus', 'error', 'Please enter ESPN League ID');
+                return;
+            }
+
+            const connectBtn = document.getElementById('espnConnectBtn');
+            connectBtn.disabled = true;
+            connectBtn.textContent = 'Connecting...';
+            
+            showStatus('espnStatus', 'info', 'Connecting to ESPN...');
+
+            try {
+                const result = await apiIntegration.connectToESPN(leagueId, espnS2, swid);
+                
+                if (result.success) {
+                    showStatus('espnStatus', 'success', result.message);
+                    
+                    const card = document.getElementById('espnCard');
+                    card.classList.add('connected');
+                    connectBtn.textContent = 'Connected ✅';
+                    connectBtn.classList.add('connected-btn');
+                    
+                    updateConnectionStatus();
+                    
+                } else {
+                    showStatus('espnStatus', 'error', result.message);
+                    connectBtn.disabled = false;
+                    connectBtn.textContent = 'Connect ESPN League';
+                }
+            } catch (error) {
+                showStatus('espnStatus', 'error', `Connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = 'Connect ESPN League';
+            }
+        }
+
+        async function syncAllAccounts() {
+            showStatus('connectionStatus', 'info', 'Syncing all accounts...');
+            
+            try {
+                const results = await apiIntegration.syncAllAccounts();
+                
+                let successCount = 0;
+                let errorCount = 0;
+                
+                results.forEach(result => {
+                    if (result.status === 'success') {
+                        successCount++;
+                        // Save roster if available
+                        if (result.roster) {
+                            localStorage.setItem('userFantasyRoster', JSON.stringify(result.roster));
+                        }
+                    } else {
+                        errorCount++;
+                    }
+                });
+                
+                if (successCount > 0) {
+                    showStatus('connectionStatus', 'success', 
+                        `✅ Successfully synced ${successCount} account(s)`);
+                } else {
+                    showStatus('connectionStatus', 'error', 'No accounts were synced');
+                }
+                
+            } catch (error) {
+                showStatus('connectionStatus', 'error', `Sync failed: ${error.message}`);
+            }
+        }
+
+        function updateConnectionStatus() {
+            if (!apiIntegration) return;
+            
+            const status = apiIntegration.getConnectionStatus();
+            const connected = apiIntegration.getConnectedPlatforms();
+            
+            const statusDiv = document.getElementById('connectionStatus');
+            
+            if (connected.length === 0) {
+                statusDiv.innerHTML = '<p style="color: #fbbf24;">⚠️ No accounts connected yet</p>';
+            } else {
+                let html = '<h4 style="color: #4ade80;">✅ Connected Accounts:</h4>';
+                connected.forEach(conn => {
+                    html += `
+                        <div style="background: #2d3748; padding: 10px; margin: 5px 0; border-radius: 5px;">
+                            <strong>${conn.platform.toUpperCase()}</strong>: ${conn.username}
+                            <br><small>Last sync: ${new Date(conn.lastSync).toLocaleString()}</small>
+                        </div>
+                    `;
+                });
+                statusDiv.innerHTML = html;
+            }
+        }
+
+        function showStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function goToFantasyHub() {
+            // Check if we have any roster data
+            const savedRoster = localStorage.getItem('userFantasyRoster');
+            if (savedRoster) {
+                window.location.href = 'fantasy-hub.html';
+            } else {
+                alert('Please connect and import a roster first, or use the manual roster builder.');
+            }
+        }
+
+        // Add disconnect functionality
+        function disconnectPlatform(platform) {
+            if (confirm(`Disconnect from ${platform}?`)) {
+                apiIntegration.disconnectPlatform(platform);
+                
+                // Update UI
+                const card = document.getElementById(`${platform}Card`);
+                if (card) {
+                    card.classList.remove('connected');
+                }
+                
+                updateConnectionStatus();
+            }
+        }
+    </script>
+</body>
+</html>
