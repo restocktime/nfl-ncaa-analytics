@@ -1804,7 +1804,7 @@
                         <i class="fas fa-chart-bar"></i>
                         <span>Statistics</span>
                     </a>
-                    <a href="fantasy-hub.html" class="mobile-nav-link">
+                    <a href="#" class="mobile-nav-link" data-view="fantasy-hub">
                         <i class="fas fa-trophy"></i>
                         <span>Fantasy Hub</span>
                     </a>
@@ -1871,7 +1871,7 @@
                         <i class="fas fa-newspaper nav-icon"></i>
                         <span class="nav-text">News</span>
                     </a></li>
-                    <li><a href="fantasy-hub.html" class="nav-link">
+                    <li><a href="#" class="nav-link" data-view="fantasy-hub">
                         <i class="fas fa-trophy nav-icon"></i>
                         <span class="nav-text">Fantasy Hub</span>
                     </a></li>
@@ -2532,6 +2532,276 @@
                     <div class="loading">
                         <div class="loading-spinner"></div>
                         <span>Loading latest news...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy Hub View -->
+            <div id="fantasy-hub" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-trophy" style="margin-right: 0.5rem;"></i>Fantasy Football Hub</h2>
+                    <p>Your complete fantasy football management center</p>
+                </div>
+                
+                <div class="grid grid-3">
+                    <div class="card" onclick="showFantasySection('dashboard')" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-tachometer-alt" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                Fantasy Dashboard
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Overview of your team and weekly performance</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="showFantasySection('lineup')" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-users" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                Lineup Optimizer
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>AI-powered lineup recommendations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="showFantasySection('waivers')" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-search" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                Waiver Wire
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Smart waiver wire analysis</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="showFantasySection('trades')" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-exchange-alt" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                Trade Analyzer
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Advanced trade evaluation</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="showFantasySection('projections')" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-line" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                Player Projections
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>ML-powered performance projections</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="showFantasySection('settings')" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-cog" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                League Setup
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Configure your league settings</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fantasy Content Sections -->
+                <div id="fantasy-content" style="margin-top: 2rem;">
+                    <!-- Dashboard Section -->
+                    <div id="fantasy-dashboard" class="fantasy-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">📊 Fantasy Dashboard</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="grid grid-2">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Current Lineup</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p><strong>QB:</strong> Josh Allen (BUF) - 24.5 pts</p>
+                                            <p><strong>RB:</strong> Christian McCaffrey (SF) - 22.8 pts</p>
+                                            <p><strong>RB:</strong> Derrick Henry (BAL) - 18.3 pts</p>
+                                            <p><strong>WR:</strong> Tyreek Hill (MIA) - 19.7 pts</p>
+                                            <p><strong>WR:</strong> Davante Adams (LV) - 17.2 pts</p>
+                                            <p><strong>TE:</strong> Travis Kelce (KC) - 16.8 pts</p>
+                                            <p><strong>FLEX:</strong> Saquon Barkley (PHI) - 15.9 pts</p>
+                                            <p style="color: #4ade80; font-weight: bold; margin-top: 1rem;">Projected Total: 156.5 points</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">This Week's Matchups</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Josh Allen vs MIA (Favorable)</p>
+                                            <p>CMC @ SEA (Neutral)</p>
+                                            <p>Tyreek Hill @ BUF (Tough)</p>
+                                            <p>Travis Kelce vs LV (Favorable)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lineup Section -->
+                    <div id="fantasy-lineup" class="fantasy-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">👥 Lineup Optimizer</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="grid grid-2">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Optimization Results</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Current lineup is <strong>94% optimized</strong></p>
+                                            <p>Potential improvement: <strong>+3.2 points</strong></p>
+                                            <p>Recommended changes: <strong>2</strong></p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Suggested Changes</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>1. Start Jayden Reed over Courtland Sutton (+2.1 pts)</p>
+                                            <p>2. Consider Roschon Johnson in FLEX (+1.1 pts)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Waivers Section -->
+                    <div id="fantasy-waivers" class="fantasy-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">🔍 Waiver Wire Intelligence</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="grid grid-2">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Top Targets</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>1. Jayden Reed (WR, GB) - 92% opportunity score</p>
+                                            <p>2. Roschon Johnson (RB, CHI) - 87% opportunity score</p>
+                                            <p>3. Darnell Mooney (WR, ATL) - 84% opportunity score</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Breakout Candidates</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Tank Dell (WR, HOU) - Injury return</p>
+                                            <p>Tyjae Spears (RB, TEN) - Increased role</p>
+                                            <p>Quentin Johnston (WR, LAC) - Target increase</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trades Section -->
+                    <div id="fantasy-trades" class="fantasy-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">🔄 Trade Analyzer</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="grid grid-2">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Trade Opportunities</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Your Davante Adams for their Saquon Barkley</p>
+                                            <p style="color: #4ade80;">Value: +2.3 pts/week (Favorable)</p>
+                                            <p>Your Travis Kelce for their Amon-Ra St. Brown + David Montgomery</p>
+                                            <p style="color: #4ade80;">Value: +1.8 pts/week (Favorable)</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Market Values</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Josh Allen: 28.5 trade points</p>
+                                            <p>Christian McCaffrey: 32.1 trade points</p>
+                                            <p>Tyreek Hill: 26.8 trade points</p>
+                                            <p>Travis Kelce: 24.3 trade points</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Projections Section -->
+                    <div id="fantasy-projections" class="fantasy-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">📈 Player Projections</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="grid grid-2">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Top QB Projections</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Josh Allen (BUF): 24.5 pts</p>
+                                            <p>Lamar Jackson (BAL): 23.8 pts</p>
+                                            <p>Jalen Hurts (PHI): 22.9 pts</p>
+                                            <p>Patrick Mahomes (KC): 22.1 pts</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Top RB Projections</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Christian McCaffrey (SF): 22.8 pts</p>
+                                            <p>Austin Ekeler (LAC): 19.4 pts</p>
+                                            <p>Derrick Henry (BAL): 18.3 pts</p>
+                                            <p>Saquon Barkley (PHI): 17.9 pts</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings Section -->
+                    <div id="fantasy-settings" class="fantasy-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">⚙️ League Configuration</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="grid grid-2">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Import League</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Connect to ESPN, Yahoo, or Sleeper</p>
+                                            <p>Automatic roster sync</p>
+                                            <p>League settings import</p>
+                                            <p>Scoring system detection</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">League Settings</div>
+                                        <div style="margin-top: 1rem;">
+                                            <p>Scoring: PPR (1 point per reception)</p>
+                                            <p>Teams: 12</p>
+                                            <p>Roster: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX, 1 K, 1 DEF</p>
+                                            <p>Bench: 6 players</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

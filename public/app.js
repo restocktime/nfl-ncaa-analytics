@@ -129,21 +129,24 @@ class ModernNFLApp {
     }
 
     setupNavigation() {
-        const navLinks = document.querySelectorAll('.nav-link');
+        // Handle both desktop and mobile navigation links
+        const allNavLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
         
-        navLinks.forEach(link => {
+        allNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 
                 // Remove active class from all links
-                navLinks.forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(l => l.classList.remove('active'));
                 
                 // Add active class to clicked link
                 link.classList.add('active');
                 
                 // Navigate to view
                 const view = link.dataset.view;
-                this.navigateToView(view);
+                if (view) {
+                    this.navigateToView(view);
+                }
             });
         });
     }
@@ -228,6 +231,9 @@ class ModernNFLApp {
                 break;
             case 'historical':
                 this.loadHistorical();
+                break;
+            case 'fantasy-hub':
+                this.loadFantasyHub();
                 break;
         }
     }
@@ -2785,6 +2791,53 @@ class ModernNFLApp {
         this.navigateToView('predictions');
     }
 
+    loadFantasyHub() {
+        console.log('🏈 Loading Fantasy Hub...');
+        
+        // Initialize fantasy hub with dashboard view
+        setTimeout(() => {
+            this.showFantasySection('dashboard');
+        }, 100);
+    }
+
+    showFantasySection(sectionName) {
+        console.log(`📊 Showing fantasy section: ${sectionName}`);
+        
+        // Hide all fantasy sections
+        document.querySelectorAll('.fantasy-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Show selected section
+        const targetSection = document.getElementById(`fantasy-${sectionName}`);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            
+            // Add fade-in animation
+            targetSection.style.opacity = '0';
+            targetSection.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                targetSection.style.transition = 'all 0.3s ease';
+                targetSection.style.opacity = '1';
+                targetSection.style.transform = 'translateY(0)';
+            }, 50);
+        }
+        
+        // Update card hover effects
+        document.querySelectorAll('.card[onclick*="showFantasySection"]').forEach(card => {
+            card.style.transform = '';
+            card.style.borderColor = '';
+        });
+        
+        // Highlight active card
+        const activeCard = document.querySelector(`[onclick="showFantasySection('${sectionName}')"]`);
+        if (activeCard) {
+            activeCard.style.transform = 'translateY(-4px)';
+            activeCard.style.borderColor = '#667eea';
+        }
+    }
+
     // Utility method
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -2796,3 +2849,6 @@ const modernApp = new ModernNFLApp();
 
 // Make it globally available
 window.modernApp = modernApp;
+
+// Make fantasy functions globally available
+window.showFantasySection = (sectionName) => modernApp.showFantasySection(sectionName);
