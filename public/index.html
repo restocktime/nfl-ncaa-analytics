@@ -143,6 +143,10 @@
             border-left: 3px solid transparent;
             position: relative;
             font-weight: 500;
+            /* Mobile touch improvements */
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .nav-link::before {
@@ -1693,6 +1697,11 @@
                 font-weight: 500;
                 transition: all 0.2s ease;
                 border-left: 3px solid transparent;
+                /* Mobile touch improvements */
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+                user-select: none;
+                min-height: 48px; /* Minimum touch target size */
             }
             
             .mobile-nav-link:hover,
