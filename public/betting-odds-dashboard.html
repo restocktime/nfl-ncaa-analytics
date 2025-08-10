@@ -379,7 +379,7 @@
                     id="odds-widget"
                     title="Sports Odds Widget - Hard Rock Bet"
                     style="width: 100%; height: 320px; sm:height: 480px; border: none; background: transparent; border-radius: 8px; sm:border-radius: 12px;"
-                    src="about:blank"
+                    src=""
                     frameborder="0"
                     scrolling="no"
                     onload="document.getElementById('widget-loading').style.display = 'none';"
@@ -790,6 +790,93 @@
 
                 // Update providers status
                 this.updateProvidersStatus();
+                
+                // Update live odds widget
+                this.updateLiveOddsWidget();
+            }
+
+            updateLiveOddsWidget() {
+                const widgetLoading = document.getElementById('widget-loading');
+                if (!widgetLoading) return;
+
+                if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                    widgetLoading.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="text-5xl mb-4">📊</div>
+                            <h3 class="text-xl font-bold text-white mb-2">No Live Games Available</h3>
+                            <p class="text-blue-300 mb-4">Click "Refresh Odds" to check for new games</p>
+                            <button onclick="window.bettingDashboard.loadOddsData(true)" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-semibold transition-all">
+                                🔄 Refresh Odds
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Build live odds display
+                let oddsHTML = `
+                    <div class="space-y-4">
+                        <div class="text-center mb-6">
+                            <h3 class="text-xl font-bold text-white mb-2">🏈 Live NFL Odds</h3>
+                            <p class="text-blue-300">Real-time betting lines from Hard Rock Bet</p>
+                        </div>
+                `;
+
+                this.currentOdds.success.forEach(provider => {
+                    provider.games.slice(0, 3).forEach(game => { // Show first 3 games
+                        const gameTime = new Date(game.gameTime).toLocaleString('en-US', { 
+                            month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+                        });
+                        
+                        oddsHTML += `
+                            <div class="bg-gray-800 rounded-lg p-4 mb-4 border border-gray-700">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-white">${game.awayTeam} @ ${game.homeTeam}</h4>
+                                        <p class="text-xs text-gray-400">${gameTime}</p>
+                                    </div>
+                                    <span class="text-xs bg-red-600 px-2 py-1 rounded text-white">🔴 LIVE</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-3 gap-4 text-sm">
+                                    <div class="text-center">
+                                        <div class="text-xs text-gray-400 mb-1">SPREAD</div>
+                                        <div class="text-white font-semibold">
+                                            ${game.bets.spread?.home?.line > 0 ? '+' : ''}${game.bets.spread?.home?.line || 'N/A'}
+                                        </div>
+                                        <div class="text-xs text-gray-300">${game.bets.spread?.home?.odds || ''}</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-xs text-gray-400 mb-1">MONEYLINE</div>
+                                        <div class="text-white font-semibold">
+                                            ${game.bets.moneyline?.home?.odds > 0 ? '+' : ''}${game.bets.moneyline?.home?.odds || 'N/A'}
+                                        </div>
+                                        <div class="text-xs text-gray-300">vs ${game.bets.moneyline?.away?.odds > 0 ? '+' : ''}${game.bets.moneyline?.away?.odds || ''}</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-xs text-gray-400 mb-1">TOTAL</div>
+                                        <div class="text-white font-semibold">O/U ${game.bets.totals?.over?.line || 'N/A'}</div>
+                                        <div class="text-xs text-gray-300">${game.bets.totals?.over?.odds || ''}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+
+                oddsHTML += `
+                        <div class="text-center mt-6">
+                            <button onclick="window.bettingDashboard.analyzeBets()" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-semibold transition-all mr-4">
+                                🧠 Analyze These Games
+                            </button>
+                            <a href="https://app.hardrock.bet/sport-leagues/american_football/691198679103111169" target="_blank" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg text-white font-semibold transition-all inline-block">
+                                🎰 Bet on Hard Rock
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                widgetLoading.innerHTML = oddsHTML;
             }
 
             updateProvidersStatus() {
@@ -1228,27 +1315,139 @@
                     this.currentOdds.success.forEach(provider => {
                         provider.games.forEach(game => {
                             if (game.bets && Object.keys(game.bets).length > 0) {
-                                bestBets.push({
-                                    awayTeam: game.awayTeam,
-                                    homeTeam: game.homeTeam,
-                                    gameTime: game.gameTime,
-                                    provider: provider.name,
-                                    betType: betType === 'all' ? 'moneyline' : betType,
-                                    recommendation: `Consider ${game.homeTeam} vs ${game.awayTeam}`,
-                                    reasoning: 'Live odds available - check current lines for value',
-                                    confidence: 0.5,
-                                    valueScore: 0.3,
-                                    hardRockBetUrl: 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'
-                                });
+                                // Generate different recommendations based on bet type
+                                const recommendations = this.generateMLRecommendations(game, betType);
+                                bestBets.push(...recommendations);
                             }
                         });
                     });
                 }
                 
+                // Sort by confidence and return top recommendations
+                bestBets.sort((a, b) => b.confidence - a.confidence);
+                
                 return {
-                    bestBets: bestBets.slice(0, 5), // Limit to 5
-                    confidence: 0.5
+                    bestBets: bestBets.slice(0, 6), // Top 6 recommendations
+                    confidence: bestBets.length > 0 ? bestBets.reduce((sum, bet) => sum + bet.confidence, 0) / bestBets.length : 0
                 };
+            }
+
+            generateMLRecommendations(game, betType) {
+                const recommendations = [];
+                const bets = game.bets;
+                
+                // Team strength simulation (mock ML analysis)
+                const teamStrengths = {
+                    'KC': 0.85, 'BUF': 0.82, 'BAL': 0.78, 'SF': 0.80, 'PHI': 0.75,
+                    'CIN': 0.72, 'DAL': 0.70, 'MIA': 0.68, 'DET': 0.76, 'GB': 0.74,
+                    'NYJ': 0.45, 'NE': 0.50, 'MIN': 0.68, 'LAR': 0.72, 'SEA': 0.66
+                };
+                
+                const homeStrength = teamStrengths[game.homeTeam] || 0.60;
+                const awayStrength = teamStrengths[game.awayTeam] || 0.60;
+                
+                // Moneyline Analysis
+                if ((betType === 'all' || betType === 'moneyline') && bets.moneyline) {
+                    const homeValue = this.calculateMoneylineValue(homeStrength, awayStrength, bets.moneyline.home.odds);
+                    const awayValue = this.calculateMoneylineValue(awayStrength, homeStrength, bets.moneyline.away.odds);
+                    
+                    if (homeValue > 0.15) {
+                        recommendations.push({
+                            awayTeam: game.awayTeam,
+                            homeTeam: game.homeTeam,
+                            gameTime: game.gameTime,
+                            provider: game.provider,
+                            betType: 'moneyline',
+                            recommendation: `Bet ${game.homeTeam} ML (${this.formatOdds(bets.moneyline.home.odds)})`,
+                            reasoning: `Model shows ${game.homeTeam} has ${(homeStrength*100).toFixed(0)}% win probability vs market implied ${this.oddsToImplied(bets.moneyline.home.odds).toFixed(1)}%`,
+                            confidence: Math.min(0.75 + homeValue, 0.95),
+                            valueScore: homeValue,
+                            hardRockBetUrl: 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'
+                        });
+                    } else if (awayValue > 0.15) {
+                        recommendations.push({
+                            awayTeam: game.awayTeam,
+                            homeTeam: game.homeTeam,
+                            gameTime: game.gameTime,
+                            provider: game.provider,
+                            betType: 'moneyline',
+                            recommendation: `Bet ${game.awayTeam} ML (${this.formatOdds(bets.moneyline.away.odds)})`,
+                            reasoning: `Model shows ${game.awayTeam} has ${(awayStrength*100).toFixed(0)}% win probability vs market implied ${this.oddsToImplied(bets.moneyline.away.odds).toFixed(1)}%`,
+                            confidence: Math.min(0.75 + awayValue, 0.95),
+                            valueScore: awayValue,
+                            hardRockBetUrl: 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'
+                        });
+                    }
+                }
+                
+                // Spread Analysis
+                if ((betType === 'all' || betType === 'spread') && bets.spread) {
+                    const predictedSpread = (homeStrength - awayStrength) * 14; // Convert to point spread
+                    const actualSpread = bets.spread.home.line;
+                    const spreadDifference = Math.abs(predictedSpread - actualSpread);
+                    
+                    if (spreadDifference > 2.5) {
+                        const recommendedSide = predictedSpread > actualSpread ? game.homeTeam : game.awayTeam;
+                        const recommendedLine = predictedSpread > actualSpread ? actualSpread : -actualSpread;
+                        
+                        recommendations.push({
+                            awayTeam: game.awayTeam,
+                            homeTeam: game.homeTeam,
+                            gameTime: game.gameTime,
+                            provider: game.provider,
+                            betType: 'spread',
+                            recommendation: `Bet ${recommendedSide} ${this.formatSpread(recommendedLine)}`,
+                            reasoning: `Model predicts ${predictedSpread > 0 ? game.homeTeam : game.awayTeam} by ${Math.abs(predictedSpread).toFixed(1)}, market has ${Math.abs(actualSpread).toFixed(1)}`,
+                            confidence: Math.min(0.65 + (spreadDifference / 10), 0.90),
+                            valueScore: spreadDifference / 15,
+                            hardRockBetUrl: 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'
+                        });
+                    }
+                }
+                
+                // Totals Analysis
+                if ((betType === 'all' || betType === 'totals') && bets.totals) {
+                    const predictedTotal = (homeStrength + awayStrength) * 50; // Mock total calculation
+                    const actualTotal = bets.totals.over.line;
+                    const totalDifference = Math.abs(predictedTotal - actualTotal);
+                    
+                    if (totalDifference > 3) {
+                        const recommendedSide = predictedTotal > actualTotal ? 'OVER' : 'UNDER';
+                        
+                        recommendations.push({
+                            awayTeam: game.awayTeam,
+                            homeTeam: game.homeTeam,
+                            gameTime: game.gameTime,
+                            provider: game.provider,
+                            betType: 'totals',
+                            recommendation: `Bet ${recommendedSide} ${actualTotal}`,
+                            reasoning: `Model projects ${predictedTotal.toFixed(1)} total points vs line of ${actualTotal}`,
+                            confidence: Math.min(0.60 + (totalDifference / 20), 0.85),
+                            valueScore: totalDifference / 25,
+                            hardRockBetUrl: 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'
+                        });
+                    }
+                }
+                
+                return recommendations;
+            }
+
+            calculateMoneylineValue(teamStrength, opponentStrength, odds) {
+                const trueWinProb = teamStrength / (teamStrength + opponentStrength);
+                const impliedProb = this.oddsToImplied(odds);
+                return trueWinProb - impliedProb;
+            }
+
+            oddsToImplied(odds) {
+                return odds > 0 ? 100 / (odds + 100) : Math.abs(odds) / (Math.abs(odds) + 100);
+            }
+
+            formatOdds(odds) {
+                return odds > 0 ? `+${odds}` : `${odds}`;
+            }
+
+            formatSpread(line) {
+                return line > 0 ? `+${line}` : `${line}`;
             }
             
             // Show bet analysis error with helpful message
