@@ -2794,10 +2794,42 @@ class ModernNFLApp {
     loadFantasyHub() {
         console.log('🏈 Loading Fantasy Hub...');
         
-        // Initialize fantasy hub with dashboard view
+        // Add click event listeners as backup
         setTimeout(() => {
+            const fantasyCards = document.querySelectorAll('[onclick*="showFantasySection"]');
+            console.log('🎯 Setting up fantasy card listeners, found:', fantasyCards.length);
+            
+            fantasyCards.forEach((card, index) => {
+                const onclick = card.getAttribute('onclick');
+                const match = onclick.match(/showFantasySection\('([^']+)'\)/);
+                if (match) {
+                    const sectionName = match[1];
+                    console.log(`🔗 Setting up listener for: ${sectionName}`);
+                    
+                    // Remove onclick to avoid conflicts
+                    card.removeAttribute('onclick');
+                    
+                    // Add proper event listener
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        console.log(`🖱️ Card clicked: ${sectionName}`);
+                        this.showFantasySection(sectionName);
+                    });
+                    
+                    // Add hover effects
+                    card.addEventListener('mouseenter', () => {
+                        card.style.transform = 'translateY(-4px)';
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = '';
+                    });
+                }
+            });
+            
+            // Initialize with dashboard view
             this.showFantasySection('dashboard');
-        }, 100);
+        }, 200);
     }
 
     showFantasySection(sectionName) {
@@ -2851,4 +2883,30 @@ const modernApp = new ModernNFLApp();
 window.modernApp = modernApp;
 
 // Make fantasy functions globally available
-window.showFantasySection = (sectionName) => modernApp.showFantasySection(sectionName);
+window.showFantasySection = (sectionName) => {
+    console.log('🔥 showFantasySection called with:', sectionName);
+    if (modernApp && modernApp.showFantasySection) {
+        modernApp.showFantasySection(sectionName);
+    } else {
+        console.error('❌ modernApp or showFantasySection not available');
+    }
+};
+
+// Debug function to test if everything is working
+window.testFantasy = () => {
+    console.log('🧪 Testing fantasy functionality...');
+    console.log('modernApp:', modernApp);
+    console.log('showFantasySection function:', window.showFantasySection);
+    
+    const fantasyCards = document.querySelectorAll('[onclick*="showFantasySection"]');
+    console.log('Fantasy cards found:', fantasyCards.length);
+    
+    const fantasySections = document.querySelectorAll('.fantasy-section');
+    console.log('Fantasy sections found:', fantasySections.length);
+    
+    // Test showing dashboard
+    if (window.showFantasySection) {
+        console.log('🎯 Testing dashboard section...');
+        window.showFantasySection('dashboard');
+    }
+};
