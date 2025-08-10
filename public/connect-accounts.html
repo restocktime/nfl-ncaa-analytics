@@ -786,8 +786,16 @@
                 // Save to localStorage
                 localStorage.setItem('userFantasyRoster', JSON.stringify(roster));
                 
-                showStatus('sleeperStatus', 'success', 
-                    `✅ Imported ${roster.roster.length} players from ${roster.leagueName}!`);
+                if (roster.success && roster.playerCount > 0) {
+                    showStatus('sleeperStatus', 'success', 
+                        `✅ Imported ${roster.playerCount} players from league ${roster.leagueId}!`);
+                } else if (roster.success && roster.playerCount === 0) {
+                    showStatus('sleeperStatus', 'warning', 
+                        `⚠️ Roster imported but no players found. ${roster.message}`);
+                } else {
+                    showStatus('sleeperStatus', 'error', 
+                        `❌ Import failed: ${roster.message || 'Unknown error'}`);
+                }
                 
             } catch (error) {
                 showStatus('sleeperStatus', 'error', `Import failed: ${error.message}`);

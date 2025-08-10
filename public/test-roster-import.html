@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Allow Vercel proxy connections -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://sleeper-api-proxy.vercel.app; connect-src 'self' https://sleeper-api-proxy.vercel.app; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
+    
+    <title>🧪 Test Roster Import</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            background: rgba(45, 47, 95, 0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        
+        input {
+            padding: 8px 12px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: white;
+            margin: 5px;
+        }
+        
+        .result {
+            background: #2d3748;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+        .warning { border-left: 4px solid #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Roster Import</h1>
+        <p>Debug the "Unexpected token '<'" error by testing the roster import flow step by step.</p>
+        
+        <!-- Step 1: Test User -->
+        <div class="test-section">
+            <h3>Step 1: Test User Lookup</h3>
+            <input type="text" id="username" value="restocktime" placeholder="Username">
+            <button onclick="testUser()">🔍 Test User</button>
+            <div id="userResult"></div>
+        </div>
+        
+        <!-- Step 2: Test Leagues -->
+        <div class="test-section">
+            <h3>Step 2: Test Leagues</h3>
+            <button onclick="testLeagues()" id="leaguesBtn" disabled>🏆 Test User Leagues</button>
+            <div id="leaguesResult"></div>
+        </div>
+        
+        <!-- Step 3: Test Rosters -->
+        <div class="test-section">
+            <h3>Step 3: Test Rosters (This is where the error occurs)</h3>
+            <input type="text" id="leagueId" placeholder="Enter league ID manually (optional)">
+            <button onclick="testRosters()" id="rostersBtn" disabled>📋 Test Rosters</button>
+            <div id="rostersResult"></div>
+        </div>
+        
+        <!-- Step 4: Test Import Function -->
+        <div class="test-section">
+            <h3>Step 4: Test Full Import Function</h3>
+            <button onclick="testFullImport()" id="importBtn" disabled>🎯 Test Full Import</button>
+            <div id="importResult"></div>
+        </div>
+        
+        <!-- Raw Response Inspector -->
+        <div class="test-section">
+            <h3>🔍 Raw Response Inspector</h3>
+            <p>Test any endpoint directly to see the raw response:</p>
+            <input type="text" id="customUrl" placeholder="Enter endpoint URL" style="width: 70%;">
+            <button onclick="testCustomEndpoint()">📡 Test Custom URL</button>
+            <div id="customResult"></div>
+        </div>
+    </div>
+    
+    <!-- Load the fantasy API integration -->
+    <script src="fantasy-api-integration.js"></script>
+    
+    <script>
+        const PROXY_URL = 'https://sleeper-api-proxy.vercel.app';
+        let currentUser = null;
+        let currentLeagues = null;
+        
+        async function testUser() {
+            const username = document.getElementById('username').value.trim() || 'restocktime';
+            const resultDiv = document.getElementById('userResult');
+            
+            log(resultDiv, `Testing user lookup: ${username}`, 'warning');
+            
+            try {
+                const response = await fetch(`${PROXY_URL}/api/sleeper/user/${encodeURIComponent(username)}`);
+                const responseText = await response.text();
+                
+                log(resultDiv, `Response status: ${response.status}`, 'warning');
+                log(resultDiv, `Response headers: ${JSON.stringify([...response.headers.entries()], null, 2)}`, 'warning');
+                log(resultDiv, `Raw response: ${responseText.substring(0, 500)}...`, 'warning');
+                
+                if (response.ok) {
+                    const userData = JSON.parse(responseText);
+                    if (userData.user_id) {
+                        currentUser = userData;
+                        log(resultDiv, `✅ User found: ${userData.display_name || userData.username} (${userData.user_id})`, 'success');
+                        document.getElementById('leaguesBtn').disabled = false;
+                    } else {
+                        log(resultDiv, `⚠️ User data incomplete: ${JSON.stringify(userData)}`, 'warning');
+                    }
+                } else {
+                    log(resultDiv, `❌ User lookup failed: ${response.status} - ${responseText}`, 'error');
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLeagues() {
+            if (!currentUser) {
+                log(document.getElementById('leaguesResult'), 'Run user test first', 'error');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('leaguesResult');
+            log(resultDiv, `Testing leagues for user: ${currentUser.user_id}`, 'warning');
+            
+            try {
+                const response = await fetch(`${PROXY_URL}/api/sleeper/leagues/${currentUser.user_id}`);
+                const responseText = await response.text();
+                
+                log(resultDiv, `Response status: ${response.status}`, 'warning');
+                log(resultDiv, `Raw response: ${responseText.substring(0, 500)}...`, 'warning');
+                
+                if (response.ok) {
+                    const leaguesData = JSON.parse(responseText);
+                    currentLeagues = Array.isArray(leaguesData) ? leaguesData : [];
+                    
+                    log(resultDiv, `✅ Found ${currentLeagues.length} leagues`, 'success');
+                    if (currentLeagues.length > 0) {
+                        log(resultDiv, `First league: ${currentLeagues[0].name} (${currentLeagues[0].league_id})`, 'success');
+                        document.getElementById('leagueId').value = currentLeagues[0].league_id;
+                        document.getElementById('rostersBtn').disabled = false;
+                        document.getElementById('importBtn').disabled = false;
+                    } else {
+                        log(resultDiv, `⚠️ No leagues found for 2024 NFL season`, 'warning');
+                    }
+                } else {
+                    log(resultDiv, `❌ Leagues lookup failed: ${response.status} - ${responseText}`, 'error');
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testRosters() {
+            let leagueId = document.getElementById('leagueId').value.trim();
+            if (!leagueId && currentLeagues && currentLeagues.length > 0) {
+                leagueId = currentLeagues[0].league_id;
+            }
+            
+            if (!leagueId) {
+                log(document.getElementById('rostersResult'), 'No league ID available', 'error');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('rostersResult');
+            log(resultDiv, `Testing rosters for league: ${leagueId}`, 'warning');
+            
+            try {
+                const response = await fetch(`${PROXY_URL}/api/sleeper/rosters/${leagueId}`);
+                const responseText = await response.text();
+                
+                log(resultDiv, `Response status: ${response.status}`, 'warning');
+                log(resultDiv, `Response length: ${responseText.length} characters`, 'warning');
+                log(resultDiv, `Response starts with: "${responseText.substring(0, 100)}"`, 'warning');
+                
+                if (response.ok) {
+                    // This is where the error likely occurs
+                    try {
+                        const rostersData = JSON.parse(responseText);
+                        
+                        if (Array.isArray(rostersData)) {
+                            log(resultDiv, `✅ Found ${rostersData.length} rosters`, 'success');
+                            
+                            if (currentUser) {
+                                const myRoster = rostersData.find(r => r.owner_id === currentUser.user_id);
+                                if (myRoster) {
+                                    const playerCount = myRoster.players ? myRoster.players.length : 0;
+                                    log(resultDiv, `✅ Found my roster with ${playerCount} players`, 'success');
+                                } else {
+                                    log(resultDiv, `⚠️ My roster not found in this league`, 'warning');
+                                }
+                            }
+                        } else {
+                            log(resultDiv, `⚠️ Rosters response is not an array: ${JSON.stringify(rostersData)}`, 'warning');
+                        }
+                    } catch (jsonError) {
+                        log(resultDiv, `❌ JSON parsing failed: ${jsonError.message}`, 'error');
+                        log(resultDiv, `This is the "Unexpected token '<'" error!`, 'error');
+                        log(resultDiv, `Full response: ${responseText}`, 'error');
+                    }
+                } else {
+                    log(resultDiv, `❌ Rosters lookup failed: ${response.status}`, 'error');
+                    log(resultDiv, `Error response: ${responseText}`, 'error');
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testFullImport() {
+            if (!window.apiIntegration) {
+                log(document.getElementById('importResult'), 'Fantasy API integration not loaded', 'error');
+                return;
+            }
+            
+            if (!currentUser || !currentLeagues || currentLeagues.length === 0) {
+                log(document.getElementById('importResult'), 'Run user and leagues tests first', 'error');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('importResult');
+            const leagueId = currentLeagues[0].league_id;
+            
+            log(resultDiv, `Testing full import function...`, 'warning');
+            log(resultDiv, `League ID: ${leagueId}`, 'warning');
+            log(resultDiv, `User ID: ${currentUser.user_id}`, 'warning');
+            
+            try {
+                const result = await window.apiIntegration.getSleeperLeagueRoster(leagueId, currentUser.user_id);
+                log(resultDiv, `✅ Import function completed successfully!`, 'success');
+                log(resultDiv, `Result: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                log(resultDiv, `❌ Import function failed: ${error.message}`, 'error');
+                log(resultDiv, `This is where the error occurs in the real flow`, 'error');
+            }
+        }
+        
+        async function testCustomEndpoint() {
+            const url = document.getElementById('customUrl').value.trim();
+            if (!url) return;
+            
+            const resultDiv = document.getElementById('customResult');
+            log(resultDiv, `Testing custom endpoint: ${url}`, 'warning');
+            
+            try {
+                const response = await fetch(url);
+                const responseText = await response.text();
+                
+                log(resultDiv, `Status: ${response.status}`, 'warning');
+                log(resultDiv, `Headers: ${JSON.stringify([...response.headers.entries()], null, 2)}`, 'warning');
+                log(resultDiv, `Response: ${responseText}`, response.ok ? 'success' : 'error');
+            } catch (error) {
+                log(resultDiv, `Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function log(element, message, type) {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = new Date().toLocaleTimeString() + ':\n' + message;
+            element.appendChild(div);
+            element.scrollTop = element.scrollHeight;
+        }
+        
+        // Auto-start test on page load
+        window.addEventListener('load', function() {
+            testUser();
+        });
+    </script>
+</body>
+</html>

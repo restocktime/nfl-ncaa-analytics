@@ -105,23 +105,34 @@ class FantasyAPIIntegration {
 
     async getSleeperLeagueRoster(leagueId, userId) {
         try {
-            console.log(`📊 Getting Sleeper roster for league ${leagueId}`);
+            console.log(`📊 Getting Sleeper roster for league ${leagueId} via Vercel proxy`);
             
-            // Get league info
-            const leagueResponse = await fetch(`${this.apis.sleeper.baseUrl}/league/${leagueId}`);
-            const league = await leagueResponse.json();
+            // Get rosters via Vercel proxy
+            const rostersResponse = await fetch(`${this.apis.sleeper.baseUrl}/rosters/${leagueId}`);
             
-            // Get rosters
-            const rostersResponse = await fetch(`${this.apis.sleeper.baseUrl}/league/${leagueId}/rosters`);
-            const rosters = await rostersResponse.json();
+            // Get response text first to handle both JSON and error cases
+            const responseText = await rostersResponse.text();
             
-            // Get users in league
-            const usersResponse = await fetch(`${this.apis.sleeper.baseUrl}/league/${leagueId}/users`);
-            const users = await usersResponse.json();
+            if (!rostersResponse.ok) {
+                console.error('Rosters API error:', responseText);
+                throw new Error(`Failed to fetch rosters (${rostersResponse.status}): ${responseText.substring(0, 100)}`);
+            }
             
-            // Get NFL players data
-            const playersResponse = await fetch(`${this.apis.sleeper.baseUrl}/players/nfl`);
-            const allPlayers = await playersResponse.json();
+            let rosters;
+            try {
+                rosters = JSON.parse(responseText);
+            } catch (jsonError) {
+                console.error('JSON parsing failed. Response was:', responseText.substring(0, 200));
+                throw new Error(`API returned invalid JSON. Response starts with: "${responseText.substring(0, 50)}..."`);
+            }
+            
+            // Check if rosters is valid
+            if (!Array.isArray(rosters)) {
+                console.error('Invalid rosters response:', rosters);
+                throw new Error('Invalid rosters data received from API');
+            }
+            
+            console.log(`Found ${rosters.length} rosters in league`);
             
             // Find user's roster
             const userRoster = rosters.find(roster => roster.owner_id === userId);
@@ -129,19 +140,26 @@ class FantasyAPIIntegration {
                 throw new Error('User not found in this league');
             }
             
-            // Get user info
-            const user = users.find(u => u.user_id === userId);
+            // Check if roster has players
+            const playerCount = userRoster.players ? userRoster.players.length : 0;
+            console.log(`Found roster with ${playerCount} players`);
             
-            // Convert to our roster format
-            const convertedRoster = this.convertSleeperRoster(
-                userRoster, 
-                league, 
-                user, 
-                allPlayers
-            );
+            // Return simplified roster format
+            const result = {
+                success: true,
+                roster: userRoster,
+                leagueId: leagueId,
+                userId: userId,
+                playerCount: playerCount,
+                players: userRoster.players || [],
+                teamName: `Team ${userId.slice(-4)}`, // Simple team name
+                message: playerCount > 0 ? 
+                    `Found roster with ${playerCount} players` : 
+                    'Roster found but no players (empty roster or draft not complete)'
+            };
             
-            console.log(`✅ Retrieved roster for ${convertedRoster.teamName}`);
-            return convertedRoster;
+            console.log(`✅ Retrieved roster: ${result.message}`);
+            return result;
             
         } catch (error) {
             console.error('❌ Error getting Sleeper roster:', error);
