@@ -32,12 +32,14 @@ class FantasyRosterManager {
         // Load sample roster data
         await this.loadSampleRosters();
         
-        // Set default user (prefer custom roster if available)
+        // Set default user only if they have a custom roster
         const userRoster = this.loadUserRoster();
         if (userRoster) {
             this.setCurrentUser(userRoster.userId);
+            console.log(`✅ Using custom roster: ${userRoster.teamName}`);
         } else {
-            this.setCurrentUser('user_12345');
+            console.log('⚠️ No roster found - user needs to build their roster first');
+            this.currentUser = null;
         }
         
         console.log('✅ Roster system ready');
@@ -62,89 +64,8 @@ class FantasyRosterManager {
             return;
         }
 
-        // Fallback to sample data if no user roster
-        console.log('📋 Loading sample rosters...');
-        const sampleRosters = [
-            {
-                userId: 'user_12345',
-                username: 'FantasyPro23',
-                teamName: 'Championship Bound',
-                draftPosition: 3,
-                roster: [
-                    // Starters
-                    { playerId: 'josh_allen', name: 'Josh Allen', team: 'BUF', position: 'QB', draftRound: 2, draftPick: 15, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'christian_mccaffrey', name: 'Christian McCaffrey', team: 'SF', position: 'RB', draftRound: 1, draftPick: 3, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'saquon_barkley', name: 'Saquon Barkley', team: 'PHI', position: 'RB', draftRound: 3, draftPick: 27, status: 'starter', injury: 'Questionable' },
-                    { playerId: 'tyreek_hill', name: 'Tyreek Hill', team: 'MIA', position: 'WR', draftRound: 4, draftPick: 45, status: 'starter', injury: 'Probable' },
-                    { playerId: 'davante_adams', name: 'Davante Adams', team: 'LV', position: 'WR', draftRound: 5, draftPick: 55, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'travis_kelce', name: 'Travis Kelce', team: 'KC', position: 'TE', draftRound: 6, draftPick: 67, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'jayden_reed', name: 'Jayden Reed', team: 'GB', position: 'WR', draftRound: 8, draftPick: 95, status: 'flex', injury: 'Healthy' },
-                    { playerId: 'justin_tucker', name: 'Justin Tucker', team: 'BAL', position: 'K', draftRound: 15, draftPick: 195, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'eagles_def', name: 'Eagles Defense', team: 'PHI', position: 'DEF', draftRound: 14, draftPick: 183, status: 'starter', injury: 'Healthy' },
-                    
-                    // Bench
-                    { playerId: 'derrick_henry', name: 'Derrick Henry', team: 'BAL', position: 'RB', draftRound: 7, draftPick: 75, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'stefon_diggs', name: 'Stefon Diggs', team: 'HOU', position: 'WR', draftRound: 9, draftPick: 105, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'george_kittle', name: 'George Kittle', team: 'SF', position: 'TE', draftRound: 10, draftPick: 123, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'jordan_love', name: 'Jordan Love', team: 'GB', position: 'QB', draftRound: 11, draftPick: 135, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'tank_dell', name: 'Tank Dell', team: 'HOU', position: 'WR', draftRound: 12, draftPick: 147, status: 'bench', injury: 'IR' },
-                    { playerId: 'roschon_johnson', name: 'Roschon Johnson', team: 'CHI', position: 'RB', draftRound: 13, draftPick: 165, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'darnell_mooney', name: 'Darnell Mooney', team: 'ATL', position: 'WR', draftRound: 16, draftPick: 203, status: 'bench', injury: 'Healthy' }
-                ],
-                record: { wins: 8, losses: 4, ties: 0 },
-                pointsFor: 1456.8,
-                pointsAgainst: 1329.4,
-                playoffSeed: 2
-            },
-            
-            {
-                userId: 'user_67890',
-                username: 'GridironGuru',
-                teamName: 'Dynasty Dreams',
-                draftPosition: 1,
-                roster: [
-                    // Starters
-                    { playerId: 'patrick_mahomes', name: 'Patrick Mahomes', team: 'KC', position: 'QB', draftRound: 1, draftPick: 1, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'austin_ekeler', name: 'Austin Ekeler', team: 'WAS', position: 'RB', draftRound: 2, draftPick: 24, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'alvin_kamara', name: 'Alvin Kamara', team: 'NO', position: 'RB', draftRound: 3, draftPick: 25, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'cooper_kupp', name: 'Cooper Kupp', team: 'LAR', position: 'WR', draftRound: 4, draftPick: 48, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'amon_ra_st_brown', name: 'Amon-Ra St. Brown', team: 'DET', position: 'WR', draftRound: 5, draftPick: 49, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'mark_andrews', name: 'Mark Andrews', team: 'BAL', position: 'TE', draftRound: 6, draftPick: 72, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'deebo_samuel', name: 'Deebo Samuel', team: 'SF', position: 'WR', draftRound: 7, draftPick: 73, status: 'flex', injury: 'Healthy' },
-                    { playerId: 'harrison_butker', name: 'Harrison Butker', team: 'KC', position: 'K', draftRound: 15, draftPick: 193, status: 'starter', injury: 'Healthy' },
-                    { playerId: 'bills_def', name: 'Bills Defense', team: 'BUF', position: 'DEF', draftRound: 14, draftPick: 192, status: 'starter', injury: 'Healthy' },
-                    
-                    // Bench
-                    { playerId: 'breece_hall', name: 'Breece Hall', team: 'NYJ', position: 'RB', draftRound: 8, draftPick: 96, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'mike_evans', name: 'Mike Evans', team: 'TB', position: 'WR', draftRound: 9, draftPick: 97, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'dallas_goedert', name: 'Dallas Goedert', team: 'PHI', position: 'TE', draftRound: 10, draftPick: 120, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'kenny_pickett', name: 'Kenny Pickett', team: 'PHI', position: 'QB', draftRound: 11, draftPick: 121, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'rome_odunze', name: 'Rome Odunze', team: 'CHI', position: 'WR', draftRound: 12, draftPick: 144, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'tyjae_spears', name: 'Tyjae Spears', team: 'TEN', position: 'RB', draftRound: 13, draftPick: 145, status: 'bench', injury: 'Healthy' },
-                    { playerId: 'quentin_johnston', name: 'Quentin Johnston', team: 'LAC', position: 'WR', draftRound: 16, draftPick: 216, status: 'bench', injury: 'Healthy' }
-                ],
-                record: { wins: 7, losses: 5, ties: 0 },
-                pointsFor: 1398.2,
-                pointsAgainst: 1367.9,
-                playoffSeed: 4
-            }
-        ];
-
-        // Store rosters
-        sampleRosters.forEach(roster => {
-            this.userRosters.set(roster.userId, roster);
-            
-            // Index all players
-            roster.roster.forEach(player => {
-                this.allPlayers.set(player.playerId, {
-                    ...player,
-                    ownedBy: roster.userId,
-                    ownerTeamName: roster.teamName
-                });
-            });
-        });
-
-        console.log(`📋 Loaded ${sampleRosters.length} user rosters with ${this.allPlayers.size} total players`);
+        // No hardcoded rosters - system is now completely empty until user adds players
+        console.log('📋 No demo data - waiting for user to build their roster');
     }
 
     loadUserRoster() {
@@ -176,6 +97,10 @@ class FantasyRosterManager {
 
     getUserRoster(userId = null) {
         const targetUser = userId || this.currentUser;
+        if (!targetUser) {
+            console.log('⚠️ No current user - roster not built yet');
+            return null;
+        }
         return this.userRosters.get(targetUser);
     }
 

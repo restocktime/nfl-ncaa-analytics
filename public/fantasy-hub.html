@@ -1152,56 +1152,44 @@
       }
 
       function loadFallbackData() {
-        console.log('📝 Loading fallback roster data...');
+        console.log('📝 No roster found - showing empty state');
         
-        // Create sample user data if roster manager failed
-        const sampleUser = {
-          teamName: 'Championship Bound',
-          record: { wins: 8, losses: 4 },
-          playoffSeed: 2,
-          pointsFor: 1456.8,
-          roster: [
-            { name: 'Josh Allen', position: 'QB', team: 'BUF', status: 'starter', injury: 'Healthy' },
-            { name: 'Christian McCaffrey', position: 'RB', team: 'SF', status: 'starter', injury: 'Healthy' },
-            { name: 'Saquon Barkley', position: 'RB', team: 'PHI', status: 'starter', injury: 'Questionable' },
-            { name: 'Tyreek Hill', position: 'WR', team: 'MIA', status: 'starter', injury: 'Probable' },
-            { name: 'Davante Adams', position: 'WR', team: 'LV', status: 'starter', injury: 'Healthy' }
-          ]
-        };
-
-        // Update dashboard with sample data
+        // Update dashboard with no-roster message
         const lineupCard = document.querySelector('#dashboard .feature-card');
         if (lineupCard) {
-          let html = `<h4>${sampleUser.teamName} - Your Team</h4>`;
-          html += `<p><strong>Record:</strong> ${sampleUser.record.wins}-${sampleUser.record.losses}</p>`;
-          html += `<p><strong>Playoff Seed:</strong> #${sampleUser.playoffSeed}</p>`;
-          html += `<p><strong>Points For:</strong> ${sampleUser.pointsFor}</p>`;
-          html += `<p><strong>Your Starters:</strong></p>`;
-          
-          sampleUser.roster.forEach(player => {
-            html += `<p>• ${player.name} (${player.position}, ${player.team})</p>`;
-          });
+          let html = '<h4>No Roster Found</h4>';
+          html += '<p style="color: #fbbf24;">⚠️ You need to build your roster first!</p>';
+          html += '<p>Click the <strong>"👥 Build Your Roster"</strong> button above to:</p>';
+          html += '<p>• Add your fantasy players</p>';
+          html += '<p>• Set your team name and record</p>';
+          html += '<p>• Get personalized recommendations</p>';
+          html += '<br>';
+          html += '<a href="roster-builder.html" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Build Roster Now</a>';
           
           lineupCard.innerHTML = html;
         }
 
-        // Update injury watch
+        // Update other cards with empty messages
+        const matchupCard = document.querySelector('#dashboard .feature-card:nth-child(2)');
+        if (matchupCard) {
+          matchupCard.innerHTML = '<h4>This Week\'s Matchups</h4><p>Add players to see matchup analysis</p>';
+        }
+
         const injuryCard = document.querySelector('#dashboard .feature-card:nth-child(3)');
         if (injuryCard) {
-          const injured = sampleUser.roster.filter(p => p.injury && p.injury !== 'Healthy');
-          let injuryHTML = '<h4>Injury Watch (Your Players)</h4>';
-          
-          injured.forEach(player => {
-            injuryHTML += `<p>⚠️ ${player.name} (${player.injury})</p>`;
-          });
-          
-          injuryCard.innerHTML = injuryHTML;
+          injuryCard.innerHTML = '<h4>Injury Watch</h4><p>Add players to monitor injury status</p>';
+        }
+
+        const newsCard = document.querySelector('#dashboard .feature-card:nth-child(4)');
+        if (newsCard) {
+          newsCard.innerHTML = '<h4>Breaking Fantasy News</h4><p>Add players to get personalized news</p>';
         }
 
         // Update status
         const statusElement = document.getElementById('status');
         if (statusElement) {
-          statusElement.textContent = '✅ Fallback data loaded - Your roster displayed';
+          statusElement.textContent = '⚠️ No roster found - Build your roster to get started';
+          statusElement.style.color = '#fbbf24';
         }
       }
 
@@ -1252,6 +1240,13 @@
           loadFallbackData();
         }
       };
+
+      // Clear any old demo data on first load
+      if (localStorage.getItem('clearDemoData') !== 'true') {
+        console.log('🧹 Clearing any old demo data...');
+        localStorage.removeItem('userFantasyRoster');
+        localStorage.setItem('clearDemoData', 'true');
+      }
 
       // Auto-debug after 2 seconds
       setTimeout(() => {
