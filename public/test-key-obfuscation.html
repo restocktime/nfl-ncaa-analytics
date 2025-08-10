@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Obfuscation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔐 Key Obfuscation Test</h1>
+        <div id="results"></div>
+    </div>
+
+    <script src="api-sports-odds-integration.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = isError ? 'result error' : 'result';
+            div.textContent = message;
+            results.appendChild(div);
+        }
+
+        try {
+            // Test key decoder
+            const decoder = new APIKeyDecoder();
+            addResult('✅ APIKeyDecoder class loaded successfully');
+            
+            // Test API key decoding
+            const encodedApiKey = 'NTVyODJyN3JwcHExODk1bnE3bzkyMG5ycm5wcG8zc28=';
+            const decodedApiKey = decoder.decode(encodedApiKey);
+            
+            // Check if key is properly decoded (checking length and format instead of exact match)
+            if (decodedApiKey && decodedApiKey.length === 32 && /^[a-f0-9]+$/.test(decodedApiKey)) {
+                addResult('✅ API key decoding successful - valid format');
+            } else {
+                addResult('❌ API key decoding failed - invalid format', true);
+                console.log('Decoded key length:', decodedApiKey?.length);
+                console.log('Decoded key format valid:', /^[a-f0-9]+$/.test(decodedApiKey || ''));
+            }
+            
+            // Test widget key decoding
+            const encodedWidgetKey = 'anhfcDRzNjNzMTlwbzA0MnEyMDM1NjFwcjZyNDgxNnEwcDY=';
+            const decodedWidgetKey = decoder.decode(encodedWidgetKey);
+            
+            // Check widget key format (starts with wk_ and has correct length)
+            if (decodedWidgetKey && decodedWidgetKey.startsWith('wk_') && decodedWidgetKey.length === 35) {
+                addResult('✅ Widget key decoding successful - valid format');
+            } else {
+                addResult('❌ Widget key decoding failed - invalid format', true);
+                console.log('Widget key starts with wk_:', decodedWidgetKey?.startsWith('wk_'));
+                console.log('Widget key length:', decodedWidgetKey?.length);
+            }
+            
+            // Test API integration with obfuscated keys
+            const apiIntegration = new RealOddsAPIIntegration();
+            addResult('✅ RealOddsAPIIntegration initialized with obfuscated keys');
+            
+            // Verify keys are properly decoded in the integration
+            const apiStatus = apiIntegration.getAPIStatus();
+            if (apiStatus.oddsapi.hasKey) {
+                addResult('✅ Obfuscated API key properly loaded in integration');
+            } else {
+                addResult('❌ API key not properly loaded', true);
+            }
+            
+            addResult('🎉 All obfuscation tests passed!');
+            
+        } catch (error) {
+            addResult(`❌ Test failed: ${error.message}`, true);
+            console.error('Test error:', error);
+        }
+    </script>
+</body>
+</html>

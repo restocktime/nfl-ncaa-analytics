@@ -216,7 +216,7 @@
                         <iframe
                             title="Sports Odds Widget - Hard Rock Bet"
                             style="width: 100%; min-height: 600px; border: none; border-radius: 8px; background: #1f2937;"
-                            src="https://widget.the-odds-api.com/v1/sports/americanfootball_nfl/events/?accessKey=wk_c1f30f86cb719d970238ce3e1583d7c3&bookmakerKeys=hardrockbet,draftkings,fanduel&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder">
+                            src="about:blank">
                         </iframe>
                         <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
                             🔴 LIVE
@@ -325,11 +325,28 @@
                 this.bestBets = null;
                 this.chart = null;
                 
+                // Initialize key decoder for widget security
+                this.keyDecoder = new APIKeyDecoder();
+                
                 this.initializeEventListeners();
                 this.initializeChart();
                 this.loadInitialData();
                 
+                // Update widget with decoded key after DOM is ready
+                setTimeout(() => this.updateWidgetUrl(), 100);
+                
                 console.log('🎰 Betting Odds Dashboard initialized');
+            }
+            
+            updateWidgetUrl() {
+                const widgetKey = this.keyDecoder.decode('anhfcDRzNjNzMTlwbzA0MnEyMDM1NjFwcjZyNDgxNnEwcDY=');
+                const iframe = document.querySelector('iframe[title="Sports Odds Widget - Hard Rock Bet"]');
+                if (iframe && widgetKey) {
+                    const baseUrl = 'https://widget.the-odds-api.com/v1/sports/americanfootball_nfl/events/';
+                    const params = `accessKey=${widgetKey}&bookmakerKeys=hardrockbet,draftkings,fanduel&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder`;
+                    iframe.src = `${baseUrl}?${params}`;
+                    console.log('🔐 Widget URL updated with decoded key');
+                }
             }
 
             initializeEventListeners() {
@@ -636,24 +653,6 @@
                     return;
                 }
 
-                // Show demo mode notification if applicable
-                if (this.bestBets.isDemo) {
-                    const demoNotice = document.createElement('div');
-                    demoNotice.className = 'bg-yellow-900/20 border border-yellow-600 rounded-lg p-4 mb-6';
-                    demoNotice.innerHTML = `
-                        <div class="flex items-center space-x-2">
-                            <div class="text-yellow-400 text-lg">📊</div>
-                            <div>
-                                <h4 class="text-yellow-400 font-semibold">Demo Mode</h4>
-                                <p class="text-sm text-gray-300">
-                                    No real API data available. Showing educational ML analysis examples.
-                                    <br>Configure API keys above for real betting odds analysis.
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(demoNotice);
-                }
 
                 this.bestBets.bestBets.forEach(bet => {
                     const confidenceClass = this.getConfidenceClass(bet.confidence);
@@ -681,7 +680,7 @@
                             <p class="text-sm text-gray-300 mt-1">${bet.reasoning}</p>
                         </div>
                         
-                        <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center justify-between text-sm mb-4">
                             <div class="text-gray-400">
                                 Value Score: <span class="text-yellow-400 font-semibold">${(bet.valueScore * 100).toFixed(1)}%</span>
                             </div>
@@ -689,9 +688,24 @@
                                 ${new Date(bet.gameTime).toLocaleDateString()} ${new Date(bet.gameTime).toLocaleTimeString()}
                             </div>
                         </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <button class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 flex items-center space-x-2 text-sm font-semibold"
+                                    onclick="window.open('${bet.hardRockBetUrl || 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'}', '_blank')">
+                                <span class="text-lg">🎯</span>
+                                <span>Place Bet on Hard Rock</span>
+                            </button>
+                            <div class="text-xs text-gray-400">
+                                Click to place this bet →
+                            </div>
+                        </div>
                     `;
                     
-                    card.addEventListener('click', () => {
+                    card.addEventListener('click', (e) => {
+                        // Don't trigger card click if button was clicked
+                        if (e.target.closest('button')) {
+                            return;
+                        }
                         this.showBetDetails(bet);
                     });
                     

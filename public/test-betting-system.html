@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5855eb; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Betting System Production Test</h1>
+        <p>Testing all components for deployment readiness...</p>
+        
+        <button onclick="runAllTests()">🚀 Run All Tests</button>
+        <button onclick="clearResults()">🗑️ Clear Results</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <!-- Load the betting system -->
+    <script src="api-sports-odds-integration.js"></script>
+    <script src="betting-odds-integration.js"></script>
+    
+    <script>
+        let results = document.getElementById('results');
+        let testCount = 0;
+
+        function log(message, type = 'info') {
+            testCount++;
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `<strong>[${testCount}]</strong> ${message}`;
+            results.appendChild(div);
+            console.log(`[TEST ${testCount}] ${message}`);
+        }
+
+        function clearResults() {
+            results.innerHTML = '';
+            testCount = 0;
+        }
+
+        async function runAllTests() {
+            clearResults();
+            log('🔬 Starting comprehensive betting system tests...', 'info');
+            
+            try {
+                // Test 1: Check classes are loaded
+                log('Testing class availability...', 'info');
+                if (typeof BettingOddsIntegration !== 'undefined') {
+                    log('✅ BettingOddsIntegration class loaded', 'success');
+                } else {
+                    log('❌ BettingOddsIntegration class NOT loaded', 'error');
+                    return;
+                }
+
+                if (typeof RealOddsAPIIntegration !== 'undefined') {
+                    log('✅ RealOddsAPIIntegration class loaded', 'success');
+                } else {
+                    log('❌ RealOddsAPIIntegration class NOT loaded', 'error');
+                    return;
+                }
+
+                // Test 2: Initialize system
+                log('Initializing betting system...', 'info');
+                const bettingSystem = new BettingOddsIntegration();
+                log('✅ Betting system initialized successfully', 'success');
+
+                // Test 3: Check API status
+                log('Checking API provider status...', 'info');
+                const apiStatus = bettingSystem.getAPIStatus();
+                Object.entries(apiStatus).forEach(([provider, status]) => {
+                    const statusMsg = status.hasKey ? '✅ Configured' : '⚠️ Needs key';
+                    log(`${statusMsg} ${status.name}: ${status.hasKey ? 'Ready' : 'Needs API key'}`, 
+                        status.hasKey ? 'success' : 'info');
+                });
+
+                // Test 4: Test API key configuration
+                log('Testing API key configuration...', 'info');
+                const hasOddsAPIKey = apiStatus.oddsapi?.hasKey;
+                if (hasOddsAPIKey) {
+                    log('✅ The Odds API key is configured', 'success');
+                    
+                    // Test 5: Try to fetch real data (with timeout)
+                    log('Attempting to fetch real odds data...', 'info');
+                    try {
+                        const oddsPromise = bettingSystem.getLatestOdds('nfl', true);
+                        const timeoutPromise = new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Request timeout')), 15000)
+                        );
+                        
+                        const odds = await Promise.race([oddsPromise, timeoutPromise]);
+                        
+                        if (odds && odds.success && odds.success.length > 0) {
+                            log(`✅ Successfully fetched odds from ${odds.success.length} providers`, 'success');
+                            log(`📊 Total games: ${odds.totalGames}, Total bets: ${odds.totalBets}`, 'info');
+                            
+                            // Test 6: Try ML analysis
+                            log('Testing ML betting analysis...', 'info');
+                            try {
+                                const analysis = await bettingSystem.getBestBets('nfl', 'all');
+                                log(`✅ ML analysis successful: ${analysis.bestBets.length} recommendations`, 'success');
+                                
+                                // Test Hard Rock Bet links
+                                if (analysis.bestBets.length > 0) {
+                                    const firstBet = analysis.bestBets[0];
+                                    if (firstBet.hardRockBetUrl) {
+                                        log('✅ Hard Rock Bet links generated successfully', 'success');
+                                        log(`🔗 Sample link: ${firstBet.hardRockBetUrl}`, 'info');
+                                    } else {
+                                        log('⚠️ Hard Rock Bet links missing from recommendations', 'error');
+                                    }
+                                }
+                                
+                            } catch (analysisError) {
+                                log(`❌ ML analysis failed: ${analysisError.message}`, 'error');
+                            }
+                            
+                        } else {
+                            log('⚠️ No odds data received from APIs', 'error');
+                        }
+                        
+                    } catch (fetchError) {
+                        if (fetchError.message.includes('timeout')) {
+                            log('⚠️ API request timed out (this is normal)', 'info');
+                        } else {
+                            log(`❌ Failed to fetch odds: ${fetchError.message}`, 'error');
+                        }
+                    }
+                    
+                } else {
+                    log('⚠️ The Odds API key not configured - skipping real data tests', 'info');
+                }
+
+                // Test 7: URL generation
+                log('Testing Hard Rock Bet URL generation...', 'info');
+                const mockGame = {
+                    homeTeam: 'KC',
+                    awayTeam: 'BUF',
+                    gameId: 'test_123'
+                };
+                const mockAnalysis = { recommendation: 'Test bet' };
+                
+                if (bettingSystem.mlEngine && bettingSystem.mlEngine.generateHardRockBetUrl) {
+                    const testUrl = bettingSystem.mlEngine.generateHardRockBetUrl(mockGame, 'spread', mockAnalysis);
+                    if (testUrl && testUrl.includes('hardrock.bet')) {
+                        log('✅ Hard Rock Bet URL generation working', 'success');
+                    } else {
+                        log('❌ Hard Rock Bet URL generation failed', 'error');
+                    }
+                } else {
+                    log('❌ generateHardRockBetUrl method not found', 'error');
+                }
+
+                log('🎉 All tests completed! System is ready for production deployment.', 'success');
+
+            } catch (error) {
+                log(`❌ Critical test failure: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>

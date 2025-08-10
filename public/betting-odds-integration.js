@@ -49,96 +49,6 @@ class BettingOddsIntegration {
         return this.realOddsAPI.getAPIStatus();
     }
 
-    // Generate demo analysis when real data isn't available
-    generateDemoAnalysis(betType = 'all') {
-        console.log('📊 Generating demo ML analysis for educational purposes...');
-        
-        const demoTeams = ['KC', 'BUF', 'BAL', 'SF', 'PHI', 'CIN', 'DAL', 'MIA'];
-        const demoBets = [];
-        
-        // Generate demo spread bets
-        if (betType === 'all' || betType === 'spread') {
-            for (let i = 0; i < 3; i++) {
-                const homeTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
-                const awayTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
-                
-                if (homeTeam !== awayTeam) {
-                    demoBets.push({
-                        gameId: `demo_spread_${i}`,
-                        provider: 'demo',
-                        betType: 'spread',
-                        homeTeam: homeTeam,
-                        awayTeam: awayTeam,
-                        recommendation: `Take ${awayTeam} +${(Math.random() * 6 + 1).toFixed(1)}`,
-                        confidence: 0.65 + Math.random() * 0.25,
-                        valueScore: 0.15 + Math.random() * 0.20,
-                        reasoning: `Market line appears inflated. Expected spread based on team analytics suggests better value on ${awayTeam}.`,
-                        gameTime: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
-                    });
-                }
-            }
-        }
-        
-        // Generate demo moneyline bets
-        if (betType === 'all' || betType === 'moneyline') {
-            for (let i = 0; i < 2; i++) {
-                const homeTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
-                const awayTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
-                
-                if (homeTeam !== awayTeam) {
-                    const odds = Math.floor(Math.random() * 200) + 100;
-                    demoBets.push({
-                        gameId: `demo_ml_${i}`,
-                        provider: 'demo',
-                        betType: 'moneyline',
-                        homeTeam: homeTeam,
-                        awayTeam: awayTeam,
-                        recommendation: `Bet ${homeTeam} ML (+${odds})`,
-                        confidence: 0.70 + Math.random() * 0.20,
-                        valueScore: 0.12 + Math.random() * 0.18,
-                        reasoning: `Implied probability (${(100/(odds+100)*100).toFixed(1)}%) appears lower than our model's true probability (${(Math.random() * 15 + 55).toFixed(1)}%).`,
-                        gameTime: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
-                    });
-                }
-            }
-        }
-        
-        // Generate demo totals bets
-        if (betType === 'all' || betType === 'totals') {
-            for (let i = 0; i < 2; i++) {
-                const homeTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
-                const awayTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
-                const total = Math.floor(Math.random() * 10) + 45;
-                const overUnder = Math.random() > 0.5 ? 'OVER' : 'UNDER';
-                
-                if (homeTeam !== awayTeam) {
-                    demoBets.push({
-                        gameId: `demo_total_${i}`,
-                        provider: 'demo',
-                        betType: 'totals',
-                        homeTeam: homeTeam,
-                        awayTeam: awayTeam,
-                        recommendation: `Bet ${overUnder} ${total}`,
-                        confidence: 0.68 + Math.random() * 0.22,
-                        valueScore: 0.10 + Math.random() * 0.15,
-                        reasoning: `Combined team scoring average suggests ${total} total is ${overUnder === 'OVER' ? 'conservative' : 'aggressive'}. Weather and pace factors support this analysis.`,
-                        gameTime: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
-                    });
-                }
-            }
-        }
-        
-        // Sort by confidence
-        demoBets.sort((a, b) => b.confidence - a.confidence);
-        
-        return {
-            bestBets: demoBets,
-            totalAnalyzed: demoBets.length,
-            confidence: demoBets.reduce((sum, bet) => sum + bet.confidence, 0) / demoBets.length,
-            lastUpdate: new Date().toISOString(),
-            isDemo: true
-        };
-    }
 
     // PUBLIC API METHODS
 
@@ -162,22 +72,35 @@ class BettingOddsIntegration {
             const odds = await this.getLatestOdds(sport);
             
             if (!odds || odds.success.length === 0) {
-                console.log('📊 No real odds data available, generating demo analysis...');
-                return this.generateDemoAnalysis(betType);
+                console.error('❌ No odds data received from any provider');
+                throw new Error('Unable to fetch betting odds. Please check your API configuration and internet connection.');
             }
             
+            console.log(`📊 Analyzing ${odds.totalGames} games from ${odds.success.length} providers...`);
             const analysis = await this.mlEngine.analyzeBets(odds, betType);
+            
+            console.log(`✅ Analysis complete: ${analysis.recommendations.length} recommendations found`);
             
             return {
                 bestBets: analysis.recommendations,
                 totalAnalyzed: analysis.totalBets,
                 confidence: analysis.averageConfidence,
-                lastUpdate: odds.lastUpdate
+                lastUpdate: odds.lastUpdate,
+                providersUsed: odds.success.map(p => p.provider)
             };
         } catch (error) {
-            console.error('❌ Bet analysis failed:', error);
-            console.log('📊 Falling back to demo analysis...');
-            return this.generateDemoAnalysis(betType);
+            console.error('❌ Bet analysis failed:', error.message);
+            
+            // Provide more user-friendly error messages
+            if (error.message.includes('API key')) {
+                throw new Error('Please configure your API keys in the settings above to enable betting analysis.');
+            } else if (error.message.includes('rate limit')) {
+                throw new Error('API rate limit reached. Please wait a few minutes before trying again.');
+            } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                throw new Error('Network connection issue. Please check your internet connection and try again.');
+            }
+            
+            throw error;
         }
     }
 
@@ -314,7 +237,8 @@ class BettingMLAnalyzer {
                         reasoning: analysis.reasoning,
                         homeTeam: game.homeTeam,
                         awayTeam: game.awayTeam,
-                        gameTime: game.gameTime
+                        gameTime: game.gameTime,
+                        hardRockBetUrl: this.generateHardRockBetUrl(game, 'spread', analysis)
                     });
                 }
                 betsAnalyzed++;
@@ -336,7 +260,8 @@ class BettingMLAnalyzer {
                         reasoning: analysis.reasoning,
                         homeTeam: game.homeTeam,
                         awayTeam: game.awayTeam,
-                        gameTime: game.gameTime
+                        gameTime: game.gameTime,
+                        hardRockBetUrl: this.generateHardRockBetUrl(game, 'moneyline', analysis)
                     });
                 }
                 betsAnalyzed++;
@@ -358,7 +283,8 @@ class BettingMLAnalyzer {
                         reasoning: analysis.reasoning,
                         homeTeam: game.homeTeam,
                         awayTeam: game.awayTeam,
-                        gameTime: game.gameTime
+                        gameTime: game.gameTime,
+                        hardRockBetUrl: this.generateHardRockBetUrl(game, 'totals', analysis)
                     });
                 }
                 betsAnalyzed++;
@@ -383,7 +309,8 @@ class BettingMLAnalyzer {
                         reasoning: analysis.reasoning,
                         homeTeam: game.homeTeam,
                         awayTeam: game.awayTeam,
-                        gameTime: game.gameTime
+                        gameTime: game.gameTime,
+                        hardRockBetUrl: this.generateHardRockBetUrl(game, 'player_prop', analysis, prop)
                     });
                 }
                 betsAnalyzed++;
@@ -396,6 +323,29 @@ class BettingMLAnalyzer {
             betsAnalyzed: betsAnalyzed,
             totalConfidence: totalConfidence
         };
+    }
+
+    generateHardRockBetUrl(game, betType, analysis, prop = null) {
+        // Base Hard Rock Bet NFL URL
+        const baseUrl = 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169';
+        
+        // For now, return the main NFL page with a hash that could help users find the game
+        // In a real implementation, we would need to map our team names and bet types to Hard Rock's specific URLs
+        const teamSearch = `${game.homeTeam}-vs-${game.awayTeam}`.toLowerCase();
+        
+        // Different URLs based on bet type
+        switch (betType) {
+            case 'spread':
+                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=spread`;
+            case 'moneyline':
+                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=moneyline`;
+            case 'totals':
+                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=totals`;
+            case 'player_prop':
+                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=props&player=${encodeURIComponent(prop?.player || '')}`;
+            default:
+                return baseUrl;
+        }
     }
 }
 
