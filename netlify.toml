@@ -18,7 +18,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://site.api.espn.com https://a.espncdn.com; img-src 'self' https: data:; connect-src 'self' https://site.api.espn.com https://api.espn.com;"
+    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://site.api.espn.com https://a.espncdn.com https://sleeper-api-proxy.vercel.app; img-src 'self' https: data:; connect-src 'self' https://site.api.espn.com https://api.espn.com https://sleeper-api-proxy.vercel.app;"
 
 [[headers]]
   for = "/*.js"
