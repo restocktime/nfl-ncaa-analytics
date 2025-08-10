@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Betting System Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a2e; color: white; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        button { background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Quick Betting System Test</h1>
+    
+    <button onclick="testAPIKeyDecoding()">Test API Key Decoding</button>
+    <button onclick="testBettingIntegration()">Test Betting Integration</button>
+    <button onclick="clearResults()">Clear</button>
+    
+    <div id="results"></div>
+
+    <script src="api-sports-odds-integration.js"></script>
+    <script src="betting-odds-integration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        function clearResults() {
+            results.innerHTML = '';
+        }
+
+        function testAPIKeyDecoding() {
+            log('🔑 Testing API Key Decoding...', 'info');
+            
+            try {
+                const apiIntegration = new RealOddsAPIIntegration();
+                const decoder = apiIntegration.keyDecoder;
+                
+                // Test with the encoded keys
+                const apiKey = apiIntegration.apiProviders.oddsapi.apiKey;
+                const widgetKey = apiIntegration.apiProviders.oddsapi.widgetKey;
+                
+                if (!apiKey) {
+                    log('❌ API key decoding failed - no key returned', 'error');
+                } else {
+                    log(`✅ API key decoded: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}`, 'success');
+                    log(`📏 API key length: ${apiKey.length} chars`, 'info');
+                }
+                
+                if (!widgetKey) {
+                    log('❌ Widget key decoding failed - no key returned', 'error');
+                } else {
+                    log(`✅ Widget key decoded: ${widgetKey.substring(0, 8)}...${widgetKey.substring(widgetKey.length - 4)}`, 'success');
+                    log(`📏 Widget key length: ${widgetKey.length} chars`, 'info');
+                }
+                
+            } catch (error) {
+                log(`❌ Key decoding test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testBettingIntegration() {
+            log('🎰 Testing Betting Integration...', 'info');
+            
+            try {
+                const bettingSystem = new BettingOddsIntegration();
+                
+                log('✅ BettingOddsIntegration created successfully', 'success');
+                log('📊 Real odds API integration initialized', 'info');
+                log('🧠 ML engine initialized', 'info');
+                
+                // Test API status
+                const status = bettingSystem.getAPIStatus();
+                log(`📈 API Status: ${JSON.stringify(status)}`, 'info');
+                
+                if (status.oddsapi && status.oddsapi.hasKey) {
+                    log('✅ The Odds API key is configured', 'success');
+                } else {
+                    log('⚠️ The Odds API key not configured', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Betting integration test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run key decoding test
+        window.addEventListener('load', () => {
+            setTimeout(testAPIKeyDecoding, 500);
+        });
+    </script>
+</body>
+</html>

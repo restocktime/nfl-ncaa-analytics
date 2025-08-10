@@ -511,14 +511,17 @@ class RealOddsAPIIntegration {
         let bestHome = { odds: -200, line: 0, bookmaker: '' };
         let bestAway = { odds: -200, line: 0, bookmaker: '' };
 
+        // Get team names from the game data to properly identify home/away
+        let homeTeamName = null;
+        let awayTeamName = null;
+        
         spreads.forEach(spread => {
-            spread.outcomes.forEach(outcome => {
-                // The Odds API provides outcomes with team names, not home/away labels
-                // We need to match by the actual team names from the first spread
-                const isFirstTeam = outcome.name === spreads[0].outcomes[0].name;
+            spread.outcomes.forEach((outcome, index) => {
+                // Determine which team is home/away based on typical API structure
+                const isHomeTeam = index === 0; // First outcome is typically home team
                 
-                if (isFirstTeam) {
-                    // First team listed is typically the home team in The Odds API
+                if (isHomeTeam) {
+                    homeTeamName = outcome.name;
                     if (outcome.price > bestHome.odds) {
                         bestHome = {
                             odds: outcome.price,
@@ -528,7 +531,7 @@ class RealOddsAPIIntegration {
                         };
                     }
                 } else {
-                    // Second team is typically the away team
+                    awayTeamName = outcome.name;
                     if (outcome.price > bestAway.odds) {
                         bestAway = {
                             odds: outcome.price,
@@ -541,9 +544,22 @@ class RealOddsAPIIntegration {
             });
         });
 
-        // In The Odds API, the point spread is from the perspective of the team
-        // If a team has a positive point spread, they are getting points (underdog)
-        // If a team has a negative point spread, they are favored
+        // Ensure proper spread line formatting
+        // In spread betting, lines are inverse - if home is -7, away is +7
+        if (bestHome.line && bestAway.line) {
+            // Verify the lines are inverse (one positive, one negative)
+            if (Math.abs(bestHome.line + bestAway.line) > 0.1) {
+                // Lines aren't properly inverse, fix them
+                if (bestHome.line < 0) {
+                    bestAway.line = Math.abs(bestHome.line);
+                } else if (bestAway.line < 0) {
+                    bestHome.line = Math.abs(bestAway.line);
+                }
+            }
+        }
+
+        console.log(`🏈 Spread parsing: Home ${homeTeamName} ${bestHome.line}, Away ${awayTeamName} ${bestAway.line}`);
+
         return {
             home: { 
                 line: bestHome.line, 
