@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- COMPLETELY DISABLE CSP FOR TESTING -->
+    <meta http-equiv="Content-Security-Policy" content="">
+    
+    <title>🧪 Fantasy API Connection Test</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1419;
+            color: white;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: #1e1e1e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .test-btn {
+            background: #4a9eff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .test-btn:hover {
+            background: #357abd;
+        }
+        
+        .test-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+        
+        .success { border-left: 4px solid #4caf50; }
+        .error { border-left: 4px solid #f44336; }
+        .info { border-left: 4px solid #2196f3; }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Fantasy API Connection Test</h1>
+    <p><strong>This page tests fantasy API connections with NO CSP restrictions</strong></p>
+    
+    <div class="test-section">
+        <h2>🏈 Sleeper API Test</h2>
+        <div class="input-group">
+            <label for="sleeperUsername">Sleeper Username:</label>
+            <input type="text" id="sleeperUsername" value="Restocktime" placeholder="Enter your Sleeper username">
+        </div>
+        
+        <button class="test-btn" onclick="testSleeperDirect()">Test Direct Connection</button>
+        <button class="test-btn" onclick="testSleeperCORS()">Test via CORS Proxy</button>
+        <button class="test-btn" onclick="testSleeperPHP()">Test via PHP Proxy</button>
+        
+        <div id="sleeperResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔥 ESPN API Test</h2>
+        <button class="test-btn" onclick="testESPNDirect()">Test Direct Connection</button>
+        <button class="test-btn" onclick="testESPNCORS()">Test via CORS Proxy</button>
+        
+        <div id="espnResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🌐 Network & CORS Test</h2>
+        <button class="test-btn" onclick="testNetworkAccess()">Test Basic Network</button>
+        <button class="test-btn" onclick="testCORSService()">Test CORS Service</button>
+        
+        <div id="networkResults"></div>
+    </div>
+    
+    <script>
+        function log(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            container.appendChild(div);
+            console.log(message);
+        }
+        
+        // Test Sleeper Direct (will likely fail with CORS)
+        async function testSleeperDirect() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                log('sleeperResults', 'Please enter a username', 'error');
+                return;
+            }
+            
+            log('sleeperResults', 'Testing direct Sleeper API connection...', 'info');
+            
+            try {
+                const response = await fetch(`https://api.sleeper.app/v1/user/${username}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('sleeperResults', `✅ SUCCESS! User: ${data.display_name || data.username}`, 'success');
+                    log('sleeperResults', `User ID: ${data.user_id}`, 'success');
+                } else {
+                    log('sleeperResults', `❌ HTTP Error: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                log('sleeperResults', `❌ Connection blocked: ${error.message}`, 'error');
+                if (error.message.includes('CORS')) {
+                    log('sleeperResults', '💡 CORS blocking detected - try proxy methods', 'info');
+                }
+            }
+        }
+        
+        // Test Sleeper via CORS Proxy
+        async function testSleeperCORS() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                log('sleeperResults', 'Please enter a username', 'error');
+                return;
+            }
+            
+            log('sleeperResults', 'Testing Sleeper via CORS proxy...', 'info');
+            
+            try {
+                const corsProxy = 'https://api.allorigins.win/get?url=';
+                const apiUrl = encodeURIComponent(`https://api.sleeper.app/v1/user/${username}`);
+                
+                const response = await fetch(corsProxy + apiUrl);
+                
+                if (response.ok) {
+                    const proxyData = await response.json();
+                    
+                    if (proxyData.contents) {
+                        const userData = JSON.parse(proxyData.contents);
+                        log('sleeperResults', `✅ CORS PROXY SUCCESS! User: ${userData.display_name || userData.username}`, 'success');
+                        log('sleeperResults', `User ID: ${userData.user_id}`, 'success');
+                    } else {
+                        log('sleeperResults', '❌ No data in CORS proxy response', 'error');
+                    }
+                } else {
+                    log('sleeperResults', `❌ CORS Proxy failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log('sleeperResults', `❌ CORS Proxy error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test Sleeper via PHP Proxy
+        async function testSleeperPHP() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                log('sleeperResults', 'Please enter a username', 'error');
+                return;
+            }
+            
+            log('sleeperResults', 'Testing Sleeper via PHP proxy...', 'info');
+            
+            try {
+                const response = await fetch(`./api-proxy.php?api=sleeper&path=user/${username}`);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    
+                    try {
+                        const data = JSON.parse(text);
+                        log('sleeperResults', `✅ PHP PROXY SUCCESS! User: ${data.display_name || data.username}`, 'success');
+                        log('sleeperResults', `User ID: ${data.user_id}`, 'success');
+                    } catch (parseError) {
+                        log('sleeperResults', `❌ PHP Proxy returned non-JSON: ${text.substring(0, 100)}...`, 'error');
+                    }
+                } else {
+                    log('sleeperResults', `❌ PHP Proxy failed: HTTP ${response.status}`, 'error');
+                    
+                    if (response.status === 404) {
+                        log('sleeperResults', '💡 PHP proxy not found - host may not support PHP', 'info');
+                    }
+                }
+            } catch (error) {
+                log('sleeperResults', `❌ PHP Proxy error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test ESPN Direct
+        async function testESPNDirect() {
+            log('espnResults', 'Testing direct ESPN API connection...', 'info');
+            
+            try {
+                // Test ESPN's public endpoint
+                const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('espnResults', '✅ ESPN Direct connection working!', 'success');
+                    log('espnResults', `Found ${data.sports?.[0]?.leagues?.[0]?.teams?.length || 'unknown'} teams`, 'success');
+                } else {
+                    log('espnResults', `❌ ESPN HTTP Error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log('espnResults', `❌ ESPN connection blocked: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test ESPN via CORS
+        async function testESPNCORS() {
+            log('espnResults', 'Testing ESPN via CORS proxy...', 'info');
+            
+            try {
+                const corsProxy = 'https://api.allorigins.win/get?url=';
+                const apiUrl = encodeURIComponent('https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams');
+                
+                const response = await fetch(corsProxy + apiUrl);
+                
+                if (response.ok) {
+                    const proxyData = await response.json();
+                    
+                    if (proxyData.contents) {
+                        const espnData = JSON.parse(proxyData.contents);
+                        log('espnResults', '✅ ESPN CORS proxy working!', 'success');
+                        log('espnResults', `Found ${espnData.sports?.[0]?.leagues?.[0]?.teams?.length || 'unknown'} teams`, 'success');
+                    }
+                } else {
+                    log('espnResults', `❌ ESPN CORS proxy failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log('espnResults', `❌ ESPN CORS error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test basic network access
+        async function testNetworkAccess() {
+            log('networkResults', 'Testing basic network connectivity...', 'info');
+            
+            try {
+                const response = await fetch('https://httpbin.org/json');
+                if (response.ok) {
+                    log('networkResults', '✅ Basic network access working', 'success');
+                } else {
+                    log('networkResults', '❌ Basic network test failed', 'error');
+                }
+            } catch (error) {
+                log('networkResults', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test CORS service
+        async function testCORSService() {
+            log('networkResults', 'Testing CORS proxy service...', 'info');
+            
+            try {
+                const response = await fetch('https://api.allorigins.win/get?url=https%3A%2F%2Fhttpbin.org%2Fjson');
+                if (response.ok) {
+                    const data = await response.json();
+                    log('networkResults', '✅ CORS proxy service working', 'success');
+                    log('networkResults', `Status: ${data.status.http_code}`, 'success');
+                } else {
+                    log('networkResults', '❌ CORS service test failed', 'error');
+                }
+            } catch (error) {
+                log('networkResults', `❌ CORS service error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run basic tests on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('networkResults', '🚀 Auto-running basic connectivity tests...', 'info');
+                testNetworkAccess();
+                setTimeout(testCORSService, 1000);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
