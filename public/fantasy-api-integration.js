@@ -144,15 +144,18 @@ class FantasyAPIIntegration {
             const playerCount = userRoster.players ? userRoster.players.length : 0;
             console.log(`Found roster with ${playerCount} players`);
             
-            // Return simplified roster format
+            // Convert to fantasy system format
+            const fantasyRosterFormat = this.convertSleeperToFantasyFormat(userRoster, leagueId, userId);
+            
             const result = {
                 success: true,
-                roster: userRoster,
+                roster: userRoster, // Raw Sleeper data
+                fantasyRoster: fantasyRosterFormat, // Converted format for fantasy system
                 leagueId: leagueId,
                 userId: userId,
                 playerCount: playerCount,
                 players: userRoster.players || [],
-                teamName: `Team ${userId.slice(-4)}`, // Simple team name
+                teamName: fantasyRosterFormat.teamName,
                 message: playerCount > 0 ? 
                     `Found roster with ${playerCount} players` : 
                     'Roster found but no players (empty roster or draft not complete)'
@@ -165,6 +168,41 @@ class FantasyAPIIntegration {
             console.error('❌ Error getting Sleeper roster:', error);
             throw error;
         }
+    }
+
+    // Convert Sleeper roster to fantasy system format
+    convertSleeperToFantasyFormat(sleeperRoster, leagueId, userId) {
+        const players = [];
+        
+        if (sleeperRoster.players && sleeperRoster.players.length > 0) {
+            sleeperRoster.players.forEach(playerId => {
+                // Create a player object in fantasy system format
+                players.push({
+                    playerId: playerId,
+                    name: `Player ${playerId}`, // We'd need another API call to get names
+                    position: 'FLEX', // Default position
+                    team: 'UNK',
+                    projectedPoints: 0,
+                    actualPoints: 0,
+                    isStarter: false,
+                    sleeperPlayerId: playerId // Keep reference to original ID
+                });
+            });
+        }
+        
+        return {
+            userId: `sleeper_${userId}`,
+            teamName: `Sleeper Team ${userId.slice(-4)}`,
+            leagueId: leagueId,
+            platform: 'sleeper',
+            roster: players,
+            weeklyProjection: 0,
+            seasonRecord: '0-0-0',
+            playoffSeed: 1,
+            importedFrom: 'sleeper',
+            importDate: new Date().toISOString(),
+            sleeperData: sleeperRoster // Keep original data
+        };
     }
 
     convertSleeperRoster(roster, league, user, allPlayers) {

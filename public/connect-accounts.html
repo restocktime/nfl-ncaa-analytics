@@ -783,8 +783,14 @@
                     connection.userId
                 );
                 
-                // Save to localStorage
-                localStorage.setItem('userFantasyRoster', JSON.stringify(roster));
+                // Save the fantasy system format to localStorage
+                if (roster.fantasyRoster) {
+                    localStorage.setItem('userFantasyRoster', JSON.stringify(roster.fantasyRoster));
+                    console.log(`💾 Saved fantasy roster format:`, roster.fantasyRoster);
+                } else {
+                    // Fallback - save the original data
+                    localStorage.setItem('userFantasyRoster', JSON.stringify(roster));
+                }
                 
                 if (roster.success && roster.playerCount > 0) {
                     showStatus('sleeperStatus', 'success', 
