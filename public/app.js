@@ -229,37 +229,6 @@ class ModernNFLApp {
             case 'historical':
                 this.loadHistorical();
                 break;
-            // Fantasy Football Views
-            case 'fantasy-dashboard':
-                if (window.fantasyIntegration) {
-                    window.fantasyIntegration.loadFantasyDashboard();
-                }
-                break;
-            case 'fantasy-lineup':
-                if (window.fantasyIntegration) {
-                    window.fantasyIntegration.loadLineupOptimizer();
-                }
-                break;
-            case 'fantasy-waiver':
-                if (window.fantasyIntegration) {
-                    window.fantasyIntegration.loadWaiverWire();
-                }
-                break;
-            case 'fantasy-trades':
-                if (window.fantasyIntegration) {
-                    window.fantasyIntegration.loadTradeAnalyzer();
-                }
-                break;
-            case 'fantasy-projections':
-                if (window.fantasyIntegration) {
-                    window.fantasyIntegration.loadPlayerProjections();
-                }
-                break;
-            case 'fantasy-league-config':
-                if (window.fantasyIntegration) {
-                    window.fantasyIntegration.loadLeagueConfiguration();
-                }
-                break;
         }
     }
 
