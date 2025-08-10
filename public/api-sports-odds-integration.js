@@ -10,8 +10,8 @@ class RealOddsAPIIntegration {
             oddsapi: {
                 name: 'The Odds API',
                 baseUrl: 'https://api.the-odds-api.com/v4',
-                apiKey: null, // User can provide their own key
-                widgetKey: 'wk_c705aff93953afa57b69c84f505347fb', // Pre-configured widget access
+                apiKey: '22e59e4eccd8562ad4b697aeeaccb0fb', // Working API key provided
+                widgetKey: 'wk_c1f30f86cb719d970238ce3e1583d7c3', // Updated working widget key
                 endpoints: {
                     sports: '/sports',
                     odds: '/sports/americanfootball_nfl/odds',
@@ -138,7 +138,7 @@ class RealOddsAPIIntegration {
             console.log('📊 Fetching from The Odds API...');
             
             const response = await fetch(
-                `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&bookmakers=hardrockbet,draftkings,fanduel`,
+                `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals,player_pass_yds,player_rush_yds,player_receiving_yds&oddsFormat=american&dateFormat=iso&bookmakers=hardrockbet,draftkings,fanduel`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -197,13 +197,15 @@ class RealOddsAPIIntegration {
         const markets = {
             spread: null,
             moneyline: null,
-            totals: null
+            totals: null,
+            props: []
         };
 
         // Aggregate from all bookmakers to find best odds
         const allSpreads = [];
         const allMoneylines = [];
         const allTotals = [];
+        const allProps = [];
 
         bookmakers.forEach(bookmaker => {
             bookmaker.markets.forEach(market => {
@@ -220,6 +222,13 @@ class RealOddsAPIIntegration {
                 } else if (market.key === 'totals') {
                     allTotals.push({
                         bookmaker: bookmaker.title,
+                        outcomes: market.outcomes
+                    });
+                } else if (market.key.startsWith('player_')) {
+                    allProps.push({
+                        bookmaker: bookmaker.title,
+                        market: market.key,
+                        description: market.description || market.key.replace('player_', '').replace('_', ' '),
                         outcomes: market.outcomes
                     });
                 }
@@ -239,6 +248,11 @@ class RealOddsAPIIntegration {
         // Parse totals
         if (allTotals.length > 0) {
             markets.totals = this.findBestTotalsOdds(allTotals);
+        }
+
+        // Parse player props
+        if (allProps.length > 0) {
+            markets.props = this.parsePlayerProps(allProps);
         }
 
         return markets;
@@ -333,6 +347,31 @@ class RealOddsAPIIntegration {
             over: { line: bestOver.line, odds: bestOver.odds },
             under: { line: bestUnder.line, odds: bestUnder.odds }
         };
+    }
+
+    // Parse player props
+    parsePlayerProps(props) {
+        const parsedProps = [];
+        
+        props.forEach(prop => {
+            prop.outcomes.forEach(outcome => {
+                const playerName = outcome.description || 'Unknown Player';
+                const statType = prop.market.replace('player_', '').replace('_', ' ');
+                
+                parsedProps.push({
+                    type: 'player_prop',
+                    category: statType,
+                    player: playerName,
+                    line: outcome.point || 0,
+                    odds: outcome.price || -110,
+                    bookmaker: prop.bookmaker,
+                    market: prop.market,
+                    selection: outcome.name // Over/Under
+                });
+            });
+        });
+        
+        return parsedProps;
     }
 
     // Fetch from RapidAPI
