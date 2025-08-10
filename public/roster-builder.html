@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://api.sleeper.app https://fantasysports.yahooapis.com https://lm-api-reads.fantasy.espn.com https://site.api.espn.com https://api.espn.com;">
     <title>Build Your Fantasy Roster</title>
     <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1b3a;
+            --bg-tertiary: #2d2f5f;
+            --bg-card: rgba(30, 30, 63, 0.6);
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --border-focus: rgba(99, 102, 241, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #0a0e1a;
-            color: white;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1b3a 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
             max-width: 1000px;
@@ -16,113 +46,255 @@
         }
         .header {
             text-align: center;
-            background-color: #1a202c;
-            padding: 30px;
-            border-radius: 10px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            border-radius: 16px;
             margin-bottom: 30px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
         }
         .roster-builder {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
+
+        @media (max-width: 768px) {
+            .roster-builder {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
         .section {
-            background-color: #1a202c;
-            padding: 20px;
-            border-radius: 10px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: var(--border-focus);
+            transform: translateY(-2px);
+        }
+
+        .section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 20px 0;
         }
         .position-group {
             margin-bottom: 20px;
-            background-color: #2d3748;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(45, 47, 95, 0.4);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
         }
+
+        .position-group:hover {
+            border-color: var(--border-focus);
+            background: rgba(45, 47, 95, 0.6);
+        }
+
         .position-group h4 {
-            color: #667eea;
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
             margin: 0 0 15px 0;
         }
         .player-input {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            gap: 10px;
         }
+
+        @media (max-width: 640px) {
+            .player-input {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+        }
+
+        .player-input input,
+        .player-input select {
+            padding: 12px 16px;
+            background: rgba(30, 30, 63, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
         .player-input input {
             flex: 1;
-            padding: 8px;
-            margin-right: 10px;
-            background-color: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 4px;
-            color: white;
         }
-        .player-input select {
-            padding: 8px;
-            background-color: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 4px;
-            color: white;
-            margin-right: 10px;
+
+        .player-input input:focus,
+        .player-input select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .player-input input::placeholder {
+            color: var(--text-muted);
         }
         .save-btn, .import-btn {
-            background-color: #667eea;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
-            padding: 12px 24px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 10px 5px;
-            font-size: 16px;
+            margin: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
         }
+
         .save-btn:hover, .import-btn:hover {
-            background-color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #5b5ff0, #7c3aed);
+        }
+
+        .save-btn:active, .import-btn:active {
+            transform: translateY(0);
         }
         .current-roster {
-            background-color: #2d3748;
-            padding: 20px;
-            border-radius: 8px;
+            background: rgba(45, 47, 95, 0.4);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .current-roster h4 {
+            color: var(--accent-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 15px 0;
         }
         .roster-player {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
-            margin: 5px 0;
-            background-color: #4a5568;
-            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            background: rgba(30, 30, 63, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
+
+        .roster-player:hover {
+            border-color: var(--border-focus);
+            transform: translateX(4px);
+        }
+
+        .roster-player strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .roster-player small {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
         .remove-btn {
-            background-color: #e53e3e;
+            background: var(--accent-danger);
             color: white;
             border: none;
-            padding: 4px 8px;
-            border-radius: 3px;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
         }
         .team-settings {
-            background-color: #2d3748;
+            background: rgba(45, 47, 95, 0.4);
+            border: 1px solid var(--border);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 20px;
         }
-        .team-settings input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            background-color: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 4px;
-            color: white;
-        }
-        .import-section {
-            background-color: #2d3748;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .import-section h4 {
-            color: #667eea;
+
+        .team-settings h4 {
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
             margin: 0 0 15px 0;
         }
+
+        .team-settings input {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            background: rgba(30, 30, 63, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .team-settings input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .team-settings input::placeholder {
+            color: var(--text-muted);
+        }
+        .import-section {
+            background: rgba(45, 47, 95, 0.4);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .import-section h4 {
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     </style>
 </head>
 <body>

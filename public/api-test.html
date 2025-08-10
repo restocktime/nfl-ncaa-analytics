@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #2a2a2a;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Fantasy API Connection Test</h1>
+    
+    <div class="test-section">
+        <h3>Sleeper API Test</h3>
+        <button onclick="testSleeperAPI()">Test Sleeper NFL State</button>
+        <button onclick="testSleeperUser()">Test User: restocktime</button>
+        <div id="sleeperResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>ESPN API Test</h3>
+        <button onclick="testESPNAPI()">Test ESPN League Defaults</button>
+        <div id="espnResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Console Log</h3>
+        <div id="consoleLog" class="result" style="background: #333; color: #ccc; max-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            console.log(message);
+            const logDiv = document.getElementById('consoleLog');
+            logDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function testSleeperAPI() {
+            const resultDiv = document.getElementById('sleeperResult');
+            resultDiv.textContent = 'Testing...';
+            
+            try {
+                log('Testing Sleeper NFL state endpoint...');
+                const response = await fetch('https://api.sleeper.app/v1/state/nfl');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = 'SUCCESS: ' + JSON.stringify(data, null, 2);
+                    log('✅ Sleeper API working: ' + JSON.stringify(data));
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'ERROR: ' + error.message;
+                log('❌ Sleeper API error: ' + error.message);
+            }
+        }
+
+        async function testSleeperUser() {
+            const resultDiv = document.getElementById('sleeperResult');
+            resultDiv.textContent = 'Testing user lookup...';
+            
+            try {
+                log('Testing Sleeper user lookup: restocktime');
+                const response = await fetch('https://api.sleeper.app/v1/user/restocktime');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = 'SUCCESS: ' + JSON.stringify(data, null, 2);
+                    log('✅ Sleeper user found: ' + data.display_name);
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'ERROR: ' + error.message;
+                log('❌ Sleeper user lookup error: ' + error.message);
+            }
+        }
+
+        async function testESPNAPI() {
+            const resultDiv = document.getElementById('espnResult');
+            resultDiv.textContent = 'Testing...';
+            
+            try {
+                log('Testing ESPN API endpoint...');
+                const response = await fetch('https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2025/segments/0/leaguedefaults/3');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = 'SUCCESS: ' + JSON.stringify(data, null, 2);
+                    log('✅ ESPN API working: ' + data.settings.name);
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'ERROR: ' + error.message;
+                log('❌ ESPN API error: ' + error.message);
+            }
+        }
+
+        // Test on page load
+        window.addEventListener('load', function() {
+            log('Page loaded - ready to test APIs');
+            log('If you see CSP errors, the APIs are being blocked by browser security');
+        });
+    </script>
+</body>
+</html>

@@ -1,14 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://api.sleeper.app https://fantasysports.yahooapis.com https://lm-api-reads.fantasy.espn.com https://site.api.espn.com https://api.espn.com;">
     <title>Connect Your Fantasy Accounts</title>
     <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1b3a;
+            --bg-tertiary: #2d2f5f;
+            --bg-card: rgba(30, 30, 63, 0.6);
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --border-focus: rgba(99, 102, 241, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         body {
-            background-color: #0a0e1a;
-            color: white;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1b3a 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
             max-width: 1000px;
@@ -16,149 +48,313 @@
         }
         .header {
             text-align: center;
-            background-color: #1a202c;
-            padding: 30px;
-            border-radius: 10px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            border-radius: 16px;
             margin-bottom: 30px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
         }
         .platform-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
             margin-bottom: 30px;
         }
-        .platform-card {
-            background-color: #1a202c;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 25px;
-            text-align: center;
+
+        @media (max-width: 768px) {
+            .platform-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
         }
+        .platform-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .platform-card:hover {
+            border-color: var(--border-focus);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
         .platform-card.connected {
-            border-color: #4ade80;
-            background-color: #1a2e1a;
+            border-color: var(--accent-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .platform-card.connected::before {
+            content: '✓';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-success);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .platform-card {
+            position: relative;
         }
         .platform-card h3 {
-            color: #667eea;
+            color: var(--accent-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
             margin: 0 0 15px 0;
         }
         .platform-logo {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
         }
         .connect-btn {
-            background-color: #667eea;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
-            padding: 12px 24px;
+            padding: 14px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
-            margin: 10px 5px;
+            margin: 12px 0;
             font-size: 16px;
+            font-weight: 500;
             width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
         }
+
         .connect-btn:hover {
-            background-color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #5b5ff0, #7c3aed);
         }
+
+        .connect-btn:active {
+            transform: translateY(0);
+        }
+
         .connect-btn:disabled {
-            background-color: #4a5568;
+            background: var(--text-muted);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         .connected-btn {
-            background-color: #4ade80;
+            background: linear-gradient(135deg, var(--accent-success), #059669) !important;
             color: white;
         }
         .disconnect-btn {
-            background-color: #e53e3e;
+            background: var(--accent-danger);
             color: white;
             padding: 8px 16px;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .input-group {
-            margin: 10px 0;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            background-color: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 4px;
-            color: white;
-            box-sizing: border-box;
-        }
-        .status {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        .status.success {
-            background-color: #1a2e1a;
-            border: 1px solid #4ade80;
-            color: #4ade80;
-        }
-        .status.error {
-            background-color: #2e1a1a;
-            border: 1px solid #e53e3e;
-            color: #e53e3e;
-        }
-        .status.info {
-            background-color: #1a1e2e;
-            border: 1px solid #667eea;
-            color: #667eea;
-        }
-        .connected-accounts {
-            background-color: #1a202c;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .league-selector {
-            background-color: #2d3748;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-        .league-selector select {
-            width: 100%;
-            padding: 8px;
-            background-color: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 4px;
-            color: white;
-        }
-        .sync-btn {
-            background-color: #f59e0b;
-            color: white;
-            padding: 15px 30px;
-            border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .disconnect-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group input {
             width: 100%;
-            margin: 20px 0;
+            padding: 14px 16px;
+            margin: 8px 0;
+            background: rgba(30, 30, 63, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-muted);
+        }
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--accent-success);
+            color: var(--accent-success);
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+        }
+
+        .status.info {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        .connected-accounts {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .connected-accounts h3 {
+            color: var(--accent-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+        }
+        .league-selector {
+            background: rgba(45, 47, 95, 0.4);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .league-selector h4 {
+            color: var(--accent-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+        }
+
+        .league-selector select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(30, 30, 63, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .league-selector select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .sync-btn {
+            background: linear-gradient(135deg, var(--accent-warning), #d97706);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sync-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #e79f0b, #c2410c);
         }
         .instructions {
-            background-color: #2d3748;
-            padding: 15px;
+            background: rgba(45, 47, 95, 0.3);
+            border: 1px solid var(--border);
+            padding: 16px;
             border-radius: 8px;
-            margin: 10px 0;
-            font-size: 14px;
+            margin: 15px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .instructions strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .instructions a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .instructions a:hover {
+            text-decoration: underline;
         }
         .back-btn {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #1a202c;
-            color: white;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
             padding: 15px 20px;
             text-decoration: none;
-            border-radius: 5px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
         }
     </style>
 </head>
@@ -176,6 +372,20 @@
             <div id="connectionStatus">
                 <p>Loading connection status...</p>
             </div>
+            <button class="connect-btn" onclick="testAllConnections()" style="background: linear-gradient(135deg, var(--accent-warning), #d97706); margin-top: 15px;">
+                🧪 Test API Connections
+            </button>
+            
+            <div class="status info" style="margin: 15px 0;">
+                <strong>🛠️ Troubleshooting:</strong><br>
+                If you see CSP errors in console:<br>
+                • Refresh the page and try again<br>
+                • Disable browser extensions temporarily<br>
+                • Use Chrome/Firefox with developer mode<br>
+                • The APIs should work on most modern browsers
+            </div>
+            
+            <div id="apiTestResults" style="margin-top: 10px;"></div>
         </div>
 
         <div class="platform-grid">
@@ -268,7 +478,7 @@
                 🔄 Sync All Connected Accounts
             </button>
             
-            <button class="sync-btn" onclick="goToFantasyHub()" style="background-color: #4ade80;">
+            <button class="sync-btn" onclick="goToFantasyHub()" style="background: linear-gradient(135deg, #10b981, #059669);">
                 ✅ Continue to Fantasy Hub
             </button>
         </div>
@@ -512,12 +722,22 @@
         }
 
         function goToFantasyHub() {
-            // Check if we have any roster data
+            // Check if we have any roster data or connections
             const savedRoster = localStorage.getItem('userFantasyRoster');
-            if (savedRoster) {
+            const connectedPlatforms = apiIntegration ? apiIntegration.getConnectedPlatforms() : [];
+            
+            if (savedRoster || connectedPlatforms.length > 0) {
                 window.location.href = 'fantasy-hub.html';
             } else {
-                alert('Please connect and import a roster first, or use the manual roster builder.');
+                // Show informative message instead of generic alert
+                const resultsDiv = document.getElementById('apiTestResults');
+                resultsDiv.innerHTML = `
+                    <div class="status info" style="margin-top: 15px;">
+                        <strong>🏈 Almost Ready!</strong><br>
+                        Connect to any platform above or <a href="roster-builder.html" style="color: #10b981; text-decoration: underline;">build a manual roster</a> to get started.<br>
+                        <small>Your Fantasy Hub will be populated with your real roster data!</small>
+                    </div>
+                `;
             }
         }
 
@@ -533,6 +753,40 @@
                 }
                 
                 updateConnectionStatus();
+            }
+        }
+
+        // Test all API connections
+        async function testAllConnections() {
+            const testButton = document.querySelector('button[onclick="testAllConnections()"]');
+            const resultsDiv = document.getElementById('apiTestResults');
+            
+            testButton.disabled = true;
+            testButton.textContent = '🔄 Testing...';
+            resultsDiv.innerHTML = '<div class="status info">Testing API connections...</div>';
+            
+            try {
+                const results = await apiIntegration.testApiConnections();
+                
+                let html = '<h4 style="color: var(--accent-primary); margin: 15px 0 10px 0;">API Test Results:</h4>';
+                
+                Object.entries(results).forEach(([platform, result]) => {
+                    const statusClass = result.available ? 'success' : 'error';
+                    const icon = result.available ? '✅' : '❌';
+                    const message = result.available ? 
+                        `${platform.toUpperCase()} API is accessible` : 
+                        `${platform.toUpperCase()} API error: ${result.error}`;
+                    
+                    html += `<div class="status ${statusClass}">${icon} ${message}</div>`;
+                });
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="status error">❌ Test failed: ${error.message}</div>`;
+            } finally {
+                testButton.disabled = false;
+                testButton.textContent = '🧪 Test API Connections';
             }
         }
     </script>

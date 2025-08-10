@@ -36,9 +36,18 @@ class FantasyAPIIntegration {
             console.log(`🏈 Connecting to Sleeper for user: ${username}`);
             
             // Get user info
-            const userResponse = await fetch(`${this.apis.sleeper.baseUrl}/user/${username}`);
+            const userResponse = await fetch(`${this.apis.sleeper.baseUrl}/user/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
             if (!userResponse.ok) {
-                throw new Error(`User ${username} not found on Sleeper`);
+                const errorText = await userResponse.text();
+                console.error(`Sleeper API error: ${userResponse.status} - ${errorText}`);
+                throw new Error(`User ${username} not found on Sleeper (Status: ${userResponse.status})`);
             }
             
             const userData = await userResponse.json();
@@ -47,11 +56,22 @@ class FantasyAPIIntegration {
             // Get user's leagues for current season
             const currentSeason = new Date().getFullYear().toString();
             const leaguesResponse = await fetch(
-                `${this.apis.sleeper.baseUrl}/user/${userData.user_id}/leagues/nfl/${currentSeason}`
+                `${this.apis.sleeper.baseUrl}/user/${userData.user_id}/leagues/nfl/${currentSeason}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }
             );
             
+            if (!leaguesResponse.ok) {
+                console.warn(`⚠️ Could not fetch leagues: ${leaguesResponse.status}`);
+            }
+            
             const leagues = await leaguesResponse.json();
-            console.log(`📋 Found ${leagues.length} leagues for user`);
+            console.log(`📋 Found ${leagues ? leagues.length : 0} leagues for user`);
             
             // Store connection
             this.userConnections.set('sleeper', {
@@ -223,19 +243,28 @@ class FantasyAPIIntegration {
         try {
             console.log(`🏀 Connecting to ESPN league: ${leagueId}`);
             
-            const headers = {};
+            const headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            };
+            
             if (espnS2 && swid) {
                 headers['Cookie'] = `espn_s2=${espnS2}; SWID=${swid}`;
             }
 
-            // Get league info
+            // Get league info - using current year
+            const currentYear = new Date().getFullYear();
             const leagueResponse = await fetch(
-                `${this.apis.espn.baseUrl}/seasons/2024/segments/0/leagues/${leagueId}`,
-                { headers }
+                `${this.apis.espn.baseUrl}/seasons/${currentYear}/segments/0/leagues/${leagueId}`,
+                { 
+                    method: 'GET',
+                    headers,
+                    mode: 'cors'
+                }
             );
 
             if (!leagueResponse.ok) {
-                throw new Error('Failed to access ESPN league. Check league ID and credentials.');
+                throw new Error(`Failed to access ESPN league. Status: ${leagueResponse.status}. Check league ID and credentials.`);
             }
 
             const leagueData = await leagueResponse.json();
@@ -361,6 +390,75 @@ class FantasyAPIIntegration {
         });
         
         return status;
+    }
+
+    // Test API connections
+    async testApiConnections() {
+        console.log('🧪 Testing API connections...');
+        const results = {
+            sleeper: { available: false, error: null },
+            yahoo: { available: false, error: null },
+            espn: { available: false, error: null }
+        };
+
+        // Test Sleeper API
+        try {
+            console.log('Testing Sleeper API endpoint...');
+            const testResponse = await fetch(`${this.apis.sleeper.baseUrl}/state/nfl`, {
+                method: 'GET',
+                headers: { 
+                    'Accept': 'application/json',
+                    'Origin': window.location.origin
+                },
+                mode: 'cors'
+            });
+            
+            if (testResponse.ok) {
+                results.sleeper.available = true;
+                console.log('✅ Sleeper API is accessible');
+            } else {
+                results.sleeper.error = `Status: ${testResponse.status}`;
+                console.log('❌ Sleeper API test failed:', testResponse.status);
+            }
+        } catch (error) {
+            results.sleeper.error = error.message;
+            console.log('❌ Sleeper API connection error:', error.message);
+            
+            // Check if it's a CSP issue
+            if (error.message.includes('Content Security Policy')) {
+                results.sleeper.error = 'CSP blocking connection - check browser console';
+            }
+        }
+
+        // Test ESPN API (basic endpoint)
+        try {
+            const currentYear = new Date().getFullYear();
+            const testResponse = await fetch(
+                `${this.apis.espn.baseUrl}/seasons/${currentYear}/segments/0/leaguedefaults/3`,
+                { 
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                }
+            );
+            
+            if (testResponse.ok) {
+                results.espn.available = true;
+                console.log('✅ ESPN API is accessible');
+            } else {
+                results.espn.error = `Status: ${testResponse.status}`;
+                console.log('❌ ESPN API test failed:', testResponse.status);
+            }
+        } catch (error) {
+            results.espn.error = error.message;
+            console.log('❌ ESPN API connection error:', error.message);
+        }
+
+        // Yahoo API requires OAuth, so we'll just mark as available but requiring setup
+        results.yahoo.available = true;
+        results.yahoo.error = 'OAuth setup required';
+        console.log('⚠️ Yahoo API requires OAuth setup');
+
+        return results;
     }
 }
 

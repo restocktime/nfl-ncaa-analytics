@@ -3067,81 +3067,119 @@
                 </div>
                 
                 <div class="grid grid-3">
-                    <div class="card" onclick="showFantasySection('dashboard')" style="cursor: pointer; transition: transform 0.3s ease;">
+                    <div class="card" onclick="window.location.href='fantasy-hub.html'" style="cursor: pointer; transition: transform 0.3s ease; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-tachometer-alt" style="margin-right: 0.5rem; color: #667eea;"></i>
-                                Fantasy Dashboard
+                                <i class="fas fa-rocket" style="margin-right: 0.5rem; color: #fff;"></i>
+                                🏆 Fantasy Hub Pro
                             </h3>
                         </div>
                         <div class="card-content">
-                            <p>Overview of your team and weekly performance</p>
+                            <p><strong>Complete Fantasy Management</strong></p>
+                            <p>✅ Connect Sleeper/ESPN accounts<br>
+                            ✅ AI-powered lineup optimization<br>
+                            ✅ Real-time injury alerts<br>
+                            ✅ Waiver wire intelligence</p>
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                                <strong>🔥 NEW: Live API Integration!</strong>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="card" onclick="showFantasySection('lineup')" style="cursor: pointer; transition: transform 0.3s ease;">
+                    <div class="card" onclick="window.location.href='connect-accounts.html'" style="cursor: pointer; transition: transform 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-plug" style="margin-right: 0.5rem; color: #667eea;"></i>
+                                Connect Accounts
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Link your Sleeper, ESPN, or Yahoo accounts</p>
+                            <p><span style="color: #10b981;">🟢 Sleeper</span> | <span style="color: #10b981;">🟢 ESPN</span> | <span style="color: #f59e0b;">🟡 Yahoo</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="window.location.href='roster-builder.html'" style="cursor: pointer; transition: transform 0.3s ease;">
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-users" style="margin-right: 0.5rem; color: #667eea;"></i>
-                                Lineup Optimizer
+                                Manual Roster Builder
                             </h3>
                         </div>
                         <div class="card-content">
-                            <p>AI-powered lineup recommendations</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card" onclick="showFantasySection('waivers')" style="cursor: pointer; transition: transform 0.3s ease;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-search" style="margin-right: 0.5rem; color: #667eea;"></i>
-                                Waiver Wire
-                            </h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Smart waiver wire analysis</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card" onclick="showFantasySection('trades')" style="cursor: pointer; transition: transform 0.3s ease;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-exchange-alt" style="margin-right: 0.5rem; color: #667eea;"></i>
-                                Trade Analyzer
-                            </h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Advanced trade evaluation</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card" onclick="showFantasySection('projections')" style="cursor: pointer; transition: transform 0.3s ease;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-line" style="margin-right: 0.5rem; color: #667eea;"></i>
-                                Player Projections
-                            </h3>
-                        </div>
-                        <div class="card-content">
-                            <p>ML-powered performance projections</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card" onclick="showFantasySection('settings')" style="cursor: pointer; transition: transform 0.3s ease;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-cog" style="margin-right: 0.5rem; color: #667eea;"></i>
-                                League Setup
-                            </h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Configure your league settings</p>
+                            <p>Build and customize your fantasy roster manually</p>
+                            <p>Perfect for custom leagues or offline management</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Quick Launch Buttons -->
+                <div style="text-align: center; margin: 30px 0; padding: 20px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 16px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">🚀 Quick Start Your Fantasy Experience</h3>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <a href="fantasy-hub.html" style="
+                            background: linear-gradient(135deg, #10b981, #059669);
+                            color: white;
+                            padding: 15px 30px;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: 600;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            🏆 Open Fantasy Hub
+                        </a>
+                        
+                        <a href="api-test.html" style="
+                            background: linear-gradient(135deg, #f59e0b, #d97706);
+                            color: white;
+                            padding: 15px 30px;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: 600;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+                        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            🧪 Test API Connections
+                        </a>
+                    </div>
+                </div>
                 
-                <!-- Fantasy Content Sections -->
-                <div id="fantasy-content" style="margin-top: 2rem;">
+                <!-- Fantasy Hub Redirect Notice -->
+                <div id="fantasy-content" style="margin-top: 2rem; text-align: center;">
+                    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); padding: 40px; border-radius: 20px; border: 2px solid rgba(102, 126, 234, 0.3);">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">🚀 Fantasy Features Have Moved!</h3>
+                        <p style="font-size: 1.1em; color: #64748b; margin-bottom: 30px;">
+                            Our enhanced Fantasy Hub now includes live API integration, personalized rosters, and AI-powered recommendations.
+                        </p>
+                        
+                        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                            <a href="fantasy-hub.html" style="
+                                background: linear-gradient(135deg, #10b981, #059669);
+                                color: white;
+                                padding: 18px 36px;
+                                text-decoration: none;
+                                border-radius: 12px;
+                                font-weight: 600;
+                                font-size: 1.1em;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+                                min-width: 200px;
+                            " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(16, 185, 129, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(16, 185, 129, 0.4)'">
+                                🏆 Open Fantasy Hub
+                            </a>
+                        </div>
+                        
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px;">
+                            <h4 style="color: #667eea; margin-bottom: 15px;">✨ New Features</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; text-align: left;">
+                                <div>✅ Connect Sleeper & ESPN accounts</div>
+                                <div>✅ AI-powered lineup optimization</div>
+                                <div>✅ Real-time injury alerts</div>
+                                <div>✅ Personalized trade analysis</div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Dashboard Section -->
                     <div id="fantasy-dashboard" class="fantasy-section" style="display: none;">
                         <div class="card">
