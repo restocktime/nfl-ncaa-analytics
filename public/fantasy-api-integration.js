@@ -293,11 +293,15 @@ class FantasyAPIIntegration {
                     }
                 };
             } else {
-                // Fallback when player data is not available
-                console.log(`⚠️ No player data for ID ${playerId}, using fallback`);
+                // Fallback when player data is not available - try local mapping
+                const playerName = window.SleeperPlayerNames ? 
+                    window.SleeperPlayerNames.getPlayerName(playerId) : 
+                    `Player ${playerId}`;
+                
+                console.log(`⚠️ No player data for ID ${playerId}, using fallback: ${playerName}`);
                 return {
                     playerId: playerId,
-                    name: `Player ${playerId}`,
+                    name: playerName,
                     team: 'UNK',
                     position: 'FLEX',
                     draftRound: Math.floor(Math.random() * 16) + 1,

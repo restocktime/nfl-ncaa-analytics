@@ -240,6 +240,13 @@ class RealOddsAPIIntegration {
 
                 const data = await response.json();
                 console.log(`✅ Successfully fetched odds using ${config.description}`);
+                console.log(`📊 Raw API Response - Games: ${data.length}, Sample:`, data[0] || 'No games');
+                
+                // Check if we got any data
+                if (!data || data.length === 0) {
+                    console.warn('⚠️ API returned empty data - could be offseason or no upcoming games');
+                }
+                
                 return this.parseOddsAPIData(data);
                 
             } catch (error) {
@@ -389,10 +396,13 @@ class RealOddsAPIIntegration {
 
     // Parse The Odds API response
     parseOddsAPIData(data) {
+        console.log(`🔄 Parsing ${data.length} games from The Odds API...`);
         const games = [];
 
-        data.forEach(game => {
+        data.forEach((game, index) => {
             try {
+                console.log(`🏈 Parsing game ${index + 1}: ${game.away_team} @ ${game.home_team} (${new Date(game.commence_time).toLocaleDateString()})`);
+                
                 const gameData = {
                     gameId: `oddsapi_${game.id}`,
                     provider: 'oddsapi',
@@ -400,16 +410,22 @@ class RealOddsAPIIntegration {
                     awayTeam: this.normalizeTeamName(game.away_team),
                     gameTime: game.commence_time,
                     status: 'upcoming',
-                    bets: this.parseOddsAPIMarkets(game.bookmakers)
+                    bets: this.parseOddsAPIMarkets(game.bookmakers || [])
                 };
+
+                console.log(`📊 Game parsed - ${gameData.awayTeam} @ ${gameData.homeTeam}, Bets: ${Object.keys(gameData.bets).join(', ')}`);
 
                 if (gameData.bets && Object.keys(gameData.bets).length > 0) {
                     games.push(gameData);
+                } else {
+                    console.warn(`⚠️ No betting markets found for ${gameData.awayTeam} @ ${gameData.homeTeam}`);
                 }
             } catch (error) {
-                console.error('Error parsing game:', error);
+                console.error(`❌ Error parsing game ${index + 1}:`, error);
             }
         });
+
+        console.log(`✅ Parsed ${games.length} games with betting data`);
 
         return {
             provider: 'oddsapi',

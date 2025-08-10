@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- REMOVE CSP RESTRICTIONS FOR API CONNECTIONS -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' https://api.sleeper.app; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
     
     <title>Connect Your Fantasy Accounts</title>
     <style>
@@ -562,6 +562,7 @@
     <!-- Load API Integration Service -->
     <script src="fantasy-api-integration.js"></script>
     <script src="fantasy-api-proxy.js"></script>
+    <script src="sleeper-player-names.js"></script>
     
     <script>
         let apiIntegration;

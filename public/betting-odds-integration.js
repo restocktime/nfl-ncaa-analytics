@@ -329,23 +329,66 @@ class BettingMLAnalyzer {
         // Base Hard Rock Bet NFL URL
         const baseUrl = 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169';
         
-        // For now, return the main NFL page with a hash that could help users find the game
-        // In a real implementation, we would need to map our team names and bet types to Hard Rock's specific URLs
-        const teamSearch = `${game.homeTeam}-vs-${game.awayTeam}`.toLowerCase();
+        // Map team abbreviations to Hard Rock Bet team names (lowercase, full names)
+        const teamNameMap = {
+            'KC': 'kansas-city-chiefs',
+            'BUF': 'buffalo-bills',
+            'BAL': 'baltimore-ravens', 
+            'SF': 'san-francisco-49ers',
+            'PHI': 'philadelphia-eagles',
+            'CIN': 'cincinnati-bengals',
+            'DAL': 'dallas-cowboys',
+            'MIA': 'miami-dolphins',
+            'NYJ': 'new-york-jets',
+            'NE': 'new-england-patriots',
+            'CLE': 'cleveland-browns',
+            'PIT': 'pittsburgh-steelers',
+            'HOU': 'houston-texans',
+            'IND': 'indianapolis-colts',
+            'JAX': 'jacksonville-jaguars',
+            'TEN': 'tennessee-titans',
+            'DEN': 'denver-broncos',
+            'LV': 'las-vegas-raiders',
+            'LAC': 'los-angeles-chargers',
+            'NYG': 'new-york-giants',
+            'WAS': 'washington-commanders',
+            'CHI': 'chicago-bears',
+            'DET': 'detroit-lions',
+            'GB': 'green-bay-packers',
+            'MIN': 'minnesota-vikings',
+            'ATL': 'atlanta-falcons',
+            'CAR': 'carolina-panthers',
+            'NO': 'new-orleans-saints',
+            'TB': 'tampa-bay-buccaneers',
+            'ARI': 'arizona-cardinals',
+            'LAR': 'los-angeles-rams',
+            'SEA': 'seattle-seahawks'
+        };
         
-        // Different URLs based on bet type
-        switch (betType) {
-            case 'spread':
-                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=spread`;
-            case 'moneyline':
-                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=moneyline`;
-            case 'totals':
-                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=totals`;
-            case 'player_prop':
-                return `${baseUrl}?search=${encodeURIComponent(teamSearch)}&market=props&player=${encodeURIComponent(prop?.player || '')}`;
-            default:
-                return baseUrl;
-        }
+        // Get proper team names for Hard Rock Bet
+        const awayTeamName = teamNameMap[game.awayTeam] || game.awayTeam.toLowerCase();
+        const homeTeamName = teamNameMap[game.homeTeam] || game.homeTeam.toLowerCase();
+        
+        // Create search term in format: away-team-at-home-team (Hard Rock Bet format)
+        const teamSearch = `${awayTeamName}-at-${homeTeamName}`;
+        
+        // For now, just return the main NFL page as search parameters might not work reliably
+        // Users can manually navigate to find their game
+        return baseUrl;
+        
+        // Alternative approach with search (commented out as it may not work reliably):
+        // switch (betType) {
+        //     case 'spread':
+        //         return `${baseUrl}#search=${encodeURIComponent(teamSearch)}&market=spread`;
+        //     case 'moneyline':
+        //         return `${baseUrl}#search=${encodeURIComponent(teamSearch)}&market=moneyline`;
+        //     case 'totals':
+        //         return `${baseUrl}#search=${encodeURIComponent(teamSearch)}&market=totals`;
+        //     case 'player_prop':
+        //         return `${baseUrl}#search=${encodeURIComponent(teamSearch)}&market=props`;
+        //     default:
+        //         return baseUrl;
+        // }
     }
 }
 
