@@ -187,6 +187,11 @@
           <p>ML-powered performance projections</p>
         </div>
 
+        <div class="nav-card" onclick="showSection('roster')">
+          <h3>👥 My Roster</h3>
+          <p>View and manage your fantasy roster</p>
+        </div>
+
         <div class="nav-card" onclick="showSection('settings')">
           <h3>⚙️ League Setup</h3>
           <p>Configure your league settings</p>
@@ -361,6 +366,36 @@
         </div>
       </div>
 
+      <div id="roster" class="content">
+        <h2>👥 My Fantasy Roster</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>Starting Lineup</h4>
+            <div id="starting-lineup-display">
+              <p>Loading your optimal lineup...</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h4>Bench Players</h4>
+            <div id="bench-players-display">
+              <p>Loading bench players...</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h4>Roster Stats</h4>
+            <div id="roster-stats-display">
+              <p>Calculating roster statistics...</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h4>Sit/Start Recommendations</h4>
+            <div id="sit-start-display">
+              <p>Analyzing sit/start decisions...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div id="settings" class="content">
         <h2>⚙️ League Configuration</h2>
         <div class="feature-grid">
@@ -401,6 +436,7 @@
     <!-- Load Fantasy Data Service -->
     <script src="fantasy-data-service.js"></script>
     <script src="fantasy-news-service.js"></script>
+    <script src="fantasy-roster-manager.js"></script>
     
     <script>
       console.log("Fantasy Hub loaded successfully");
@@ -408,10 +444,12 @@
       // Initialize live data when page loads
       let fantasyApp;
       let fantasyNewsApp;
+      let fantasyRosterApp;
       
       document.addEventListener('DOMContentLoaded', async function() {
         await initializeLiveData();
         await initializeNewsService();
+        await initializeRosterManager();
         loadDashboardData();
         
         // Update data every 5 minutes
@@ -473,16 +511,42 @@
         }
       }
 
+      async function initializeRosterManager() {
+        console.log('👥 Initializing Fantasy Roster Manager...');
+        
+        // Wait for fantasy roster manager to be available
+        let attempts = 0;
+        while (!window.fantasyRosterManager && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (window.fantasyRosterManager) {
+          fantasyRosterApp = window.fantasyRosterManager;
+          console.log('✅ Fantasy Roster Manager connected');
+          
+          // Display current user info
+          const currentRoster = fantasyRosterApp.getUserRoster();
+          if (currentRoster) {
+            console.log(`👤 Loaded roster for: ${currentRoster.teamName} (${currentRoster.roster.length} players)`);
+          }
+        } else {
+          console.warn('⚠️ Fantasy Roster Manager not found');
+        }
+      }
+
       async function loadDashboardData() {
-        if (!fantasyApp) return;
+        if (!fantasyApp || !fantasyRosterApp) return;
         
         try {
-          console.log('🔄 Loading live fantasy data...');
-          updateStatus('🔄 Loading live data from APIs...', 'loading');
+          console.log('🔄 Loading live fantasy data with user roster...');
+          updateStatus('🔄 Loading optimal lineup from your roster...', 'loading');
           
-          // Load real player projections
-          const projections = await fantasyApp.getPlayerProjections();
-          updateCurrentLineup(projections);
+          // Generate optimal lineup from user's actual roster
+          const optimalLineupData = await fantasyRosterApp.generateOptimalLineup();
+          if (optimalLineupData) {
+            updateOptimalLineup(optimalLineupData);
+          }
           
           // Load waiver wire targets
           const waiverTargets = await fantasyApp.getWaiverWireTargets();
@@ -492,7 +556,7 @@
           const schedule = await fantasyApp.getNFLSchedule();
           updateMatchupInfo(schedule);
           
-          updateStatus('✅ Live data loaded successfully', 'success');
+          updateStatus('✅ Live data loaded with your roster', 'success');
           
         } catch (error) {
           console.error('❌ Error loading live data:', error);
@@ -500,46 +564,40 @@
         }
       }
 
-      function updateCurrentLineup(projections) {
+      function updateOptimalLineup(lineupData) {
         const lineupCard = document.querySelector('#dashboard .feature-card');
-        if (!lineupCard || !projections.length) return;
+        if (!lineupCard || !lineupData.lineup.length) return;
         
-        // Get top players by position
-        const qb = projections.filter(p => p.position === 'QB').slice(0, 1)[0];
-        const rbs = projections.filter(p => p.position === 'RB').slice(0, 2);
-        const wrs = projections.filter(p => p.position === 'WR').slice(0, 2);
-        const te = projections.filter(p => p.position === 'TE').slice(0, 1)[0];
-        const flex = projections.filter(p => ['RB', 'WR', 'TE'].includes(p.position)).slice(0, 1)[0];
+        const currentRoster = fantasyRosterApp.getUserRoster();
         
-        let totalProjection = 0;
-        let lineupHTML = '<h4>Current Lineup (Live Data)</h4>';
+        let lineupHTML = `<h4>${currentRoster.teamName} - Optimal Lineup</h4>`;
         
-        if (qb) {
-          lineupHTML += `<p><strong>QB:</strong> ${qb.name} (${qb.team}) - ${qb.projection} pts</p>`;
-          totalProjection += qb.projection;
-        }
+        // Group players by lineup position
+        const positions = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'K', 'DEF'];
         
-        rbs.forEach((rb, index) => {
-          lineupHTML += `<p><strong>RB${index + 1}:</strong> ${rb.name} (${rb.team}) - ${rb.projection} pts</p>`;
-          totalProjection += rb.projection;
+        positions.forEach(position => {
+          const positionPlayers = lineupData.lineup.filter(p => p.lineupPosition === position);
+          
+          if (position === 'RB' || position === 'WR') {
+            // Handle multiple RB/WR positions
+            positionPlayers.forEach((player, index) => {
+              const posLabel = `${position}${index + 1}`;
+              lineupHTML += `<p><strong>${posLabel}:</strong> ${player.name} (${player.team}) - ${player.projection} pts</p>`;
+            });
+          } else if (positionPlayers.length > 0) {
+            const player = positionPlayers[0];
+            lineupHTML += `<p><strong>${position}:</strong> ${player.name} (${player.team}) - ${player.projection} pts</p>`;
+          }
         });
         
-        wrs.forEach((wr, index) => {
-          lineupHTML += `<p><strong>WR${index + 1}:</strong> ${wr.name} (${wr.team}) - ${wr.projection} pts</p>`;
-          totalProjection += wr.projection;
-        });
+        lineupHTML += `<p style="color: #4ade80; font-weight: bold">Projected Total: ${lineupData.totalProjection.toFixed(1)} points</p>`;
+        lineupHTML += `<p style="color: #fbbf24; font-size: 0.9em">Confidence: ${lineupData.confidence}</p>`;
         
-        if (te) {
-          lineupHTML += `<p><strong>TE:</strong> ${te.name} (${te.team}) - ${te.projection} pts</p>`;
-          totalProjection += te.projection;
+        // Add top recommendation if available
+        if (lineupData.recommendations.length > 0) {
+          const topRec = lineupData.recommendations[0];
+          lineupHTML += `<p style="color: #60a5fa; font-size: 0.9em">💡 ${topRec.message}</p>`;
         }
-        
-        if (flex) {
-          lineupHTML += `<p><strong>FLEX:</strong> ${flex.name} (${flex.team}) - ${flex.projection} pts</p>`;
-          totalProjection += flex.projection;
-        }
-        
-        lineupHTML += `<p style="color: #4ade80; font-weight: bold">Projected Total: ${totalProjection.toFixed(1)} points</p>`;
         
         lineupCard.innerHTML = lineupHTML;
       }
@@ -652,15 +710,21 @@
       }
 
       async function loadSectionData(sectionName) {
-        if (!fantasyApp) return;
+        if (!fantasyApp || !fantasyRosterApp) return;
         
         try {
           switch (sectionName) {
+            case 'lineup':
+              await loadLineupOptimizerData();
+              break;
             case 'projections':
               await loadProjectionsData();
               break;
             case 'waivers':
               await loadWaiverData();
+              break;
+            case 'roster':
+              await loadRosterData();
               break;
             case 'trades':
               await loadTradeData();
@@ -669,6 +733,184 @@
         } catch (error) {
           console.error(`Error loading ${sectionName} data:`, error);
         }
+      }
+
+      async function loadLineupOptimizerData() {
+        const lineupSection = document.getElementById('lineup');
+        if (!lineupSection) return;
+        
+        const featureCards = lineupSection.querySelectorAll('.feature-card');
+        
+        // Get optimal lineup and analysis
+        const optimalLineupData = await fantasyRosterApp.generateOptimalLineup();
+        const sitStartRecommendations = fantasyRosterApp.getSitStartRecommendations();
+        const rosterAnalysis = fantasyRosterApp.getRosterAnalysis();
+        const currentRoster = fantasyRosterApp.getUserRoster();
+        
+        // Update optimization results
+        if (featureCards[0] && optimalLineupData) {
+          let optimizationHTML = '<h4>Your Lineup Analysis</h4>';
+          optimizationHTML += `<p>Total Projected Points: <strong>${optimalLineupData.totalProjection.toFixed(1)}</strong></p>`;
+          optimizationHTML += `<p>Lineup Confidence: <strong>${optimalLineupData.confidence}</strong></p>`;
+          optimizationHTML += `<p>Team Record: <strong>${currentRoster.record.wins}-${currentRoster.record.losses}</strong></p>`;
+          optimizationHTML += `<p>Playoff Seed: <strong>#${currentRoster.playoffSeed}</strong></p>`;
+          featureCards[0].innerHTML = optimizationHTML;
+        }
+        
+        // Update suggested changes
+        if (featureCards[1] && optimalLineupData.recommendations.length > 0) {
+          let changesHTML = '<h4>Lineup Recommendations</h4>';
+          optimalLineupData.recommendations.slice(0, 3).forEach((rec, index) => {
+            changesHTML += `<p>${index + 1}. ${rec.message}</p>`;
+            if (rec.impact) {
+              changesHTML += `<p style="color: #4ade80; font-size: 0.9em">   Impact: ${rec.impact}</p>`;
+            }
+          });
+          featureCards[1].innerHTML = changesHTML;
+        }
+        
+        // Update risk analysis
+        if (featureCards[2]) {
+          let riskHTML = '<h4>Roster Risk Analysis</h4>';
+          
+          // Count injured players
+          const injuredPlayers = currentRoster.roster.filter(p => 
+            p.injury && p.injury !== 'Healthy'
+          );
+          
+          if (injuredPlayers.length > 0) {
+            riskHTML += `<p style="color: #f97316">⚠️ ${injuredPlayers.length} players with injury concerns</p>`;
+            injuredPlayers.slice(0, 2).forEach(player => {
+              riskHTML += `<p style="font-size: 0.9em">   ${player.name} (${player.injury})</p>`;
+            });
+          } else {
+            riskHTML += '<p style="color: #4ade80">✅ No injury concerns this week</p>';
+          }
+          
+          // Add depth analysis
+          if (rosterAnalysis) {
+            if (rosterAnalysis.weaknesses.length > 0) {
+              riskHTML += `<p style="color: #fbbf24">📊 Depth Concerns: ${rosterAnalysis.weaknesses[0]}</p>`;
+            }
+          }
+          
+          featureCards[2].innerHTML = riskHTML;
+        }
+        
+        // Update matchup grades with actual roster
+        if (featureCards[3]) {
+          let matchupHTML = '<h4>Your Players This Week</h4>';
+          
+          const starters = fantasyRosterApp.getStartingLineup();
+          const positionGroups = {
+            QB: starters.filter(p => p.position === 'QB'),
+            RB: starters.filter(p => p.position === 'RB'),
+            WR: starters.filter(p => p.position === 'WR'),
+            TE: starters.filter(p => p.position === 'TE')
+          };
+          
+          Object.entries(positionGroups).forEach(([pos, players]) => {
+            if (players.length > 0) {
+              const avgProjection = players.reduce((sum, p) => sum + fantasyRosterApp.getStaticProjection(p), 0) / players.length;
+              let grade = avgProjection >= 18 ? 'A+' : avgProjection >= 15 ? 'A' : avgProjection >= 12 ? 'B+' : avgProjection >= 10 ? 'B' : 'C';
+              matchupHTML += `<p><strong>${pos}:</strong> ${grade} (${players.map(p => p.name.split(' ')[1]).join(', ')})</p>`;
+            }
+          });
+          
+          featureCards[3].innerHTML = matchupHTML;
+        }
+        
+        console.log('✅ Lineup optimizer data loaded with user roster');
+      }
+
+      async function loadRosterData() {
+        if (!fantasyRosterApp) return;
+        
+        const currentRoster = fantasyRosterApp.getUserRoster();
+        const optimalLineupData = await fantasyRosterApp.generateOptimalLineup();
+        const sitStartRecommendations = fantasyRosterApp.getSitStartRecommendations();
+        const rosterAnalysis = fantasyRosterApp.getRosterAnalysis();
+        
+        // Update starting lineup display
+        const startingLineupDiv = document.getElementById('starting-lineup-display');
+        if (startingLineupDiv && optimalLineupData) {
+          let lineupHTML = '';
+          
+          optimalLineupData.lineup.forEach(player => {
+            const statusIcon = player.injury !== 'Healthy' ? '🟡' : '✅';
+            lineupHTML += `<p>${statusIcon} <strong>${player.lineupPosition}:</strong> ${player.name} (${player.team}) - ${player.projection} pts</p>`;
+          });
+          
+          lineupHTML += `<hr><p style="color: #4ade80; font-weight: bold">Total: ${optimalLineupData.totalProjection.toFixed(1)} points</p>`;
+          startingLineupDiv.innerHTML = lineupHTML;
+        }
+        
+        // Update bench players display
+        const benchDiv = document.getElementById('bench-players-display');
+        if (benchDiv) {
+          const benchPlayers = fantasyRosterApp.getBench();
+          let benchHTML = '';
+          
+          benchPlayers.forEach(player => {
+            const projection = fantasyRosterApp.getStaticProjection(player);
+            const statusIcon = player.injury !== 'Healthy' ? '🟡' : '✅';
+            benchHTML += `<p>${statusIcon} <strong>${player.position}:</strong> ${player.name} (${player.team}) - ${projection} pts</p>`;
+          });
+          
+          if (benchPlayers.length === 0) {
+            benchHTML = '<p>No bench players</p>';
+          }
+          
+          benchDiv.innerHTML = benchHTML;
+        }
+        
+        // Update roster stats
+        const statsDiv = document.getElementById('roster-stats-display');
+        if (statsDiv && currentRoster) {
+          let statsHTML = `<p><strong>Team:</strong> ${currentRoster.teamName}</p>`;
+          statsHTML += `<p><strong>Record:</strong> ${currentRoster.record.wins}-${currentRoster.record.losses}</p>`;
+          statsHTML += `<p><strong>Points For:</strong> ${currentRoster.pointsFor}</p>`;
+          statsHTML += `<p><strong>Playoff Seed:</strong> #${currentRoster.playoffSeed}</p>`;
+          statsHTML += `<p><strong>Draft Position:</strong> ${currentRoster.draftPosition}</p>`;
+          
+          // Add strengths/weaknesses
+          if (rosterAnalysis) {
+            if (rosterAnalysis.strengths.length > 0) {
+              statsHTML += `<p style="color: #4ade80">💪 ${rosterAnalysis.strengths[0]}</p>`;
+            }
+            if (rosterAnalysis.weaknesses.length > 0) {
+              statsHTML += `<p style="color: #f97316">⚠️ ${rosterAnalysis.weaknesses[0]}</p>`;
+            }
+          }
+          
+          statsDiv.innerHTML = statsHTML;
+        }
+        
+        // Update sit/start recommendations
+        const sitStartDiv = document.getElementById('sit-start-display');
+        if (sitStartDiv) {
+          let recommendationsHTML = '';
+          
+          if (optimalLineupData && optimalLineupData.recommendations.length > 0) {
+            optimalLineupData.recommendations.forEach((rec, index) => {
+              recommendationsHTML += `<p><strong>${index + 1}.</strong> ${rec.message}</p>`;
+              if (rec.impact) {
+                recommendationsHTML += `<p style="color: #4ade80; font-size: 0.9em">   ${rec.impact}</p>`;
+              }
+            });
+          } else {
+            recommendationsHTML = '<p>✅ Your current lineup is optimal!</p>';
+          }
+          
+          // Add position-specific recommendations
+          sitStartRecommendations.slice(0, 2).forEach(posRec => {
+            recommendationsHTML += `<p><strong>${posRec.position}:</strong> Start ${posRec.start.name}</p>`;
+          });
+          
+          sitStartDiv.innerHTML = recommendationsHTML;
+        }
+        
+        console.log('✅ Roster data loaded successfully');
       }
 
       async function loadProjectionsData() {
