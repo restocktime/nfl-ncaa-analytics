@@ -405,6 +405,7 @@
     <!-- Scripts -->
     <script src="api-sports-odds-integration.js"></script>
     <script src="betting-odds-integration.js"></script>
+    <script src="hardrock-integration.js"></script>
     <script>
         class BettingOddsDashboard {
             constructor() {
@@ -1077,31 +1078,137 @@
                 };
                 return icons[betType] || '🎰';
             }
+
+            // Initialize Hard Rock Bet testing
+            initializeHardRockTest() {
+                this.hardRockIntegration = new HardRockBetIntegration();
+                console.log('🎰 Hard Rock Bet integration initialized');
+            }
+
+            // Test Hard Rock Bet connection
+            async testHardRockIntegration() {
+                const statusElement = document.getElementById('hardrock-status');
+                const button = event.target;
+                
+                try {
+                    button.disabled = true;
+                    button.innerHTML = '🔄 Testing...';
+                    statusElement.textContent = 'Testing connection...';
+                    statusElement.className = 'text-xs text-yellow-400';
+                    
+                    console.log('🧪 Testing Hard Rock Bet connection...');
+                    
+                    const events = await this.hardRockIntegration.getEvents();
+                    
+                    if (events && events.length > 0) {
+                        statusElement.textContent = `✅ Connected - ${events.length} events`;
+                        statusElement.className = 'text-xs text-green-400';
+                        
+                        button.innerHTML = '✅ Connection Successful!';
+                        button.className = 'bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all';
+                        
+                        // Update the odds data with Hard Rock results
+                        this.updateProvidersWithHardRock(events);
+                        
+                        this.showNotification('✅ Hard Rock Bet connection successful!', 'success');
+                    } else {
+                        throw new Error('No events returned from Hard Rock Bet');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Hard Rock Bet test failed:', error);
+                    
+                    statusElement.textContent = `❌ Connection failed`;
+                    statusElement.className = 'text-xs text-red-400';
+                    
+                    button.innerHTML = '❌ Connection Failed - Retry';
+                    button.className = 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105';
+                    
+                    this.showNotification(`❌ Hard Rock Bet connection failed: ${error.message}`, 'error');
+                } finally {
+                    button.disabled = false;
+                }
+            }
+
+            // Update providers with Hard Rock data
+            updateProvidersWithHardRock(events) {
+                const hardRockData = this.hardRockIntegration.parseEvents(events);
+                
+                if (hardRockData && hardRockData.length > 0) {
+                    console.log(`🏈 Hard Rock Bet: Found ${hardRockData.length} games`);
+                    
+                    // Add Hard Rock as a successful provider
+                    if (!this.latestOdds) {
+                        this.latestOdds = { success: [], failed: [], totalGames: 0, totalBets: 0 };
+                    }
+                    
+                    const hardRockProvider = {
+                        provider: 'hardrock',
+                        name: 'Hard Rock Bet',
+                        games: hardRockData,
+                        totalBets: this.hardRockIntegration.countTotalBets(hardRockData)
+                    };
+                    
+                    this.latestOdds.success.push(hardRockProvider);
+                    this.latestOdds.totalGames += hardRockData.length;
+                    this.latestOdds.totalBets += hardRockProvider.totalBets;
+                    
+                    // Update the odds comparison display
+                    this.displayOddsComparison();
+                }
+            }
         }
 
         // Initialize dashboard when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             window.bettingDashboard = new BettingOddsDashboard();
             
-            // Initialize odds widget with obfuscated key
+            // Initialize odds widget with fallback handling
             setTimeout(() => {
                 const widget = document.getElementById('odds-widget');
-                const apiIntegration = new RealOddsAPIIntegration();
-                const widgetKey = apiIntegration.apiProviders.oddsapi.widgetKey;
+                const widgetLoading = document.getElementById('widget-loading');
                 
-                if (widgetKey && widget) {
-                    widget.src = `https://widgets.the-odds-api.com/nfl?apikey=${widgetKey}`;
-                    console.log('🏈 Live odds widget initialized');
-                } else {
-                    console.warn('⚠️ Widget key not found, widget will show placeholder');
-                    document.getElementById('widget-loading').innerHTML = `
-                        <div class="text-center py-12">
-                            <div class="text-4xl mb-4">📊</div>
-                            <p class="text-lg text-gray-300">Widget Configuration Required</p>
-                            <p class="text-sm text-gray-400 mt-2">Live odds available via API in sections below</p>
+                // The Odds API widget domain is currently unreachable
+                // Show custom live odds feed instead
+                console.log('🏈 Using custom live odds feed due to widget DNS issues');
+                
+                widgetLoading.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-5xl mb-4">🏈</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Live NFL Odds Feed</h3>
+                        <p class="text-blue-300 mb-4">Real-time data from multiple sportsbooks</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                            <div class="bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-lg p-4 border border-red-500/30">
+                                <div class="text-red-400 font-semibold mb-1">Hard Rock Bet</div>
+                                <div id="hardrock-status" class="text-xs text-gray-300">Connecting...</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-600/20 to-green-700/20 rounded-lg p-4 border border-green-500/30">
+                                <div class="text-green-400 font-semibold mb-1">The Odds API</div>
+                                <div id="oddsapi-status" class="text-xs text-gray-300">Ready</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-600/20 to-blue-700/20 rounded-lg p-4 border border-blue-500/30">
+                                <div class="text-blue-400 font-semibold mb-1">Live Analysis</div>
+                                <div id="analysis-status" class="text-xs text-gray-300">Active</div>
+                            </div>
                         </div>
-                    `;
-                }
+                        
+                        <div class="mt-6">
+                            <button onclick="window.bettingDashboard.testHardRockIntegration()" 
+                                    class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105">
+                                🎰 Test Hard Rock Bet Connection
+                            </button>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mt-4">
+                            Live odds available in ML Analysis section below
+                        </p>
+                    </div>
+                `;
+                
+                // Initialize Hard Rock integration test
+                window.bettingDashboard.initializeHardRockTest();
+                
             }, 1000);
         });
     </script>

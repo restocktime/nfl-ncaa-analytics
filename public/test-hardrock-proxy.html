@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hard Rock Bet Proxy Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #1a1a2e; 
+            color: white; 
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        button { 
+            background: #6366f1; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px; 
+        }
+        button:hover { background: #5855eb; }
+        button:disabled { background: #6b7280; cursor: not-allowed; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Hard Rock Bet CORS Proxy Test</h1>
+        <p>Testing the server-side proxy to bypass CORS restrictions</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>🏈 Direct Proxy Tests</h3>
+                <button onclick="testProxyDirect('events')">Test Events Endpoint</button>
+                <button onclick="testProxyDirect('live')">Test Live Events</button>
+                <button onclick="testProxyHealth()">Test Proxy Health</button>
+            </div>
+            
+            <div class="card">
+                <h3>🔧 Integration Tests</h3>
+                <button onclick="testHardRockIntegration()">Test Full Integration</button>
+                <button onclick="testDataParsing()">Test Data Parsing</button>
+                <button onclick="testCacheSystem()">Test Cache System</button>
+            </div>
+            
+            <div class="card">
+                <h3>🎯 Performance Tests</h3>
+                <button onclick="testMultipleRequests()">Test Multiple Requests</button>
+                <button onclick="testConcurrentRequests()">Test Concurrent Requests</button>
+                <button onclick="clearAllCaches()">Clear All Caches</button>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="hardrock-integration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        let testCount = 0;
+
+        function log(message, type = 'info') {
+            testCount++;
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>[${testCount}]</strong> ${message}`;
+            results.appendChild(div);
+            console.log(`[${testCount}] ${message}`);
+            
+            // Auto-scroll to latest result
+            div.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function clearResults() {
+            results.innerHTML = '';
+            testCount = 0;
+        }
+
+        // Test direct proxy endpoints
+        async function testProxyDirect(action) {
+            log(`🧪 Testing proxy direct: ${action}`, 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const url = `hardrock-proxy.php?action=${action}`;
+                log(`📡 Fetching: ${url}`, 'info');
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    log(`✅ ${action} proxy success: ${JSON.stringify(data).substring(0, 200)}...`, 'success');
+                    
+                    if (data.data && Array.isArray(data.data)) {
+                        log(`📊 Data array length: ${data.data.length}`, 'info');
+                        if (data.data.length > 0) {
+                            log(`📝 Sample item keys: ${Object.keys(data.data[0]).join(', ')}`, 'info');
+                        }
+                    }
+                } else {
+                    log(`❌ ${action} proxy failed: ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ ${action} proxy error: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test proxy health
+        async function testProxyHealth() {
+            log('🔍 Testing proxy health and connectivity', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                // Test with a simple events call
+                const response = await fetch('hardrock-proxy.php?action=events');
+                const responseText = await response.text();
+                
+                log(`📊 Response status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error');
+                log(`📏 Response size: ${responseText.length} characters`, 'info');
+                log(`🕐 Response time: measured client-side`, 'info');
+                
+                if (responseText.includes('success')) {
+                    log('✅ Proxy appears to be healthy', 'success');
+                } else {
+                    log('⚠️ Proxy response may have issues', 'warning');
+                    log(`Response preview: ${responseText.substring(0, 300)}`, 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ Proxy health check failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test full Hard Rock integration
+        async function testHardRockIntegration() {
+            log('🎰 Testing full Hard Rock Bet integration', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                log('📦 HardRockBetIntegration instance created', 'success');
+                
+                const events = await integration.getEvents();
+                log(`🏈 Events fetched: ${events ? events.length : 0} events`, 
+                    events && events.length > 0 ? 'success' : 'warning');
+                
+                if (events && events.length > 0) {
+                    const parsedGames = integration.parseEvents(events);
+                    log(`⚽ Parsed games: ${parsedGames.length}`, 'success');
+                    
+                    if (parsedGames.length > 0) {
+                        const sample = parsedGames[0];
+                        log(`📋 Sample game: ${sample.awayTeam} @ ${sample.homeTeam}`, 'info');
+                        log(`🎯 Available bets: ${Object.keys(sample.bets).join(', ')}`, 'info');
+                    }
+                    
+                    const totalBets = integration.countTotalBets(parsedGames);
+                    log(`🎲 Total bets available: ${totalBets}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`❌ Integration test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test data parsing
+        async function testDataParsing() {
+            log('🔬 Testing Hard Rock data parsing logic', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                
+                // Test with mock data
+                const mockEvent = {
+                    id: 'test123',
+                    sport: 'AMERICAN_FOOTBALL',
+                    home_team: { name: 'Kansas City Chiefs' },
+                    away_team: { name: 'Buffalo Bills' },
+                    start_time: new Date().toISOString(),
+                    status: 'upcoming',
+                    markets: [
+                        {
+                            type: 'POINT_SPREAD',
+                            outcomes: [
+                                { handicap: -3.5, odds: -110 },
+                                { handicap: 3.5, odds: -110 }
+                            ]
+                        }
+                    ]
+                };
+                
+                const parsed = integration.parseEvents([mockEvent]);
+                log(`✅ Mock data parsed: ${parsed.length} games`, 'success');
+                
+                if (parsed.length > 0) {
+                    const game = parsed[0];
+                    log(`🏈 Parsed game: ${game.awayTeam} @ ${game.homeTeam}`, 'success');
+                    log(`📊 Has spread: ${!!game.bets.spread}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`❌ Parsing test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test cache system
+        async function testCacheSystem() {
+            log('💾 Testing cache system functionality', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                
+                log('🗑️ Clearing cache first', 'info');
+                integration.clearCache();
+                
+                log('📡 First request (should hit server)', 'info');
+                const start1 = Date.now();
+                await integration.getEvents();
+                const time1 = Date.now() - start1;
+                log(`⏱️ First request took: ${time1}ms`, 'info');
+                
+                log('📡 Second request (should hit cache)', 'info');
+                const start2 = Date.now();
+                await integration.getEvents();
+                const time2 = Date.now() - start2;
+                log(`⏱️ Second request took: ${time2}ms`, time2 < time1 ? 'success' : 'warning');
+                
+                if (time2 < time1) {
+                    log('✅ Cache appears to be working correctly', 'success');
+                } else {
+                    log('⚠️ Cache may not be working as expected', 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ Cache test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test multiple sequential requests
+        async function testMultipleRequests() {
+            log('🔄 Testing multiple sequential requests', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                const requests = ['events', 'live'];
+                
+                for (const action of requests) {
+                    log(`📡 Testing ${action}...`, 'info');
+                    const result = await integration.fetchThroughProxy(action);
+                    log(`✅ ${action}: ${Array.isArray(result) ? result.length + ' items' : 'success'}`, 'success');
+                }
+                
+            } catch (error) {
+                log(`❌ Multiple requests test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test concurrent requests
+        async function testConcurrentRequests() {
+            log('⚡ Testing concurrent requests', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                
+                log('🚀 Launching 3 concurrent requests...', 'info');
+                const start = Date.now();
+                
+                const promises = [
+                    integration.fetchThroughProxy('events'),
+                    integration.fetchThroughProxy('live'),
+                    integration.fetchThroughProxy('events') // Duplicate to test cache
+                ];
+                
+                const results = await Promise.all(promises);
+                const totalTime = Date.now() - start;
+                
+                log(`✅ All concurrent requests completed in ${totalTime}ms`, 'success');
+                results.forEach((result, index) => {
+                    log(`📊 Request ${index + 1}: ${Array.isArray(result) ? result.length + ' items' : 'success'}`, 'info');
+                });
+                
+            } catch (error) {
+                log(`❌ Concurrent requests test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Clear all caches
+        function clearAllCaches() {
+            log('🧹 Clearing all caches and results', 'info');
+            
+            try {
+                if (window.HardRockBetIntegration) {
+                    const integration = new HardRockBetIntegration();
+                    integration.clearCache();
+                    log('✅ Hard Rock cache cleared', 'success');
+                }
+                
+                // Clear this page's results
+                setTimeout(() => {
+                    clearResults();
+                    log('🧹 Test results cleared', 'success');
+                }, 1000);
+                
+            } catch (error) {
+                log(`❌ Cache clear failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run basic connectivity test on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('🚀 Auto-running basic connectivity test...', 'info');
+                testProxyHealth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

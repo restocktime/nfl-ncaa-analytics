@@ -893,13 +893,34 @@ class RealOddsAPIIntegration {
             }
         }
 
-        // Web scraping disabled due to CORS issues
-        console.log('⚠️ Web scraping disabled - CORS restrictions prevent direct sportsbook access');
-        results.failed.push({
-            provider: 'hardrock',
-            name: 'Hard Rock Bet (Scraped)',
-            error: 'CORS restrictions prevent web scraping'
-        });
+        // Try Hard Rock Bet via CORS proxy
+        try {
+            console.log('🎰 Attempting Hard Rock Bet via CORS proxy...');
+            
+            // Check if HardRockBetIntegration is available
+            if (typeof HardRockBetIntegration === 'undefined') {
+                throw new Error('Hard Rock Bet integration not loaded');
+            }
+            
+            const hardRockIntegration = new HardRockBetIntegration();
+            const hardRockData = await hardRockIntegration.getAllOdds();
+            
+            if (hardRockData && hardRockData.games.length > 0) {
+                results.success.push(hardRockData);
+                results.totalGames += hardRockData.games.length;
+                results.totalBets += hardRockData.totalBets;
+                console.log('✅ Hard Rock Bet: Success via proxy');
+            } else {
+                throw new Error('No games returned from Hard Rock Bet');
+            }
+        } catch (error) {
+            console.log('❌ Hard Rock Bet proxy failed:', error.message);
+            results.failed.push({
+                provider: 'hardrock',
+                name: 'Hard Rock Bet (Proxy)',
+                error: error.message
+            });
+        }
 
         results.providers = results.success.map(r => r.provider);
         
