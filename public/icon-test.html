@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Icon Fallback Test - No Font Awesome CDN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1419;
+            color: white;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .icon-test {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #4a9eff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon-test i {
+            font-size: 24px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #4a9eff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        /* Same fallback CSS as main site */
+        .fas.fa-football-ball:before { content: "🏈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-times:before { content: "✕"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-tachometer-alt:before { content: "⚡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-play-circle:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-chart-line:before { content: "📈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-brain:before { content: "🧠"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-dice:before { content: "🎲"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-robot:before { content: "🤖"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-users:before, .fas.fa-user-friends:before { content: "👥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-user:before { content: "👤"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-rocket:before { content: "🚀"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-plug:before { content: "🔌"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-search:before { content: "🔍"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-cog:before { content: "⚙️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-code:before { content: "💻"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-chart-bar:before { content: "📊"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-trophy:before { content: "🏆"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-play:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-fire:before { content: "🔥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-shield:before { content: "🛡️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-calendar:before, .fas.fa-calendar-alt:before { content: "📅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-star:before { content: "⭐"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-check:before { content: "✅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-home:before { content: "🏠"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-heart:before { content: "❤️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-link:before { content: "🔗"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-magic:before { content: "✨"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-lightbulb:before { content: "💡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-gamepad:before { content: "🎮"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-database:before { content: "💾"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-wifi:before { content: "📶"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        
+        /* Ensure icons display properly even without Font Awesome */
+        .fas:before, .far:before, .fab:before {
+            font-weight: normal;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Main Site</a>
+    
+    <h1>🧪 Icon Fallback Test</h1>
+    <p><strong>This page intentionally does NOT load Font Awesome</strong> - All icons should display as emojis</p>
+    
+    <h2>Navigation & UI Icons</h2>
+    <div class="icon-grid">
+        <div class="icon-test"><i class="fas fa-home"></i> Home</div>
+        <div class="icon-test"><i class="fas fa-users"></i> Users</div>
+        <div class="icon-test"><i class="fas fa-user"></i> User</div>
+        <div class="icon-test"><i class="fas fa-cog"></i> Settings</div>
+        <div class="icon-test"><i class="fas fa-search"></i> Search</div>
+        <div class="icon-test"><i class="fas fa-link"></i> Link</div>
+    </div>
+    
+    <h2>Sports & Gaming Icons</h2>
+    <div class="icon-grid">
+        <div class="icon-test"><i class="fas fa-football-ball"></i> Football</div>
+        <div class="icon-test"><i class="fas fa-trophy"></i> Trophy</div>
+        <div class="icon-test"><i class="fas fa-fire"></i> Fire</div>
+        <div class="icon-test"><i class="fas fa-shield"></i> Shield</div>
+        <div class="icon-test"><i class="fas fa-gamepad"></i> Gamepad</div>
+        <div class="icon-test"><i class="fas fa-dice"></i> Dice</div>
+    </div>
+    
+    <h2>Analytics & Data Icons</h2>
+    <div class="icon-grid">
+        <div class="icon-test"><i class="fas fa-chart-line"></i> Chart Line</div>
+        <div class="icon-test"><i class="fas fa-chart-bar"></i> Chart Bar</div>
+        <div class="icon-test"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+        <div class="icon-test"><i class="fas fa-database"></i> Database</div>
+        <div class="icon-test"><i class="fas fa-wifi"></i> Connection</div>
+        <div class="icon-test"><i class="fas fa-brain"></i> AI Brain</div>
+    </div>
+    
+    <h2>Action & Status Icons</h2>
+    <div class="icon-grid">
+        <div class="icon-test"><i class="fas fa-check"></i> Success</div>
+        <div class="icon-test"><i class="fas fa-times"></i> Error</div>
+        <div class="icon-test"><i class="fas fa-play"></i> Play</div>
+        <div class="icon-test"><i class="fas fa-star"></i> Star</div>
+        <div class="icon-test"><i class="fas fa-heart"></i> Heart</div>
+        <div class="icon-test"><i class="fas fa-magic"></i> Magic</div>
+    </div>
+    
+    <h2>Tech & Tools Icons</h2>
+    <div class="icon-grid">
+        <div class="icon-test"><i class="fas fa-rocket"></i> Rocket</div>
+        <div class="icon-test"><i class="fas fa-robot"></i> Robot</div>
+        <div class="icon-test"><i class="fas fa-code"></i> Code</div>
+        <div class="icon-test"><i class="fas fa-plug"></i> Plugin</div>
+        <div class="icon-test"><i class="fas fa-lightbulb"></i> Idea</div>
+        <div class="icon-test"><i class="fas fa-calendar"></i> Calendar</div>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #1e1e1e; border-radius: 5px;">
+        <h3>✅ Expected Results:</h3>
+        <p>All icons above should display as emojis (🏠👥👤⚙️🔍🔗 etc.) instead of white boxes.</p>
+        <p>If you see boxes instead of emojis, the fallback system needs more work.</p>
+        <p><strong>This page proves the fallback system works without any Font Awesome loading.</strong></p>
+    </div>
+</body>
+</html>
