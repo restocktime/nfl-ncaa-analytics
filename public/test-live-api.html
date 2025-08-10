@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel API Test - Hard Rock Bet</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #0f172a; 
+            color: white; 
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .result { 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+        }
+        .success { 
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%); 
+            color: #22c55e; 
+            border-left: 4px solid #22c55e;
+        }
+        .error { 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%); 
+            color: #ef4444; 
+            border-left: 4px solid #ef4444;
+        }
+        .info { 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%); 
+            color: #3b82f6; 
+            border-left: 4px solid #3b82f6;
+        }
+        .warning { 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%); 
+            color: #f59e0b; 
+            border-left: 4px solid #f59e0b;
+        }
+        button { 
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 8px; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        button:disabled { 
+            background: #6b7280; 
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .card h3 {
+            color: #60a5fa;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-good { color: #22c55e; }
+        .status-bad { color: #ef4444; }
+        .status-unknown { color: #f59e0b; }
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Vercel API Test</h1>
+        <p class="subtitle">Testing Hard Rock Bet integration via Vercel serverless functions</p>
+        
+        <div id="api-status" class="card" style="margin-bottom: 20px;">
+            <h3>📡 API Status</h3>
+            <div id="status-display">
+                <span class="status-unknown">● Checking API status...</span>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>🎯 Direct API Tests</h3>
+                <button onclick="testDirectAPI('events')">Test Events Endpoint</button>
+                <button onclick="testDirectAPI('live')">Test Live Events</button>
+                <button onclick="testAPIHealth()">Check API Health</button>
+            </div>
+            
+            <div class="card">
+                <h3>🔧 Integration Tests</h3>
+                <button onclick="testVercelIntegration()">Test Full Integration</button>
+                <button onclick="testPerformance()">Performance Test</button>
+                <button onclick="testConcurrency()">Concurrency Test</button>
+            </div>
+            
+            <div class="card">
+                <h3>🛠️ Utilities</h3>
+                <button onclick="clearAllData()">Clear Cache & Results</button>
+                <button onclick="exportTestResults()">Export Results</button>
+                <button onclick="runFullSuite()">Run Full Test Suite</button>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="hardrock-vercel-integration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        const statusDisplay = document.getElementById('status-display');
+        let testCount = 0;
+        let testResults = [];
+
+        function log(message, type = 'info', details = null) {
+            testCount++;
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>[${testCount}] ${timestamp}</strong> ${message}`;
+            
+            if (details) {
+                div.innerHTML += `\n\n${JSON.stringify(details, null, 2)}`;
+            }
+            
+            results.appendChild(div);
+            console.log(`[${testCount}] ${message}`, details);
+            
+            // Store for export
+            testResults.push({
+                id: testCount,
+                timestamp: timestamp,
+                message: message,
+                type: type,
+                details: details
+            });
+            
+            // Auto-scroll to latest result
+            div.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateAPIStatus(status, message) {
+            const statusClass = status === 'good' ? 'status-good' : 
+                               status === 'bad' ? 'status-bad' : 'status-unknown';
+            statusDisplay.innerHTML = `<span class="${statusClass}">● ${message}</span>`;
+        }
+
+        // Test direct API endpoints
+        async function testDirectAPI(action) {
+            log(`🧪 Testing direct API: /api/hardrock?action=${action}`, 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const url = `/api/hardrock?action=${action}`;
+                log(`📡 Fetching: ${url}`, 'info');
+                
+                const start = Date.now();
+                const response = await fetch(url);
+                const duration = Date.now() - start;
+                
+                log(`⏱️ Response time: ${duration}ms`, 'info');
+                log(`📊 Response status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    log(`✅ ${action} API success`, 'success', {
+                        itemCount: Array.isArray(data.data) ? data.data.length : 1,
+                        metadata: data.metadata
+                    });
+                    
+                    updateAPIStatus('good', 'API responding normally');
+                } else {
+                    log(`❌ ${action} API failed: ${data.error}`, 'error', data);
+                    updateAPIStatus('bad', 'API returning errors');
+                }
+                
+            } catch (error) {
+                log(`❌ ${action} API error: ${error.message}`, 'error');
+                updateAPIStatus('bad', 'API connection failed');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test API health
+        async function testAPIHealth() {
+            log('🔍 Testing API health and connectivity', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const tests = [
+                    { endpoint: '/api/hardrock?action=events', name: 'Events' },
+                    { endpoint: '/api/hardrock?action=live', name: 'Live Events' }
+                ];
+                
+                const healthResults = [];
+                
+                for (const test of tests) {
+                    try {
+                        const start = Date.now();
+                        const response = await fetch(test.endpoint);
+                        const duration = Date.now() - start;
+                        const data = await response.json();
+                        
+                        healthResults.push({
+                            name: test.name,
+                            success: data.success,
+                            duration: duration,
+                            status: response.status,
+                            error: data.error || null
+                        });
+                        
+                    } catch (error) {
+                        healthResults.push({
+                            name: test.name,
+                            success: false,
+                            error: error.message
+                        });
+                    }
+                }
+                
+                const successfulTests = healthResults.filter(r => r.success);
+                const overallHealth = successfulTests.length / healthResults.length;
+                
+                if (overallHealth === 1) {
+                    log('✅ All API endpoints healthy', 'success', healthResults);
+                    updateAPIStatus('good', 'All systems operational');
+                } else if (overallHealth > 0) {
+                    log(`⚠️ Partial API health: ${successfulTests.length}/${healthResults.length} endpoints working`, 'warning', healthResults);
+                    updateAPIStatus('unknown', 'Some endpoints failing');
+                } else {
+                    log('❌ All API endpoints failing', 'error', healthResults);
+                    updateAPIStatus('bad', 'All endpoints down');
+                }
+                
+            } catch (error) {
+                log(`❌ Health check failed: ${error.message}`, 'error');
+                updateAPIStatus('bad', 'Health check failed');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Test full Vercel integration
+        async function testVercelIntegration() {
+            log('🎰 Testing full Vercel integration', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                log('📦 Integration instance created', 'success');
+                
+                // Test API status method
+                const apiStatus = await integration.getAPIStatus();
+                log(`📊 API Status: ${apiStatus.status}`, 
+                    apiStatus.status === 'fully_operational' ? 'success' : 'warning', 
+                    apiStatus);
+                
+                // Test events fetching
+                const events = await integration.getEvents();
+                log(`🏈 Events fetched: ${events ? events.length : 0} events`, 
+                    events && events.length > 0 ? 'success' : 'warning');
+                
+                if (events && events.length > 0) {
+                    const parsedGames = integration.parseEvents(events);
+                    log(`⚽ Parsed games: ${parsedGames.length}`, 'success');
+                    
+                    if (parsedGames.length > 0) {
+                        const sample = parsedGames[0];
+                        log(`📋 Sample game: ${sample.awayTeam} @ ${sample.homeTeam}`, 'info');
+                        log(`🎯 Available bets: ${Object.keys(sample.bets).join(', ')}`, 'info');
+                        
+                        const totalBets = integration.countTotalBets(parsedGames);
+                        log(`🎲 Total bets available: ${totalBets}`, 'info');
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ Integration test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Performance test
+        async function testPerformance() {
+            log('⚡ Running performance tests', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                
+                // Clear cache for accurate timing
+                integration.clearCache();
+                
+                // Test multiple requests
+                const iterations = 3;
+                const times = [];
+                
+                for (let i = 0; i < iterations; i++) {
+                    log(`📡 Performance test iteration ${i + 1}/${iterations}`, 'info');
+                    
+                    const start = Date.now();
+                    await integration.getEvents();
+                    const duration = Date.now() - start;
+                    
+                    times.push(duration);
+                    log(`⏱️ Iteration ${i + 1}: ${duration}ms`, 'info');
+                }
+                
+                const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
+                const minTime = Math.min(...times);
+                const maxTime = Math.max(...times);
+                
+                log(`📊 Performance Results:`, 'success', {
+                    averageTime: `${avgTime.toFixed(2)}ms`,
+                    minTime: `${minTime}ms`,
+                    maxTime: `${maxTime}ms`,
+                    allTimes: times
+                });
+                
+                if (avgTime < 2000) {
+                    log('✅ Performance: Excellent (<2s average)', 'success');
+                } else if (avgTime < 5000) {
+                    log('⚠️ Performance: Good (<5s average)', 'warning');
+                } else {
+                    log('❌ Performance: Poor (>5s average)', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Performance test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Concurrency test
+        async function testConcurrency() {
+            log('🚀 Testing concurrent requests', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                const integration = new HardRockBetIntegration();
+                
+                log('🔄 Launching 3 concurrent requests...', 'info');
+                const start = Date.now();
+                
+                const promises = [
+                    integration.getEvents(),
+                    integration.getLiveEvents(),
+                    integration.getEvents() // Duplicate to test caching
+                ];
+                
+                const results = await Promise.all(promises);
+                const totalTime = Date.now() - start;
+                
+                log(`✅ All concurrent requests completed in ${totalTime}ms`, 'success');
+                
+                results.forEach((result, index) => {
+                    const requestName = ['Events', 'Live Events', 'Events (cached)'][index];
+                    log(`📊 ${requestName}: ${Array.isArray(result) ? result.length + ' items' : 'success'}`, 'info');
+                });
+                
+                log('🎯 Concurrency test completed successfully', 'success');
+                
+            } catch (error) {
+                log(`❌ Concurrency test failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Run full test suite
+        async function runFullSuite() {
+            log('🧪 Starting full test suite...', 'info');
+            
+            const button = event.target;
+            button.disabled = true;
+            
+            try {
+                await testAPIHealth();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await testVercelIntegration();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await testPerformance();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await testConcurrency();
+                
+                log('🎉 Full test suite completed!', 'success');
+                
+            } catch (error) {
+                log(`❌ Test suite failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Clear all data
+        function clearAllData() {
+            results.innerHTML = '';
+            testResults = [];
+            testCount = 0;
+            updateAPIStatus('unknown', 'Status cleared');
+            log('🧹 All data cleared', 'info');
+        }
+
+        // Export test results
+        function exportTestResults() {
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                testCount: testCount,
+                results: testResults
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+                type: 'application/json'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `vercel-api-test-results-${Date.now()}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            log(`📤 Exported ${testResults.length} test results`, 'success');
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('🚀 Auto-running basic connectivity test...', 'info');
+                testAPIHealth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

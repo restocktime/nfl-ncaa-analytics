@@ -1,15 +1,9 @@
 {
   "functions": {
-    "public/api/hardrock.js": {
+    "api/hardrock.js": {
       "runtime": "@vercel/node@18"
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/hardrock",
-      "destination": "/api/hardrock.js"
-    }
-  ],
   "headers": [
     {
       "source": "/api/(.*)",
@@ -28,5 +22,7 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "echo 'Static site build complete'",
+  "outputDirectory": "public"
 }

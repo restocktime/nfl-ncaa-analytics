@@ -25,6 +25,23 @@ export default async function handler(req, res) {
 
     const { action = 'events', eventId } = req.query;
 
+    // Handle health check endpoint
+    if (action === 'health') {
+        return res.status(200).json({
+            success: true,
+            status: 'healthy',
+            service: 'Hard Rock Bet API Proxy',
+            version: '1.0.0',
+            timestamp: new Date().toISOString(),
+            endpoints: ['events', 'live', 'odds'],
+            deployment: {
+                vercel: true,
+                runtime: 'Node.js 18',
+                region: process.env.VERCEL_REGION || 'unknown'
+            }
+        });
+    }
+
     // Hard Rock Bet API endpoints
     const hardRockEndpoints = {
         events: 'https://app.hardrock.bet/api/sportsbook/v3/sports/american_football/leagues/691198679103111169/events',
@@ -33,10 +50,10 @@ export default async function handler(req, res) {
     };
 
     // Validate action
-    if (!hardRockEndpoints[action]) {
+    if (!hardRockEndpoints[action] && action !== 'health') {
         return res.status(400).json({
             success: false,
-            error: `Invalid action. Use: ${Object.keys(hardRockEndpoints).join(', ')}`,
+            error: `Invalid action. Use: ${Object.keys(hardRockEndpoints).join(', ')}, health`,
             timestamp: new Date().toISOString()
         });
     }
