@@ -5,316 +5,457 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fantasy Football Hub</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
+            margin: 0;
+            padding: 20px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0e1a;
+            background-color: #0a0e1a;
             color: white;
             min-height: 100vh;
-            padding: 1rem;
         }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
         .header {
             text-align: center;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: #1a202c;
-            border-radius: 1rem;
+            margin-bottom: 30px;
+            padding: 30px;
+            background-color: #1a202c;
+            border-radius: 15px;
         }
+        
         .header h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             color: #667eea;
         }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #a0aec0;
+        }
+        
         .nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
+        
         .nav-card {
-            background: #1a202c;
+            background-color: #1a202c;
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 1rem;
-            padding: 2rem;
+            border-radius: 15px;
+            padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            /* Mobile touch improvements */
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            min-height: 120px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .nav-card:hover, .nav-card:active {
-            transform: translateY(-4px);
+        
+        .nav-card:hover {
+            transform: translateY(-5px);
             border-color: #667eea;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
+        
         .nav-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
             color: #667eea;
         }
+        
+        .nav-card p {
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+        
         .back-btn {
             position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: #1a202c;
+            top: 20px;
+            right: 20px;
+            background-color: #1a202c;
             color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
+            padding: 15px 20px;
+            border-radius: 10px;
             text-decoration: none;
             border: 1px solid rgba(255,255,255,0.1);
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
             z-index: 1000;
+            font-weight: 500;
         }
+        
         .back-btn:hover {
-            background: #667eea;
+            background-color: #667eea;
         }
-        .content {
-            background: #1a202c;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-top: 2rem;
+        
+        .content-section {
+            background-color: #1a202c;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
             display: none;
         }
-        .content.active {
+        
+        .content-section.active {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .content-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #667eea;
         }
+        
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
+        
         .feature-card {
-            background: #121825;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
+            background-color: #121825;
+            padding: 25px;
+            border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
         }
+        
         .feature-card h4 {
             color: #667eea;
-            margin-bottom: 0.5rem;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
         }
+        
+        .feature-card p {
+            color: #a0aec0;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
         .status {
             position: fixed;
-            bottom: 1rem;
-            left: 1rem;
-            background: #1a202c;
-            padding: 1rem;
-            border-radius: 0.5rem;
+            bottom: 20px;
+            left: 20px;
+            background-color: #1a202c;
+            padding: 15px;
+            border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             z-index: 1000;
+            color: #4ade80;
         }
+        
         @media (max-width: 768px) {
-            .nav-grid { grid-template-columns: 1fr; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .header h1 { font-size: 1.5rem; }
-            .nav-card { min-height: 100px; padding: 1.5rem; }
+            body {
+                padding: 10px;
+            }
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .nav-card {
+                min-height: 120px;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <a href="index.html" class="back-btn">← Back to NFL Analytics</a>
     
-    <div class="header">
-        <h1>🏈 Fantasy Football Hub</h1>
-        <p>Your complete fantasy football management center</p>
-    </div>
-    
-    <div class="nav-grid">
-        <div class="nav-card" onclick="showContent('dashboard')">
-            <h3>📊 Fantasy Dashboard</h3>
-            <p>Overview of your team and weekly performance</p>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 Fantasy Football Hub</h1>
+            <p>Your complete fantasy football management center</p>
         </div>
         
-        <div class="nav-card" onclick="showContent('lineup')">
-            <h3>👥 Lineup Optimizer</h3>
-            <p>AI-powered lineup recommendations</p>
+        <div class="nav-grid">
+            <div class="nav-card" onclick="showSection('dashboard')">
+                <h3>📊 Fantasy Dashboard</h3>
+                <p>Overview of your team, lineup, and weekly performance</p>
+            </div>
+            
+            <div class="nav-card" onclick="showSection('lineup')">
+                <h3>👥 Lineup Optimizer</h3>
+                <p>AI-powered lineup recommendations for maximum points</p>
+            </div>
+            
+            <div class="nav-card" onclick="showSection('waivers')">
+                <h3>🔍 Waiver Wire</h3>
+                <p>Smart waiver wire analysis and pickup recommendations</p>
+            </div>
+            
+            <div class="nav-card" onclick="showSection('trades')">
+                <h3>🔄 Trade Analyzer</h3>
+                <p>Advanced trade evaluation and fair value analysis</p>
+            </div>
+            
+            <div class="nav-card" onclick="showSection('projections')">
+                <h3>📈 Player Projections</h3>
+                <p>ML-powered weekly player performance projections</p>
+            </div>
+            
+            <div class="nav-card" onclick="showSection('settings')">
+                <h3>⚙️ League Setup</h3>
+                <p>Configure your league settings and import data</p>
+            </div>
         </div>
         
-        <div class="nav-card" onclick="showContent('waivers')">
-            <h3>🔍 Waiver Wire</h3>
-            <p>Smart waiver wire analysis</p>
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section">
+            <h2>📊 Fantasy Dashboard</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Current Lineup</h4>
+                    <p><strong>QB:</strong> Josh Allen (BUF) - 24.5 pts</p>
+                    <p><strong>RB:</strong> Christian McCaffrey (SF) - 22.8 pts</p>
+                    <p><strong>RB:</strong> Derrick Henry (BAL) - 18.3 pts</p>
+                    <p><strong>WR:</strong> Tyreek Hill (MIA) - 19.7 pts</p>
+                    <p><strong>WR:</strong> Davante Adams (LV) - 17.2 pts</p>
+                    <p><strong>TE:</strong> Travis Kelce (KC) - 16.8 pts</p>
+                    <p><strong>FLEX:</strong> Saquon Barkley (PHI) - 15.9 pts</p>
+                    <p style="color: #4ade80; font-weight: bold;">Projected Total: 156.5 points</p>
+                </div>
+                <div class="feature-card">
+                    <h4>This Week's Matchups</h4>
+                    <p>Josh Allen vs MIA (Favorable)</p>
+                    <p>CMC @ SEA (Neutral)</p>
+                    <p>Tyreek Hill @ BUF (Tough)</p>
+                    <p>Travis Kelce vs LV (Favorable)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Injury Watch</h4>
+                    <p>✅ All players currently healthy</p>
+                    <p>📅 Monitor practice reports Wednesday</p>
+                    <p>🏥 No injury concerns this week</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Weekly Outlook</h4>
+                    <p>💪 Strong lineup this week</p>
+                    <p>🎯 Consider starting all projected players</p>
+                    <p>🌤️ Weather looks good for all games</p>
+                </div>
+            </div>
         </div>
         
-        <div class="nav-card" onclick="showContent('trades')">
-            <h3>🔄 Trade Analyzer</h3>
-            <p>Advanced trade evaluation</p>
+        <!-- Lineup Section -->
+        <div id="lineup" class="content-section">
+            <h2>👥 Lineup Optimizer</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Optimization Results</h4>
+                    <p>Current lineup is <strong>94% optimized</strong></p>
+                    <p>Potential improvement: <strong>+3.2 points</strong></p>
+                    <p>Recommended changes: <strong>2</strong></p>
+                </div>
+                <div class="feature-card">
+                    <h4>Suggested Changes</h4>
+                    <p>1. Start Jayden Reed over Courtland Sutton (+2.1 pts)</p>
+                    <p>2. Consider Roschon Johnson in FLEX (+1.1 pts)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Risk Analysis</h4>
+                    <p>Current lineup: <strong>Moderate risk</strong></p>
+                    <p>Floor: 128.3 points</p>
+                    <p>Ceiling: 184.7 points</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Matchup Grades</h4>
+                    <p>QB: A+ (vs weak pass defense)</p>
+                    <p>RB: A- (good matchups)</p>
+                    <p>WR: B+ (mixed matchups)</p>
+                    <p>TE: A (favorable target share)</p>
+                </div>
+            </div>
         </div>
         
-        <div class="nav-card" onclick="showContent('projections')">
-            <h3>📈 Player Projections</h3>
-            <p>ML-powered performance projections</p>
+        <!-- Waivers Section -->
+        <div id="waivers" class="content-section">
+            <h2>🔍 Waiver Wire Intelligence</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Top Targets</h4>
+                    <p>1. Jayden Reed (WR, GB) - 92% opportunity score</p>
+                    <p>2. Roschon Johnson (RB, CHI) - 87% opportunity score</p>
+                    <p>3. Darnell Mooney (WR, ATL) - 84% opportunity score</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Breakout Candidates</h4>
+                    <p>Tank Dell (WR, HOU) - Injury return</p>
+                    <p>Tyjae Spears (RB, TEN) - Increased role</p>
+                    <p>Quentin Johnston (WR, LAC) - Target increase</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Injury Replacements</h4>
+                    <p>Monitor practice reports</p>
+                    <p>Handcuff recommendations available</p>
+                    <p>Emergency pickups identified</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Trending Up</h4>
+                    <p>Players gaining ownership</p>
+                    <p>Snap count increases</p>
+                    <p>Target share improvements</p>
+                </div>
+            </div>
         </div>
         
-        <div class="nav-card" onclick="showContent('settings')">
-            <h3>⚙️ League Setup</h3>
-            <p>Configure your league settings</p>
-        </div>
-    </div>
-    
-    <div id="dashboard" class="content">
-        <h2>📊 Fantasy Dashboard</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Current Lineup</h4>
-                <p>QB: Josh Allen (BUF) - 24.5 pts</p>
-                <p>RB: Christian McCaffrey (SF) - 22.8 pts</p>
-                <p>WR: Tyreek Hill (MIA) - 19.7 pts</p>
-                <p><strong>Projected Total: 156.5 points</strong></p>
-            </div>
-            <div class="feature-card">
-                <h4>This Week's Matchups</h4>
-                <p>Josh Allen vs MIA (Favorable)</p>
-                <p>CMC @ SEA (Neutral)</p>
-                <p>Tyreek Hill @ BUF (Tough)</p>
-            </div>
-            <div class="feature-card">
-                <h4>Injury Watch</h4>
-                <p>All players currently healthy</p>
-                <p>Monitor practice reports Wednesday</p>
-            </div>
-        </div>
-    </div>
-    
-    <div id="lineup" class="content">
-        <h2>👥 Lineup Optimizer</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Optimization Results</h4>
-                <p>Current lineup is 94% optimized</p>
-                <p>Potential improvement: +3.2 points</p>
-            </div>
-            <div class="feature-card">
-                <h4>Suggested Changes</h4>
-                <p>1. Start Jayden Reed over Courtland Sutton (+2.1 pts)</p>
-                <p>2. Consider Roschon Johnson in FLEX (+1.1 pts)</p>
+        <!-- Trades Section -->
+        <div id="trades" class="content-section">
+            <h2>🔄 Trade Analyzer</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Trade Opportunities</h4>
+                    <p>Your Davante Adams for their Saquon Barkley</p>
+                    <p style="color: #4ade80;">Value: +2.3 pts/week (Favorable)</p>
+                    <p>Your Travis Kelce for their Amon-Ra St. Brown + David Montgomery</p>
+                    <p style="color: #4ade80;">Value: +1.8 pts/week (Favorable)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Market Values</h4>
+                    <p>Josh Allen: 28.5 trade points</p>
+                    <p>Christian McCaffrey: 32.1 trade points</p>
+                    <p>Tyreek Hill: 26.8 trade points</p>
+                    <p>Travis Kelce: 24.3 trade points</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Trade Calculator</h4>
+                    <p>Enter players to analyze trade value</p>
+                    <p>Rest-of-season projections</p>
+                    <p>Playoff schedule analysis</p>
+                    <p>Position scarcity factors</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Trade Tips</h4>
+                    <p>Buy low on underperforming stars</p>
+                    <p>Sell high on overperforming players</p>
+                    <p>Consider playoff schedules</p>
+                    <p>Address positional needs</p>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div id="waivers" class="content">
-        <h2>🔍 Waiver Wire Intelligence</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Top Targets</h4>
-                <p>1. Jayden Reed (WR, GB) - 92% opportunity score</p>
-                <p>2. Roschon Johnson (RB, CHI) - 87% opportunity score</p>
-                <p>3. Darnell Mooney (WR, ATL) - 84% opportunity score</p>
-            </div>
-            <div class="feature-card">
-                <h4>Breakout Candidates</h4>
-                <p>Tank Dell (WR, HOU) - Injury return</p>
-                <p>Tyjae Spears (RB, TEN) - Increased role</p>
-            </div>
-        </div>
-    </div>
-    
-    <div id="trades" class="content">
-        <h2>🔄 Trade Analyzer</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Trade Opportunities</h4>
-                <p>Your Davante Adams for their Saquon Barkley</p>
-                <p>Value: +2.3 pts/week (Favorable)</p>
-            </div>
-            <div class="feature-card">
-                <h4>Market Values</h4>
-                <p>Josh Allen: 28.5 trade points</p>
-                <p>Christian McCaffrey: 32.1 trade points</p>
-                <p>Tyreek Hill: 26.8 trade points</p>
-            </div>
-        </div>
-    </div>
-    
-    <div id="projections" class="content">
-        <h2>📈 Player Projections</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Top QB Projections</h4>
-                <p>Josh Allen (BUF): 24.5 pts</p>
-                <p>Lamar Jackson (BAL): 23.8 pts</p>
-                <p>Jalen Hurts (PHI): 22.9 pts</p>
-            </div>
-            <div class="feature-card">
-                <h4>Top RB Projections</h4>
-                <p>Christian McCaffrey (SF): 22.8 pts</p>
-                <p>Austin Ekeler (LAC): 19.4 pts</p>
-                <p>Derrick Henry (BAL): 18.3 pts</p>
+        
+        <!-- Projections Section -->
+        <div id="projections" class="content-section">
+            <h2>📈 Player Projections</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Top QB Projections</h4>
+                    <p>Josh Allen (BUF): 24.5 pts</p>
+                    <p>Lamar Jackson (BAL): 23.8 pts</p>
+                    <p>Jalen Hurts (PHI): 22.9 pts</p>
+                    <p>Patrick Mahomes (KC): 22.1 pts</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Top RB Projections</h4>
+                    <p>Christian McCaffrey (SF): 22.8 pts</p>
+                    <p>Austin Ekeler (LAC): 19.4 pts</p>
+                    <p>Derrick Henry (BAL): 18.3 pts</p>
+                    <p>Saquon Barkley (PHI): 17.9 pts</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Top WR Projections</h4>
+                    <p>Tyreek Hill (MIA): 19.7 pts</p>
+                    <p>Davante Adams (LV): 17.2 pts</p>
+                    <p>Stefon Diggs (BUF): 16.8 pts</p>
+                    <p>Cooper Kupp (LAR): 16.5 pts</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Top TE Projections</h4>
+                    <p>Travis Kelce (KC): 16.8 pts</p>
+                    <p>Mark Andrews (BAL): 14.2 pts</p>
+                    <p>George Kittle (SF): 13.9 pts</p>
+                    <p>T.J. Hockenson (MIN): 12.7 pts</p>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div id="settings" class="content">
-        <h2>⚙️ League Configuration</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Import League</h4>
-                <p>Connect to ESPN, Yahoo, or Sleeper</p>
-                <p>Automatic roster sync</p>
-                <p>League settings import</p>
-            </div>
-            <div class="feature-card">
-                <h4>League Settings</h4>
-                <p>Scoring: PPR (1 point per reception)</p>
-                <p>Teams: 12</p>
-                <p>Roster: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX, 1 K, 1 DEF</p>
+        
+        <!-- Settings Section -->
+        <div id="settings" class="content-section">
+            <h2>⚙️ League Configuration</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Import League</h4>
+                    <p>Connect to ESPN, Yahoo, or Sleeper</p>
+                    <p>Automatic roster sync</p>
+                    <p>League settings import</p>
+                    <p>Scoring system detection</p>
+                </div>
+                <div class="feature-card">
+                    <h4>League Settings</h4>
+                    <p>Scoring: PPR (1 point per reception)</p>
+                    <p>Teams: 12</p>
+                    <p>Roster: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX, 1 K, 1 DEF</p>
+                    <p>Bench: 6 players</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Waiver Settings</h4>
+                    <p>Waiver type: FAAB ($100 budget)</p>
+                    <p>Waiver period: 2 days</p>
+                    <p>Weekly resets: Yes</p>
+                    <p>Waiver priority: Inverse standings</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Playoff Settings</h4>
+                    <p>Playoff teams: 6</p>
+                    <p>Playoff weeks: 15-17</p>
+                    <p>Championship week: 17</p>
+                    <p>Seeding: Regular season record</p>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="status" id="status">
-        Fantasy Hub loaded successfully ✅
-    </div>
+    <div class="status" id="status">Fantasy Hub loaded successfully ✅</div>
     
     <script>
         console.log('Fantasy Hub loaded successfully');
         
-        function showContent(section) {
-            console.log('Showing section:', section);
+        function showSection(sectionName) {
+            console.log('Showing section:', sectionName);
             
             // Hide all content sections
-            document.querySelectorAll('.content').forEach(content => {
-                content.classList.remove('active');
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
             });
             
             // Show selected section
-            const targetSection = document.getElementById(section);
+            const targetSection = document.getElementById(sectionName);
             if (targetSection) {
                 targetSection.classList.add('active');
-                document.getElementById('status').textContent = `Showing ${section} section ✅`;
+                document.getElementById('status').textContent = `Showing ${sectionName} section ✅`;
+                
+                // Scroll to content
+                targetSection.scrollIntoView({ behavior: 'smooth' });
             } else {
-                document.getElementById('status').textContent = `Error: ${section} section not found ❌`;
+                document.getElementById('status').textContent = `Error: ${sectionName} section not found ❌`;
             }
         }
         
-        // Test mobile touch events
-        document.addEventListener('touchstart', function(e) {
-            console.log('Touch detected on:', e.target.tagName);
-        });
-        
-        // Show dashboard by default after a short delay
+        // Show dashboard by default
         setTimeout(() => {
-            showContent('dashboard');
-        }, 500);
+            showSection('dashboard');
+        }, 100);
         
-        // Add visual feedback for touch events
+        // Add click feedback
         document.querySelectorAll('.nav-card').forEach(card => {
-            card.addEventListener('touchstart', function() {
-                this.style.transform = 'translateY(-2px) scale(0.98)';
-            });
-            
-            card.addEventListener('touchend', function() {
-                this.style.transform = 'translateY(-4px) scale(1)';
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-5px) scale(1)';
+                }, 150);
             });
         });
     </script>
