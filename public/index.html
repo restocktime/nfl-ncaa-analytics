@@ -1148,6 +1148,33 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* Betting Cards Special Effects */
+        .betting-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .betting-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(99, 102, 241, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .betting-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .betting-card:hover::before {
+            left: 100%;
+        }
+
         .clickable-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.2);
@@ -2654,6 +2681,10 @@
                         <i class="fas fa-chart-bar"></i>
                         <span>Statistics</span>
                     </a>
+                    <a href="#" class="mobile-nav-link" data-view="betting-hub">
+                        <i class="fas fa-dice"></i>
+                        <span>Betting Hub</span>
+                    </a>
                     <a href="#" class="mobile-nav-link" data-view="fantasy-hub">
                         <i class="fas fa-trophy"></i>
                         <span>Fantasy Hub</span>
@@ -2720,6 +2751,10 @@
                     <li><a href="#" class="nav-link" data-view="news">
                         <i class="fas fa-newspaper nav-icon"></i>
                         <span class="nav-text">News</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-view="betting-hub">
+                        <i class="fas fa-dice nav-icon"></i>
+                        <span class="nav-text">Betting Hub</span>
                     </a></li>
                     <li><a href="#" class="nav-link" data-view="fantasy-hub">
                         <i class="fas fa-trophy nav-icon"></i>
@@ -3383,6 +3418,183 @@
                         <div class="loading-spinner"></div>
                         <span>Loading latest news...</span>
                     </div>
+                </div>
+            </div>
+
+            <!-- Betting Hub View -->
+            <div id="betting-hub" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-dice" style="margin-right: 0.5rem;"></i>🎯 NFL Betting Intelligence Hub</h2>
+                    <p>AI-powered betting analysis with real-time odds and ML recommendations</p>
+                    
+                    <!-- Betting Hub Quick Actions -->
+                    <div style="margin-top: 25px; text-align: center;">
+                        <a href="betting-odds-dashboard.html" style="
+                            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+                            color: white;
+                            padding: 18px 36px;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: bold;
+                            font-size: 1.1em;
+                            display: inline-block;
+                            margin-right: 20px;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+                            min-width: 200px;
+                        " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(220, 38, 38, 0.5)'" 
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(220, 38, 38, 0.4)'">
+                            🎯 Open Betting Dashboard
+                        </a>
+                        <a href="test-api-debug.html" style="
+                            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+                            color: white;
+                            padding: 18px 36px;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: bold;
+                            font-size: 1.1em;
+                            display: inline-block;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 8px 25px rgba(31, 41, 55, 0.4);
+                            min-width: 200px;
+                            border: 1px solid rgba(59, 130, 246, 0.3);
+                        " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(31, 41, 55, 0.6)'" 
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(31, 41, 55, 0.4)'">
+                            🔍 API Debug & Test
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Betting Features Grid -->
+                <div class="grid grid-3">
+                    <!-- ML Betting Analysis -->
+                    <div class="card gradient-card betting-card" onclick="window.location.href='betting-odds-dashboard.html'" style="cursor: pointer; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; transition: all 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-brain" style="margin-right: 0.5rem; color: #fff;"></i>
+                                🧠 ML Betting Analysis
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>AI-Powered Recommendations</strong></p>
+                            <p>✅ Real-time NFL odds analysis<br>
+                            ✅ Machine learning predictions<br>
+                            ✅ Value bet identification<br>
+                            ✅ Confidence scoring<br>
+                            ✅ Live odds from 3 sportsbooks</p>
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                <small><strong>Features:</strong> Hard Rock Bet integration, Player props, Date-organized picks</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Odds Widget -->
+                    <div class="card gradient-card betting-card" onclick="window.location.href='betting-odds-dashboard.html'" style="cursor: pointer; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; transition: all 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-line" style="margin-right: 0.5rem; color: #fff;"></i>
+                                📊 Live Odds Feed
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Real-Time Sportsbook Data</strong></p>
+                            <p>🔴 Hard Rock Bet odds<br>
+                            🔴 DraftKings odds<br>
+                            🔴 FanDuel odds<br>
+                            🔄 Auto-refreshing data<br>
+                            ⚡ Sub-second latency</p>
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                <small><strong>Markets:</strong> Spreads, Moneylines, Totals, Player Props</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Betting Tools -->
+                    <div class="card gradient-card betting-card" onclick="window.location.href='test-api-debug.html'" style="cursor: pointer; background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; transition: all 0.3s ease;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-tools" style="margin-right: 0.5rem; color: #fff;"></i>
+                                🔧 Betting Tools & Debug
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Developer & Testing Suite</strong></p>
+                            <p>🧪 API connection testing<br>
+                            📊 Real-time data validation<br>
+                            🔍 Odds parsing verification<br>
+                            📈 System health monitoring<br>
+                            ⚙️ Configuration management</p>
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                <small><strong>Debug:</strong> API responses, Key validation, Error tracking</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Betting System Status -->
+                <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)); border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <h3 style="color: #3b82f6; margin-bottom: 25px; text-align: center;">🎯 Betting System Overview</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div style="background: rgba(34, 197, 94, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.3);">
+                            <h4 style="color: #22c55e; margin-bottom: 10px;">✅ API Integration</h4>
+                            <p style="color: #64748b; font-size: 0.9em; margin: 0;">Secure connection to The Odds API with obfuscated keys and progressive fallback system.</p>
+                        </div>
+                        
+                        <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                            <h4 style="color: #ef4444; margin-bottom: 10px;">🎲 Hard Rock Bet</h4>
+                            <p style="color: #64748b; font-size: 0.9em; margin: 0;">Direct betting links with proper team mapping and bet placement integration.</p>
+                        </div>
+                        
+                        <div style="background: rgba(168, 85, 247, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                            <h4 style="color: #a855f7; margin-bottom: 10px;">🧠 ML Analysis</h4>
+                            <p style="color: #64748b; font-size: 0.9em; margin: 0;">Advanced machine learning models for spread, moneyline, and player prop analysis.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p style="color: #64748b; font-size: 1.1em; margin-bottom: 20px;">
+                            <strong>🚀 Production Ready:</strong> Real API data, no mock fallbacks, comprehensive error handling, and security-first design.
+                        </p>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                            <a href="betting-odds-dashboard.html" style="
+                                background: linear-gradient(135deg, #dc2626, #991b1b);
+                                color: white;
+                                padding: 15px 30px;
+                                text-decoration: none;
+                                border-radius: 12px;
+                                font-weight: 600;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+                                min-width: 180px;
+                            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                🎯 Start Betting Analysis
+                            </a>
+                            <a href="test-widget.html" style="
+                                background: linear-gradient(135deg, #1f2937, #111827);
+                                color: white;
+                                padding: 15px 30px;
+                                text-decoration: none;
+                                border-radius: 12px;
+                                font-weight: 600;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(31, 41, 55, 0.3);
+                                border: 1px solid rgba(59, 130, 246, 0.3);
+                                min-width: 180px;
+                            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                📺 Test Widget
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsible Gambling Notice -->
+                <div style="margin-top: 30px; padding: 20px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px;">
+                    <p style="color: #f59e0b; font-weight: 600; margin: 0; text-align: center; font-size: 0.9em;">
+                        ⚠️ <strong>Responsible Gambling:</strong> Must be 21+ and in a legal betting jurisdiction. Gamble responsibly. This tool is for educational and analytical purposes only.
+                    </p>
                 </div>
             </div>
 
