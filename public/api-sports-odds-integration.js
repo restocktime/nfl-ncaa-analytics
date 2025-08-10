@@ -414,6 +414,11 @@ class RealOddsAPIIntegration {
                 };
 
                 console.log(`📊 Game parsed - ${gameData.awayTeam} @ ${gameData.homeTeam}, Bets: ${Object.keys(gameData.bets).join(', ')}`);
+                
+                // Debug spread information
+                if (gameData.bets.spread) {
+                    console.log(`   🏈 Spread: Home ${gameData.bets.spread.home.line} (${gameData.bets.spread.home.odds}), Away ${gameData.bets.spread.away.line} (${gameData.bets.spread.away.odds})`);
+                }
 
                 if (gameData.bets && Object.keys(gameData.bets).length > 0) {
                     games.push(gameData);
@@ -508,29 +513,48 @@ class RealOddsAPIIntegration {
 
         spreads.forEach(spread => {
             spread.outcomes.forEach(outcome => {
-                if (outcome.name.includes('home') || outcome.name === spreads[0].outcomes[0].name) {
+                // The Odds API provides outcomes with team names, not home/away labels
+                // We need to match by the actual team names from the first spread
+                const isFirstTeam = outcome.name === spreads[0].outcomes[0].name;
+                
+                if (isFirstTeam) {
+                    // First team listed is typically the home team in The Odds API
                     if (outcome.price > bestHome.odds) {
                         bestHome = {
                             odds: outcome.price,
                             line: outcome.point || 0,
-                            bookmaker: spread.bookmaker
+                            bookmaker: spread.bookmaker,
+                            teamName: outcome.name
                         };
                     }
                 } else {
+                    // Second team is typically the away team
                     if (outcome.price > bestAway.odds) {
                         bestAway = {
                             odds: outcome.price,
                             line: outcome.point || 0,
-                            bookmaker: spread.bookmaker
+                            bookmaker: spread.bookmaker,
+                            teamName: outcome.name
                         };
                     }
                 }
             });
         });
 
+        // In The Odds API, the point spread is from the perspective of the team
+        // If a team has a positive point spread, they are getting points (underdog)
+        // If a team has a negative point spread, they are favored
         return {
-            home: { line: bestHome.line, odds: bestHome.odds },
-            away: { line: bestAway.line, odds: bestAway.odds }
+            home: { 
+                line: bestHome.line, 
+                odds: bestHome.odds,
+                teamName: bestHome.teamName 
+            },
+            away: { 
+                line: bestAway.line, 
+                odds: bestAway.odds,
+                teamName: bestAway.teamName 
+            }
         };
     }
 

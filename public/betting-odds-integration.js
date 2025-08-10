@@ -400,6 +400,8 @@ class SpreadAnalyzer {
         const homeSpread = spread.home.line;
         const awaySpread = spread.away.line;
         
+        console.log(`🏈 Analyzing spread for ${game.awayTeam} @ ${game.homeTeam}: Home line ${homeSpread}, Away line ${awaySpread}`);
+        
         // Simple ML model - in real implementation would use historical data
         let confidence = 0.5;
         let recommendation = null;
@@ -420,10 +422,14 @@ class SpreadAnalyzer {
             confidence = Math.min(confidence, 0.95);
             
             if (homeSpread > predictedSpread) {
-                recommendation = `Take ${game.awayTeam} +${Math.abs(awaySpread)}`;
+                // Home team spread is higher than expected, take the away team
+                const awaySpreadDisplay = awaySpread > 0 ? `+${awaySpread}` : awaySpread.toString();
+                recommendation = `Take ${game.awayTeam} ${awaySpreadDisplay}`;
                 reasoning = `Market overvaluing ${game.homeTeam}. Expected spread: ${predictedSpread.toFixed(1)}`;
             } else {
-                recommendation = `Take ${game.homeTeam} ${homeSpread}`;
+                // Home team spread is lower than expected, take the home team  
+                const homeSpreadDisplay = homeSpread > 0 ? `+${homeSpread}` : homeSpread.toString();
+                recommendation = `Take ${game.homeTeam} ${homeSpreadDisplay}`;
                 reasoning = `Market undervaluing ${game.homeTeam}. Expected spread: ${predictedSpread.toFixed(1)}`;
             }
             
@@ -472,12 +478,14 @@ class MoneylineAnalyzer {
         
         if (homeValue > 0.05) {
             confidence = 0.65 + homeValue * 2;
-            recommendation = `Bet ${game.homeTeam} ML (${ml.home.odds > 0 ? '+' : ''}${ml.home.odds})`;
+            const homeOddsDisplay = this.formatAmericanOdds(ml.home.odds);
+            recommendation = `Bet ${game.homeTeam} ML (${homeOddsDisplay})`;
             reasoning = `True probability: ${(homeTrueProb * 100).toFixed(1)}%, Market: ${(homeImplied * 100).toFixed(1)}%`;
             valueScore = homeValue * 5;
         } else if (awayValue > 0.05) {
             confidence = 0.65 + awayValue * 2;
-            recommendation = `Bet ${game.awayTeam} ML (${ml.away.odds > 0 ? '+' : ''}${ml.away.odds})`;
+            const awayOddsDisplay = this.formatAmericanOdds(ml.away.odds);
+            recommendation = `Bet ${game.awayTeam} ML (${awayOddsDisplay})`;
             reasoning = `True probability: ${((1 - homeTrueProb) * 100).toFixed(1)}%, Market: ${(awayImplied * 100).toFixed(1)}%`;
             valueScore = awayValue * 5;
         }
@@ -504,6 +512,14 @@ class MoneylineAnalyzer {
             'CIN': 0.72, 'DAL': 0.70, 'MIA': 0.68, 'NYJ': 0.45, 'NE': 0.50
         };
         return strengths[team] || 0.60;
+    }
+    
+    formatAmericanOdds(odds) {
+        // Ensure proper formatting of American odds
+        if (typeof odds === 'number') {
+            return odds > 0 ? `+${odds}` : odds.toString();
+        }
+        return odds; // Return as-is if not a number
     }
 }
 
