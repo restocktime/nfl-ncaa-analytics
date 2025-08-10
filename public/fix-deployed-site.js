@@ -1,6 +1,39 @@
 // EMERGENCY FIX FOR DEPLOYED SITE - ICONS AND API
 console.log('🚨 DEPLOYED SITE EMERGENCY FIX LOADED');
 
+// CLEAN UP HARDCODED EMOJIS IN HTML
+function cleanHardcodedEmojis() {
+    console.log('🧹 Cleaning hardcoded emojis from HTML...');
+    
+    // Find text nodes with hardcoded emojis next to icons
+    const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    const textNodes = [];
+    let node;
+    while (node = walker.nextNode()) {
+        if (node.nodeValue && node.nodeValue.match(/[\u{1F300}-\u{1F9FF}]/u)) {
+            textNodes.push(node);
+        }
+    }
+    
+    textNodes.forEach(textNode => {
+        const parent = textNode.parentElement;
+        // If the parent has an icon class, remove the emoji text
+        if (parent && (parent.classList.contains('nav-text') || parent.classList.contains('card-title'))) {
+            const cleanText = textNode.nodeValue.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+            if (cleanText) {
+                textNode.nodeValue = cleanText;
+            }
+            console.log(`🧹 Cleaned hardcoded emoji from: ${parent.className}`);
+        }
+    });
+}
+
 // SMART ICON REPLACEMENT - PREVENTS DOUBLING
 function emergencyIconFix() {
     console.log('🔧 SMART ICON REPLACEMENT STARTING');
@@ -33,7 +66,18 @@ function emergencyIconFix() {
     
     allIcons.forEach((icon, index) => {
         // Skip if already replaced
-        if (icon.classList.contains('emoji-replaced') || icon.innerHTML.match(/[\u{1F300}-\u{1F9FF}]/u)) {
+        if (icon.classList.contains('emoji-replaced')) {
+            return;
+        }
+        
+        // Check if this icon already has emoji content (hardcoded)
+        const currentContent = icon.innerHTML.trim();
+        const hasEmojiContent = currentContent.match(/[\u{1F300}-\u{1F9FF}]/u);
+        
+        if (hasEmojiContent) {
+            // Mark as processed but don't replace - it already has an emoji
+            icon.classList.add('emoji-replaced');
+            console.log(`⏭️ Skipped (already has emoji): ${currentContent}`);
             return;
         }
         
@@ -47,27 +91,18 @@ function emergencyIconFix() {
         });
         
         if (emoji) {
-            // Check if Font Awesome is actually loaded by testing :before content
-            const beforeContent = window.getComputedStyle(icon, ':before').content;
-            const isFontAwesomeLoaded = beforeContent && beforeContent !== 'none' && beforeContent !== '""';
-            
-            // Only replace if Font Awesome isn't showing or shows as boxes
-            if (!isFontAwesomeLoaded || beforeContent.includes('\\')) {
-                icon.innerHTML = emoji;
-                icon.className = 'emoji-icon emoji-replaced';
-                icon.style.fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", sans-serif';
-                icon.style.fontSize = '1.1em';
-                icon.style.fontWeight = 'normal';
-                icon.style.display = 'inline-block';
-                icon.style.width = 'auto';
-                icon.style.textAlign = 'center';
-                icon.style.lineHeight = '1';
-                icon.style.padding = '0 2px';
-                console.log(`✅ Replaced: ${emoji}`);
-            } else {
-                icon.classList.add('emoji-replaced'); // Mark as processed but don't replace
-                console.log(`⏭️ Skipped (Font Awesome loaded): ${icon.className}`);
-            }
+            // Always replace with emoji since we removed Font Awesome CDN
+            icon.innerHTML = emoji;
+            icon.className = 'emoji-icon emoji-replaced';
+            icon.style.fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+            icon.style.fontSize = '1.1em';
+            icon.style.fontWeight = 'normal';
+            icon.style.display = 'inline-block';
+            icon.style.width = 'auto';
+            icon.style.textAlign = 'center';
+            icon.style.lineHeight = '1';
+            icon.style.padding = '0 2px';
+            console.log(`✅ Replaced: ${emoji}`);
         }
     });
     
@@ -169,12 +204,21 @@ class FantasyAPIFix {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DEPLOYED SITE FIX: DOM LOADED');
     
+    // Clean hardcoded emojis first
+    cleanHardcodedEmojis();
+    
     // Fix icons immediately
     emergencyIconFix();
     
     // Fix icons again after delays
-    setTimeout(emergencyIconFix, 500);
-    setTimeout(emergencyIconFix, 1000);
+    setTimeout(() => {
+        cleanHardcodedEmojis();
+        emergencyIconFix();
+    }, 500);
+    setTimeout(() => {
+        cleanHardcodedEmojis();
+        emergencyIconFix();
+    }, 1000);
     setTimeout(emergencyIconFix, 2000);
     
     // Test API connections
@@ -190,6 +234,7 @@ window.addEventListener('load', function() {
 
 // Make functions globally available for manual testing
 window.emergencyIconFix = emergencyIconFix;
+window.cleanHardcodedEmojis = cleanHardcodedEmojis;
 window.FantasyAPIFix = FantasyAPIFix;
 
 console.log('💪 EMERGENCY FIX SYSTEM READY');

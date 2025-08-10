@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 Manual Fantasy Roster Manager</title>
+    
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: #f8fafc;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .roster-section {
+            background: rgba(30, 30, 63, 0.6);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .position-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .player-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            background: rgba(45, 47, 95, 0.5);
+            border-radius: 8px;
+        }
+        
+        .player-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .player-input input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        
+        .position-label {
+            font-weight: 600;
+            color: #8b5cf6;
+            min-width: 60px;
+            font-size: 14px;
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .clear-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0.5rem;
+        }
+        
+        .stats-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(45, 47, 95, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+        
+        .import-section {
+            background: rgba(45, 47, 95, 0.3);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border: 2px dashed #6366f1;
+        }
+        
+        .import-textarea {
+            width: 100%;
+            height: 120px;
+            background: #2d3748;
+            color: white;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .position-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-display {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .player-input {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.25rem;
+            }
+            
+            .position-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="fantasy-hub.html" class="back-link">← Back to Fantasy Hub</a>
+        
+        <div class="header">
+            <h1>🏈 Manual Fantasy Roster Manager</h1>
+            <p>Build your fantasy roster manually - works completely offline!</p>
+            <p><strong>Your roster is saved locally in your browser</strong></p>
+        </div>
+        
+        <div class="import-section">
+            <h3>📋 Quick Import</h3>
+            <p>Paste your roster (one player per line with position):</p>
+            <textarea class="import-textarea" id="importText" placeholder="Example:
+QB: Josh Allen
+RB: Derrick Henry
+RB: Nick Chubb
+WR: Tyreek Hill
+WR: Davante Adams
+TE: Travis Kelce
+FLEX: Austin Ekeler
+K: Justin Tucker
+DEF: Buffalo Bills"></textarea>
+            <button class="save-btn" onclick="importRoster()">📥 Import Roster</button>
+        </div>
+        
+        <div class="roster-section">
+            <h2>🎯 Starting Lineup</h2>
+            <div class="position-group">
+                <div>
+                    <div class="player-input">
+                        <span class="position-label">QB:</span>
+                        <input type="text" id="qb1" placeholder="Quarterback">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">RB:</span>
+                        <input type="text" id="rb1" placeholder="Running Back 1">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">RB:</span>
+                        <input type="text" id="rb2" placeholder="Running Back 2">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">WR:</span>
+                        <input type="text" id="wr1" placeholder="Wide Receiver 1">
+                    </div>
+                </div>
+                <div>
+                    <div class="player-input">
+                        <span class="position-label">WR:</span>
+                        <input type="text" id="wr2" placeholder="Wide Receiver 2">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">TE:</span>
+                        <input type="text" id="te1" placeholder="Tight End">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">FLEX:</span>
+                        <input type="text" id="flex1" placeholder="RB/WR/TE">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">K:</span>
+                        <input type="text" id="k1" placeholder="Kicker">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="roster-section">
+            <h2>🛡️ Defense & Bench</h2>
+            <div class="position-group">
+                <div>
+                    <div class="player-input">
+                        <span class="position-label">DEF:</span>
+                        <input type="text" id="def1" placeholder="Team Defense">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">BENCH:</span>
+                        <input type="text" id="bench1" placeholder="Bench Player 1">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">BENCH:</span>
+                        <input type="text" id="bench2" placeholder="Bench Player 2">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">BENCH:</span>
+                        <input type="text" id="bench3" placeholder="Bench Player 3">
+                    </div>
+                </div>
+                <div>
+                    <div class="player-input">
+                        <span class="position-label">BENCH:</span>
+                        <input type="text" id="bench4" placeholder="Bench Player 4">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">BENCH:</span>
+                        <input type="text" id="bench5" placeholder="Bench Player 5">
+                    </div>
+                    <div class="player-input">
+                        <span class="position-label">BENCH:</span>
+                        <input type="text" id="bench6" placeholder="Bench Player 6">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 2rem 0;">
+            <button class="save-btn" onclick="saveRoster()">💾 Save Roster</button>
+            <button class="clear-btn" onclick="clearRoster()">🗑️ Clear All</button>
+            <button class="save-btn" onclick="exportRoster()">📤 Export Roster</button>
+        </div>
+        
+        <div class="stats-display" id="statsDisplay">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPlayers">0</div>
+                <div class="stat-label">Total Players</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="filledPositions">0</div>
+                <div class="stat-label">Positions Filled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="benchCount">0</div>
+                <div class="stat-label">Bench Players</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="rosterComplete">❌</div>
+                <div class="stat-label">Roster Complete</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const positions = ['qb1', 'rb1', 'rb2', 'wr1', 'wr2', 'te1', 'flex1', 'k1', 'def1', 'bench1', 'bench2', 'bench3', 'bench4', 'bench5', 'bench6'];
+        
+        // Load saved roster on page load
+        window.addEventListener('load', function() {
+            loadRoster();
+            updateStats();
+            
+            // Add event listeners for real-time updates
+            positions.forEach(pos => {
+                const input = document.getElementById(pos);
+                if (input) {
+                    input.addEventListener('input', updateStats);
+                }
+            });
+        });
+        
+        function saveRoster() {
+            const roster = {};
+            positions.forEach(pos => {
+                const input = document.getElementById(pos);
+                if (input && input.value.trim()) {
+                    roster[pos] = input.value.trim();
+                }
+            });
+            
+            localStorage.setItem('fantasy-roster-manual', JSON.stringify(roster));
+            
+            alert(`✅ Roster saved successfully!\n${Object.keys(roster).length} players saved locally.`);
+            updateStats();
+        }
+        
+        function loadRoster() {
+            const saved = localStorage.getItem('fantasy-roster-manual');
+            if (saved) {
+                const roster = JSON.parse(saved);
+                positions.forEach(pos => {
+                    const input = document.getElementById(pos);
+                    if (input && roster[pos]) {
+                        input.value = roster[pos];
+                    }
+                });
+                console.log('✅ Loaded saved roster:', Object.keys(roster).length, 'players');
+            }
+        }
+        
+        function clearRoster() {
+            if (confirm('Are you sure you want to clear your entire roster?')) {
+                positions.forEach(pos => {
+                    const input = document.getElementById(pos);
+                    if (input) input.value = '';
+                });
+                
+                localStorage.removeItem('fantasy-roster-manual');
+                updateStats();
+                alert('🗑️ Roster cleared!');
+            }
+        }
+        
+        function updateStats() {
+            const filledInputs = positions.filter(pos => {
+                const input = document.getElementById(pos);
+                return input && input.value.trim();
+            });
+            
+            const startingPositions = ['qb1', 'rb1', 'rb2', 'wr1', 'wr2', 'te1', 'flex1', 'k1', 'def1'];
+            const filledStarters = startingPositions.filter(pos => {
+                const input = document.getElementById(pos);
+                return input && input.value.trim();
+            });
+            
+            const benchPositions = ['bench1', 'bench2', 'bench3', 'bench4', 'bench5', 'bench6'];
+            const filledBench = benchPositions.filter(pos => {
+                const input = document.getElementById(pos);
+                return input && input.value.trim();
+            });
+            
+            document.getElementById('totalPlayers').textContent = filledInputs.length;
+            document.getElementById('filledPositions').textContent = `${filledStarters.length}/9`;
+            document.getElementById('benchCount').textContent = filledBench.length;
+            document.getElementById('rosterComplete').textContent = filledStarters.length === 9 ? '✅' : '❌';
+        }
+        
+        function importRoster() {
+            const text = document.getElementById('importText').value.trim();
+            if (!text) {
+                alert('Please paste your roster in the text area first.');
+                return;
+            }
+            
+            const lines = text.split('\n').filter(line => line.trim());
+            let imported = 0;
+            
+            // Clear current roster first
+            positions.forEach(pos => {
+                const input = document.getElementById(pos);
+                if (input) input.value = '';
+            });
+            
+            const positionMap = {
+                'QB': ['qb1'],
+                'RB': ['rb1', 'rb2'],
+                'WR': ['wr1', 'wr2'],
+                'TE': ['te1'],
+                'FLEX': ['flex1'],
+                'K': ['k1'],
+                'DEF': ['def1'],
+                'DEFENSE': ['def1'],
+                'BENCH': ['bench1', 'bench2', 'bench3', 'bench4', 'bench5', 'bench6']
+            };
+            
+            const usedPositions = {};
+            
+            lines.forEach(line => {
+                const match = line.match(/^(QB|RB|WR|TE|FLEX|K|DEF|DEFENSE|BENCH):\s*(.+)$/i);
+                if (match) {
+                    const pos = match[1].toUpperCase();
+                    const player = match[2].trim();
+                    
+                    if (positionMap[pos]) {
+                        const availableSlots = positionMap[pos].filter(slot => !usedPositions[slot]);
+                        if (availableSlots.length > 0) {
+                            const slot = availableSlots[0];
+                            const input = document.getElementById(slot);
+                            if (input) {
+                                input.value = player;
+                                usedPositions[slot] = true;
+                                imported++;
+                            }
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('importText').value = '';
+            updateStats();
+            alert(`📥 Imported ${imported} players successfully!`);
+        }
+        
+        function exportRoster() {
+            const roster = {};
+            positions.forEach(pos => {
+                const input = document.getElementById(pos);
+                if (input && input.value.trim()) {
+                    roster[pos] = input.value.trim();
+                }
+            });
+            
+            if (Object.keys(roster).length === 0) {
+                alert('No roster to export. Please add some players first.');
+                return;
+            }
+            
+            const positionLabels = {
+                'qb1': 'QB', 'rb1': 'RB', 'rb2': 'RB', 'wr1': 'WR', 'wr2': 'WR',
+                'te1': 'TE', 'flex1': 'FLEX', 'k1': 'K', 'def1': 'DEF',
+                'bench1': 'BENCH', 'bench2': 'BENCH', 'bench3': 'BENCH',
+                'bench4': 'BENCH', 'bench5': 'BENCH', 'bench6': 'BENCH'
+            };
+            
+            const exportText = Object.entries(roster)
+                .map(([pos, player]) => `${positionLabels[pos]}: ${player}`)
+                .join('\n');
+            
+            navigator.clipboard.writeText(exportText).then(() => {
+                alert(`📤 Roster copied to clipboard!\n\n${exportText}`);
+            }).catch(() => {
+                prompt('Copy your roster:', exportText);
+            });
+        }
+    </script>
+</body>
+</html>
