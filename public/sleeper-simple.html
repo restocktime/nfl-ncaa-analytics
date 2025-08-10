@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 Simple Sleeper Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .input-group {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            background: #2d3748;
+            color: white;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+        }
+        .result {
+            background: #2d3748;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            display: none;
+        }
+        .back-link {
+            display: inline-block;
+            color: #a5b4fc;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .success {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .error {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="connect-accounts.html" class="back-link">← Back to Connect Accounts</a>
+        
+        <h1>🏈 Simple Sleeper Lookup</h1>
+        <p>Enter your Sleeper username to connect:</p>
+        
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Enter Sleeper username" value="Restocktime">
+            <button onclick="lookupSleeper()">🔍 Connect</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+    </div>
+    
+    <script>
+        async function lookupSleeper() {
+            const username = document.getElementById('username').value.trim();
+            const result = document.getElementById('result');
+            
+            if (!username) {
+                showResult('Please enter a username', 'error');
+                return;
+            }
+            
+            result.style.display = 'block';
+            result.className = 'result';
+            result.innerHTML = `<p>🔍 Looking up ${username}...</p>`;
+            
+            // Simple proxy list - try each one
+            const proxies = [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url='
+            ];
+            
+            for (let i = 0; i < proxies.length; i++) {
+                const proxy = proxies[i];
+                const proxyName = proxy.includes('corsproxy') ? 'corsproxy.io' : 'allorigins.win';
+                
+                try {
+                    result.innerHTML = `<p>🔍 Trying ${proxyName}...</p>`;
+                    
+                    const url = proxy + encodeURIComponent(`https://api.sleeper.app/v1/user/${username}`);
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const text = await response.text();
+                        const data = JSON.parse(text);
+                        
+                        if (data && data.user_id) {
+                            showResult(`
+                                <h3>✅ Success!</h3>
+                                <p><strong>User:</strong> ${data.display_name || data.username}</p>
+                                <p><strong>User ID:</strong> ${data.user_id}</p>
+                                <p><strong>Connected via:</strong> ${proxyName}</p>
+                                <button onclick="saveUser('${data.display_name || data.username}', '${data.user_id}')" style="margin-top: 15px; padding: 10px 20px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">💾 Save to Fantasy System</button>
+                            `, 'success');
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`${proxyName} failed:`, error.message);
+                }
+            }
+            
+            // All failed
+            showResult(`
+                <h3>❌ Connection Failed</h3>
+                <p>Could not connect to Sleeper API for username "${username}"</p>
+                <p>Please try:</p>
+                <ul>
+                    <li>Check your username spelling</li>
+                    <li>Use the Manual Roster Builder instead</li>
+                    <li>Try again in a few minutes</li>
+                </ul>
+                <a href="manual-fantasy-system.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #10b981; color: white; text-decoration: none; border-radius: 4px;">🏈 Use Manual System</a>
+            `, 'error');
+        }
+        
+        function showResult(content, type) {
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.className = `result ${type}`;
+            result.innerHTML = content;
+        }
+        
+        function saveUser(displayName, userId) {
+            // Save basic user info to fantasy system
+            const userData = {
+                sleeperUsername: displayName,
+                sleeperUserId: userId,
+                connected: true,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('sleeper-connection', JSON.stringify(userData));
+            
+            // Also save to the fantasy roster format
+            const existingRoster = JSON.parse(localStorage.getItem('fantasy-roster-manual') || '{}');
+            existingRoster.sleeperUser = displayName;
+            existingRoster.sleeperUserId = userId;
+            localStorage.setItem('fantasy-roster-manual', JSON.stringify(existingRoster));
+            
+            alert(`✅ Connected to Sleeper!\\n\\nUser: ${displayName}\\nUser ID: ${userId}\\n\\nYou can now use the Fantasy System.`);
+            
+            // Redirect to fantasy system
+            setTimeout(() => {
+                window.location.href = 'manual-fantasy-system.html';
+            }, 2000);
+        }
+        
+        // Auto-focus on input
+        window.addEventListener('load', function() {
+            document.getElementById('username').focus();
+        });
+        
+        // Enter key support
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                lookupSleeper();
+            }
+        });
+    </script>
+</body>
+</html>

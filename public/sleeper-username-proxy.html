@@ -554,7 +554,7 @@
             setTimeout(() => {
                 if (document.head.contains(script)) {
                     document.head.removeChild(script);
-                    log('❌ JSONP method timed out (expected - Sleeper doesn\\'t support JSONP)', 'advancedResults');
+                    log('❌ JSONP method timed out (expected - Sleeper does not support JSONP)', 'advancedResults');
                 }
             }, 5000);
         }
@@ -664,7 +664,7 @@
         function log(message, elementId) {
             const element = document.getElementById(elementId);
             if (element) {
-                element.textContent += new Date().toLocaleTimeString() + ': ' + message + '\\n';
+                element.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
                 element.scrollTop = element.scrollHeight;
             }
             console.log(message);
