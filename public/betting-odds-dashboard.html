@@ -14,13 +14,30 @@
     
     <!-- Custom styles -->
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --primary-bg: #0f1419;
+            --secondary-bg: #1a202c;
+            --card-bg: #2d3748;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--accent) 0%, #1e40af 100%);
+        }
+        
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
         .bet-card {
             transition: all 0.3s ease;
@@ -72,8 +89,13 @@
         .odds-positive { color: #10B981; }
         .odds-negative { color: #EF4444; }
         
-        /* Mobile touch improvements */
+        /* Mobile optimizations */
         @media (max-width: 640px) {
+            .max-w-7xl {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+            
             button, a[role="button"], .cursor-pointer {
                 min-height: 44px;
                 min-width: 44px;
@@ -83,98 +105,134 @@
                 min-height: 44px;
             }
             
-            /* Improve tap targets */
             .bet-card {
-                margin-bottom: 1rem;
+                margin-bottom: 0.75rem;
+                padding: 1rem;
+            }
+            
+            /* Ensure content doesn't overflow */
+            body {
+                overflow-x: hidden;
             }
         }
         
-        /* Better scrollbar on mobile */
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 6px;
         }
         
         ::-webkit-scrollbar-track {
-            background: rgba(31, 41, 55, 0.5);
+            background: var(--primary-bg);
         }
         
         ::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.5);
-            border-radius: 2px;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+        
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        
+        /* Ensure proper text rendering */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
     </style>
 </head>
 
-<body class="bg-gray-900 text-white min-h-screen">
+<body class="min-h-screen" style="background: var(--primary-bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
     <!-- Header -->
-    <header class="gradient-bg py-4 sm:py-6 shadow-lg">
-        <div class="container mx-auto px-4 sm:px-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                <div class="text-center sm:text-left">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-white">🎰 NFL Betting Odds Dashboard</h1>
-                    <p class="text-blue-100 mt-1 sm:mt-2 text-sm sm:text-base">ML-Powered Sports Betting Analysis & Best Bet Finder</p>
+    <header class="gradient-bg py-3 sm:py-4 shadow-sm border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <span class="text-xl">🏈</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold text-white">NFL Betting Dashboard</h1>
+                        <p class="text-blue-100 text-xs sm:text-sm opacity-90">AI-Powered Analysis</p>
+                    </div>
                 </div>
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                    <button id="refreshOdds" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all text-sm sm:text-base">
-                        <span class="flex items-center justify-center space-x-2">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <button id="refreshOdds" class="bg-white/15 hover:bg-white/25 p-2 sm:px-3 sm:py-2 rounded-lg transition-all text-sm">
+                        <span class="flex items-center space-x-1 sm:space-x-2">
                             <span id="refreshSpinner" class="loading-spinner hidden"></span>
-                            <span id="refreshText">🔄 Refresh Odds</span>
+                            <span id="refreshText" class="hidden sm:inline">Refresh</span>
+                            <span class="sm:hidden">🔄</span>
                         </span>
                     </button>
-                    <a href="fantasy-hub.html" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-all text-center text-sm sm:text-base">
-                        ← Back to Fantasy Hub
+                    <a href="fantasy-hub.html" class="bg-blue-600/80 hover:bg-blue-600 p-2 sm:px-3 sm:py-2 rounded-lg transition-all text-sm">
+                        <span class="hidden sm:inline">← Hub</span>
+                        <span class="sm:hidden">←</span>
                     </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6">
         <!-- Status Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
-            <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div class="glass-effect rounded-xl p-4 hover:bg-gray-700/50 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-xs sm:text-sm">Total Games</p>
-                        <p id="totalGames" class="text-xl sm:text-2xl font-bold text-white">-</p>
+                        <p style="color: var(--text-muted);" class="text-xs font-medium">TOTAL GAMES</p>
+                        <p id="totalGames" class="text-2xl font-bold mt-1" style="color: var(--text-primary);">-</p>
                     </div>
-                    <div class="text-2xl sm:text-3xl">🏈</div>
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--accent)/20;">
+                        <span class="text-xl">🏈</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <div class="glass-effect rounded-xl p-4 hover:bg-gray-700/50 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-xs sm:text-sm">Available Bets</p>
-                        <p id="totalBets" class="text-xl sm:text-2xl font-bold text-white">-</p>
+                        <p style="color: var(--text-muted);" class="text-xs font-medium">AVAILABLE BETS</p>
+                        <p id="totalBets" class="text-2xl font-bold mt-1" style="color: var(--text-primary);">-</p>
                     </div>
-                    <div class="text-2xl sm:text-3xl">🎯</div>
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--warning)/20;">
+                        <span class="text-xl">🎯</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <div class="glass-effect rounded-xl p-4 hover:bg-gray-700/50 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-xs sm:text-sm">Best Bets Found</p>
-                        <p id="bestBetsCount" class="text-xl sm:text-2xl font-bold text-green-400">-</p>
+                        <p style="color: var(--text-muted);" class="text-xs font-medium">BEST BETS</p>
+                        <p id="bestBetsCount" class="text-2xl font-bold mt-1" style="color: var(--success);">-</p>
                     </div>
-                    <div class="text-2xl sm:text-3xl">⭐</div>
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--success)/20;">
+                        <span class="text-xl">⭐</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <div class="glass-effect rounded-xl p-4 hover:bg-gray-700/50 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-xs sm:text-sm">Avg Confidence</p>
-                        <p id="avgConfidence" class="text-xl sm:text-2xl font-bold text-blue-400">-</p>
+                        <p style="color: var(--text-muted);" class="text-xs font-medium">CONFIDENCE</p>
+                        <p id="avgConfidence" class="text-2xl font-bold mt-1" style="color: var(--accent);">-</p>
                     </div>
-                    <div class="text-2xl sm:text-3xl">🧠</div>
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--accent)/20;">
+                        <span class="text-xl">🧠</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- API Setup Section -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <div class="glass-effect rounded-xl p-4 mb-4" style="border: 1px solid var(--border);">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-white">🔑 Real API Configuration</h2>
                 <button id="showApiSetup" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-all">
@@ -212,7 +270,7 @@
         </div>
 
         <!-- Providers Status -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <div class="glass-effect rounded-xl p-4 mb-4" style="border: 1px solid var(--border);">
             <h2 class="text-xl font-bold text-white mb-4">📊 Live Data Sources</h2>
             <div id="providersStatus" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Provider status cards will be populated here -->
@@ -220,19 +278,19 @@
         </div>
 
         <!-- Best Bets Section -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
-                <h2 class="text-xl sm:text-2xl font-bold text-white">🏆 Best Bets - ML Recommendations</h2>
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
-                    <select id="betTypeFilter" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm">
-                        <option value="all">All Bet Types</option>
+        <div class="glass-effect rounded-xl p-4 mb-4" style="border: 1px solid var(--border);">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+                <h2 class="text-lg sm:text-xl font-bold" style="color: var(--text-primary);">🏆 Best Bets - AI Recommendations</h2>
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <select id="betTypeFilter" class="rounded-lg px-3 py-2 text-sm border-0" style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid var(--border);">
+                        <option value="all">All Types</option>
                         <option value="spread">Spread</option>
                         <option value="moneyline">Moneyline</option>
                         <option value="totals">Totals</option>
-                        <option value="props">Player Props</option>
+                        <option value="props">Props</option>
                     </select>
-                    <button id="analyzeBets" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap">
-                        🔍 Analyze Bets
+                    <button id="analyzeBets" class="px-4 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap" style="background: var(--success); color: white;" onmouseover="this.style.background='var(--success)/90'" onmouseout="this.style.background='var(--success)'">
+                        🔍 Analyze
                     </button>
                 </div>
             </div>
@@ -246,24 +304,19 @@
             </div>
         </div>
 
-        <!-- Live Odds Widget - Enhanced Styling -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8" style="background: linear-gradient(135deg, rgba(16, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%); border: 1px solid rgba(59, 130, 246, 0.3); backdrop-filter: blur(20px);">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+        <!-- Live Odds Widget -->
+        <div class="glass-effect rounded-xl p-4 mb-4" style="background: var(--secondary-bg); border: 1px solid var(--border);">
+            <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">🏈 Live NFL Odds Hub</h2>
-                    <p class="text-blue-200 text-sm sm:text-base">Real-time betting lines from premium sportsbooks</p>
+                    <h2 class="text-lg sm:text-xl font-bold" style="color: var(--text-primary);">🏈 Live Odds Hub</h2>
+                    <p class="text-sm" style="color: var(--text-secondary);">Real-time betting lines</p>
                 </div>
-                <div class="flex flex-col items-start sm:items-end space-y-2">
-                    <div class="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-bold animate-pulse shadow-lg">
-                        🔴 LIVE ODDS
-                    </div>
-                    <div class="text-xs text-blue-300 font-medium hidden sm:block">
-                        Hard Rock • DraftKings • FanDuel • BetMGM
-                    </div>
+                <div class="px-3 py-1 rounded-full text-xs font-bold animate-pulse" style="background: var(--danger); color: white;">
+                    🔴 LIVE
                 </div>
             </div>
             
-            <div class="relative rounded-lg sm:rounded-xl overflow-hidden" style="min-height: 300px; sm:min-height: 450px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 2px solid rgba(99, 102, 241, 0.2);">
+            <div class="relative rounded-xl overflow-hidden" style="min-height: 300px; background: var(--primary-bg); border: 1px solid var(--border);">
                 <div id="widget-loading" class="absolute inset-0 flex flex-col items-center justify-center z-10" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
                     <div class="text-center">
                         <div class="relative mb-6">
@@ -367,9 +420,9 @@
             </div>
         </div>
 
-        <!-- Hard Rock Bet Quick Access -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-            <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">🎯 Quick Bet - Hard Rock Bet</h2>
+        <!-- Quick Bet Access -->
+        <div class="glass-effect rounded-xl p-4 mb-4" style="border: 1px solid var(--border);">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎯 Quick Bet - Hard Rock</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
                 <a href="https://app.hardrock.bet/sport-leagues/american_football/691198679103111169" 
                    target="_blank" rel="noopener noreferrer"
@@ -398,9 +451,9 @@
             </div>
         </div>
 
-        <!-- Our ML Analysis Results -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-            <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">🧠 ML Analysis vs Live Odds</h2>
+        <!-- AI Analysis Results -->
+        <div class="glass-effect rounded-xl p-4 mb-4" style="border: 1px solid var(--border);">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🧠 AI Analysis vs Live Odds</h2>
             <div id="oddsComparisonContainer">
                 <div class="text-center py-12 text-gray-400">
                     <div class="text-6xl mb-4">🤖</div>
@@ -411,8 +464,8 @@
         </div>
 
         <!-- Analytics Chart -->
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-6">
-            <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">📈 Betting Analytics</h2>
+        <div class="glass-effect rounded-xl p-4" style="border: 1px solid var(--border);">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">📈 Analytics</h2>
             <div class="bg-gray-800 rounded-lg p-4">
                 <canvas id="analyticsChart" width="400" height="200"></canvas>
             </div>
@@ -421,19 +474,19 @@
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
-        <div class="glass-effect rounded-lg sm:rounded-xl p-6 sm:p-8 text-center max-w-sm w-full">
+        <div class="rounded-xl p-6 text-center max-w-sm w-full" style="background: var(--card-bg); border: 1px solid var(--border);">
             <div class="loading-spinner mx-auto mb-4"></div>
-            <h3 class="text-lg sm:text-xl font-bold text-white mb-2">Analyzing Betting Odds</h3>
-            <p class="text-gray-300 text-sm sm:text-base">Our ML engine is finding the best opportunities...</p>
+            <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">Analyzing Betting Odds</h3>
+            <p class="text-sm" style="color: var(--text-secondary);">AI engine finding best opportunities...</p>
         </div>
     </div>
 
     <!-- Bet Details Modal -->
     <div id="betModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
-        <div class="glass-effect rounded-lg sm:rounded-xl p-4 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4 sm:mb-6">
-                <h3 class="text-xl sm:text-2xl font-bold text-white">Bet Analysis Details</h3>
-                <button id="closeBetModal" class="text-gray-400 hover:text-white text-2xl sm:text-3xl leading-none">×</button>
+        <div class="rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" style="background: var(--card-bg); border: 1px solid var(--border);">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold" style="color: var(--text-primary);">Bet Analysis Details</h3>
+                <button id="closeBetModal" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors" style="color: var(--text-muted); background: var(--primary-bg);" onmouseover="this.style.background='var(--danger)'; this.style.color='white'" onmouseout="this.style.background='var(--primary-bg)'; this.style.color='var(--text-muted)'">×</button>
             </div>
             <div id="betModalContent">
                 <!-- Bet details will be populated here -->
@@ -804,8 +857,12 @@
                 Object.entries(betsByDate).forEach(([dateStr, bets]) => {
                     // Add date header
                     const dateHeader = document.createElement('div');
-                    dateHeader.className = 'text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 mt-4 sm:mt-6 first:mt-0 border-b border-gray-600 pb-2 px-2 sm:px-0';
-                    dateHeader.innerHTML = `📅 ${dateStr} <span class="text-sm sm:text-base font-normal text-gray-400">(${bets.length} picks)</span>`;
+                    dateHeader.className = 'flex items-center justify-between py-3 mb-2 mt-4 first:mt-0';
+                    dateHeader.style.borderBottom = '1px solid var(--border)';
+                    dateHeader.innerHTML = `
+                        <h3 class="font-bold text-lg" style="color: var(--text-primary);">📅 ${dateStr}</h3>
+                        <span class="text-sm px-2 py-1 rounded-full" style="background: var(--accent)/20; color: var(--accent);">${bets.length} picks</span>
+                    `;
                     container.appendChild(dateHeader);
                     
                     // Sort bets within each date by game time
@@ -816,52 +873,52 @@
                         const confidenceLevel = this.getConfidenceLevel(bet.confidence);
                     
                     const card = document.createElement('div');
-                    card.className = `bet-card bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6 ${confidenceClass} cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300`;
+                    card.className = `bet-card cursor-pointer transition-all duration-300 rounded-xl p-4 mb-3 hover:scale-[1.01] ${confidenceClass}`;
+                    card.style.background = 'var(--card-bg)';
+                    card.style.border = '1px solid var(--border)';
                     card.innerHTML = `
-                        <div class="flex flex-col sm:flex-row sm:items-start justify-between mb-4 space-y-3 sm:space-y-0">
+                        <div class="flex items-start justify-between mb-3">
                             <div class="flex items-center space-x-3 flex-1">
-                                <div class="text-2xl sm:text-3xl flex-shrink-0">${this.getBetTypeIcon(bet.betType)}</div>
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background: var(--accent)/20;">
+                                    <span class="text-lg">${this.getBetTypeIcon(bet.betType)}</span>
+                                </div>
                                 <div class="min-w-0 flex-1">
-                                    <h3 class="font-bold text-white text-lg sm:text-xl leading-tight">${bet.awayTeam} @ ${bet.homeTeam}</h3>
-                                    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-xs sm:text-sm text-gray-400 mt-1">
-                                        <span class="font-medium">${bet.provider} • ${bet.betType.toUpperCase()}</span>
-                                        <span class="hidden sm:inline">•</span>
-                                        <span class="text-blue-400 font-medium">${new Date(bet.gameTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                                    <h3 class="font-bold text-lg leading-tight mb-1" style="color: var(--text-primary);">${bet.awayTeam} @ ${bet.homeTeam}</h3>
+                                    <div class="flex items-center space-x-2 text-xs">
+                                        <span class="font-medium" style="color: var(--text-secondary);">${bet.provider}</span>
+                                        <span style="color: var(--text-muted);">•</span>
+                                        <span style="color: var(--accent);">${bet.betType.toUpperCase()}</span>
+                                        <span style="color: var(--text-muted);">•</span>
+                                        <span style="color: var(--text-secondary);">${new Date(bet.gameTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-center sm:text-right flex-shrink-0">
-                                <div class="text-2xl sm:text-3xl font-bold text-white">${(bet.confidence * 100).toFixed(1)}%</div>
-                                <div class="text-xs sm:text-sm text-gray-400 font-medium">${confidenceLevel}</div>
+                            <div class="text-right flex-shrink-0">
+                                <div class="text-2xl font-bold" style="color: var(--success);">${(bet.confidence * 100).toFixed(1)}%</div>
+                                <div class="text-xs font-medium" style="color: var(--text-muted);">${confidenceLevel}</div>
                             </div>
                         </div>
                         
-                        <div class="mb-4 bg-gray-900/50 rounded-lg p-3">
-                            <p class="text-base sm:text-lg font-semibold text-blue-400 mb-2">${bet.recommendation}</p>
-                            <p class="text-sm text-gray-300 leading-relaxed">${bet.reasoning}</p>
+                        <div class="rounded-lg p-3 mb-3" style="background: var(--primary-bg);">
+                            <p class="font-semibold mb-1" style="color: var(--accent);">${bet.recommendation}</p>
+                            <p class="text-sm leading-relaxed" style="color: var(--text-secondary);">${bet.reasoning}</p>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between text-sm mb-4 space-y-2 sm:space-y-0">
-                            <div class="text-gray-400">
-                                Value Score: <span class="text-yellow-400 font-semibold text-base">${(bet.valueScore * 100).toFixed(1)}%</span>
+                        <div class="flex items-center justify-between text-sm mb-4">
+                            <div style="color: var(--text-secondary);">
+                                Value: <span class="font-semibold" style="color: var(--warning);">${(bet.valueScore * 100).toFixed(1)}%</span>
                             </div>
-                            <div class="text-gray-400 text-xs sm:text-sm">
-                                ${bet.betType === 'player_prop' ? `${bet.propType || ''} ${bet.player || ''}`.trim() : `${bet.betType.charAt(0).toUpperCase() + bet.betType.slice(1)} Bet`}
+                            <div class="text-xs" style="color: var(--text-muted);">
+                                ${bet.betType === 'player_prop' ? `${bet.propType || ''} ${bet.player || ''}`.trim() : `${bet.betType.charAt(0).toUpperCase() + bet.betType.slice(1)}`}
                             </div>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
-                            <button class="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 text-sm font-bold shadow-lg"
-                                    onclick="window.open('${bet.hardRockBetUrl || 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'}', '_blank')">
-                                <span class="text-lg">🎯</span>
-                                <span>Bet on Hard Rock</span>
-                            </button>
-                            <div class="text-xs text-gray-400 text-center sm:text-right">
-                                <div class="hidden sm:block">Opens NFL betting page →</div>
-                                <div class="sm:hidden">Find: ${bet.awayTeam} @ ${bet.homeTeam}</div>
-                                <div class="hidden sm:block">Find: ${bet.awayTeam} @ ${bet.homeTeam}</div>
-                            </div>
-                        </div>
+                        <button class="w-full px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center space-x-2 hover:scale-105 active:scale-95" 
+                                style="background: var(--danger); color: white;"
+                                onclick="window.open('${bet.hardRockBetUrl || 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'}', '_blank')">
+                            <span>🎯</span>
+                            <span>Place Bet - Hard Rock</span>
+                        </button>
                     `;
                     
                     card.addEventListener('click', (e) => {
@@ -1035,43 +1092,46 @@
                 const content = document.getElementById('betModalContent');
                 
                 content.innerHTML = `
-                    <div class="space-y-4 sm:space-y-6">
-                        <div class="text-center">
-                            <h4 class="text-xl sm:text-2xl font-bold text-white">${bet.homeTeam} vs ${bet.awayTeam}</h4>
-                            <p class="text-gray-400 text-sm sm:text-base">${new Date(bet.gameTime).toLocaleString()}</p>
+                    <div class="space-y-4">
+                        <div class="text-center py-4">
+                            <h4 class="text-xl font-bold mb-2" style="color: var(--text-primary);">${bet.homeTeam} vs ${bet.awayTeam}</h4>
+                            <p class="text-sm" style="color: var(--text-secondary);">${new Date(bet.gameTime).toLocaleString()}</p>
                         </div>
                         
-                        <div class="bg-gray-800 rounded-lg p-4">
-                            <h5 class="font-semibold text-white mb-2 text-sm sm:text-base">Recommendation</h5>
-                            <p class="text-blue-400 text-base sm:text-lg">${bet.recommendation}</p>
+                        <div class="rounded-lg p-4" style="background: var(--primary-bg); border: 1px solid var(--border);">
+                            <h5 class="font-semibold mb-2 text-sm" style="color: var(--text-secondary);">RECOMMENDATION</h5>
+                            <p class="text-base" style="color: var(--accent);">${bet.recommendation}</p>
                         </div>
                         
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="bg-gray-800 rounded-lg p-4">
-                                <h5 class="font-semibold text-white mb-2 text-sm sm:text-base">Confidence</h5>
-                                <div class="text-2xl sm:text-3xl font-bold ${this.getConfidenceTextColor(bet.confidence)}">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="rounded-lg p-4" style="background: var(--primary-bg); border: 1px solid var(--border);">
+                                <h5 class="font-semibold mb-2 text-sm" style="color: var(--text-secondary);">CONFIDENCE</h5>
+                                <div class="text-2xl font-bold" style="color: var(--success);">
                                     ${(bet.confidence * 100).toFixed(1)}%
                                 </div>
-                                <p class="text-xs sm:text-sm text-gray-400">${this.getConfidenceLevel(bet.confidence)}</p>
+                                <p class="text-xs" style="color: var(--text-muted);">${this.getConfidenceLevel(bet.confidence)}</p>
                             </div>
                             
-                            <div class="bg-gray-800 rounded-lg p-4">
-                                <h5 class="font-semibold text-white mb-2 text-sm sm:text-base">Value Score</h5>
-                                <div class="text-2xl sm:text-3xl font-bold text-yellow-400">
+                            <div class="rounded-lg p-4" style="background: var(--primary-bg); border: 1px solid var(--border);">
+                                <h5 class="font-semibold mb-2 text-sm" style="color: var(--text-secondary);">VALUE SCORE</h5>
+                                <div class="text-2xl font-bold" style="color: var(--warning);">
                                     ${(bet.valueScore * 100).toFixed(1)}%
                                 </div>
-                                <p class="text-xs sm:text-sm text-gray-400">Expected value</p>
+                                <p class="text-xs" style="color: var(--text-muted);">Expected value</p>
                             </div>
                         </div>
                         
-                        <div class="bg-gray-800 rounded-lg p-4">
-                            <h5 class="font-semibold text-white mb-2 text-sm sm:text-base">Analysis</h5>
-                            <p class="text-gray-300 text-sm sm:text-base">${bet.reasoning}</p>
+                        <div class="rounded-lg p-4" style="background: var(--primary-bg); border: 1px solid var(--border);">
+                            <h5 class="font-semibold mb-2 text-sm" style="color: var(--text-secondary);">ANALYSIS</h5>
+                            <p class="text-sm leading-relaxed" style="color: var(--text-secondary);">${bet.reasoning}</p>
                         </div>
                         
-                        <div class="bg-yellow-900/20 border border-yellow-600 rounded-lg p-4">
-                            <h5 class="font-semibold text-yellow-400 mb-2 text-sm sm:text-base">⚠️ Disclaimer</h5>
-                            <p class="text-xs sm:text-sm text-gray-300">
+                        <div class="rounded-lg p-4" style="background: var(--warning)/10; border: 1px solid var(--warning)/30;">
+                            <h5 class="font-semibold mb-2 text-sm flex items-center space-x-2">
+                                <span>⚠️</span>
+                                <span style="color: var(--warning);">DISCLAIMER</span>
+                            </h5>
+                            <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
                                 This is for educational and entertainment purposes only. 
                                 Please gamble responsibly and within your means.
                             </p>
