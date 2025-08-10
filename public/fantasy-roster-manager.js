@@ -32,14 +32,38 @@ class FantasyRosterManager {
         // Load sample roster data
         await this.loadSampleRosters();
         
-        // Set default user
-        this.setCurrentUser('user_12345');
+        // Set default user (prefer custom roster if available)
+        const userRoster = this.loadUserRoster();
+        if (userRoster) {
+            this.setCurrentUser(userRoster.userId);
+        } else {
+            this.setCurrentUser('user_12345');
+        }
         
-        console.log('✅ Roster system ready with sample data');
+        console.log('✅ Roster system ready');
     }
 
     async loadSampleRosters() {
-        // Sample user rosters with realistic draft data
+        // Check for user's custom roster first
+        const userRoster = this.loadUserRoster();
+        if (userRoster) {
+            console.log(`📋 Loading user's custom roster: ${userRoster.teamName}`);
+            this.userRosters.set(userRoster.userId, userRoster);
+            
+            userRoster.roster.forEach(player => {
+                this.allPlayers.set(player.playerId, {
+                    ...player,
+                    ownedBy: userRoster.userId,
+                    ownerTeamName: userRoster.teamName
+                });
+            });
+            
+            console.log(`✅ Loaded user roster with ${userRoster.roster.length} players`);
+            return;
+        }
+
+        // Fallback to sample data if no user roster
+        console.log('📋 Loading sample rosters...');
         const sampleRosters = [
             {
                 userId: 'user_12345',
@@ -121,6 +145,20 @@ class FantasyRosterManager {
         });
 
         console.log(`📋 Loaded ${sampleRosters.length} user rosters with ${this.allPlayers.size} total players`);
+    }
+
+    loadUserRoster() {
+        try {
+            const saved = localStorage.getItem('userFantasyRoster');
+            if (saved) {
+                const roster = JSON.parse(saved);
+                console.log(`💾 Found saved roster: ${roster.teamName}`);
+                return roster;
+            }
+        } catch (error) {
+            console.warn('⚠️ Error loading user roster from localStorage:', error);
+        }
+        return null;
     }
 
     setCurrentUser(userId) {

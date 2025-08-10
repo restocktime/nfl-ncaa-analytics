@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Build Your Fantasy Roster</title>
+    <style>
+        body {
+            background-color: #0a0e1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            background-color: #1a202c;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .roster-builder {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .section {
+            background-color: #1a202c;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .position-group {
+            margin-bottom: 20px;
+            background-color: #2d3748;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .position-group h4 {
+            color: #667eea;
+            margin: 0 0 15px 0;
+        }
+        .player-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .player-input input {
+            flex: 1;
+            padding: 8px;
+            margin-right: 10px;
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 4px;
+            color: white;
+        }
+        .player-input select {
+            padding: 8px;
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 4px;
+            color: white;
+            margin-right: 10px;
+        }
+        .save-btn, .import-btn {
+            background-color: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        .save-btn:hover, .import-btn:hover {
+            background-color: #5a67d8;
+        }
+        .current-roster {
+            background-color: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .roster-player {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #4a5568;
+            border-radius: 4px;
+        }
+        .remove-btn {
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .team-settings {
+            background-color: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .team-settings input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 4px;
+            color: white;
+        }
+        .import-section {
+            background-color: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .import-section h4 {
+            color: #667eea;
+            margin: 0 0 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 Build Your Fantasy Roster</h1>
+            <p>Add your actual fantasy players to get personalized recommendations</p>
+        </div>
+
+        <div class="roster-builder">
+            <div class="section">
+                <h3>Add Your Players</h3>
+                
+                <div class="team-settings">
+                    <h4>Team Settings</h4>
+                    <input type="text" id="teamName" placeholder="Your Team Name" value="My Fantasy Team">
+                    <input type="number" id="wins" placeholder="Wins" min="0" max="17" value="8">
+                    <input type="number" id="losses" placeholder="Losses" min="0" max="17" value="4">
+                    <input type="number" id="playoffSeed" placeholder="Playoff Seed" min="1" max="12" value="3">
+                </div>
+
+                <div class="import-section">
+                    <h4>Quick Import</h4>
+                    <button class="import-btn" onclick="importSampleRoster()">Load Sample Roster</button>
+                    <button class="import-btn" onclick="clearRoster()">Clear All</button>
+                </div>
+
+                <div class="position-group">
+                    <h4>Quarterbacks (QB)</h4>
+                    <div class="player-input">
+                        <input type="text" placeholder="Player Name" id="qb1-name">
+                        <select id="qb1-team">
+                            <option value="">Team</option>
+                            <option value="ARI">ARI</option>
+                            <option value="ATL">ATL</option>
+                            <option value="BAL">BAL</option>
+                            <option value="BUF">BUF</option>
+                            <option value="CAR">CAR</option>
+                            <option value="CHI">CHI</option>
+                            <option value="CIN">CIN</option>
+                            <option value="CLE">CLE</option>
+                            <option value="DAL">DAL</option>
+                            <option value="DEN">DEN</option>
+                            <option value="DET">DET</option>
+                            <option value="GB">GB</option>
+                            <option value="HOU">HOU</option>
+                            <option value="IND">IND</option>
+                            <option value="JAX">JAX</option>
+                            <option value="KC">KC</option>
+                            <option value="LV">LV</option>
+                            <option value="LAC">LAC</option>
+                            <option value="LAR">LAR</option>
+                            <option value="MIA">MIA</option>
+                            <option value="MIN">MIN</option>
+                            <option value="NE">NE</option>
+                            <option value="NO">NO</option>
+                            <option value="NYG">NYG</option>
+                            <option value="NYJ">NYJ</option>
+                            <option value="PHI">PHI</option>
+                            <option value="PIT">PIT</option>
+                            <option value="SF">SF</option>
+                            <option value="SEA">SEA</option>
+                            <option value="TB">TB</option>
+                            <option value="TEN">TEN</option>
+                            <option value="WAS">WAS</option>
+                        </select>
+                        <select id="qb1-status">
+                            <option value="starter">Starter</option>
+                            <option value="bench">Bench</option>
+                        </select>
+                        <button onclick="addPlayer('QB', 'qb1')" class="save-btn" style="padding: 8px 12px;">Add</button>
+                    </div>
+                </div>
+
+                <div class="position-group">
+                    <h4>Running Backs (RB)</h4>
+                    <div class="player-input">
+                        <input type="text" placeholder="Player Name" id="rb1-name">
+                        <select id="rb1-team"></select>
+                        <select id="rb1-status">
+                            <option value="starter">Starter</option>
+                            <option value="bench">Bench</option>
+                        </select>
+                        <button onclick="addPlayer('RB', 'rb1')" class="save-btn" style="padding: 8px 12px;">Add</button>
+                    </div>
+                </div>
+
+                <div class="position-group">
+                    <h4>Wide Receivers (WR)</h4>
+                    <div class="player-input">
+                        <input type="text" placeholder="Player Name" id="wr1-name">
+                        <select id="wr1-team"></select>
+                        <select id="wr1-status">
+                            <option value="starter">Starter</option>
+                            <option value="bench">Bench</option>
+                        </select>
+                        <button onclick="addPlayer('WR', 'wr1')" class="save-btn" style="padding: 8px 12px;">Add</button>
+                    </div>
+                </div>
+
+                <div class="position-group">
+                    <h4>Tight Ends (TE)</h4>
+                    <div class="player-input">
+                        <input type="text" placeholder="Player Name" id="te1-name">
+                        <select id="te1-team"></select>
+                        <select id="te1-status">
+                            <option value="starter">Starter</option>
+                            <option value="bench">Bench</option>
+                        </select>
+                        <button onclick="addPlayer('TE', 'te1')" class="save-btn" style="padding: 8px 12px;">Add</button>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="saveRoster()" style="width: 100%; margin-top: 20px; font-size: 18px;">
+                    💾 Save My Roster & Go to Fantasy Hub
+                </button>
+            </div>
+
+            <div class="section">
+                <h3>Your Current Roster</h3>
+                <div class="current-roster" id="currentRoster">
+                    <p>Add players to see your roster here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize team options for all selects
+        const teams = ['ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET','GB','HOU','IND','JAX','KC','LV','LAC','LAR','MIA','MIN','NE','NO','NYG','NYJ','PHI','PIT','SF','SEA','TB','TEN','WAS'];
+        
+        function populateTeamSelects() {
+            const selects = document.querySelectorAll('select[id$="-team"]');
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Team</option>';
+                teams.forEach(team => {
+                    select.innerHTML += `<option value="${team}">${team}</option>`;
+                });
+            });
+        }
+
+        // Initialize roster
+        let userRoster = {
+            userId: 'user_' + Date.now(),
+            username: 'User',
+            teamName: 'My Fantasy Team',
+            draftPosition: 5,
+            record: { wins: 8, losses: 4, ties: 0 },
+            playoffSeed: 3,
+            pointsFor: 1200,
+            pointsAgainst: 1100,
+            roster: []
+        };
+
+        function addPlayer(position, inputId) {
+            const name = document.getElementById(inputId + '-name').value.trim();
+            const team = document.getElementById(inputId + '-team').value;
+            const status = document.getElementById(inputId + '-status').value;
+
+            if (!name || !team) {
+                alert('Please enter player name and select team');
+                return;
+            }
+
+            const player = {
+                playerId: name.toLowerCase().replace(' ', '_'),
+                name: name,
+                team: team,
+                position: position,
+                draftRound: Math.floor(Math.random() * 10) + 1,
+                draftPick: Math.floor(Math.random() * 120) + 1,
+                status: status,
+                injury: 'Healthy'
+            };
+
+            userRoster.roster.push(player);
+
+            // Clear inputs
+            document.getElementById(inputId + '-name').value = '';
+            document.getElementById(inputId + '-team').value = '';
+
+            updateRosterDisplay();
+            console.log('Added player:', player);
+        }
+
+        function removePlayer(index) {
+            userRoster.roster.splice(index, 1);
+            updateRosterDisplay();
+        }
+
+        function updateRosterDisplay() {
+            const rosterDiv = document.getElementById('currentRoster');
+            
+            if (userRoster.roster.length === 0) {
+                rosterDiv.innerHTML = '<p>Add players to see your roster here...</p>';
+                return;
+            }
+
+            let html = `<h4>${userRoster.teamName}</h4>`;
+            html += `<p><strong>Record:</strong> ${userRoster.record.wins}-${userRoster.record.losses}</p>`;
+            html += '<div style="margin-top: 15px;"><strong>Roster:</strong></div>';
+
+            userRoster.roster.forEach((player, index) => {
+                html += `
+                    <div class="roster-player">
+                        <div>
+                            <strong>${player.name}</strong> (${player.position}, ${player.team})
+                            <br><small>${player.status}</small>
+                        </div>
+                        <button class="remove-btn" onclick="removePlayer(${index})">Remove</button>
+                    </div>
+                `;
+            });
+
+            rosterDiv.innerHTML = html;
+        }
+
+        function importSampleRoster() {
+            userRoster.roster = [
+                { playerId: 'josh_allen', name: 'Josh Allen', team: 'BUF', position: 'QB', draftRound: 2, draftPick: 15, status: 'starter', injury: 'Healthy' },
+                { playerId: 'christian_mccaffrey', name: 'Christian McCaffrey', team: 'SF', position: 'RB', draftRound: 1, draftPick: 3, status: 'starter', injury: 'Healthy' },
+                { playerId: 'saquon_barkley', name: 'Saquon Barkley', team: 'PHI', position: 'RB', draftRound: 3, draftPick: 27, status: 'starter', injury: 'Questionable' },
+                { playerId: 'tyreek_hill', name: 'Tyreek Hill', team: 'MIA', position: 'WR', draftRound: 4, draftPick: 45, status: 'starter', injury: 'Probable' },
+                { playerId: 'davante_adams', name: 'Davante Adams', team: 'LV', position: 'WR', draftRound: 5, draftPick: 55, status: 'starter', injury: 'Healthy' },
+                { playerId: 'travis_kelce', name: 'Travis Kelce', team: 'KC', position: 'TE', draftRound: 6, draftPick: 67, status: 'starter', injury: 'Healthy' },
+                { playerId: 'derrick_henry', name: 'Derrick Henry', team: 'BAL', position: 'RB', draftRound: 7, draftPick: 75, status: 'bench', injury: 'Healthy' },
+                { playerId: 'stefon_diggs', name: 'Stefon Diggs', team: 'HOU', position: 'WR', draftRound: 9, draftPick: 105, status: 'bench', injury: 'Healthy' }
+            ];
+            updateRosterDisplay();
+        }
+
+        function clearRoster() {
+            userRoster.roster = [];
+            updateRosterDisplay();
+        }
+
+        function saveRoster() {
+            // Update team settings
+            userRoster.teamName = document.getElementById('teamName').value || 'My Fantasy Team';
+            userRoster.record.wins = parseInt(document.getElementById('wins').value) || 0;
+            userRoster.record.losses = parseInt(document.getElementById('losses').value) || 0;
+            userRoster.playoffSeed = parseInt(document.getElementById('playoffSeed').value) || 1;
+
+            // Save to localStorage
+            localStorage.setItem('userFantasyRoster', JSON.stringify(userRoster));
+            
+            alert(`✅ Roster saved! Your team "${userRoster.teamName}" with ${userRoster.roster.length} players is ready.`);
+            
+            // Redirect to fantasy hub
+            window.location.href = 'fantasy-hub.html';
+        }
+
+        // Load existing roster if available
+        function loadExistingRoster() {
+            const saved = localStorage.getItem('userFantasyRoster');
+            if (saved) {
+                userRoster = JSON.parse(saved);
+                document.getElementById('teamName').value = userRoster.teamName;
+                document.getElementById('wins').value = userRoster.record.wins;
+                document.getElementById('losses').value = userRoster.record.losses;
+                document.getElementById('playoffSeed').value = userRoster.playoffSeed;
+                updateRosterDisplay();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTeamSelects();
+            loadExistingRoster();
+        });
+    </script>
+</body>
+</html>
