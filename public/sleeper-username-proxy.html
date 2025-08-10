@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Sleeper Username Lookup - Proxy Solutions</title>
+    
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: #f8fafc;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .method-card {
+            background: rgba(30, 30, 63, 0.6);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            background: #2d3748;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .result-box {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            border-left: 4px solid #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .error {
+            border-left: 4px solid #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .warning {
+            border-left: 4px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .proxy-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .proxy-item {
+            background: rgba(45, 47, 95, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .proxy-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-unknown { background: #374151; color: #9ca3af; }
+        .status-working { background: #065f46; color: #34d399; }
+        .status-failed { background: #7f1d1d; color: #f87171; }
+        .status-testing { background: #1e40af; color: #60a5fa; }
+        
+        .back-link {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-group input {
+                min-width: auto;
+            }
+            
+            .proxy-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="connect-accounts.html" class="back-link">← Back to Connect Accounts</a>
+        
+        <div class="header">
+            <h1>🔍 Sleeper Username Lookup</h1>
+            <p>Multiple proxy methods to make username lookup work on deployed sites</p>
+            <p><strong>Bypass hosting provider restrictions with these advanced techniques</strong></p>
+        </div>
+        
+        <!-- Quick Test Section -->
+        <div class="method-card">
+            <h2>⚡ Quick Username Lookup</h2>
+            <p>Try your Sleeper username with our best proxy methods:</p>
+            
+            <div class="input-group">
+                <input type="text" id="mainUsername" placeholder="Enter Sleeper username (e.g., Restocktime)" value="Restocktime">
+                <button class="btn" onclick="quickLookup()">🔍 Quick Lookup</button>
+                <button class="btn btn-secondary" onclick="deepLookup()">🔎 Deep Search</button>
+            </div>
+            
+            <div id="quickResults" class="result-box" style="display: none;"></div>
+        </div>
+        
+        <!-- Proxy Testing Section -->
+        <div class="method-card">
+            <h2>🌐 Proxy Services Status</h2>
+            <p>Testing multiple CORS proxy services to find working ones:</p>
+            
+            <button class="btn btn-warning" onclick="testAllProxies()">🧪 Test All Proxies</button>
+            
+            <div class="proxy-list" id="proxyList">
+                <div class="proxy-item">
+                    <strong>AllOrigins (JSON)</strong><br>
+                    <span class="proxy-status status-unknown" id="status-allorigins-json">Unknown</span><br>
+                    <small>api.allorigins.win/get?url=</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>AllOrigins (Raw)</strong><br>
+                    <span class="proxy-status status-unknown" id="status-allorigins-raw">Unknown</span><br>
+                    <small>api.allorigins.win/raw?url=</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>CORS Anywhere</strong><br>
+                    <span class="proxy-status status-unknown" id="status-cors-anywhere">Unknown</span><br>
+                    <small>cors-anywhere.herokuapp.com/</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>ThingProxy</strong><br>
+                    <span class="proxy-status status-unknown" id="status-thingproxy">Unknown</span><br>
+                    <small>thingproxy.freeboard.io/fetch/</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>CodeTabs Proxy</strong><br>
+                    <span class="proxy-status status-unknown" id="status-codetabs">Unknown</span><br>
+                    <small>api.codetabs.com/v1/proxy</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>CORS Proxy</strong><br>
+                    <span class="proxy-status status-unknown" id="status-corsproxy">Unknown</span><br>
+                    <small>corsproxy.org/</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>Proxy Via</strong><br>
+                    <span class="proxy-status status-unknown" id="status-proxyvia">Unknown</span><br>
+                    <small>api.proxyhub.me/</small>
+                </div>
+                
+                <div class="proxy-item">
+                    <strong>CrossOrigin</strong><br>
+                    <span class="proxy-status status-unknown" id="status-crossorigin">Unknown</span><br>
+                    <small>crossorigin.me/</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Advanced Methods -->
+        <div class="method-card">
+            <h2>🚀 Advanced Bypass Methods</h2>
+            <p>Alternative techniques when standard CORS proxies fail:</p>
+            
+            <div class="input-group">
+                <input type="text" id="advancedUsername" placeholder="Username for advanced lookup" value="Restocktime">
+                <button class="btn" onclick="tryJSONPMethod()">📡 JSONP Method</button>
+                <button class="btn btn-secondary" onclick="tryWebSocketMethod()">🔌 WebSocket</button>
+                <button class="btn btn-warning" onclick="tryIframeMethod()">🖼️ Iframe</button>
+            </div>
+            
+            <div id="advancedResults" class="result-box" style="display: none;"></div>
+        </div>
+        
+        <!-- Success Handler -->
+        <div class="method-card">
+            <h2>✅ Success Actions</h2>
+            <p>When we successfully get your Sleeper data:</p>
+            
+            <button class="btn" onclick="saveToFantasySystem()" id="saveBtn" disabled>💾 Save to Fantasy System</button>
+            <button class="btn btn-secondary" onclick="downloadData()" id="downloadBtn" disabled>📥 Download JSON</button>
+            <button class="btn btn-warning" onclick="copyToClipboard()" id="copyBtn" disabled>📋 Copy Data</button>
+            
+            <div id="successData" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        let successfulData = null;
+        let workingProxies = [];
+        
+        // Comprehensive proxy list with different formats
+        const proxyServices = [
+            {
+                name: 'AllOrigins JSON',
+                id: 'allorigins-json',
+                url: 'https://api.allorigins.win/get?url=',
+                parser: (data) => JSON.parse(data.contents)
+            },
+            {
+                name: 'AllOrigins Raw', 
+                id: 'allorigins-raw',
+                url: 'https://api.allorigins.win/raw?url=',
+                parser: (data) => data
+            },
+            {
+                name: 'CORS Anywhere',
+                id: 'cors-anywhere', 
+                url: 'https://cors-anywhere.herokuapp.com/',
+                parser: (data) => data
+            },
+            {
+                name: 'ThingProxy',
+                id: 'thingproxy',
+                url: 'https://thingproxy.freeboard.io/fetch/',
+                parser: (data) => data
+            },
+            {
+                name: 'CodeTabs',
+                id: 'codetabs',
+                url: 'https://api.codetabs.com/v1/proxy?quest=',
+                parser: (data) => data
+            },
+            {
+                name: 'CORS Proxy',
+                id: 'corsproxy',
+                url: 'https://corsproxy.org/?',
+                parser: (data) => data
+            },
+            {
+                name: 'Proxy Via',
+                id: 'proxyvia',
+                url: 'https://api.proxyhub.me/',
+                parser: (data) => data
+            },
+            {
+                name: 'CrossOrigin',
+                id: 'crossorigin',
+                url: 'https://crossorigin.me/',
+                parser: (data) => data
+            }
+        ];
+        
+        function updateProxyStatus(proxyId, status, message = '') {
+            const statusEl = document.getElementById(`status-${proxyId}`);
+            if (statusEl) {
+                statusEl.textContent = status === 'working' ? '✅ Working' : 
+                                     status === 'failed' ? '❌ Failed' : 
+                                     status === 'testing' ? '🔄 Testing' : '❓ Unknown';
+                statusEl.className = `proxy-status status-${status}`;
+                if (message) {
+                    statusEl.title = message;
+                }
+            }
+        }
+        
+        async function testProxy(proxy, testUrl = 'https://api.sleeper.app/v1/user/testuser123') {
+            updateProxyStatus(proxy.id, 'testing');
+            
+            try {
+                const proxyUrl = proxy.url + encodeURIComponent(testUrl);
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const parsedData = proxy.parser ? proxy.parser(data) : data;
+                    
+                    // Validate it's actual Sleeper data
+                    if (parsedData && (parsedData.user_id || parsedData.username || parsedData.display_name)) {
+                        updateProxyStatus(proxy.id, 'working', 'Successfully connected to Sleeper API');
+                        workingProxies.push(proxy);
+                        return true;
+                    } else {
+                        updateProxyStatus(proxy.id, 'failed', 'Connected but invalid Sleeper data format');
+                    }
+                } else {
+                    updateProxyStatus(proxy.id, 'failed', `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                updateProxyStatus(proxy.id, 'failed', error.message);
+            }
+            
+            return false;
+        }
+        
+        async function testAllProxies() {
+            workingProxies = [];
+            log('🧪 Testing all proxy services...', 'quickResults');
+            
+            const promises = proxyServices.map(proxy => testProxy(proxy));
+            await Promise.all(promises);
+            
+            log(`✅ Proxy testing complete. Found ${workingProxies.length} working proxies.`, 'quickResults');
+            
+            if (workingProxies.length > 0) {
+                log(`🚀 Working proxies: ${workingProxies.map(p => p.name).join(', ')}`, 'quickResults');
+            } else {
+                log('❌ No working proxies found. Try advanced methods or manual extraction.', 'quickResults');
+            }
+        }
+        
+        async function quickLookup() {
+            const username = document.getElementById('mainUsername').value.trim();
+            if (!username) {
+                alert('Please enter a Sleeper username');
+                return;
+            }
+            
+            const resultsEl = document.getElementById('quickResults');
+            resultsEl.style.display = 'block';
+            resultsEl.className = 'result-box';
+            resultsEl.textContent = '';
+            
+            log(`🔍 Looking up Sleeper user: ${username}`, 'quickResults');
+            
+            // If we haven't tested proxies yet, test them first
+            if (workingProxies.length === 0) {
+                await testAllProxies();
+            }
+            
+            if (workingProxies.length === 0) {
+                log('❌ No working proxies available. Please try advanced methods.', 'quickResults');
+                return;
+            }
+            
+            // Try each working proxy
+            for (const proxy of workingProxies) {
+                try {
+                    log(`📡 Trying ${proxy.name}...`, 'quickResults');
+                    
+                    const sleeperUrl = `https://api.sleeper.app/v1/user/${username}`;
+                    const proxyUrl = proxy.url + encodeURIComponent(sleeperUrl);
+                    
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const userData = proxy.parser ? proxy.parser(data) : data;
+                        
+                        if (userData && userData.user_id) {
+                            log(`✅ SUCCESS! Found user via ${proxy.name}`, 'quickResults');
+                            log(`👤 User: ${userData.display_name || userData.username}`, 'quickResults');
+                            log(`🆔 User ID: ${userData.user_id}`, 'quickResults');
+                            
+                            successfulData = userData;
+                            enableSuccessButtons();
+                            
+                            // Try to get leagues too
+                            await fetchUserLeagues(userData.user_id, proxy);
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    log(`❌ ${proxy.name} failed: ${error.message}`, 'quickResults');
+                }
+            }
+            
+            log('❌ All proxy methods failed for this username', 'quickResults');
+        }
+        
+        async function fetchUserLeagues(userId, proxy) {
+            try {
+                log(`🏈 Fetching leagues for user...`, 'quickResults');
+                
+                const leaguesUrl = `https://api.sleeper.app/v1/user/${userId}/leagues/nfl/2024`;
+                const proxyUrl = proxy.url + encodeURIComponent(leaguesUrl);
+                
+                const response = await fetch(proxyUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    const leagues = proxy.parser ? proxy.parser(data) : data;
+                    
+                    if (leagues && leagues.length > 0) {
+                        log(`🏆 Found ${leagues.length} leagues!`, 'quickResults');
+                        successfulData.leagues = leagues;
+                        
+                        // Try to get roster for first league
+                        await fetchUserRoster(userId, leagues[0].league_id, proxy);
+                    } else {
+                        log(`ℹ️ No leagues found for 2024 season`, 'quickResults');
+                    }
+                }
+            } catch (error) {
+                log(`⚠️ Could not fetch leagues: ${error.message}`, 'quickResults');
+            }
+        }
+        
+        async function fetchUserRoster(userId, leagueId, proxy) {
+            try {
+                log(`📋 Fetching roster data...`, 'quickResults');
+                
+                const rostersUrl = `https://api.sleeper.app/v1/league/${leagueId}/rosters`;
+                const proxyUrl = proxy.url + encodeURIComponent(rostersUrl);
+                
+                const response = await fetch(proxyUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    const rosters = proxy.parser ? proxy.parser(data) : data;
+                    
+                    if (rosters && rosters.length > 0) {
+                        // Find user's roster
+                        const userRoster = rosters.find(r => r.owner_id === userId);
+                        if (userRoster) {
+                            log(`📊 Found roster with ${userRoster.players?.length || 0} players!`, 'quickResults');
+                            successfulData.roster = userRoster;
+                            successfulData.rosters = rosters; // Include all rosters
+                        }
+                    }
+                }
+            } catch (error) {
+                log(`⚠️ Could not fetch roster: ${error.message}`, 'quickResults');
+            }
+        }
+        
+        async function deepLookup() {
+            const username = document.getElementById('mainUsername').value.trim();
+            if (!username) {
+                alert('Please enter a Sleeper username');
+                return;
+            }
+            
+            log(`🔎 Starting deep search for: ${username}`, 'quickResults');
+            
+            // Test all proxies first
+            await testAllProxies();
+            
+            // Try quick lookup
+            await quickLookup();
+            
+            // If that didn't work, try advanced methods
+            if (!successfulData) {
+                log('🚀 Trying advanced methods...', 'quickResults');
+                document.getElementById('advancedUsername').value = username;
+                await tryJSONPMethod();
+            }
+        }
+        
+        async function tryJSONPMethod() {
+            const username = document.getElementById('advancedUsername').value.trim();
+            log(`📡 Attempting JSONP method for: ${username}`, 'advancedResults');
+            document.getElementById('advancedResults').style.display = 'block';
+            
+            // JSONP won't work with Sleeper, but we'll try anyway
+            const script = document.createElement('script');
+            script.src = `https://api.sleeper.app/v1/user/${username}?callback=handleSleeperJSONP&_=${Date.now()}`;
+            
+            // Set up callback
+            window.handleSleeperJSONP = function(data) {
+                if (data && data.user_id) {
+                    log(`✅ JSONP success! User: ${data.display_name || data.username}`, 'advancedResults');
+                    successfulData = data;
+                    enableSuccessButtons();
+                } else {
+                    log('❌ JSONP returned invalid data', 'advancedResults');
+                }
+                document.head.removeChild(script);
+            };
+            
+            document.head.appendChild(script);
+            
+            // Timeout after 5 seconds
+            setTimeout(() => {
+                if (document.head.contains(script)) {
+                    document.head.removeChild(script);
+                    log('❌ JSONP method timed out (expected - Sleeper doesn\\'t support JSONP)', 'advancedResults');
+                }
+            }, 5000);
+        }
+        
+        async function tryWebSocketMethod() {
+            log('🔌 WebSocket method not applicable for REST API lookups', 'advancedResults');
+        }
+        
+        async function tryIframeMethod() {
+            const username = document.getElementById('advancedUsername').value.trim();
+            log(`🖼️ Attempting iframe method for: ${username}`, 'advancedResults');
+            
+            // This won't work due to CORS, but shows the attempt
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = `https://sleeper.com/user/${username}`;
+            
+            iframe.onload = () => {
+                try {
+                    // This will fail due to same-origin policy
+                    const doc = iframe.contentDocument;
+                    log('❌ Iframe blocked by same-origin policy (expected)', 'advancedResults');
+                } catch (error) {
+                    log(`❌ Iframe method failed: ${error.message}`, 'advancedResults');
+                }
+                document.body.removeChild(iframe);
+            };
+            
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+                if (document.body.contains(iframe)) {
+                    document.body.removeChild(iframe);
+                }
+            }, 3000);
+        }
+        
+        function enableSuccessButtons() {
+            document.getElementById('saveBtn').disabled = false;
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('copyBtn').disabled = false;
+        }
+        
+        function saveToFantasySystem() {
+            if (!successfulData) {
+                alert('No data to save. Please perform a successful lookup first.');
+                return;
+            }
+            
+            try {
+                // Convert to fantasy system format
+                const roster = {};
+                const players = successfulData.roster?.players || [];
+                
+                // This is simplified - in reality, we'd need player name mappings
+                players.forEach((playerId, index) => {
+                    if (index < 9) {
+                        const positions = ['qb1', 'rb1', 'rb2', 'wr1', 'wr2', 'te1', 'flex1', 'k1', 'def1'];
+                        roster[positions[index]] = `Player ${playerId}`;
+                    } else if (index < 15) {
+                        roster[`bench${index - 8}`] = `Player ${playerId}`;
+                    }
+                });
+                
+                localStorage.setItem('fantasy-roster-manual', JSON.stringify(roster));
+                alert(`✅ Saved ${Object.keys(roster).length} players to Fantasy System!\\n\\nGo to Manual Fantasy System to view.`);
+                
+            } catch (error) {
+                alert('Error saving to fantasy system: ' + error.message);
+            }
+        }
+        
+        function downloadData() {
+            if (!successfulData) return;
+            
+            const dataStr = JSON.stringify(successfulData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `sleeper-${successfulData.username || 'data'}-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        
+        function copyToClipboard() {
+            if (!successfulData) return;
+            
+            const dataStr = JSON.stringify(successfulData, null, 2);
+            navigator.clipboard.writeText(dataStr).then(() => {
+                alert('✅ Data copied to clipboard!');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = dataStr;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ Data copied to clipboard!');
+            });
+        }
+        
+        function log(message, elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent += new Date().toLocaleTimeString() + ': ' + message + '\\n';
+                element.scrollTop = element.scrollHeight;
+            }
+            console.log(message);
+        }
+        
+        // Auto-test proxies on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('🚀 Auto-testing proxy services...', 'quickResults');
+                document.getElementById('quickResults').style.display = 'block';
+                testAllProxies();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
