@@ -1,0 +1,40 @@
+# Server files (not needed for static deployment)
+server.js
+nfl-server.js
+simple-server.js
+demo-server.js
+
+# Development files
+node_modules
+src/
+frontend/
+docker/
+k8s/
+tests/
+docs/
+
+# Build files
+dist/
+.env
+.env.local
+.env.production
+
+# Logs and cache
+*.log
+.cache/
+
+# Development tools
+jest.config.js
+tsconfig.json
+docker-compose*.yml
+Dockerfile*
+
+# Scripts
+scripts/
+*.sh
+
+# Legacy files
+deploy-ready/
+working-*.html
+test-*.html
+button-*.html
