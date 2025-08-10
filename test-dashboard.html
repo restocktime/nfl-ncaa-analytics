@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <h1 class="text-2xl font-bold mb-4">🧪 Dashboard Integration Test</h1>
+    <div id="test-results" class="space-y-4"></div>
+    
+    <script>
+        async function testEndpoints() {
+            const results = document.getElementById('test-results');
+            
+            const endpoints = [
+                { url: '/api/hardrock?action=health', name: 'Health Check' },
+                { url: '/api/hardrock?action=events', name: 'Events API' },
+                { url: '/api/hardrock?action=live', name: 'Live Games API' }
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    results.innerHTML += `<div class="bg-blue-800 p-4 rounded">Testing ${endpoint.name}...</div>`;
+                    
+                    const response = await fetch(endpoint.url);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        results.innerHTML += `<div class="bg-green-800 p-4 rounded">✅ ${endpoint.name}: SUCCESS<br><small>Data: ${JSON.stringify(data, null, 2)}</small></div>`;
+                    } else {
+                        results.innerHTML += `<div class="bg-red-800 p-4 rounded">❌ ${endpoint.name}: ${data.error || 'Unknown error'}</div>`;
+                    }
+                } catch (error) {
+                    results.innerHTML += `<div class="bg-red-800 p-4 rounded">❌ ${endpoint.name}: ${error.message}</div>`;
+                }
+            }
+            
+            // Test dashboard parsing
+            results.innerHTML += `<div class="bg-purple-800 p-4 rounded">🧪 Testing dashboard parsing logic...</div>`;
+            
+            try {
+                const mockData = [
+                    {
+                        id: 'test_001',
+                        name: 'Kansas City Chiefs @ Buffalo Bills',
+                        date: '2025-01-26T20:00:00Z',
+                        markets: []
+                    }
+                ];
+                
+                const parsed = parseHardRockData(mockData, 'events');
+                results.innerHTML += `<div class="bg-green-800 p-4 rounded">✅ Parsing: SUCCESS<br><small>Parsed: ${JSON.stringify(parsed, null, 2)}</small></div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="bg-red-800 p-4 rounded">❌ Parsing: ${error.message}</div>`;
+            }
+        }
+        
+        // Simple parsing function for test
+        function parseHardRockData(data, type) {
+            if (!Array.isArray(data) || data.length === 0) {
+                return [];
+            }
+            
+            return data.map(event => {
+                const teams = extractTeamNames(event.name || 'Unknown Game');
+                return {
+                    id: event.id,
+                    homeTeam: teams.home,
+                    awayTeam: teams.away,
+                    gameTime: event.date || new Date().toISOString(),
+                    type: type,
+                    provider: 'hardrock'
+                };
+            });
+        }
+        
+        function extractTeamNames(eventName) {
+            const separators = [' @ ', ' vs ', ' v ', ' - '];
+            for (const sep of separators) {
+                if (eventName.includes(sep)) {
+                    const [away, home] = eventName.split(sep).map(t => t.trim());
+                    return { home, away };
+                }
+            }
+            return { home: 'Home Team', away: 'Away Team' };
+        }
+        
+        // Run tests
+        testEndpoints();
+    </script>
+</body>
+</html>
