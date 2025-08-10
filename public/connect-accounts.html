@@ -400,7 +400,10 @@
                 <p>Loading connection status...</p>
             </div>
             <button class="connect-btn" onclick="testAllConnections()" style="background: linear-gradient(135deg, var(--accent-warning), #d97706); margin-top: 15px;">
-                🧪 Test API Connections
+                🧪 Test Direct API Connections
+            </button>
+            <button class="connect-btn" onclick="testProxyConnections()" style="background: linear-gradient(135deg, var(--accent-success), #059669); margin-top: 15px;">
+                🔄 Test Proxy API Connections
             </button>
             
             <div class="status info" style="margin: 15px 0;">
@@ -428,6 +431,9 @@
                 
                 <button class="connect-btn" id="sleeperConnectBtn" onclick="connectSleeper()">
                     Connect Sleeper Account
+                </button>
+                <button class="connect-btn" onclick="connectSleeperProxy()" style="background: linear-gradient(135deg, var(--accent-success), #059669);">
+                    🔄 Connect via Proxy
                 </button>
                 
                 <div class="league-selector" id="sleeperLeagues" style="display: none;">
@@ -513,6 +519,7 @@
 
     <!-- Load API Integration Service -->
     <script src="fantasy-api-integration.js"></script>
+    <script src="fantasy-api-proxy.js"></script>
     
     <script>
         let apiIntegration;
@@ -528,6 +535,64 @@
                 showStatus('error', 'API service failed to load');
             }
         });
+
+        async function connectSleeperProxy() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                showStatus('sleeperStatus', 'error', 'Please enter your Sleeper username');
+                return;
+            }
+
+            if (!window.fantasyAPIProxy) {
+                showStatus('sleeperStatus', 'error', 'Proxy service not available');
+                return;
+            }
+
+            const connectBtn = document.querySelector('button[onclick="connectSleeperProxy()"]');
+            connectBtn.disabled = true;
+            connectBtn.textContent = '🔄 Connecting via Proxy...';
+            
+            showStatus('sleeperStatus', 'info', 'Connecting to Sleeper via proxy...');
+
+            try {
+                const result = await window.fantasyAPIProxy.connectToSleeperWithProxy(username);
+                
+                if (result.success) {
+                    showStatus('sleeperStatus', 'success', result.message);
+                    
+                    // Show leagues
+                    if (result.leagues && result.leagues.length > 0) {
+                        displaySleeperLeagues(result.leagues);
+                        
+                        // Store connection info for later use
+                        window.sleeperProxyConnection = {
+                            userId: result.userId,
+                            user: result.user,
+                            leagues: result.leagues
+                        };
+                    } else {
+                        showStatus('sleeperStatus', 'info', 'No active leagues found for this user');
+                    }
+                    
+                    // Update UI
+                    const card = document.getElementById('sleeperCard');
+                    card.classList.add('connected');
+                    connectBtn.textContent = 'Connected via Proxy ✅';
+                    connectBtn.classList.add('connected-btn');
+                    
+                    updateConnectionStatus();
+                    
+                } else {
+                    showStatus('sleeperStatus', 'error', result.message);
+                    connectBtn.disabled = false;
+                    connectBtn.textContent = '🔄 Connect via Proxy';
+                }
+            } catch (error) {
+                showStatus('sleeperStatus', 'error', `Proxy connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = '🔄 Connect via Proxy';
+            }
+        }
 
         async function connectSleeper() {
             const username = document.getElementById('sleeperUsername').value.trim();
@@ -783,6 +848,47 @@
             }
         }
 
+        // Test proxy API connections
+        async function testProxyConnections() {
+            const resultsDiv = document.getElementById('apiTestResults');
+            const testButton = document.querySelector('button[onclick="testProxyConnections()"]');
+            
+            testButton.disabled = true;
+            testButton.textContent = '🔄 Testing Proxy...';
+            resultsDiv.innerHTML = '<div class="status info">Testing proxy API connections...</div>';
+            
+            try {
+                if (!window.fantasyAPIProxy) {
+                    throw new Error('Proxy service not loaded');
+                }
+                
+                const results = await window.fantasyAPIProxy.testProxyConnections();
+                
+                let html = '<h4 style="color: var(--accent-primary); margin: 15px 0 10px 0;">Proxy API Test Results:</h4>';
+                
+                Object.entries(results).forEach(([testName, result]) => {
+                    const statusClass = result.success ? 'success' : 'error';
+                    const icon = result.success ? '✅' : '❌';
+                    
+                    html += `<div class="status ${statusClass}">${icon} ${testName}: ${result.status}</div>`;
+                });
+                
+                resultsDiv.innerHTML = html;
+                
+                // If proxy works, show how to use it
+                const proxyWorking = Object.values(results).some(r => r.success);
+                if (proxyWorking) {
+                    html += '<div class="status success">🎉 Proxy working! You can now connect to APIs through the server-side proxy.</div>';
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="status error">❌ Proxy test failed: ${error.message}</div>`;
+            } finally {
+                testButton.disabled = false;
+                testButton.textContent = '🔄 Test Proxy API Connections';
+            }
+        }
+        
         // Test all API connections
         async function testAllConnections() {
             const testButton = document.querySelector('button[onclick="testAllConnections()"]');
