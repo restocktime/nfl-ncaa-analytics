@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://api.sleeper.app https://fantasysports.yahooapis.com https://lm-api-reads.fantasy.espn.com https://site.api.espn.com https://api.espn.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https: wss: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; style-src 'self' 'unsafe-inline' https: data: blob:; font-src 'self' https: data: blob:; img-src 'self' data: https: blob:; frame-src 'none'; object-src 'none'; base-uri 'self';">
     <title>Connect Your Fantasy Accounts</title>
     <style>
         :root {
@@ -355,6 +355,34 @@
             border-color: var(--border-focus);
             transform: translateY(-2px);
             box-shadow: var(--shadow-xl);
+        }
+        
+        /* Icon fallbacks using Unicode symbols and emojis */
+        .fas.fa-link:before { content: "🔗"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-check:before { content: "✅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-times:before { content: "❌"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-sync:before { content: "🔄"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-exclamation-triangle:before { content: "⚠️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-info-circle:before { content: "ℹ️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-plug:before { content: "🔌"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-wifi:before { content: "📶"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-chart-line:before { content: "📈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-database:before { content: "💾"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        
+        /* Ensure icons display properly even without Font Awesome */
+        .fas:before, .far:before, .fab:before {
+            font-weight: normal;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Force emoji rendering when Font Awesome isn't available */
+        .icon-fallback-active .fas:before,
+        .icon-fallback-active .far:before,
+        .icon-fallback-active .fab:before {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
         }
     </style>
 </head>
