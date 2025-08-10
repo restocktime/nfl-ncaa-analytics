@@ -49,6 +49,97 @@ class BettingOddsIntegration {
         return this.realOddsAPI.getAPIStatus();
     }
 
+    // Generate demo analysis when real data isn't available
+    generateDemoAnalysis(betType = 'all') {
+        console.log('📊 Generating demo ML analysis for educational purposes...');
+        
+        const demoTeams = ['KC', 'BUF', 'BAL', 'SF', 'PHI', 'CIN', 'DAL', 'MIA'];
+        const demoBets = [];
+        
+        // Generate demo spread bets
+        if (betType === 'all' || betType === 'spread') {
+            for (let i = 0; i < 3; i++) {
+                const homeTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
+                const awayTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
+                
+                if (homeTeam !== awayTeam) {
+                    demoBets.push({
+                        gameId: `demo_spread_${i}`,
+                        provider: 'demo',
+                        betType: 'spread',
+                        homeTeam: homeTeam,
+                        awayTeam: awayTeam,
+                        recommendation: `Take ${awayTeam} +${(Math.random() * 6 + 1).toFixed(1)}`,
+                        confidence: 0.65 + Math.random() * 0.25,
+                        valueScore: 0.15 + Math.random() * 0.20,
+                        reasoning: `Market line appears inflated. Expected spread based on team analytics suggests better value on ${awayTeam}.`,
+                        gameTime: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                }
+            }
+        }
+        
+        // Generate demo moneyline bets
+        if (betType === 'all' || betType === 'moneyline') {
+            for (let i = 0; i < 2; i++) {
+                const homeTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
+                const awayTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
+                
+                if (homeTeam !== awayTeam) {
+                    const odds = Math.floor(Math.random() * 200) + 100;
+                    demoBets.push({
+                        gameId: `demo_ml_${i}`,
+                        provider: 'demo',
+                        betType: 'moneyline',
+                        homeTeam: homeTeam,
+                        awayTeam: awayTeam,
+                        recommendation: `Bet ${homeTeam} ML (+${odds})`,
+                        confidence: 0.70 + Math.random() * 0.20,
+                        valueScore: 0.12 + Math.random() * 0.18,
+                        reasoning: `Implied probability (${(100/(odds+100)*100).toFixed(1)}%) appears lower than our model's true probability (${(Math.random() * 15 + 55).toFixed(1)}%).`,
+                        gameTime: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                }
+            }
+        }
+        
+        // Generate demo totals bets
+        if (betType === 'all' || betType === 'totals') {
+            for (let i = 0; i < 2; i++) {
+                const homeTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
+                const awayTeam = demoTeams[Math.floor(Math.random() * demoTeams.length)];
+                const total = Math.floor(Math.random() * 10) + 45;
+                const overUnder = Math.random() > 0.5 ? 'OVER' : 'UNDER';
+                
+                if (homeTeam !== awayTeam) {
+                    demoBets.push({
+                        gameId: `demo_total_${i}`,
+                        provider: 'demo',
+                        betType: 'totals',
+                        homeTeam: homeTeam,
+                        awayTeam: awayTeam,
+                        recommendation: `Bet ${overUnder} ${total}`,
+                        confidence: 0.68 + Math.random() * 0.22,
+                        valueScore: 0.10 + Math.random() * 0.15,
+                        reasoning: `Combined team scoring average suggests ${total} total is ${overUnder === 'OVER' ? 'conservative' : 'aggressive'}. Weather and pace factors support this analysis.`,
+                        gameTime: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                }
+            }
+        }
+        
+        // Sort by confidence
+        demoBets.sort((a, b) => b.confidence - a.confidence);
+        
+        return {
+            bestBets: demoBets,
+            totalAnalyzed: demoBets.length,
+            confidence: demoBets.reduce((sum, bet) => sum + bet.confidence, 0) / demoBets.length,
+            lastUpdate: new Date().toISOString(),
+            isDemo: true
+        };
+    }
+
     // PUBLIC API METHODS
 
     async getLatestOdds(sport = 'nfl', forceRefresh = false) {
@@ -67,15 +158,27 @@ class BettingOddsIntegration {
     async getBestBets(sport = 'nfl', betType = 'all') {
         console.log(`🔍 Finding best ${betType} bets for ${sport.toUpperCase()}...`);
         
-        const odds = await this.getLatestOdds(sport);
-        const analysis = await this.mlEngine.analyzeBets(odds, betType);
-        
-        return {
-            bestBets: analysis.recommendations,
-            totalAnalyzed: analysis.totalBets,
-            confidence: analysis.averageConfidence,
-            lastUpdate: odds.lastUpdate
-        };
+        try {
+            const odds = await this.getLatestOdds(sport);
+            
+            if (!odds || odds.success.length === 0) {
+                console.log('📊 No real odds data available, generating demo analysis...');
+                return this.generateDemoAnalysis(betType);
+            }
+            
+            const analysis = await this.mlEngine.analyzeBets(odds, betType);
+            
+            return {
+                bestBets: analysis.recommendations,
+                totalAnalyzed: analysis.totalBets,
+                confidence: analysis.averageConfidence,
+                lastUpdate: odds.lastUpdate
+            };
+        } catch (error) {
+            console.error('❌ Bet analysis failed:', error);
+            console.log('📊 Falling back to demo analysis...');
+            return this.generateDemoAnalysis(betType);
+        }
     }
 
     async compareOdds(gameId, betType = 'spread') {
@@ -150,12 +253,29 @@ class BettingMLAnalyzer {
         let totalBets = 0;
         let totalConfidence = 0;
         
+        if (!oddsData || !oddsData.success || oddsData.success.length === 0) {
+            console.warn('⚠️ No odds data available for ML analysis');
+            return {
+                recommendations: [],
+                totalBets: 0,
+                averageConfidence: 0,
+                analysisDate: new Date().toISOString()
+            };
+        }
+        
         for (const provider of oddsData.success) {
+            if (!provider.games || provider.games.length === 0) continue;
+            
             for (const game of provider.games) {
-                const gameAnalysis = await this.analyzeGame(game, betType);
-                recommendations.push(...gameAnalysis.recommendations);
-                totalBets += gameAnalysis.betsAnalyzed;
-                totalConfidence += gameAnalysis.totalConfidence;
+                try {
+                    const gameAnalysis = await this.analyzeGame(game, betType);
+                    recommendations.push(...gameAnalysis.recommendations);
+                    totalBets += gameAnalysis.betsAnalyzed;
+                    totalConfidence += gameAnalysis.totalConfidence;
+                } catch (error) {
+                    console.error(`Error analyzing game ${game.gameId}:`, error);
+                    continue;
+                }
             }
         }
         

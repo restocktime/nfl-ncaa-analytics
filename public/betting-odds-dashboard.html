@@ -594,6 +594,25 @@
                     return;
                 }
 
+                // Show demo mode notification if applicable
+                if (this.bestBets.isDemo) {
+                    const demoNotice = document.createElement('div');
+                    demoNotice.className = 'bg-yellow-900/20 border border-yellow-600 rounded-lg p-4 mb-6';
+                    demoNotice.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <div class="text-yellow-400 text-lg">📊</div>
+                            <div>
+                                <h4 class="text-yellow-400 font-semibold">Demo Mode</h4>
+                                <p class="text-sm text-gray-300">
+                                    No real API data available. Showing educational ML analysis examples.
+                                    <br>Configure API keys above for real betting odds analysis.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(demoNotice);
+                }
+
                 this.bestBets.bestBets.forEach(bet => {
                     const confidenceClass = this.getConfidenceClass(bet.confidence);
                     const confidenceLevel = this.getConfidenceLevel(bet.confidence);
