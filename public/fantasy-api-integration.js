@@ -482,5 +482,10 @@ class FantasyAPIIntegration {
     }
 }
 
+// Make the class available globally
+window.FantasyAPIIntegration = FantasyAPIIntegration;
+
 // Initialize the API integration service
 window.fantasyAPIIntegration = new FantasyAPIIntegration();
+
+console.log('✅ Fantasy API Integration service initialized and available globally');

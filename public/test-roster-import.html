@@ -121,6 +121,19 @@
     <script src="fantasy-api-integration.js"></script>
     
     <script>
+        // Wait for fantasy API integration to load
+        let apiIntegration;
+        
+        function waitForAPI() {
+            return new Promise((resolve) => {
+                if (window.fantasyAPIIntegration) {
+                    apiIntegration = window.fantasyAPIIntegration;
+                    resolve();
+                } else {
+                    setTimeout(() => waitForAPI().then(resolve), 100);
+                }
+            });
+        }
         const PROXY_URL = 'https://sleeper-api-proxy.vercel.app';
         let currentUser = null;
         let currentLeagues = null;
@@ -250,8 +263,20 @@
         }
         
         async function testFullImport() {
-            if (!window.apiIntegration) {
-                log(document.getElementById('importResult'), 'Fantasy API integration not loaded', 'error');
+            const resultDiv = document.getElementById('importResult');
+            
+            log(resultDiv, 'Checking what is available in window object...', 'warning');
+            log(resultDiv, `window.fantasyAPIIntegration: ${!!window.fantasyAPIIntegration}`, 'warning');
+            log(resultDiv, `window.FantasyAPIIntegration: ${!!window.FantasyAPIIntegration}`, 'warning');
+            
+            try {
+                log(resultDiv, 'Waiting for Fantasy API integration to load...', 'warning');
+                await waitForAPI();
+                log(resultDiv, '✅ Fantasy API integration loaded successfully', 'success');
+                log(resultDiv, `API Integration type: ${typeof apiIntegration}`, 'success');
+                log(resultDiv, `API Integration methods: ${Object.getOwnPropertyNames(Object.getPrototypeOf(apiIntegration))}`, 'success');
+            } catch (error) {
+                log(resultDiv, '❌ Fantasy API integration failed to load', 'error');
                 return;
             }
             
@@ -268,7 +293,7 @@
             log(resultDiv, `User ID: ${currentUser.user_id}`, 'warning');
             
             try {
-                const result = await window.apiIntegration.getSleeperLeagueRoster(leagueId, currentUser.user_id);
+                const result = await apiIntegration.getSleeperLeagueRoster(leagueId, currentUser.user_id);
                 log(resultDiv, `✅ Import function completed successfully!`, 'success');
                 log(resultDiv, `Result: ${JSON.stringify(result, null, 2)}`, 'success');
             } catch (error) {
