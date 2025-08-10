@@ -23,16 +23,16 @@
     
     <!-- Fallback for when Font Awesome fails to load -->
     <style>
-        /* Icon fallbacks using Unicode symbols */
+        /* Comprehensive icon fallbacks using Unicode symbols and emojis */
         .fas.fa-football-ball:before { content: "🏈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
-        .fas.fa-times:before { content: "✕"; }
+        .fas.fa-times:before { content: "✕"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-tachometer-alt:before { content: "⚡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-play-circle:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-chart-line:before { content: "📈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-brain:before { content: "🧠"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-dice:before { content: "🎲"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-robot:before { content: "🤖"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
-        .fas.fa-users:before { content: "👥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-users:before, .fas.fa-user-friends:before { content: "👥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-user:before { content: "👤"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-rocket:before { content: "🚀"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-plug:before { content: "🔌"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
@@ -40,6 +40,38 @@
         .fas.fa-search:before { content: "🔍"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-cog:before { content: "⚙️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-code:before { content: "💻"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        
+        /* Additional icons used throughout the site */
+        .fas.fa-chart-bar:before { content: "📊"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-trophy:before { content: "🏆"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-play:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-fire:before { content: "🔥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-crystal-ball:before { content: "🔮"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-shield:before { content: "🛡️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-calendar:before, .fas.fa-calendar-alt:before { content: "📅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-bullseye:before, .fas.fa-target:before { content: "🎯"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-newspaper:before { content: "📰"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-bars:before { content: "☰"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-sync-alt:before, .fas.fa-sync:before, .fas.fa-refresh:before { content: "🔄"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-calendar-day:before { content: "📅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-broadcast-tower:before { content: "📡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-magic:before { content: "✨"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-star:before { content: "⭐"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-balance-scale:before { content: "⚖️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-bolt:before { content: "⚡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-calendar-week:before { content: "📅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-analytics:before { content: "📊"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-calculator:before { content: "🧮"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-info-circle:before { content: "ℹ️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-gamepad:before { content: "🎮"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-vs:before { content: "⚔️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-user-cog:before { content: "👤"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-calendar-times:before { content: "📅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-clock:before { content: "⏰"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-lightbulb:before { content: "💡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-history:before { content: "🕒"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-external-link-alt:before { content: "🔗"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-check:before { content: "✅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         
         /* Ensure icons display properly even without Font Awesome */
         .fas:before, .far:before, .fab:before {
@@ -106,6 +138,7 @@
                 'fa-dice': '🎲',
                 'fa-robot': '🤖',
                 'fa-users': '👥',
+                'fa-user-friends': '👥',
                 'fa-user': '👤',
                 'fa-rocket': '🚀',
                 'fa-plug': '🔌',
@@ -115,6 +148,39 @@
                 'fa-code': '💻',
                 'fa-home': '🏠',
                 'fa-star': '⭐',
+                'fa-chart-bar': '📊',
+                'fa-trophy': '🏆',
+                'fa-play': '▶️',
+                'fa-fire': '🔥',
+                'fa-crystal-ball': '🔮',
+                'fa-shield': '🛡️',
+                'fa-calendar': '📅',
+                'fa-calendar-alt': '📅',
+                'fa-bullseye': '🎯',
+                'fa-target': '🎯',
+                'fa-newspaper': '📰',
+                'fa-bars': '☰',
+                'fa-sync-alt': '🔄',
+                'fa-sync': '🔄',
+                'fa-refresh': '🔄',
+                'fa-calendar-day': '📅',
+                'fa-broadcast-tower': '📡',
+                'fa-magic': '✨',
+                'fa-balance-scale': '⚖️',
+                'fa-bolt': '⚡',
+                'fa-calendar-week': '📅',
+                'fa-analytics': '📊',
+                'fa-calculator': '🧮',
+                'fa-info-circle': 'ℹ️',
+                'fa-gamepad': '🎮',
+                'fa-vs': '⚔️',
+                'fa-user-cog': '👤',
+                'fa-calendar-times': '📅',
+                'fa-clock': '⏰',
+                'fa-lightbulb': '💡',
+                'fa-history': '🕒',
+                'fa-external-link-alt': '🔗',
+                'fa-check': '✅',
                 'fa-heart': '❤️',
                 'fa-envelope': '📧',
                 'fa-phone': '📞',
