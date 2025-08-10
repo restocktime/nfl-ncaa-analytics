@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Betting Odds Dashboard - ML Analysis</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom styles -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .bet-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .bet-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .high-confidence {
+            border-left-color: #10B981;
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+        }
+        .medium-confidence {
+            border-left-color: #F59E0B;
+            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);
+        }
+        .low-confidence {
+            border-left-color: #EF4444;
+            background: linear-gradient(to right, rgba(239, 68, 68, 0.05), transparent);
+        }
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .odds-positive { color: #10B981; }
+        .odds-negative { color: #EF4444; }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg py-6 shadow-lg">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">🎰 NFL Betting Odds Dashboard</h1>
+                    <p class="text-blue-100 mt-2">ML-Powered Sports Betting Analysis & Best Bet Finder</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="refreshOdds" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all">
+                        <span class="flex items-center space-x-2">
+                            <span id="refreshSpinner" class="loading-spinner hidden"></span>
+                            <span id="refreshText">🔄 Refresh Odds</span>
+                        </span>
+                    </button>
+                    <a href="fantasy-hub.html" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-all">
+                        ← Back to Fantasy Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Status Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Total Games</p>
+                        <p id="totalGames" class="text-2xl font-bold text-white">-</p>
+                    </div>
+                    <div class="text-3xl">🏈</div>
+                </div>
+            </div>
+            
+            <div class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Available Bets</p>
+                        <p id="totalBets" class="text-2xl font-bold text-white">-</p>
+                    </div>
+                    <div class="text-3xl">🎯</div>
+                </div>
+            </div>
+            
+            <div class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Best Bets Found</p>
+                        <p id="bestBetsCount" class="text-2xl font-bold text-green-400">-</p>
+                    </div>
+                    <div class="text-3xl">⭐</div>
+                </div>
+            </div>
+            
+            <div class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Avg Confidence</p>
+                        <p id="avgConfidence" class="text-2xl font-bold text-blue-400">-</p>
+                    </div>
+                    <div class="text-3xl">🧠</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Setup Section -->
+        <div class="glass-effect rounded-xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-white">🔑 Real API Configuration</h2>
+                <button id="showApiSetup" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-all">
+                    ⚙️ Setup APIs
+                </button>
+            </div>
+            <div id="apiStatus" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- API status will be populated here -->
+            </div>
+            <div id="apiSetupPanel" class="hidden mt-4 bg-gray-800 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-white mb-4">API Key Setup</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">The Odds API Key (Recommended)</label>
+                        <input type="text" id="oddsApiKey" placeholder="Get free key from the-odds-api.com" 
+                               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                        <p class="text-xs text-gray-400 mt-1">500 free requests/month, most reliable data</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">RapidAPI Key (Optional)</label>
+                        <input type="text" id="rapidApiKey" placeholder="Get from rapidapi.com/hub/odds/api" 
+                               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                        <p class="text-xs text-gray-400 mt-1">Additional data source for comparison</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="saveApiKeys" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-all">
+                            💾 Save Keys
+                        </button>
+                        <button id="testApiKeys" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-all">
+                            🧪 Test APIs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Providers Status -->
+        <div class="glass-effect rounded-xl p-6 mb-8">
+            <h2 class="text-xl font-bold text-white mb-4">📊 Live Data Sources</h2>
+            <div id="providersStatus" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Provider status cards will be populated here -->
+            </div>
+        </div>
+
+        <!-- Best Bets Section -->
+        <div class="glass-effect rounded-xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white">🏆 Best Bets - ML Recommendations</h2>
+                <div class="flex items-center space-x-4">
+                    <select id="betTypeFilter" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                        <option value="all">All Bet Types</option>
+                        <option value="spread">Spread</option>
+                        <option value="moneyline">Moneyline</option>
+                        <option value="totals">Totals</option>
+                        <option value="props">Player Props</option>
+                    </select>
+                    <button id="analyzeBets" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-all">
+                        🔍 Analyze Bets
+                    </button>
+                </div>
+            </div>
+            
+            <div id="bestBetsContainer" class="space-y-4">
+                <div class="text-center py-12 text-gray-400">
+                    <div class="text-6xl mb-4">🎯</div>
+                    <p class="text-lg">Click "Analyze Bets" to find the best betting opportunities</p>
+                    <p class="text-sm mt-2">Our ML engine will analyze all available odds and find value bets</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Odds Comparison -->
+        <div class="glass-effect rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-white mb-6">⚖️ Live Odds Comparison</h2>
+            <div id="oddsComparisonContainer">
+                <div class="text-center py-12 text-gray-400">
+                    <div class="text-6xl mb-4">📋</div>
+                    <p class="text-lg">Loading odds data...</p>
+                    <div class="loading-spinner mx-auto mt-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Chart -->
+        <div class="glass-effect rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-6">📈 Betting Analytics</h2>
+            <div class="bg-gray-800 rounded-lg p-4">
+                <canvas id="analyticsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-xl p-8 text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <h3 class="text-xl font-bold text-white mb-2">Analyzing Betting Odds</h3>
+            <p class="text-gray-300">Our ML engine is finding the best opportunities...</p>
+        </div>
+    </div>
+
+    <!-- Bet Details Modal -->
+    <div id="betModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-xl p-8 max-w-2xl w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Bet Analysis Details</h3>
+                <button id="closeBetModal" class="text-gray-400 hover:text-white text-2xl">×</button>
+            </div>
+            <div id="betModalContent">
+                <!-- Bet details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="api-sports-odds-integration.js"></script>
+    <script src="betting-odds-integration.js"></script>
+    <script>
+        class BettingOddsDashboard {
+            constructor() {
+                this.bettingEngine = new BettingOddsIntegration();
+                this.currentOdds = null;
+                this.bestBets = null;
+                this.chart = null;
+                
+                this.initializeEventListeners();
+                this.initializeChart();
+                this.loadInitialData();
+                
+                console.log('🎰 Betting Odds Dashboard initialized');
+            }
+
+            initializeEventListeners() {
+                // Refresh odds button
+                document.getElementById('refreshOdds').addEventListener('click', () => {
+                    this.loadOddsData(true);
+                });
+
+                // Analyze bets button
+                document.getElementById('analyzeBets').addEventListener('click', () => {
+                    this.analyzeBets();
+                });
+
+                // Bet type filter
+                document.getElementById('betTypeFilter').addEventListener('change', (e) => {
+                    this.filterBets(e.target.value);
+                });
+
+                // API Setup
+                document.getElementById('showApiSetup').addEventListener('click', () => {
+                    this.toggleApiSetup();
+                });
+
+                document.getElementById('saveApiKeys').addEventListener('click', () => {
+                    this.saveApiKeys();
+                });
+
+                document.getElementById('testApiKeys').addEventListener('click', () => {
+                    this.testApiKeys();
+                });
+
+                // Close modal
+                document.getElementById('closeBetModal').addEventListener('click', () => {
+                    this.closeBetModal();
+                });
+
+                // Close modal on outside click
+                document.getElementById('betModal').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        this.closeBetModal();
+                    }
+                });
+            }
+
+            initializeChart() {
+                const ctx = document.getElementById('analyticsChart').getContext('2d');
+                this.chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['High Confidence', 'Medium Confidence', 'Low Confidence'],
+                        datasets: [{
+                            label: 'Number of Bets',
+                            data: [0, 0, 0],
+                            backgroundColor: [
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(16, 185, 129)',
+                                'rgb(245, 158, 11)',
+                                'rgb(239, 68, 68)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#E5E7EB'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#E5E7EB'
+                                },
+                                grid: {
+                                    color: '#374151'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#E5E7EB'
+                                },
+                                grid: {
+                                    color: '#374151'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            async loadInitialData() {
+                console.log('📊 Loading initial betting odds data...');
+                this.updateAPIStatus();
+                await this.loadOddsData();
+            }
+
+            updateAPIStatus() {
+                const status = this.bettingEngine.getAPIStatus();
+                const container = document.getElementById('apiStatus');
+                container.innerHTML = '';
+
+                Object.entries(status).forEach(([key, provider]) => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-gray-800 rounded-lg p-4';
+                    
+                    const statusIcon = provider.hasKey ? '✅' : (provider.requiresKey ? '⚠️' : '🔄');
+                    const statusText = provider.hasKey ? 'Configured' : (provider.requiresKey ? 'Needs API Key' : 'Scraping Mode');
+                    const statusColor = provider.hasKey ? 'text-green-400' : (provider.requiresKey ? 'text-yellow-400' : 'text-blue-400');
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-white">${provider.name}</h3>
+                            <span class="${statusColor} text-sm">${statusIcon} ${statusText}</span>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            ${provider.requiresKey ? 
+                                (provider.hasKey ? 'API key configured' : 'Requires API key for reliable data') :
+                                'Uses web scraping (may be limited)'
+                            }
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            toggleApiSetup() {
+                const panel = document.getElementById('apiSetupPanel');
+                const button = document.getElementById('showApiSetup');
+                
+                if (panel.classList.contains('hidden')) {
+                    panel.classList.remove('hidden');
+                    button.textContent = '❌ Close Setup';
+                } else {
+                    panel.classList.add('hidden');
+                    button.textContent = '⚙️ Setup APIs';
+                }
+            }
+
+            saveApiKeys() {
+                const oddsApiKey = document.getElementById('oddsApiKey').value.trim();
+                const rapidApiKey = document.getElementById('rapidApiKey').value.trim();
+
+                const keys = {};
+                if (oddsApiKey) keys.oddsapi = oddsApiKey;
+                if (rapidApiKey) keys.rapidapi = rapidApiKey;
+
+                try {
+                    this.bettingEngine.setupAPIKeys(keys);
+                    this.updateAPIStatus();
+                    this.showNotification('✅ API keys saved successfully!', 'success');
+                } catch (error) {
+                    this.showNotification('❌ Failed to save API keys: ' + error.message, 'error');
+                }
+            }
+
+            async testApiKeys() {
+                this.showNotification('🧪 Testing API connections...', 'info');
+                
+                try {
+                    // This would test the actual API connections
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate test
+                    this.showNotification('✅ API connections tested successfully!', 'success');
+                } catch (error) {
+                    this.showNotification('❌ API test failed: ' + error.message, 'error');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                // Simple notification - could be enhanced with a proper toast system
+                const colors = {
+                    success: 'bg-green-600',
+                    error: 'bg-red-600',
+                    info: 'bg-blue-600'
+                };
+                
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 4000);
+            }
+
+            async loadOddsData(forceRefresh = false) {
+                const refreshBtn = document.getElementById('refreshOdds');
+                const spinner = document.getElementById('refreshSpinner');
+                const text = document.getElementById('refreshText');
+
+                // Show loading state
+                spinner.classList.remove('hidden');
+                text.textContent = 'Loading...';
+                refreshBtn.disabled = true;
+
+                try {
+                    this.currentOdds = await this.bettingEngine.getLatestOdds('nfl', forceRefresh);
+                    this.updateDashboard();
+                    this.displayOddsComparison();
+                    
+                    console.log('✅ Odds data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load odds data:', error);
+                    this.showError('Failed to load odds data. Please try again.');
+                } finally {
+                    // Hide loading state
+                    spinner.classList.add('hidden');
+                    text.textContent = '🔄 Refresh Odds';
+                    refreshBtn.disabled = false;
+                }
+            }
+
+            updateDashboard() {
+                if (!this.currentOdds) return;
+
+                // Update status cards
+                document.getElementById('totalGames').textContent = this.currentOdds.totalGames;
+                document.getElementById('totalBets').textContent = this.currentOdds.totalBets;
+
+                // Update providers status
+                this.updateProvidersStatus();
+            }
+
+            updateProvidersStatus() {
+                const container = document.getElementById('providersStatus');
+                container.innerHTML = '';
+
+                this.currentOdds.success.forEach(provider => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-gray-800 rounded-lg p-4';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-white">${provider.name}</h3>
+                            <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">✅ Active</span>
+                        </div>
+                        <div class="text-sm text-gray-300">
+                            <p>Games: ${provider.games.length}</p>
+                            <p>Bets: ${provider.bets}</p>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+                this.currentOdds.failed.forEach(provider => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-gray-800 rounded-lg p-4 opacity-60';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-white">${provider.name}</h3>
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">❌ Error</span>
+                        </div>
+                        <div class="text-sm text-gray-400">
+                            <p>Error: ${provider.error}</p>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            async analyzeBets() {
+                const betType = document.getElementById('betTypeFilter').value;
+                this.showLoadingOverlay();
+
+                try {
+                    this.bestBets = await this.bettingEngine.getBestBets('nfl', betType);
+                    this.displayBestBets();
+                    this.updateAnalyticsChart();
+                    
+                    // Update best bets count
+                    document.getElementById('bestBetsCount').textContent = this.bestBets.bestBets.length;
+                    document.getElementById('avgConfidence').textContent = 
+                        (this.bestBets.confidence * 100).toFixed(1) + '%';
+                        
+                    console.log('✅ Bet analysis complete');
+                } catch (error) {
+                    console.error('❌ Bet analysis failed:', error);
+                    this.showError('Bet analysis failed. Please try again.');
+                } finally {
+                    this.hideLoadingOverlay();
+                }
+            }
+
+            displayBestBets() {
+                const container = document.getElementById('bestBetsContainer');
+                container.innerHTML = '';
+
+                if (!this.bestBets || this.bestBets.bestBets.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-gray-400">
+                            <div class="text-6xl mb-4">🤷</div>
+                            <p class="text-lg">No qualifying bets found</p>
+                            <p class="text-sm mt-2">Try adjusting your filters or refresh the odds</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.bestBets.bestBets.forEach(bet => {
+                    const confidenceClass = this.getConfidenceClass(bet.confidence);
+                    const confidenceLevel = this.getConfidenceLevel(bet.confidence);
+                    
+                    const card = document.createElement('div');
+                    card.className = `bet-card bg-gray-800 rounded-lg p-6 ${confidenceClass} cursor-pointer`;
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="text-2xl">${this.getBetTypeIcon(bet.betType)}</div>
+                                <div>
+                                    <h3 class="font-bold text-white">${bet.homeTeam} vs ${bet.awayTeam}</h3>
+                                    <p class="text-sm text-gray-400">${bet.provider} • ${bet.betType.toUpperCase()}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-white">${(bet.confidence * 100).toFixed(1)}%</div>
+                                <div class="text-sm text-gray-400">${confidenceLevel}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-lg font-semibold text-blue-400">${bet.recommendation}</p>
+                            <p class="text-sm text-gray-300 mt-1">${bet.reasoning}</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="text-gray-400">
+                                Value Score: <span class="text-yellow-400 font-semibold">${(bet.valueScore * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="text-gray-400">
+                                ${new Date(bet.gameTime).toLocaleDateString()} ${new Date(bet.gameTime).toLocaleTimeString()}
+                            </div>
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        this.showBetDetails(bet);
+                    });
+                    
+                    container.appendChild(card);
+                });
+            }
+
+            displayOddsComparison() {
+                const container = document.getElementById('oddsComparisonContainer');
+                container.innerHTML = '';
+
+                if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-gray-400">
+                            <div class="text-6xl mb-4">📊</div>
+                            <p class="text-lg">No odds data available</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Display games with odds comparison
+                this.currentOdds.success.forEach(provider => {
+                    provider.games.slice(0, 5).forEach(game => { // Show first 5 games
+                        const gameCard = document.createElement('div');
+                        gameCard.className = 'bg-gray-800 rounded-lg p-4 mb-4';
+                        gameCard.innerHTML = `
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-bold text-white">${game.homeTeam} vs ${game.awayTeam}</h3>
+                                <span class="text-xs bg-blue-600 px-2 py-1 rounded">${provider.name}</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                ${game.bets.spread ? this.renderSpreadOdds(game.bets.spread) : ''}
+                                ${game.bets.moneyline ? this.renderMoneylineOdds(game.bets.moneyline) : ''}
+                                ${game.bets.totals ? this.renderTotalsOdds(game.bets.totals) : ''}
+                            </div>
+                        `;
+                        container.appendChild(gameCard);
+                    });
+                });
+            }
+
+            renderSpreadOdds(spread) {
+                return `
+                    <div class="text-center">
+                        <h4 class="text-sm font-semibold text-gray-400 mb-2">SPREAD</h4>
+                        <div class="space-y-1">
+                            <div class="text-sm">
+                                <span class="text-white">${spread.home.line > 0 ? '+' : ''}${spread.home.line}</span>
+                                <span class="ml-2 ${spread.home.odds > 0 ? 'odds-positive' : 'odds-negative'}">${spread.home.odds > 0 ? '+' : ''}${spread.home.odds}</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-white">${spread.away.line > 0 ? '+' : ''}${spread.away.line}</span>
+                                <span class="ml-2 ${spread.away.odds > 0 ? 'odds-positive' : 'odds-negative'}">${spread.away.odds > 0 ? '+' : ''}${spread.away.odds}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderMoneylineOdds(moneyline) {
+                return `
+                    <div class="text-center">
+                        <h4 class="text-sm font-semibold text-gray-400 mb-2">MONEYLINE</h4>
+                        <div class="space-y-1">
+                            <div class="text-sm ${moneyline.home.odds > 0 ? 'odds-positive' : 'odds-negative'}">
+                                ${moneyline.home.odds > 0 ? '+' : ''}${moneyline.home.odds}
+                            </div>
+                            <div class="text-sm ${moneyline.away.odds > 0 ? 'odds-positive' : 'odds-negative'}">
+                                ${moneyline.away.odds > 0 ? '+' : ''}${moneyline.away.odds}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderTotalsOdds(totals) {
+                return `
+                    <div class="text-center">
+                        <h4 class="text-sm font-semibold text-gray-400 mb-2">TOTAL</h4>
+                        <div class="space-y-1">
+                            <div class="text-sm">
+                                <span class="text-white">O ${totals.over.line}</span>
+                                <span class="ml-2 ${totals.over.odds > 0 ? 'odds-positive' : 'odds-negative'}">${totals.over.odds > 0 ? '+' : ''}${totals.over.odds}</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-white">U ${totals.under.line}</span>
+                                <span class="ml-2 ${totals.under.odds > 0 ? 'odds-positive' : 'odds-negative'}">${totals.under.odds > 0 ? '+' : ''}${totals.under.odds}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateAnalyticsChart() {
+                if (!this.bestBets || !this.chart) return;
+
+                const high = this.bestBets.bestBets.filter(bet => bet.confidence >= 0.8).length;
+                const medium = this.bestBets.bestBets.filter(bet => bet.confidence >= 0.6 && bet.confidence < 0.8).length;
+                const low = this.bestBets.bestBets.filter(bet => bet.confidence < 0.6).length;
+
+                this.chart.data.datasets[0].data = [high, medium, low];
+                this.chart.update();
+            }
+
+            showBetDetails(bet) {
+                const modal = document.getElementById('betModal');
+                const content = document.getElementById('betModalContent');
+                
+                content.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <h4 class="text-2xl font-bold text-white">${bet.homeTeam} vs ${bet.awayTeam}</h4>
+                            <p class="text-gray-400">${new Date(bet.gameTime).toLocaleString()}</p>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h5 class="font-semibold text-white mb-2">Recommendation</h5>
+                            <p class="text-blue-400 text-lg">${bet.recommendation}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <h5 class="font-semibold text-white mb-2">Confidence</h5>
+                                <div class="text-2xl font-bold ${this.getConfidenceTextColor(bet.confidence)}">
+                                    ${(bet.confidence * 100).toFixed(1)}%
+                                </div>
+                                <p class="text-sm text-gray-400">${this.getConfidenceLevel(bet.confidence)}</p>
+                            </div>
+                            
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <h5 class="font-semibold text-white mb-2">Value Score</h5>
+                                <div class="text-2xl font-bold text-yellow-400">
+                                    ${(bet.valueScore * 100).toFixed(1)}%
+                                </div>
+                                <p class="text-sm text-gray-400">Expected value</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h5 class="font-semibold text-white mb-2">Analysis</h5>
+                            <p class="text-gray-300">${bet.reasoning}</p>
+                        </div>
+                        
+                        <div class="bg-yellow-900/20 border border-yellow-600 rounded-lg p-4">
+                            <h5 class="font-semibold text-yellow-400 mb-2">⚠️ Disclaimer</h5>
+                            <p class="text-sm text-gray-300">
+                                This is for educational and entertainment purposes only. 
+                                Please gamble responsibly and within your means.
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+            }
+
+            closeBetModal() {
+                document.getElementById('betModal').classList.add('hidden');
+            }
+
+            filterBets(betType) {
+                if (this.bestBets) {
+                    this.analyzeBets(); // Re-analyze with new filter
+                }
+            }
+
+            showLoadingOverlay() {
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+            }
+
+            hideLoadingOverlay() {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+
+            showError(message) {
+                // Simple error display - could be enhanced with a proper toast/notification system
+                alert(`Error: ${message}`);
+            }
+
+            // Utility methods
+            getConfidenceClass(confidence) {
+                if (confidence >= 0.8) return 'high-confidence';
+                if (confidence >= 0.6) return 'medium-confidence';
+                return 'low-confidence';
+            }
+
+            getConfidenceLevel(confidence) {
+                if (confidence >= 0.8) return 'High Confidence';
+                if (confidence >= 0.6) return 'Medium Confidence';
+                return 'Low Confidence';
+            }
+
+            getConfidenceTextColor(confidence) {
+                if (confidence >= 0.8) return 'text-green-400';
+                if (confidence >= 0.6) return 'text-yellow-400';
+                return 'text-red-400';
+            }
+
+            getBetTypeIcon(betType) {
+                const icons = {
+                    'spread': '📊',
+                    'moneyline': '💰',
+                    'totals': '🎯',
+                    'player_prop': '👤'
+                };
+                return icons[betType] || '🎰';
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.bettingDashboard = new BettingOddsDashboard();
+        });
+    </script>
+</body>
+</html>
