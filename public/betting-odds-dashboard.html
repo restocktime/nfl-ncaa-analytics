@@ -149,10 +149,10 @@
                 <h3 class="text-lg font-semibold text-white mb-4">API Key Setup</h3>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">The Odds API Key (Recommended)</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">The Odds API Key (Optional)</label>
                         <input type="text" id="oddsApiKey" placeholder="Get free key from the-odds-api.com" 
                                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                        <p class="text-xs text-gray-400 mt-1">500 free requests/month, most reliable data</p>
+                        <p class="text-xs text-gray-400 mt-1">✅ Hard Rock Bet data already available via widget • Add your key for more requests</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">RapidAPI Key (Optional)</label>
@@ -207,14 +207,36 @@
             </div>
         </div>
 
-        <!-- Odds Comparison -->
+        <!-- Live Odds Widget from The Odds API -->
         <div class="glass-effect rounded-xl p-6 mb-8">
-            <h2 class="text-2xl font-bold text-white mb-6">⚖️ Live Odds Comparison</h2>
+            <h2 class="text-2xl font-bold text-white mb-6">🏈 Live NFL Odds (Hard Rock Bet + Others)</h2>
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="flex justify-center">
+                    <iframe
+                        title="Sports Odds Widget - Hard Rock Bet"
+                        style="width: 100%; min-height: 600px; border: none; border-radius: 8px;"
+                        src="https://widget.the-odds-api.com/v1/sports/americanfootball_nfl/events/?accessKey=wk_c705aff93953afa57b69c84f505347fb&bookmakerKeys=hardrockbet,draftkings,fanduel&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder">
+                    </iframe>
+                </div>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-400">
+                        🔴 Live odds from Hard Rock Bet, DraftKings & FanDuel via The Odds API
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Data refreshes automatically • Click odds for detailed analysis
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our ML Analysis Results -->
+        <div class="glass-effect rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-white mb-6">🧠 ML Analysis vs Live Odds</h2>
             <div id="oddsComparisonContainer">
                 <div class="text-center py-12 text-gray-400">
-                    <div class="text-6xl mb-4">📋</div>
-                    <p class="text-lg">Loading odds data...</p>
-                    <div class="loading-spinner mx-auto mt-4"></div>
+                    <div class="text-6xl mb-4">🤖</div>
+                    <p class="text-lg">Click "Analyze Bets" to compare ML predictions with live odds above</p>
+                    <p class="text-sm mt-2">Our AI will find discrepancies and value opportunities</p>
                 </div>
             </div>
         </div>

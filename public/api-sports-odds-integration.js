@@ -10,7 +10,8 @@ class RealOddsAPIIntegration {
             oddsapi: {
                 name: 'The Odds API',
                 baseUrl: 'https://api.the-odds-api.com/v4',
-                apiKey: null, // User needs to provide
+                apiKey: null, // User can provide their own key
+                widgetKey: 'wk_c705aff93953afa57b69c84f505347fb', // Pre-configured widget access
                 endpoints: {
                     sports: '/sports',
                     odds: '/sports/americanfootball_nfl/odds',
@@ -125,7 +126,11 @@ class RealOddsAPIIntegration {
     // Fetch from The Odds API (premium, reliable)
     async fetchOddsAPI(sport = 'americanfootball_nfl') {
         const provider = this.apiProviders.oddsapi;
-        if (!provider.apiKey) {
+        
+        // Try user's API key first, then widget access key
+        const apiKey = provider.apiKey || provider.widgetKey;
+        
+        if (!apiKey) {
             throw new Error('The Odds API key required. Get one from https://the-odds-api.com/');
         }
 
@@ -133,7 +138,7 @@ class RealOddsAPIIntegration {
             console.log('📊 Fetching from The Odds API...');
             
             const response = await fetch(
-                `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${provider.apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso`,
+                `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&bookmakers=hardrockbet,draftkings,fanduel`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -508,21 +513,19 @@ class RealOddsAPIIntegration {
             lastUpdate: new Date().toISOString()
         };
 
-        // Try The Odds API first (most reliable)
-        if (this.apiProviders.oddsapi.apiKey) {
-            try {
-                const data = await this.fetchOddsAPI();
-                results.success.push(data);
-                results.totalGames += data.games.length;
-                results.totalBets += data.totalBets;
-                console.log('✅ The Odds API: Success');
-            } catch (error) {
-                results.failed.push({
-                    provider: 'oddsapi',
-                    name: 'The Odds API',
-                    error: error.message
-                });
-            }
+        // Try The Odds API first (most reliable) - we have widget access key
+        try {
+            const data = await this.fetchOddsAPI();
+            results.success.push(data);
+            results.totalGames += data.games.length;
+            results.totalBets += data.totalBets;
+            console.log('✅ The Odds API: Success');
+        } catch (error) {
+            results.failed.push({
+                provider: 'oddsapi',
+                name: 'The Odds API',
+                error: error.message
+            });
         }
 
         // Try RapidAPI
