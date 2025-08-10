@@ -398,8 +398,233 @@
 
     <div class="status" id="status">Fantasy Hub loaded successfully ✅</div>
 
+    <!-- Load Fantasy Data Service -->
+    <script src="fantasy-data-service.js"></script>
+    <script src="fantasy-news-service.js"></script>
+    
     <script>
       console.log("Fantasy Hub loaded successfully");
+
+      // Initialize live data when page loads
+      let fantasyApp;
+      let fantasyNewsApp;
+      
+      document.addEventListener('DOMContentLoaded', async function() {
+        await initializeLiveData();
+        await initializeNewsService();
+        loadDashboardData();
+        
+        // Update data every 5 minutes
+        setInterval(loadDashboardData, 5 * 60 * 1000);
+        setInterval(loadNewsData, 10 * 60 * 1000);
+      });
+
+      async function initializeLiveData() {
+        console.log('🏈 Initializing Fantasy Live Data...');
+        
+        // Wait for fantasy data service to be available
+        let attempts = 0;
+        while (!window.fantasyDataService && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (window.fantasyDataService) {
+          fantasyApp = window.fantasyDataService;
+          console.log('✅ Fantasy Data Service connected');
+        } else {
+          console.warn('⚠️ Fantasy Data Service not found, using mock data');
+        }
+      }
+
+      async function initializeNewsService() {
+        console.log('📰 Initializing Fantasy News Service...');
+        
+        // Wait for fantasy news service to be available
+        let attempts = 0;
+        while (!window.fantasyNewsService && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (window.fantasyNewsService) {
+          fantasyNewsApp = window.fantasyNewsService;
+          console.log('✅ Fantasy News Service connected');
+          loadNewsData();
+        } else {
+          console.warn('⚠️ Fantasy News Service not found');
+        }
+      }
+
+      async function loadNewsData() {
+        if (!fantasyNewsApp) return;
+        
+        try {
+          // Update injury watch in dashboard
+          const injuryReports = fantasyNewsApp.getInjuryAlerts();
+          updateInjuryWatch(injuryReports);
+          
+          // Update breaking news
+          const breakingNews = fantasyNewsApp.getBreakingNews(3);
+          updateBreakingNews(breakingNews);
+          
+        } catch (error) {
+          console.error('❌ Error loading news data:', error);
+        }
+      }
+
+      async function loadDashboardData() {
+        if (!fantasyApp) return;
+        
+        try {
+          console.log('🔄 Loading live fantasy data...');
+          updateStatus('🔄 Loading live data from APIs...', 'loading');
+          
+          // Load real player projections
+          const projections = await fantasyApp.getPlayerProjections();
+          updateCurrentLineup(projections);
+          
+          // Load waiver wire targets
+          const waiverTargets = await fantasyApp.getWaiverWireTargets();
+          updateWaiverWire(waiverTargets);
+          
+          // Load NFL schedule for matchups
+          const schedule = await fantasyApp.getNFLSchedule();
+          updateMatchupInfo(schedule);
+          
+          updateStatus('✅ Live data loaded successfully', 'success');
+          
+        } catch (error) {
+          console.error('❌ Error loading live data:', error);
+          updateStatus('❌ Error loading live data', 'error');
+        }
+      }
+
+      function updateCurrentLineup(projections) {
+        const lineupCard = document.querySelector('#dashboard .feature-card');
+        if (!lineupCard || !projections.length) return;
+        
+        // Get top players by position
+        const qb = projections.filter(p => p.position === 'QB').slice(0, 1)[0];
+        const rbs = projections.filter(p => p.position === 'RB').slice(0, 2);
+        const wrs = projections.filter(p => p.position === 'WR').slice(0, 2);
+        const te = projections.filter(p => p.position === 'TE').slice(0, 1)[0];
+        const flex = projections.filter(p => ['RB', 'WR', 'TE'].includes(p.position)).slice(0, 1)[0];
+        
+        let totalProjection = 0;
+        let lineupHTML = '<h4>Current Lineup (Live Data)</h4>';
+        
+        if (qb) {
+          lineupHTML += `<p><strong>QB:</strong> ${qb.name} (${qb.team}) - ${qb.projection} pts</p>`;
+          totalProjection += qb.projection;
+        }
+        
+        rbs.forEach((rb, index) => {
+          lineupHTML += `<p><strong>RB${index + 1}:</strong> ${rb.name} (${rb.team}) - ${rb.projection} pts</p>`;
+          totalProjection += rb.projection;
+        });
+        
+        wrs.forEach((wr, index) => {
+          lineupHTML += `<p><strong>WR${index + 1}:</strong> ${wr.name} (${wr.team}) - ${wr.projection} pts</p>`;
+          totalProjection += wr.projection;
+        });
+        
+        if (te) {
+          lineupHTML += `<p><strong>TE:</strong> ${te.name} (${te.team}) - ${te.projection} pts</p>`;
+          totalProjection += te.projection;
+        }
+        
+        if (flex) {
+          lineupHTML += `<p><strong>FLEX:</strong> ${flex.name} (${flex.team}) - ${flex.projection} pts</p>`;
+          totalProjection += flex.projection;
+        }
+        
+        lineupHTML += `<p style="color: #4ade80; font-weight: bold">Projected Total: ${totalProjection.toFixed(1)} points</p>`;
+        
+        lineupCard.innerHTML = lineupHTML;
+      }
+
+      function updateInjuryWatch(injuries) {
+        const injuryCard = document.querySelector('#dashboard .feature-card:nth-child(3)');
+        if (!injuryCard) return;
+        
+        let injuryHTML = '<h4>Injury Watch (Live Data)</h4>';
+        
+        if (injuries.length > 0) {
+          injuries.slice(0, 4).forEach(injury => {
+            const icon = fantasyNewsApp.getStatusIcon(injury.gameStatus);
+            injuryHTML += `<p>${icon} ${injury.player} (${injury.team}) - ${injury.injury}</p>`;
+          });
+        } else {
+          injuryHTML += '<p>✅ No major injury concerns this week</p>';
+          injuryHTML += '<p>📅 Monitor practice reports Wednesday</p>';
+        }
+        
+        injuryCard.innerHTML = injuryHTML;
+      }
+
+      function updateBreakingNews(news) {
+        const outlookCard = document.querySelector('#dashboard .feature-card:nth-child(4)');
+        if (!outlookCard || !news.length) return;
+        
+        let newsHTML = '<h4>Breaking Fantasy News</h4>';
+        
+        news.forEach(item => {
+          const timeAgo = fantasyNewsApp.formatTimeAgo(item.timestamp);
+          newsHTML += `<p>📰 ${item.headline} (${timeAgo})</p>`;
+        });
+        
+        if (news.length === 0) {
+          newsHTML += '<p>📈 No breaking news - check back later</p>';
+        }
+        
+        outlookCard.innerHTML = newsHTML;
+      }
+
+      function updateWaiverWire(targets) {
+        const waiverSection = document.getElementById('waivers');
+        if (!waiverSection || !targets.length) return;
+        
+        const topTargetsCard = waiverSection.querySelector('.feature-card');
+        if (!topTargetsCard) return;
+        
+        let waiverHTML = '<h4>Top Waiver Targets (Live Data)</h4>';
+        targets.slice(0, 5).forEach((target, index) => {
+          waiverHTML += `<p>${index + 1}. ${target.name} (${target.position}, ${target.team}) - ${target.score}% opportunity score</p>`;
+        });
+        
+        topTargetsCard.innerHTML = waiverHTML;
+      }
+
+      function updateMatchupInfo(schedule) {
+        const matchupCard = document.querySelector('#dashboard .feature-card:nth-child(2)');
+        if (!matchupCard || !schedule.length) return;
+        
+        let matchupHTML = '<h4>This Week\'s Matchups (Live Data)</h4>';
+        schedule.slice(0, 4).forEach(game => {
+          const gameTime = new Date(game.date).toLocaleDateString();
+          matchupHTML += `<p>${game.awayTeam} @ ${game.homeTeam} (${gameTime})</p>`;
+        });
+        
+        matchupCard.innerHTML = matchupHTML;
+      }
+
+      function updateStatus(message, type = 'info') {
+        const statusElement = document.getElementById('status');
+        if (!statusElement) return;
+        
+        statusElement.textContent = message;
+        statusElement.className = 'status';
+        
+        // Add type-specific styling
+        if (type === 'loading') {
+          statusElement.style.color = '#fbbf24';
+        } else if (type === 'success') {
+          statusElement.style.color = '#4ade80';
+        } else if (type === 'error') {
+          statusElement.style.color = '#f87171';
+        }
+      }
 
       function showSection(sectionName) {
         console.log("Showing section:", sectionName);
@@ -414,15 +639,165 @@
         var targetSection = document.getElementById(sectionName);
         if (targetSection) {
           targetSection.classList.add("active");
-          document.getElementById("status").textContent =
-            "Showing " + sectionName + " section ✅";
+          updateStatus("Showing " + sectionName + " section ✅");
+
+          // Load section-specific data
+          loadSectionData(sectionName);
 
           // Scroll to content
           targetSection.scrollIntoView({ behavior: "smooth" });
         } else {
-          document.getElementById("status").textContent =
-            "Error: " + sectionName + " section not found ❌";
+          updateStatus("Error: " + sectionName + " section not found ❌", 'error');
         }
+      }
+
+      async function loadSectionData(sectionName) {
+        if (!fantasyApp) return;
+        
+        try {
+          switch (sectionName) {
+            case 'projections':
+              await loadProjectionsData();
+              break;
+            case 'waivers':
+              await loadWaiverData();
+              break;
+            case 'trades':
+              await loadTradeData();
+              break;
+          }
+        } catch (error) {
+          console.error(`Error loading ${sectionName} data:`, error);
+        }
+      }
+
+      async function loadProjectionsData() {
+        const projectionsSection = document.getElementById('projections');
+        if (!projectionsSection) return;
+        
+        const projections = await fantasyApp.getPlayerProjections();
+        const featureCards = projectionsSection.querySelectorAll('.feature-card');
+        
+        // Update QB projections
+        if (featureCards[0]) {
+          const qbs = projections.filter(p => p.position === 'QB').slice(0, 4);
+          let qbHTML = '<h4>Top QB Projections (Live)</h4>';
+          qbs.forEach(qb => {
+            qbHTML += `<p>${qb.name} (${qb.team}): ${qb.projection} pts</p>`;
+          });
+          featureCards[0].innerHTML = qbHTML;
+        }
+        
+        // Update RB projections
+        if (featureCards[1]) {
+          const rbs = projections.filter(p => p.position === 'RB').slice(0, 4);
+          let rbHTML = '<h4>Top RB Projections (Live)</h4>';
+          rbs.forEach(rb => {
+            rbHTML += `<p>${rb.name} (${rb.team}): ${rb.projection} pts</p>`;
+          });
+          featureCards[1].innerHTML = rbHTML;
+        }
+        
+        // Update WR projections
+        if (featureCards[2]) {
+          const wrs = projections.filter(p => p.position === 'WR').slice(0, 4);
+          let wrHTML = '<h4>Top WR Projections (Live)</h4>';
+          wrs.forEach(wr => {
+            wrHTML += `<p>${wr.name} (${wr.team}): ${wr.projection} pts</p>`;
+          });
+          featureCards[2].innerHTML = wrHTML;
+        }
+        
+        // Update TE projections
+        if (featureCards[3]) {
+          const tes = projections.filter(p => p.position === 'TE').slice(0, 4);
+          let teHTML = '<h4>Top TE Projections (Live)</h4>';
+          tes.forEach(te => {
+            teHTML += `<p>${te.name} (${te.team}): ${te.projection} pts</p>`;
+          });
+          featureCards[3].innerHTML = teHTML;
+        }
+      }
+
+      async function loadWaiverData() {
+        const waiverTargets = await fantasyApp.getWaiverWireTargets();
+        const waiverSection = document.getElementById('waivers');
+        if (!waiverSection) return;
+        
+        const featureCards = waiverSection.querySelectorAll('.feature-card');
+        
+        // Update breakout candidates
+        if (featureCards[1]) {
+          const breakouts = waiverTargets.filter(t => t.score > 85).slice(0, 3);
+          let breakoutHTML = '<h4>Breakout Candidates (Live)</h4>';
+          breakouts.forEach(player => {
+            breakoutHTML += `<p>${player.name} (${player.position}, ${player.team}) - ${player.reasoning}</p>`;
+          });
+          featureCards[1].innerHTML = breakoutHTML;
+        }
+
+        // Update injury replacements with live injury data
+        if (featureCards[2] && fantasyNewsApp) {
+          const injuries = fantasyNewsApp.getInjuryAlerts();
+          const waiverNews = fantasyNewsApp.getWaiverWireNews();
+          
+          let injuryHTML = '<h4>Injury Replacements (Live)</h4>';
+          
+          injuries.slice(0, 2).forEach(injury => {
+            const icon = fantasyNewsApp.getStatusIcon(injury.gameStatus);
+            injuryHTML += `<p>${icon} Monitor ${injury.player} (${injury.injury})</p>`;
+          });
+          
+          if (waiverNews.length > 0) {
+            injuryHTML += `<p>📈 ${waiverNews[0].headline}</p>`;
+          }
+          
+          featureCards[2].innerHTML = injuryHTML;
+        }
+        
+        // Update trending up
+        if (featureCards[3]) {
+          const trending = waiverTargets.slice(0, 3);
+          let trendHTML = '<h4>Trending Up (Live)</h4>';
+          trending.forEach(player => {
+            trendHTML += `<p>${player.name} (${player.position}, ${player.team}) ${player.trending}</p>`;
+          });
+          featureCards[3].innerHTML = trendHTML;
+        }
+      }
+
+      async function loadTradeData() {
+        const tradesSection = document.getElementById('trades');
+        if (!tradesSection || !fantasyNewsApp) return;
+        
+        const featureCards = tradesSection.querySelectorAll('.feature-card');
+        
+        // Update trade tips with relevant news
+        if (featureCards[3]) {
+          const tradeNews = fantasyNewsApp.getTradeNews();
+          const injuries = fantasyNewsApp.getInjuryAlerts();
+          
+          let tipsHTML = '<h4>Trade Tips (Live Insights)</h4>';
+          
+          // Add injury-based trade advice
+          if (injuries.length > 0) {
+            const injuredPlayer = injuries[0];
+            tipsHTML += `<p>💡 Consider trading ${injuredPlayer.player} if severity increases</p>`;
+          }
+          
+          // Add news-based insights
+          if (tradeNews.length > 0) {
+            tipsHTML += `<p>📰 ${tradeNews[0].headline}</p>`;
+          }
+          
+          // Default trade tips
+          tipsHTML += '<p>📈 Monitor playoff schedules for trade timing</p>';
+          tipsHTML += '<p>⏰ Trade deadline approaches - act quickly</p>';
+          
+          featureCards[3].innerHTML = tipsHTML;
+        }
+        
+        console.log('Trade data with live news loaded');
       }
 
       // Show dashboard by default
