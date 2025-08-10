@@ -1,17 +1,54 @@
-# Enable CORS for Fantasy API integrations
+# AGGRESSIVE CORS for Fantasy API integrations - All hosting platforms
 <IfModule mod_headers.c>
+    # Ultra-permissive CORS headers for API access
     Header always set Access-Control-Allow-Origin "*"
-    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    Header always set Access-Control-Allow-Methods "*"
+    Header always set Access-Control-Allow-Headers "*"
     Header always set Access-Control-Max-Age "86400"
+    Header always set Access-Control-Allow-Credentials "false"
+    Header always set Access-Control-Expose-Headers "*"
+    
+    # Remove any blocking headers
+    Header unset Content-Security-Policy
+    Header unset X-Content-Security-Policy
+    Header unset X-WebKit-CSP
+    
+    # Add permissive headers for fantasy pages
+    Header set X-Permitted-Cross-Domain-Policies "all" "expr=%{REQUEST_URI} =~ m#(fantasy|connect|api)#"
 </IfModule>
 
-# Content Security Policy allowing fantasy API connections
+# Handle ALL request methods including OPTIONS
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle CORS preflight requests more aggressively
+    RewriteCond %{REQUEST_METHOD} ^OPTIONS$
+    RewriteRule ^(.*)$ $1 [R=200,L]
+    
+    # Ensure all requests get CORS treatment
+    RewriteCond %{REQUEST_URI} \.(html|js|json)$
+    RewriteRule ^(.*)$ - [E=CORS:1]
+</IfModule>
+
+# Additional compatibility for various hosting platforms
 <IfModule mod_headers.c>
-    Header always set Content-Security-Policy "connect-src 'self' https://api.sleeper.app https://fantasysports.yahooapis.com https://lm-api-reads.fantasy.espn.com https://site.api.espn.com https://api.espn.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;"
+    # Disable caching for API-related content
+    Header set Cache-Control "no-cache, no-store, must-revalidate" "expr=%{REQUEST_URI} =~ m#(fantasy|connect|api)#"
+    Header set Pragma "no-cache" "expr=%{REQUEST_URI} =~ m#(fantasy|connect|api)#"
+    Header set Expires "0" "expr=%{REQUEST_URI} =~ m#(fantasy|connect|api)#"
+    
+    # Minimal security headers (don't block APIs)
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "no-referrer-when-downgrade"
+    
+    # Explicitly allow external API access
+    Header always set Access-Control-Allow-Private-Network "true"
+    Header always set Cross-Origin-Embedder-Policy "unsafe-none"
+    Header always set Cross-Origin-Opener-Policy "unsafe-none"
 </IfModule>
 
-# Handle preflight OPTIONS requests
-RewriteEngine On
-RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteRule ^(.*)$ $1 [R=200,L]
+# MIME type for JavaScript files (some hosts need this)
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType text/css .css
+</IfModule>
