@@ -127,8 +127,8 @@ class RealOddsAPIIntegration {
     async fetchOddsAPI(sport = 'americanfootball_nfl') {
         const provider = this.apiProviders.oddsapi;
         
-        // Try user's API key first, then widget access key
-        const apiKey = provider.apiKey || provider.widgetKey;
+        // Use user's API key only (widget key appears to be invalid)
+        const apiKey = provider.apiKey;
         
         if (!apiKey) {
             throw new Error('The Odds API key required. Get one from https://the-odds-api.com/');
@@ -513,18 +513,28 @@ class RealOddsAPIIntegration {
             lastUpdate: new Date().toISOString()
         };
 
-        // Try The Odds API first (most reliable) - we have widget access key
-        try {
-            const data = await this.fetchOddsAPI();
-            results.success.push(data);
-            results.totalGames += data.games.length;
-            results.totalBets += data.totalBets;
-            console.log('✅ The Odds API: Success');
-        } catch (error) {
+        // Try The Odds API first (most reliable) - only if user has API key
+        if (this.apiProviders.oddsapi.apiKey) {
+            try {
+                const data = await this.fetchOddsAPI();
+                results.success.push(data);
+                results.totalGames += data.games.length;
+                results.totalBets += data.totalBets;
+                console.log('✅ The Odds API: Success');
+            } catch (error) {
+                console.log('❌ The Odds API failed:', error.message);
+                results.failed.push({
+                    provider: 'oddsapi',
+                    name: 'The Odds API',
+                    error: error.message
+                });
+            }
+        } else {
+            console.log('⚠️ The Odds API: No API key configured, skipping...');
             results.failed.push({
                 provider: 'oddsapi',
                 name: 'The Odds API',
-                error: error.message
+                error: 'No API key configured'
             });
         }
 
@@ -545,20 +555,13 @@ class RealOddsAPIIntegration {
             }
         }
 
-        // Try web scraping as fallback
-        try {
-            const data = await this.scrapeHardRockBet();
-            results.success.push(data);
-            results.totalGames += data.games.length;
-            results.totalBets += data.totalBets;
-            console.log('✅ Hard Rock Bet Scraping: Success');
-        } catch (error) {
-            results.failed.push({
-                provider: 'hardrock',
-                name: 'Hard Rock Bet (Scraped)',
-                error: error.message
-            });
-        }
+        // Web scraping disabled due to CORS issues
+        console.log('⚠️ Web scraping disabled - CORS restrictions prevent direct sportsbook access');
+        results.failed.push({
+            provider: 'hardrock',
+            name: 'Hard Rock Bet (Scraped)',
+            error: 'CORS restrictions prevent web scraping'
+        });
 
         results.providers = results.success.map(r => r.provider);
         

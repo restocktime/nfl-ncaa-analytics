@@ -149,10 +149,10 @@
                 <h3 class="text-lg font-semibold text-white mb-4">API Key Setup</h3>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">The Odds API Key (Optional)</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">The Odds API Key (Required for ML Analysis)</label>
                         <input type="text" id="oddsApiKey" placeholder="Get free key from the-odds-api.com" 
                                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                        <p class="text-xs text-gray-400 mt-1">✅ Hard Rock Bet data already available via widget • Add your key for more requests</p>
+                        <p class="text-xs text-gray-400 mt-1">🎯 Widget shows live odds • API key needed for ML bet analysis</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">RapidAPI Key (Optional)</label>
@@ -223,8 +223,14 @@
                         🔴 Live odds from Hard Rock Bet, DraftKings & FanDuel via The Odds API
                     </p>
                     <p class="text-xs text-gray-500 mt-1">
-                        Data refreshes automatically • Click odds for detailed analysis
+                        Data refreshes automatically • This is your primary odds source
                     </p>
+                    <div class="mt-2 p-2 bg-blue-900/20 rounded-lg">
+                        <p class="text-xs text-blue-300">
+                            💡 <strong>Tip:</strong> Use the widget above for live odds viewing. 
+                            Configure API keys below to enable ML analysis of these odds.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
