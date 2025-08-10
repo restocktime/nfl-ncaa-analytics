@@ -405,7 +405,6 @@
     <!-- Scripts -->
     <script src="api-sports-odds-integration.js"></script>
     <script src="betting-odds-integration.js"></script>
-    <script src="hardrock-vercel-integration.js"></script>
     <script>
         class BettingOddsDashboard {
             constructor() {
@@ -641,14 +640,16 @@
                 refreshBtn.disabled = true;
 
                 try {
-                    this.currentOdds = await this.bettingEngine.getLatestOdds('nfl', forceRefresh);
+                    // Try new Vercel endpoint first
+                    this.currentOdds = await this.loadFromVercelAPI();
                     this.updateDashboard();
                     this.displayOddsComparison();
                     
                     console.log('✅ Odds data loaded successfully');
                 } catch (error) {
                     console.error('❌ Failed to load odds data:', error);
-                    this.showError('Failed to load odds data. Please try again.');
+                    this.showNotification('No live games available right now', 'info');
+                    this.showEmptyState();
                 } finally {
                     // Hide loading state
                     spinner.classList.add('hidden');
@@ -709,19 +710,33 @@
                 this.showLoadingOverlay();
 
                 try {
-                    this.bestBets = await this.bettingEngine.getBestBets('nfl', betType);
+                    // Check if we have odds data first
+                    if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                        throw new Error('No odds data available. Please refresh odds first.');
+                    }
+                    
+                    // Use simplified analysis if betting engine fails
+                    try {
+                        this.bestBets = await this.bettingEngine.getBestBets('nfl', betType);
+                    } catch (engineError) {
+                        console.log('Using fallback analysis:', engineError.message);
+                        this.bestBets = this.generateFallbackAnalysis(betType);
+                    }
+                    
                     this.displayBestBets();
                     this.updateAnalyticsChart();
                     
                     // Update best bets count
-                    document.getElementById('bestBetsCount').textContent = this.bestBets.bestBets.length;
+                    const betsCount = this.bestBets && this.bestBets.bestBets ? this.bestBets.bestBets.length : 0;
+                    document.getElementById('bestBetsCount').textContent = betsCount;
                     document.getElementById('avgConfidence').textContent = 
-                        (this.bestBets.confidence * 100).toFixed(1) + '%';
+                        this.bestBets && this.bestBets.confidence ? 
+                        (this.bestBets.confidence * 100).toFixed(1) + '%' : 'N/A';
                         
                     console.log('✅ Bet analysis complete');
                 } catch (error) {
                     console.error('❌ Bet analysis failed:', error);
-                    this.showError('Bet analysis failed. Please try again.');
+                    this.showBetAnalysisError(error.message);
                 } finally {
                     this.hideLoadingOverlay();
                 }
@@ -1078,14 +1093,235 @@
                 };
                 return icons[betType] || '🎰';
             }
-
-            // Initialize Hard Rock Bet testing
-            initializeHardRockTest() {
-                this.hardRockIntegration = new HardRockBetIntegration();
-                console.log('🎰 Hard Rock Bet integration initialized');
+            
+            // Generate fallback analysis when main engine fails
+            generateFallbackAnalysis(betType) {
+                const bestBets = [];
+                
+                if (this.currentOdds && this.currentOdds.success.length > 0) {
+                    this.currentOdds.success.forEach(provider => {
+                        provider.games.forEach(game => {
+                            if (game.bets && Object.keys(game.bets).length > 0) {
+                                bestBets.push({
+                                    awayTeam: game.awayTeam,
+                                    homeTeam: game.homeTeam,
+                                    gameTime: game.gameTime,
+                                    provider: provider.name,
+                                    betType: betType === 'all' ? 'moneyline' : betType,
+                                    recommendation: `Consider ${game.homeTeam} vs ${game.awayTeam}`,
+                                    reasoning: 'Live odds available - check current lines for value',
+                                    confidence: 0.5,
+                                    valueScore: 0.3,
+                                    hardRockBetUrl: 'https://app.hardrock.bet/sport-leagues/american_football/691198679103111169'
+                                });
+                            }
+                        });
+                    });
+                }
+                
+                return {
+                    bestBets: bestBets.slice(0, 5), // Limit to 5
+                    confidence: 0.5
+                };
+            }
+            
+            // Show bet analysis error with helpful message
+            showBetAnalysisError(message) {
+                const container = document.getElementById('bestBetsContainer');
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <div class="text-6xl mb-4">🤔</div>
+                        <p class="text-lg font-semibold mb-2">Unable to analyze bets right now</p>
+                        <p class="text-sm mb-4">${message}</p>
+                        <div class="space-y-2">
+                            <p class="text-xs text-gray-500">Try:</p>
+                            <ul class="text-xs text-gray-500 list-disc list-inside space-y-1">
+                                <li>Refresh the odds data first</li>
+                                <li>Check if games are currently available</li>
+                                <li>Visit Hard Rock Bet directly for current lines</li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 space-x-4">
+                            <button onclick="window.bettingDashboard.loadOddsData(true)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white font-medium transition-all">
+                                🔄 Refresh Odds
+                            </button>
+                            <a href="https://app.hardrock.bet/sport-leagues/american_football/691198679103111169" 
+                               target="_blank" rel="noopener noreferrer"
+                               class="inline-block bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white font-medium transition-all">
+                                🎰 View Hard Rock Bet
+                            </a>
+                        </div>
+                    </div>
+                `;
             }
 
-            // Test Hard Rock Bet connection
+            // Load data from new Vercel API
+            async loadFromVercelAPI() {
+                const endpoints = [
+                    { action: 'events', name: 'Upcoming Games' },
+                    { action: 'live', name: 'Live Games' }
+                ];
+                
+                const results = { success: [], failed: [], totalGames: 0, totalBets: 0 };
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        const response = await fetch(`/api/hardrock?action=${endpoint.action}`);
+                        const data = await response.json();
+                        
+                        if (data.success && data.data && Array.isArray(data.data)) {
+                            const games = this.parseHardRockData(data.data, endpoint.action);
+                            if (games.length > 0) {
+                                results.success.push({
+                                    provider: 'hardrock',
+                                    name: `Hard Rock Bet (${endpoint.name})`,
+                                    games: games,
+                                    bets: games.reduce((total, game) => total + (game.bets ? Object.keys(game.bets).length : 0), 0)
+                                });
+                                results.totalGames += games.length;
+                            }
+                        } else {
+                            console.log(`ℹ️ ${endpoint.name}: ${data.error || 'No data available'}`);
+                        }
+                    } catch (error) {
+                        console.error(`❌ ${endpoint.name} failed:`, error);
+                        results.failed.push({
+                            name: endpoint.name,
+                            error: error.message
+                        });
+                    }
+                }
+                
+                if (results.success.length === 0) {
+                    throw new Error('No live games available at this time');
+                }
+                
+                results.totalBets = results.success.reduce((total, provider) => total + provider.bets, 0);
+                return results;
+            }
+            
+            // Parse Hard Rock data into standardized format
+            parseHardRockData(data, type) {
+                if (!Array.isArray(data) || data.length === 0) {
+                    return [];
+                }
+                
+                return data.map(event => {
+                    const teams = this.extractTeamNames(event.name || event.title || 'Unknown Game');
+                    return {
+                        id: event.id,
+                        homeTeam: teams.home,
+                        awayTeam: teams.away,
+                        gameTime: event.startTime || event.date || new Date().toISOString(),
+                        bets: this.extractBetsFromEvent(event),
+                        type: type,
+                        provider: 'hardrock'
+                    };
+                }).filter(game => game.homeTeam && game.awayTeam);
+            }
+            
+            // Extract team names from event name
+            extractTeamNames(eventName) {
+                // Handle formats like "Team A @ Team B" or "Team A vs Team B"
+                const separators = [' @ ', ' vs ', ' v ', ' - '];
+                for (const sep of separators) {
+                    if (eventName.includes(sep)) {
+                        const [away, home] = eventName.split(sep).map(t => t.trim());
+                        return { home, away };
+                    }
+                }
+                // Fallback
+                return { home: 'Home Team', away: 'Away Team' };
+            }
+            
+            // Extract betting markets from event
+            extractBetsFromEvent(event) {
+                const bets = {};
+                
+                if (event.markets && Array.isArray(event.markets)) {
+                    event.markets.forEach(market => {
+                        if (market.name && market.outcomes) {
+                            const marketName = market.name.toLowerCase();
+                            if (marketName.includes('spread') || marketName.includes('handicap')) {
+                                bets.spread = this.parseSpreadMarket(market.outcomes);
+                            } else if (marketName.includes('moneyline') || marketName.includes('match winner')) {
+                                bets.moneyline = this.parseMoneylineMarket(market.outcomes);
+                            } else if (marketName.includes('total') || marketName.includes('over/under')) {
+                                bets.totals = this.parseTotalsMarket(market.outcomes);
+                            }
+                        }
+                    });
+                }
+                
+                return bets;
+            }
+            
+            // Parse spread betting market
+            parseSpreadMarket(outcomes) {
+                const home = outcomes.find(o => o.name && o.name.includes('home'));
+                const away = outcomes.find(o => o.name && o.name.includes('away'));
+                
+                if (home && away) {
+                    return {
+                        home: { line: home.handicap || 0, odds: home.odds || home.price || 0 },
+                        away: { line: away.handicap || 0, odds: away.odds || away.price || 0 }
+                    };
+                }
+                return null;
+            }
+            
+            // Parse moneyline betting market
+            parseMoneylineMarket(outcomes) {
+                const home = outcomes.find(o => o.name && o.name.includes('home'));
+                const away = outcomes.find(o => o.name && o.name.includes('away'));
+                
+                if (home && away) {
+                    return {
+                        home: { odds: home.odds || home.price || 0 },
+                        away: { odds: away.odds || away.price || 0 }
+                    };
+                }
+                return null;
+            }
+            
+            // Parse totals betting market
+            parseTotalsMarket(outcomes) {
+                const over = outcomes.find(o => o.name && o.name.toLowerCase().includes('over'));
+                const under = outcomes.find(o => o.name && o.name.toLowerCase().includes('under'));
+                
+                if (over && under) {
+                    return {
+                        over: { line: over.handicap || over.line || 0, odds: over.odds || over.price || 0 },
+                        under: { line: under.handicap || under.line || 0, odds: under.odds || under.price || 0 }
+                    };
+                }
+                return null;
+            }
+            
+            // Show empty state when no games available
+            showEmptyState() {
+                const container = document.getElementById('oddsComparisonContainer');
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <div class="text-6xl mb-4">🏈</div>
+                        <p class="text-lg font-semibold mb-2">No live NFL games right now</p>
+                        <p class="text-sm">Games will appear here when the NFL season is active</p>
+                        <div class="mt-6">
+                            <button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white font-medium transition-all">
+                                🔄 Check Again
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Update status cards
+                document.getElementById('totalGames').textContent = '0';
+                document.getElementById('totalBets').textContent = '0';
+                document.getElementById('bestBetsCount').textContent = '0';
+                document.getElementById('avgConfidence').textContent = 'N/A';
+            }
+
+            // Test Hard Rock Bet connection via Vercel API
             async testHardRockIntegration() {
                 const statusElement = document.getElementById('hardrock-status');
                 const button = event.target;
@@ -1096,23 +1332,36 @@
                     statusElement.textContent = 'Testing connection...';
                     statusElement.className = 'text-xs text-yellow-400';
                     
-                    console.log('🧪 Testing Hard Rock Bet connection...');
+                    console.log('🧪 Testing Hard Rock Bet connection via Vercel API...');
                     
-                    const events = await this.hardRockIntegration.getEvents();
+                    const response = await fetch('/api/hardrock?action=events');
+                    const data = await response.json();
                     
-                    if (events && events.length > 0) {
-                        statusElement.textContent = `✅ Connected - ${events.length} events`;
-                        statusElement.className = 'text-xs text-green-400';
+                    if (data.success && data.data) {
+                        const eventCount = Array.isArray(data.data) ? data.data.length : 0;
                         
-                        button.innerHTML = '✅ Connection Successful!';
-                        button.className = 'bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all';
-                        
-                        // Update the odds data with Hard Rock results
-                        this.updateProvidersWithHardRock(events);
-                        
-                        this.showNotification('✅ Hard Rock Bet connection successful!', 'success');
+                        if (eventCount > 0) {
+                            statusElement.textContent = `✅ Connected - ${eventCount} events`;
+                            statusElement.className = 'text-xs text-green-400';
+                            
+                            button.innerHTML = '✅ Connection Successful!';
+                            button.className = 'bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all';
+                            
+                            this.showNotification('✅ Hard Rock Bet connection successful!', 'success');
+                            
+                            // Refresh the odds data
+                            await this.loadOddsData(true);
+                        } else {
+                            statusElement.textContent = '⚠️ Connected but no games available';
+                            statusElement.className = 'text-xs text-yellow-400';
+                            
+                            button.innerHTML = 'ℹ️ No Games Available';
+                            button.className = 'bg-gradient-to-r from-yellow-600 to-yellow-700 text-white px-6 py-3 rounded-lg font-semibold transition-all';
+                            
+                            this.showNotification('✅ Connection successful but no games available', 'info');
+                        }
                     } else {
-                        throw new Error('No events returned from Hard Rock Bet');
+                        throw new Error(data.error || 'API returned no data');
                     }
                     
                 } catch (error) {
@@ -1124,7 +1373,7 @@
                     button.innerHTML = '❌ Connection Failed - Retry';
                     button.className = 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105';
                     
-                    this.showNotification(`❌ Hard Rock Bet connection failed: ${error.message}`, 'error');
+                    this.showNotification(`❌ Connection failed: ${error.message}`, 'error');
                 } finally {
                     button.disabled = false;
                 }
@@ -1207,7 +1456,7 @@
                 `;
                 
                 // Initialize Hard Rock integration test
-                window.bettingDashboard.initializeHardRockTest();
+                console.log('🎰 Hard Rock Bet API ready via Vercel endpoint');
                 
             }, 1000);
         });
