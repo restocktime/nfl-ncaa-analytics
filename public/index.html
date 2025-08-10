@@ -47,6 +47,7 @@
         .fas.fa-play:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-fire:before { content: "🔥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-crystal-ball:before { content: "🔮"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-bullseye:before, .fas.fa-target:before { content: "🎯"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-shield:before { content: "🛡️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-calendar:before, .fas.fa-calendar-alt:before { content: "📅"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
         .fas.fa-bullseye:before, .fas.fa-target:before { content: "🎯"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
@@ -154,6 +155,7 @@
                 'fa-fire': '🔥',
                 'fa-crystal-ball': '🔮',
                 'fa-shield': '🛡️',
+                'fa-bullseye': '🎯',
                 'fa-calendar': '📅',
                 'fa-calendar-alt': '📅',
                 'fa-bullseye': '🎯',
@@ -241,12 +243,30 @@
         styleSheet.textContent = fallbackCSS;
         document.head.appendChild(styleSheet);
         
+        // Force icon fallbacks to activate (aggressive approach)
+        function forceIconFallbacks() {
+            console.log('🚨 Force activating icon fallbacks for navigation icons...');
+            document.body.classList.add('icon-fallback-active');
+            replaceFontAwesomeWithEmojis();
+        }
+        
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initIconFallbacks);
+            document.addEventListener('DOMContentLoaded', function() {
+                initIconFallbacks();
+                // Force fallbacks after delay to ensure nav icons show
+                setTimeout(forceIconFallbacks, 1000);
+            });
         } else {
             initIconFallbacks();
+            setTimeout(forceIconFallbacks, 500);
         }
+        
+        // Manual trigger for testing
+        window.debugIcons = function() {
+            console.log('🔧 Manual icon debug triggered');
+            forceIconFallbacks();
+        };
         
         // Re-check periodically in case icons load late
         setTimeout(initIconFallbacks, 1000);
