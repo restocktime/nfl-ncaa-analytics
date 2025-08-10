@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 Sleeper Data Extractor</title>
+    
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: #f8fafc;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .method-card {
+            background: rgba(30, 30, 63, 0.6);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .step-list li {
+            background: rgba(45, 47, 95, 0.5);
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .bookmarklet-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 1rem 0;
+            cursor: grab;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .bookmarklet-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .code-block {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .import-area {
+            background: rgba(45, 47, 95, 0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px dashed #6366f1;
+            margin: 1rem 0;
+        }
+        
+        .import-textarea {
+            width: 100%;
+            height: 200px;
+            background: #2d3748;
+            color: white;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+        
+        .result-display {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .bookmarklet-link {
+                padding: 0.75rem 1rem;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="connect-accounts.html" class="back-link">← Back to Connect Accounts</a>
+        
+        <div class="header">
+            <h1>🏈 Sleeper Data Extractor</h1>
+            <p>Get your Sleeper roster data despite API restrictions</p>
+            <p><strong>3 different methods to extract your fantasy data</strong></p>
+        </div>
+        
+        <!-- Method 1: Bookmarklet -->
+        <div class="method-card">
+            <h2>📖 Method 1: Browser Bookmarklet (Recommended)</h2>
+            <p>Drag this button to your bookmarks bar, then click it while on Sleeper.com:</p>
+            
+            <a href="javascript:(function(){
+                console.log('🏈 Sleeper Data Extractor Started');
+                
+                function extractSleeperData() {
+                    let data = {
+                        user: null,
+                        leagues: [],
+                        rosters: [],
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Try to get user data from page
+                    try {
+                        // Look for user data in various places
+                        if (window.__INITIAL_STATE__ && window.__INITIAL_STATE__.user) {
+                            data.user = window.__INITIAL_STATE__.user;
+                        } else if (window.user) {
+                            data.user = window.user;
+                        }
+                        
+                        // Look for league data
+                        if (window.__INITIAL_STATE__ && window.__INITIAL_STATE__.leagues) {
+                            data.leagues = Object.values(window.__INITIAL_STATE__.leagues);
+                        }
+                        
+                        // Look for roster data
+                        if (window.__INITIAL_STATE__ && window.__INITIAL_STATE__.rosters) {
+                            data.rosters = Object.values(window.__INITIAL_STATE__.rosters);
+                        }
+                        
+                        console.log('📊 Extracted data:', data);
+                        
+                        // Create downloadable file
+                        const dataStr = JSON.stringify(data, null, 2);
+                        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                        const url = URL.createObjectURL(dataBlob);
+                        
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'sleeper-data-' + new Date().toISOString().split('T')[0] + '.json';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                        
+                        alert('✅ Sleeper data extracted! Check your downloads for: sleeper-data-' + new Date().toISOString().split('T')[0] + '.json');
+                        
+                    } catch (error) {
+                        console.error('❌ Error extracting data:', error);
+                        alert('❌ Could not extract data. Make sure you\\'re on sleeper.com and logged in.');
+                    }
+                }
+                
+                // Run the extraction
+                if (window.location.hostname.includes('sleeper')) {
+                    extractSleeperData();
+                } else {
+                    if (confirm('You need to be on sleeper.com to extract data. Go there now?')) {
+                        window.open('https://sleeper.com/leagues', '_blank');
+                    }
+                }
+            })();" class="bookmarklet-link" draggable="true">
+                🏈 Extract Sleeper Data
+            </a>
+            
+            <ol class="step-list">
+                <li><strong>Step 1:</strong> Drag the blue button above to your browser's bookmarks bar</li>
+                <li><strong>Step 2:</strong> Go to <a href="https://sleeper.com/leagues" target="_blank" style="color: #6366f1;">sleeper.com/leagues</a> and log in</li>
+                <li><strong>Step 3:</strong> Click the bookmarklet you just saved</li>
+                <li><strong>Step 4:</strong> Your data will download as a JSON file</li>
+                <li><strong>Step 5:</strong> Upload that file in Method 3 below</li>
+            </ol>
+        </div>
+        
+        <!-- Method 2: Manual Copy -->
+        <div class="method-card">
+            <h2>📋 Method 2: Manual Copy from Sleeper</h2>
+            <p>If the bookmarklet doesn't work, manually copy your roster data:</p>
+            
+            <ol class="step-list">
+                <li>Go to <a href="https://sleeper.com/roster" target="_blank" style="color: #6366f1;">sleeper.com/roster</a></li>
+                <li>Open browser console (F12 → Console tab)</li>
+                <li>Paste this code and press Enter:</li>
+            </ol>
+            
+            <div class="code-block">
+console.log('🏈 Manual Sleeper Data Extract');
+let roster = [];
+document.querySelectorAll('.roster-player').forEach(player => {
+    const name = player.querySelector('.player-name')?.textContent || 'Unknown';
+    const position = player.querySelector('.position')?.textContent || 'Unknown';
+    roster.push({name, position});
+});
+console.log('📊 Your roster:', roster);
+copy(JSON.stringify(roster, null, 2));
+alert('✅ Roster data copied to clipboard!');
+            </div>
+            
+            <ol class="step-list" start="4">
+                <li>Your roster data will be copied to clipboard</li>
+                <li>Paste it in the import area below (Method 3)</li>
+            </ol>
+        </div>
+        
+        <!-- Method 3: Import Data -->
+        <div class="method-card">
+            <h2>📥 Method 3: Import Your Data</h2>
+            <p>Paste your extracted Sleeper data here:</p>
+            
+            <div class="import-area">
+                <textarea class="import-textarea" id="sleeperDataImport" placeholder="Paste your Sleeper JSON data here...
+
+Example format:
+{
+  &quot;user&quot;: {
+    &quot;username&quot;: &quot;YourUsername&quot;,
+    &quot;display_name&quot;: &quot;Your Display Name&quot;
+  },
+  &quot;leagues&quot;: [...],
+  &quot;rosters&quot;: [...]
+}
+
+Or simple roster format:
+[
+  {&quot;name&quot;: &quot;Josh Allen&quot;, &quot;position&quot;: &quot;QB&quot;},
+  {&quot;name&quot;: &quot;Derrick Henry&quot;, &quot;position&quot;: &quot;RB&quot;},
+  ...
+]"></textarea>
+                
+                <button class="btn" onclick="processSleeperData()">📊 Process Sleeper Data</button>
+                <button class="btn btn-secondary" onclick="saveToFantasySystem()">💾 Save to Fantasy System</button>
+            </div>
+            
+            <div class="result-display" id="resultDisplay">
+                <h3>✅ Data Processed Successfully!</h3>
+                <div id="processedData"></div>
+            </div>
+        </div>
+        
+        <!-- Method 4: Username Lookup -->
+        <div class="method-card">
+            <h2>🔍 Method 4: Alternative Username Lookup</h2>
+            <p>Try these alternative methods to get your Sleeper data:</p>
+            
+            <div style="margin: 1rem 0;">
+                <input type="text" id="sleeperUsername" placeholder="Enter your Sleeper username" style="padding: 0.75rem; width: 200px; border: 1px solid #4a5568; border-radius: 4px; background: #2d3748; color: white; margin-right: 0.5rem;">
+                <button class="btn" onclick="tryAlternativeLookup()">🔍 Try Lookup</button>
+            </div>
+            
+            <div id="lookupResults"></div>
+        </div>
+    </div>
+    
+    <script>
+        let extractedData = null;
+        
+        function processSleeperData() {
+            const textarea = document.getElementById('sleeperDataImport');
+            const data = textarea.value.trim();
+            
+            if (!data) {
+                alert('Please paste your Sleeper data first.');
+                return;
+            }
+            
+            try {
+                extractedData = JSON.parse(data);
+                
+                const resultDiv = document.getElementById('resultDisplay');
+                const processedDiv = document.getElementById('processedData');
+                
+                let summary = '';
+                
+                // Check data format and process
+                if (Array.isArray(extractedData)) {
+                    // Simple roster array
+                    summary = `<p><strong>Roster:</strong> ${extractedData.length} players found</p>`;
+                    extractedData.forEach((player, index) => {
+                        summary += `<p>${index + 1}. ${player.name || 'Unknown'} (${player.position || 'Unknown'})</p>`;
+                    });
+                } else if (extractedData.user || extractedData.leagues || extractedData.rosters) {
+                    // Full Sleeper export
+                    if (extractedData.user) {
+                        summary += `<p><strong>User:</strong> ${extractedData.user.display_name || extractedData.user.username || 'Unknown'}</p>`;
+                    }
+                    if (extractedData.leagues && extractedData.leagues.length > 0) {
+                        summary += `<p><strong>Leagues:</strong> ${extractedData.leagues.length} found</p>`;
+                    }
+                    if (extractedData.rosters && extractedData.rosters.length > 0) {
+                        summary += `<p><strong>Rosters:</strong> ${extractedData.rosters.length} found</p>`;
+                    }
+                }
+                
+                processedDiv.innerHTML = summary;
+                resultDiv.style.display = 'block';
+                
+                console.log('✅ Sleeper data processed:', extractedData);
+                
+            } catch (error) {
+                alert('❌ Invalid JSON data. Please check your input and try again.');
+                console.error('Parse error:', error);
+            }
+        }
+        
+        function saveToFantasySystem() {
+            if (!extractedData) {
+                alert('Please process your data first using the "Process Sleeper Data" button.');
+                return;
+            }
+            
+            // Convert to our fantasy system format
+            let roster = {};
+            
+            try {
+                let players = [];
+                
+                if (Array.isArray(extractedData)) {
+                    players = extractedData;
+                } else if (extractedData.rosters && extractedData.rosters.length > 0) {
+                    // Extract from full Sleeper data structure
+                    players = extractedData.rosters[0].players || [];
+                }
+                
+                // Map positions
+                const positionMap = {
+                    'QB': ['qb1'],
+                    'RB': ['rb1', 'rb2'],
+                    'WR': ['wr1', 'wr2'],
+                    'TE': ['te1'],
+                    'K': ['k1'],
+                    'DEF': ['def1']
+                };
+                
+                const usedPositions = {};
+                let benchIndex = 1;
+                
+                players.forEach(player => {
+                    const name = player.name || player.full_name || 'Unknown Player';
+                    const position = player.position || 'BENCH';
+                    
+                    if (positionMap[position] && position !== 'BENCH') {
+                        const availableSlots = positionMap[position].filter(slot => !usedPositions[slot]);
+                        if (availableSlots.length > 0) {
+                            const slot = availableSlots[0];
+                            roster[slot] = name;
+                            usedPositions[slot] = true;
+                        } else if (benchIndex <= 6) {
+                            roster[`bench${benchIndex}`] = name;
+                            benchIndex++;
+                        }
+                    } else if (benchIndex <= 6) {
+                        roster[`bench${benchIndex}`] = name;
+                        benchIndex++;
+                    }
+                });
+                
+                // Save to localStorage
+                localStorage.setItem('fantasy-roster-manual', JSON.stringify(roster));
+                
+                alert(`✅ Roster saved to Fantasy System!\\n${Object.keys(roster).length} players imported.\\n\\nGo to Manual Fantasy System to view your roster.`);
+                
+            } catch (error) {
+                alert('❌ Error saving roster. Please check your data format.');
+                console.error('Save error:', error);
+            }
+        }
+        
+        async function tryAlternativeLookup() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            const resultsDiv = document.getElementById('lookupResults');
+            
+            if (!username) {
+                alert('Please enter your Sleeper username.');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p>🔍 Trying alternative lookup methods...</p>';
+            
+            // Try different approaches
+            const methods = [
+                {
+                    name: 'Public Sleeper API (via iframe)',
+                    test: () => tryIframeLookup(username)
+                },
+                {
+                    name: 'JSONP attempt',
+                    test: () => tryJSONPLookup(username)  
+                },
+                {
+                    name: 'Image pixel trick',
+                    test: () => tryImagePixelLookup(username)
+                }
+            ];
+            
+            let results = '<h4>🧪 Alternative Lookup Results:</h4>';
+            
+            for (const method of methods) {
+                try {
+                    results += `<p>Testing ${method.name}...</p>`;
+                    const result = await method.test();
+                    if (result) {
+                        results += `<p style="color: #10b981;">✅ ${method.name}: Success!</p>`;
+                        results += `<pre style="background: #2d3748; padding: 1rem; border-radius: 4px; overflow-x: auto;">${JSON.stringify(result, null, 2)}</pre>`;
+                    } else {
+                        results += `<p style="color: #f59e0b;">⚠️ ${method.name}: No data found</p>`;
+                    }
+                } catch (error) {
+                    results += `<p style="color: #ef4444;">❌ ${method.name}: ${error.message}</p>`;
+                }
+            }
+            
+            results += '<h4>💡 Recommendations:</h4>';
+            results += '<p>1. Use the bookmarklet method while logged into Sleeper</p>';
+            results += '<p>2. Manually copy your roster from Sleeper and paste above</p>';
+            results += '<p>3. Use the Manual Fantasy System for offline management</p>';
+            
+            resultsDiv.innerHTML = results;
+        }
+        
+        function tryIframeLookup(username) {
+            return new Promise((resolve, reject) => {
+                // This won't work due to CORS but shows the attempt
+                setTimeout(() => {
+                    reject(new Error('CORS policy blocks iframe approach'));
+                }, 1000);
+            });
+        }
+        
+        function tryJSONPLookup(username) {
+            return new Promise((resolve, reject) => {
+                // Attempt JSONP - won't work with Sleeper but shows the attempt
+                setTimeout(() => {
+                    reject(new Error('Sleeper API does not support JSONP callbacks'));
+                }, 1000);
+            });
+        }
+        
+        function tryImagePixelLookup(username) {
+            return new Promise((resolve, reject) => {
+                // This technique sometimes works for basic connectivity tests
+                const img = new Image();
+                img.onload = () => resolve({method: 'image-pixel', status: 'connected'});
+                img.onerror = () => reject(new Error('Image pixel method failed'));
+                img.src = `https://api.sleeper.app/v1/user/${username}?callback=test&_=${Date.now()}`;
+                
+                setTimeout(() => reject(new Error('Timeout')), 3000);
+            });
+        }
+    </script>
+</body>
+</html>

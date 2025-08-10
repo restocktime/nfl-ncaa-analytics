@@ -1,11 +1,11 @@
 // EMERGENCY FIX FOR DEPLOYED SITE - ICONS AND API
 console.log('🚨 DEPLOYED SITE EMERGENCY FIX LOADED');
 
-// CLEAN UP HARDCODED EMOJIS IN HTML
+// CLEAN UP HARDCODED EMOJIS AND DOUBLED ICONS
 function cleanHardcodedEmojis() {
-    console.log('🧹 Cleaning hardcoded emojis from HTML...');
+    console.log('🧹 Cleaning hardcoded emojis and doubled icons...');
     
-    // Find text nodes with hardcoded emojis next to icons
+    // Method 1: Clean hardcoded emojis from HTML text
     const walker = document.createTreeWalker(
         document.body,
         NodeFilter.SHOW_TEXT,
@@ -23,13 +23,47 @@ function cleanHardcodedEmojis() {
     
     textNodes.forEach(textNode => {
         const parent = textNode.parentElement;
-        // If the parent has an icon class, remove the emoji text
-        if (parent && (parent.classList.contains('nav-text') || parent.classList.contains('card-title'))) {
+        // Remove emoji text from nav items, headings, etc.
+        if (parent && (
+            parent.classList.contains('nav-text') || 
+            parent.classList.contains('card-title') ||
+            parent.tagName === 'H2' ||
+            parent.tagName === 'H3' ||
+            parent.tagName === 'SPAN'
+        )) {
             const cleanText = textNode.nodeValue.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
             if (cleanText) {
                 textNode.nodeValue = cleanText;
+                console.log(`🧹 Cleaned hardcoded emoji from: ${parent.tagName}.${parent.className}`);
+            } else {
+                // If only emoji was there, remove the text node entirely
+                textNode.remove();
+                console.log(`🗑️ Removed emoji-only text node from: ${parent.tagName}.${parent.className}`);
             }
-            console.log(`🧹 Cleaned hardcoded emoji from: ${parent.className}`);
+        }
+    });
+    
+    // Method 2: Find elements with both emoji content AND icon classes
+    document.querySelectorAll('*').forEach(element => {
+        // Check if element has text content with emojis AND has icon siblings
+        const textContent = element.textContent;
+        if (textContent && textContent.match(/[\u{1F300}-\u{1F9FF}]/u)) {
+            const hasIconSibling = element.querySelector('i[class*="fa-"]') || 
+                                   element.previousElementSibling?.classList.contains('fas') ||
+                                   element.nextElementSibling?.classList.contains('fas');
+            
+            if (hasIconSibling) {
+                // Clean the emoji from this element's text
+                element.childNodes.forEach(child => {
+                    if (child.nodeType === Node.TEXT_NODE) {
+                        const cleaned = child.nodeValue.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+                        if (cleaned !== child.nodeValue) {
+                            child.nodeValue = cleaned;
+                            console.log(`🧹 Cleaned doubled emoji from element with icon sibling`);
+                        }
+                    }
+                });
+            }
         }
     });
 }
@@ -228,13 +262,80 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.addEventListener('load', function() {
     console.log('🌐 WINDOW LOADED - FINAL FIX');
+    cleanHardcodedEmojis();
     emergencyIconFix();
-    setTimeout(emergencyIconFix, 1000);
+    
+    // Extra aggressive cleanup after everything loads
+    setTimeout(() => {
+        fixNavigationDoubles();
+        cleanHardcodedEmojis();
+        emergencyIconFix();
+    }, 1000);
+    
+    setTimeout(() => {
+        fixNavigationDoubles();
+    }, 2000);
 });
+
+// AGGRESSIVE FIX FOR NAVIGATION DOUBLING
+function fixNavigationDoubles() {
+    console.log('🎯 Fixing navigation doubles...');
+    
+    // Target specific navigation elements that were showing doubles
+    const navItems = [
+        { selector: 'a[data-view="live-picks"]', text: 'Live Picks' },
+        { selector: 'a[data-view="predictions"]', text: 'Predictions' },
+        { selector: 'a[data-view="monte-carlo"]', text: 'Monte Carlo' },
+        { selector: 'a[data-view="ai-models"]', text: 'AI Models' },
+        { selector: 'a[data-view="teams"]', text: 'Teams' },
+        { selector: 'a[data-view="players"]', text: 'Players' },
+        { selector: 'a[data-view="statistics"]', text: 'Statistics' },
+        { selector: 'a[data-view="schedule"]', text: 'Schedule' },
+        { selector: 'a[data-view="player-props"]', text: 'Player Props' },
+        { selector: 'a[data-view="news"]', text: 'News' },
+        { selector: 'a[data-view="fantasy-hub"]', text: 'Fantasy Hub' }
+    ];
+    
+    navItems.forEach(item => {
+        const elements = document.querySelectorAll(item.selector);
+        elements.forEach(el => {
+            // Clean all text content, keeping only the expected text
+            const navText = el.querySelector('.nav-text');
+            if (navText) {
+                // Remove any emojis and keep only the expected text
+                navText.textContent = item.text;
+                console.log(`🔧 Fixed nav text for: ${item.text}`);
+            }
+            
+            // Also clean the mobile version
+            const mobileSpan = el.querySelector('span');
+            if (mobileSpan && !mobileSpan.classList.contains('nav-text')) {
+                mobileSpan.textContent = item.text;
+                console.log(`📱 Fixed mobile nav text for: ${item.text}`);
+            }
+        });
+    });
+    
+    // Clean any remaining emoji-only text nodes in navigation
+    const navElements = document.querySelectorAll('.nav-link, .mobile-nav-link');
+    navElements.forEach(nav => {
+        nav.childNodes.forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) {
+                const text = child.nodeValue.trim();
+                // If it's only emojis, remove it
+                if (text.match(/^[\u{1F300}-\u{1F9FF}\s]*$/u)) {
+                    child.remove();
+                    console.log('🗑️ Removed emoji-only text from navigation');
+                }
+            }
+        });
+    });
+}
 
 // Make functions globally available for manual testing
 window.emergencyIconFix = emergencyIconFix;
 window.cleanHardcodedEmojis = cleanHardcodedEmojis;
+window.fixNavigationDoubles = fixNavigationDoubles;
 window.FantasyAPIFix = FantasyAPIFix;
 
 console.log('💪 EMERGENCY FIX SYSTEM READY');
