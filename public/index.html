@@ -11,8 +11,181 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Preload Font Awesome for faster loading -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://use.fontawesome.com">
+    
+    <!-- Icons with Multiple CDN Fallbacks -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" media="print" onload="this.media='all'; this.onload=null;" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" media="print" onload="this.media='all'; this.onload=null;" crossorigin="anonymous">
+    
+    <!-- Fallback for when Font Awesome fails to load -->
+    <style>
+        /* Icon fallbacks using Unicode symbols */
+        .fas.fa-football-ball:before { content: "🏈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-times:before { content: "✕"; }
+        .fas.fa-tachometer-alt:before { content: "⚡"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-play-circle:before { content: "▶️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-chart-line:before { content: "📈"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-brain:before { content: "🧠"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-dice:before { content: "🎲"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-robot:before { content: "🤖"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-users:before { content: "👥"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-user:before { content: "👤"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-rocket:before { content: "🚀"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-plug:before { content: "🔌"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-exchange-alt:before { content: "🔄"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-search:before { content: "🔍"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-cog:before { content: "⚙️"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        .fas.fa-code:before { content: "💻"; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+        
+        /* Ensure icons display properly even without Font Awesome */
+        .fas:before, .far:before, .fab:before {
+            font-weight: normal;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Force emoji rendering when Font Awesome isn't available */
+        .icon-fallback-active .fas:before,
+        .icon-fallback-active .far:before,
+        .icon-fallback-active .fab:before {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+        }
+    </style>
+    
+    <!-- Comprehensive Icon Fallback System -->
+    <script>
+        // Comprehensive Font Awesome fallback system
+        function initIconFallbacks() {
+            console.log('🔧 Initializing icon fallback system...');
+            
+            // Test if Font Awesome is loaded
+            const testElement = document.createElement('i');
+            testElement.className = 'fas fa-home';
+            testElement.style.position = 'absolute';
+            testElement.style.left = '-9999px';
+            testElement.style.visibility = 'hidden';
+            document.body.appendChild(testElement);
+            
+            // Wait a bit for fonts to load
+            setTimeout(() => {
+                const computed = window.getComputedStyle(testElement, ':before');
+                const content = computed.content;
+                const fontFamily = computed.fontFamily;
+                
+                const isFontAwesome = fontFamily.includes('Font Awesome') || 
+                                    content !== 'none' && content !== '""' && content.charCodeAt(1) > 255;
+                
+                if (!isFontAwesome) {
+                    console.log('⚠️ Font Awesome not properly loaded, activating fallbacks');
+                    document.body.classList.add('icon-fallback-active');
+                    
+                    // Replace all Font Awesome icons with emojis
+                    replaceFontAwesomeWithEmojis();
+                } else {
+                    console.log('✅ Font Awesome loaded successfully');
+                }
+                
+                document.body.removeChild(testElement);
+            }, 100);
+        }
+        
+        function replaceFontAwesomeWithEmojis() {
+            const iconMap = {
+                'fa-football-ball': '🏈',
+                'fa-times': '✕',
+                'fa-tachometer-alt': '⚡',
+                'fa-play-circle': '▶️',
+                'fa-chart-line': '📈',
+                'fa-brain': '🧠',
+                'fa-dice': '🎲',
+                'fa-robot': '🤖',
+                'fa-users': '👥',
+                'fa-user': '👤',
+                'fa-rocket': '🚀',
+                'fa-plug': '🔌',
+                'fa-exchange-alt': '🔄',
+                'fa-search': '🔍',
+                'fa-cog': '⚙️',
+                'fa-code': '💻',
+                'fa-home': '🏠',
+                'fa-star': '⭐',
+                'fa-heart': '❤️',
+                'fa-envelope': '📧',
+                'fa-phone': '📞',
+                'fa-calendar': '📅',
+                'fa-clock': '🕐',
+                'fa-download': '⬇️',
+                'fa-upload': '⬆️',
+                'fa-trash': '🗑️',
+                'fa-edit': '✏️',
+                'fa-save': '💾',
+                'fa-check': '✅',
+                'fa-check-circle': '✅',
+                'fa-exclamation-triangle': '⚠️',
+                'fa-info-circle': 'ℹ️',
+                'fa-question-circle': '❓',
+                'fa-plus': '➕',
+                'fa-minus': '➖',
+                'fa-arrow-up': '⬆️',
+                'fa-arrow-down': '⬇️',
+                'fa-arrow-left': '⬅️',
+                'fa-arrow-right': '➡️',
+                'fa-bars': '☰',
+                'fa-ellipsis-v': '⋮',
+                'fa-ellipsis-h': '⋯'
+            };
+            
+            // Find all Font Awesome icons and replace them
+            document.querySelectorAll('[class*="fa-"]').forEach(element => {
+                const classList = Array.from(element.classList);
+                const faClass = classList.find(cls => cls.startsWith('fa-'));
+                
+                if (faClass && iconMap[faClass]) {
+                    element.textContent = iconMap[faClass];
+                    element.style.fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+                    element.style.fontSize = '1em';
+                    element.classList.add('emoji-fallback');
+                }
+            });
+            
+            console.log('🔄 Replaced Font Awesome icons with emoji fallbacks');
+        }
+        
+        // Add CSS for emoji fallbacks
+        const fallbackCSS = `
+            .icon-fallback-active .emoji-fallback {
+                font-style: normal !important;
+                font-weight: normal !important;
+                font-variant: normal !important;
+            }
+            
+            .emoji-fallback {
+                display: inline-block;
+                vertical-align: middle;
+            }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = fallbackCSS;
+        document.head.appendChild(styleSheet);
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initIconFallbacks);
+        } else {
+            initIconFallbacks();
+        }
+        
+        // Re-check periodically in case icons load late
+        setTimeout(initIconFallbacks, 1000);
+        setTimeout(initIconFallbacks, 3000);
+    </script>
     
     <!-- Fantasy Football Helper Styles -->
     <link rel="stylesheet" href="fantasy-styles.css">
