@@ -177,8 +177,12 @@ class ModernNFLApp {
             view.classList.remove('active');
         });
 
-        // Show selected view
-        const targetView = document.getElementById(`${viewName}-view`);
+        // Show selected view - try both ID patterns
+        let targetView = document.getElementById(viewName);
+        if (!targetView) {
+            targetView = document.getElementById(`${viewName}-view`);
+        }
+        
         if (targetView) {
             targetView.classList.add('active');
             targetView.classList.add('fade-in');
@@ -224,6 +228,37 @@ class ModernNFLApp {
                 break;
             case 'historical':
                 this.loadHistorical();
+                break;
+            // Fantasy Football Views
+            case 'fantasy-dashboard':
+                if (window.fantasyIntegration) {
+                    window.fantasyIntegration.loadFantasyDashboard();
+                }
+                break;
+            case 'fantasy-lineup':
+                if (window.fantasyIntegration) {
+                    window.fantasyIntegration.loadLineupOptimizer();
+                }
+                break;
+            case 'fantasy-waiver':
+                if (window.fantasyIntegration) {
+                    window.fantasyIntegration.loadWaiverWire();
+                }
+                break;
+            case 'fantasy-trades':
+                if (window.fantasyIntegration) {
+                    window.fantasyIntegration.loadTradeAnalyzer();
+                }
+                break;
+            case 'fantasy-projections':
+                if (window.fantasyIntegration) {
+                    window.fantasyIntegration.loadPlayerProjections();
+                }
+                break;
+            case 'fantasy-league-config':
+                if (window.fantasyIntegration) {
+                    window.fantasyIntegration.loadLeagueConfiguration();
+                }
                 break;
         }
     }

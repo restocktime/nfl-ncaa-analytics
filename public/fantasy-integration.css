@@ -1,0 +1,659 @@
+/* Fantasy Football Integration Styles */
+
+/* Navigation Section Divider */
+.nav-section-divider {
+    margin: 1.5rem 0 1rem 0;
+    padding: 0 2rem;
+}
+
+.nav-section-title {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.nav-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 1px;
+}
+
+/* Fantasy Lineup Styles */
+.lineup-positions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.position-slot {
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.position-slot:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.position-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.player-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.player-team {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.player-projection {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.lineup-total {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+/* Waiver Wire Styles */
+.waiver-target {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.waiver-target:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.target-info {
+    flex: 1;
+}
+
+.target-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.target-team {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.target-score {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--success);
+    margin: 0 1rem;
+}
+
+.target-reasoning {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex: 2;
+    text-align: right;
+}
+
+.waiver-target-card {
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.waiver-target-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.target-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.target-header h4 {
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.badges {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.position-badge,
+.team-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.position-badge {
+    background: var(--primary);
+    color: white;
+}
+
+.team-badge {
+    background: var(--success);
+    color: white;
+}
+
+.target-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.target-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Projections Table Styles */
+.projections-table-container {
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    overflow-x: auto;
+}
+
+.projections-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.projections-table th,
+.projections-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.projections-table th {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.projections-table td {
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.projections-table tr:hover {
+    background: var(--dark-secondary);
+}
+
+.confidence-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.confidence-badge.high {
+    background: var(--success);
+    color: white;
+}
+
+.confidence-badge.medium {
+    background: var(--warning);
+    color: white;
+}
+
+.confidence-badge.low {
+    background: var(--danger);
+    color: white;
+}
+
+/* League Configuration Wizard */
+.wizard-steps {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.step.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.step-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Control Bars */
+.optimizer-controls,
+.waiver-controls,
+.projection-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Placeholders and Loading */
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-style: italic;
+    background: var(--dark-secondary);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+}
+
+/* Optimization Results */
+.improvement-badge {
+    background: var(--success);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.optimization-changes h4 {
+    color: var(--text-primary);
+    margin: 1rem 0 0.5rem 0;
+}
+
+.optimization-changes ul {
+    list-style: none;
+    padding: 0;
+}
+
+.optimization-changes li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.optimization-changes li:last-child {
+    border-bottom: none;
+}
+
+/* Trade Analysis */
+.trade-analysis-result {
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+}
+
+.trade-verdict {
+    text-align: center;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+}
+
+.trade-verdict.positive {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid var(--success);
+}
+
+.trade-verdict h4 {
+    color: var(--success);
+    margin: 0 0 0.5rem 0;
+}
+
+.trade-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.trade-side h5 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.player-value {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.trade-factors h5 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.trade-factors ul {
+    list-style: none;
+    padding: 0;
+}
+
+.trade-factors li {
+    padding: 0.25rem 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Analysis Stats */
+.analysis-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.analysis-details p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Projection Items */
+.projection-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.projection-item:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.proj-player {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.proj-matchup {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    flex: 1;
+    text-align: center;
+}
+
+.proj-points {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--success);
+    flex: 1;
+    text-align: center;
+}
+
+.proj-rating {
+    font-size: 0.75rem;
+    color: var(--primary);
+    flex: 1;
+    text-align: right;
+}
+
+/* Trade Opportunities */
+.trade-opportunity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--dark-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.trade-opportunity:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.trade-summary {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.trade-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--success);
+    margin: 0 1rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .lineup-positions {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .position-slot {
+        display: flex;
+        align-items: center;
+        text-align: left;
+        padding: 0.75rem;
+    }
+    
+    .position-label {
+        min-width: 60px;
+        margin-bottom: 0;
+        margin-right: 1rem;
+    }
+    
+    .player-info {
+        flex: 1;
+    }
+    
+    .target-stats {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .trade-breakdown {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .analysis-stats {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .wizard-steps {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .step {
+        min-width: 80px;
+        padding: 0.75rem;
+    }
+    
+    .optimizer-controls,
+    .waiver-controls,
+    .projection-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .projections-table-container {
+        padding: 1rem;
+    }
+    
+    .projections-table {
+        font-size: 0.8rem;
+    }
+    
+    .projections-table th,
+    .projections-table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .waiver-target {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .target-reasoning {
+        text-align: left;
+    }
+    
+    .projection-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .proj-player,
+    .proj-matchup,
+    .proj-points,
+    .proj-rating {
+        text-align: left;
+    }
+    
+    .trade-opportunity {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+}

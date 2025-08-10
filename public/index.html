@@ -14,9 +14,17 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
+    <!-- Fantasy Football Helper Styles -->
+    <link rel="stylesheet" href="fantasy-styles.css">
+    <link rel="stylesheet" href="fantasy-integration.css">
+    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <!-- Fantasy Football Integration -->
+    <script src="fantasy-data-service.js"></script>
+    <script src="fantasy-integration.js"></script>
     
     <style>
         :root {
@@ -697,6 +705,33 @@
             .grid-2, .grid-3, .grid-4 {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Navigation Section Divider */
+        .nav-section-divider {
+            margin: 1.5rem 0 1rem 0;
+            padding: 0 2rem;
+        }
+
+        .nav-section-title {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .nav-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 1px;
         }
 
         /* Custom Scrollbar */
@@ -1760,6 +1795,10 @@
                         <i class="fas fa-chart-bar"></i>
                         <span>Statistics</span>
                     </a>
+                    <a href="#" class="mobile-nav-link" data-view="fantasy-dashboard">
+                        <i class="fas fa-trophy"></i>
+                        <span>Fantasy</span>
+                    </a>
                 </nav>
             </div>
         </div>
@@ -1822,6 +1861,35 @@
                     <li><a href="#" class="nav-link" data-view="news">
                         <i class="fas fa-newspaper nav-icon"></i>
                         <span class="nav-text">News</span>
+                    </a></li>
+                    
+                    <!-- Fantasy Football Section -->
+                    <li class="nav-section-divider">
+                        <span class="nav-section-title">Fantasy Football</span>
+                    </li>
+                    <li><a href="#" class="nav-link" data-view="fantasy-dashboard">
+                        <i class="fas fa-trophy nav-icon"></i>
+                        <span class="nav-text">Fantasy Dashboard</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-view="fantasy-lineup">
+                        <i class="fas fa-users nav-icon"></i>
+                        <span class="nav-text">Lineup Optimizer</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-view="fantasy-waiver">
+                        <i class="fas fa-search nav-icon"></i>
+                        <span class="nav-text">Waiver Wire</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-view="fantasy-trades">
+                        <i class="fas fa-exchange-alt nav-icon"></i>
+                        <span class="nav-text">Trade Analyzer</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-view="fantasy-projections">
+                        <i class="fas fa-chart-line nav-icon"></i>
+                        <span class="nav-text">Player Projections</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-view="fantasy-league-config">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span class="nav-text">League Setup</span>
                     </a></li>
                 </ul>
             </nav>
@@ -2480,6 +2548,92 @@
                     <div class="loading">
                         <div class="loading-spinner"></div>
                         <span>Loading latest news...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy Football Views -->
+            
+            <!-- Fantasy Dashboard View -->
+            <div id="fantasy-dashboard" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-trophy"></i> Fantasy Football Dashboard</h2>
+                    <p>Your complete fantasy football command center</p>
+                </div>
+                <div id="fantasy-dashboard-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading fantasy dashboard...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy Lineup Optimizer View -->
+            <div id="fantasy-lineup" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-users"></i> Lineup Optimizer</h2>
+                    <p>AI-powered lineup optimization for maximum points</p>
+                </div>
+                <div id="fantasy-lineup-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading lineup optimizer...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy Waiver Wire View -->
+            <div id="fantasy-waiver" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-search"></i> Waiver Wire Intelligence</h2>
+                    <p>Smart waiver wire analysis and recommendations</p>
+                </div>
+                <div id="fantasy-waiver-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading waiver wire analysis...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy Trade Analyzer View -->
+            <div id="fantasy-trades" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-exchange-alt"></i> Trade Analyzer</h2>
+                    <p>Advanced trade evaluation and fair value analysis</p>
+                </div>
+                <div id="fantasy-trades-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading trade analyzer...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy Player Projections View -->
+            <div id="fantasy-projections" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-chart-line"></i> Player Projections</h2>
+                    <p>ML-powered player performance projections</p>
+                </div>
+                <div id="fantasy-projections-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading player projections...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fantasy League Configuration View -->
+            <div id="fantasy-league-config" class="view">
+                <div class="header">
+                    <h2><i class="fas fa-cog"></i> League Configuration</h2>
+                    <p>Setup and manage your fantasy league settings</p>
+                </div>
+                <div id="fantasy-league-config-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading league configuration...</span>
                     </div>
                 </div>
             </div>
@@ -6292,5 +6446,8 @@
             console.log('🏈 NFL Analytics Pro initialized');
         });
     </script>
+    
+    <!-- Fantasy Football Helper -->
+    <script src="fantasy-football-helper.js"></script>
 </body>
 </html>
