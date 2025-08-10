@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hard Rock Bet Widget Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .widget-container {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Hard Rock Bet Widget Test</h1>
+        <p>Testing the live odds widget integration:</p>
+        
+        <div class="widget-container">
+            <h2>Your Original Widget</h2>
+            <iframe
+                title="Sports Odds Widget"
+                style="width: 20rem; height: 25rem; border: 1px solid black;"
+                src="https://widget.the-odds-api.com/v1/sports/americanfootball_nfl_preseason/events/?accessKey=wk_c705aff93953afa57b69c84f505347fb&bookmakerKeys=hardrockbet&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder">
+            </iframe>
+        </div>
+
+        <div class="widget-container">
+            <h2>Enhanced Widget (Multiple Sportsbooks)</h2>
+            <iframe
+                title="Sports Odds Widget - Enhanced"
+                style="width: 100%; height: 600px; border: none; border-radius: 8px;"
+                src="https://widget.the-odds-api.com/v1/sports/americanfootball_nfl/events/?accessKey=wk_c705aff93953afa57b69c84f505347fb&bookmakerKeys=hardrockbet,draftkings,fanduel&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder">
+            </iframe>
+        </div>
+
+        <div class="widget-container">
+            <h2>Regular Season NFL (if available)</h2>
+            <iframe
+                title="Sports Odds Widget - Regular Season"
+                style="width: 100%; height: 600px; border: none; border-radius: 8px;"
+                src="https://widget.the-odds-api.com/v1/sports/americanfootball_nfl/events/?accessKey=wk_c705aff93953afa57b69c84f505347fb&bookmakerKeys=hardrockbet,draftkings,fanduel&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder">
+            </iframe>
+        </div>
+
+        <p><a href="betting-odds-dashboard.html" style="color: #6366f1;">→ Go to Full Betting Dashboard</a></p>
+        <p><a href="fantasy-hub.html" style="color: #10b981;">← Back to Fantasy Hub</a></p>
+    </div>
+</body>
+</html>
