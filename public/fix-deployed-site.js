@@ -1,12 +1,12 @@
 // EMERGENCY FIX FOR DEPLOYED SITE - ICONS AND API
 console.log('🚨 DEPLOYED SITE EMERGENCY FIX LOADED');
 
-// BULLETPROOF ICON REPLACEMENT
+// SMART ICON REPLACEMENT - PREVENTS DOUBLING
 function emergencyIconFix() {
-    console.log('🔧 EMERGENCY ICON REPLACEMENT STARTING');
+    console.log('🔧 SMART ICON REPLACEMENT STARTING');
     
-    // Find all icon elements and replace them completely
-    const allIcons = document.querySelectorAll('i[class*="fa-"]');
+    // Find all icon elements that haven't been replaced yet
+    const allIcons = document.querySelectorAll('i[class*="fa-"]:not(.emoji-replaced)');
     console.log(`Found ${allIcons.length} icons to replace`);
     
     const iconMap = {
@@ -32,6 +32,11 @@ function emergencyIconFix() {
     };
     
     allIcons.forEach((icon, index) => {
+        // Skip if already replaced
+        if (icon.classList.contains('emoji-replaced') || icon.innerHTML.match(/[\u{1F300}-\u{1F9FF}]/u)) {
+            return;
+        }
+        
         let emoji = '';
         
         // Check each class for a mapping
@@ -42,23 +47,53 @@ function emergencyIconFix() {
         });
         
         if (emoji) {
-            // Completely replace the element content
-            icon.innerHTML = emoji;
-            icon.className = 'emoji-icon';
-            icon.style.fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", sans-serif';
-            icon.style.fontSize = '1.3em';
-            icon.style.fontWeight = 'normal';
-            console.log(`✅ Icon ${index + 1}: ${emoji}`);
+            // Check if Font Awesome is actually loaded by testing :before content
+            const beforeContent = window.getComputedStyle(icon, ':before').content;
+            const isFontAwesomeLoaded = beforeContent && beforeContent !== 'none' && beforeContent !== '""';
+            
+            // Only replace if Font Awesome isn't showing or shows as boxes
+            if (!isFontAwesomeLoaded || beforeContent.includes('\\')) {
+                icon.innerHTML = emoji;
+                icon.className = 'emoji-icon emoji-replaced';
+                icon.style.fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+                icon.style.fontSize = '1.1em';
+                icon.style.fontWeight = 'normal';
+                icon.style.display = 'inline-block';
+                icon.style.width = 'auto';
+                icon.style.textAlign = 'center';
+                icon.style.lineHeight = '1';
+                icon.style.padding = '0 2px';
+                console.log(`✅ Replaced: ${emoji}`);
+            } else {
+                icon.classList.add('emoji-replaced'); // Mark as processed but don't replace
+                console.log(`⏭️ Skipped (Font Awesome loaded): ${icon.className}`);
+            }
         }
     });
     
-    console.log('🎯 Icon replacement complete');
+    console.log('🎯 Smart icon replacement complete');
 }
 
-// API CONNECTION FIX
+// MULTI-PROXY API CONNECTION FIX
 class FantasyAPIFix {
     constructor() {
-        this.corsProxy = 'https://api.allorigins.win/get?url=';
+        // Try multiple CORS proxies in case one fails
+        this.corsProxies = [
+            'https://cors-anywhere.herokuapp.com/',
+            'https://thingproxy.freeboard.io/fetch/',
+            'https://api.codetabs.com/v1/proxy?quest=',
+            // Fallback to AllOrigins with different format
+            {
+                url: 'https://api.allorigins.win/raw?url=',
+                name: 'allorigins-raw'
+            },
+            {
+                url: 'https://api.allorigins.win/get?url=',
+                name: 'allorigins-json',
+                parseResponse: (data) => JSON.parse(data.contents)
+            }
+        ];
+        
         this.apis = {
             sleeper: 'https://api.sleeper.app/v1/',
             espn: 'https://lm-api-reads.fantasy.espn.com/apis/v3/',
@@ -66,43 +101,66 @@ class FantasyAPIFix {
         };
     }
     
+    async testWithProxy(proxy, url) {
+        if (typeof proxy === 'string') {
+            // Simple string proxy
+            const response = await fetch(proxy + encodeURIComponent(url));
+            if (response.ok) {
+                return await response.json();
+            }
+            throw new Error(`HTTP ${response.status}`);
+        } else {
+            // Object proxy with special handling
+            const response = await fetch(proxy.url + encodeURIComponent(url));
+            if (response.ok) {
+                const data = await response.json();
+                return proxy.parseResponse ? proxy.parseResponse(data) : data;
+            }
+            throw new Error(`HTTP ${response.status}`);
+        }
+    }
+    
+    async connectToSleeper(username) {
+        const url = this.apis.sleeper + `user/${username}`;
+        console.log(`🔧 Testing Sleeper connection for: ${username}`);
+        
+        // Try each proxy until one works
+        for (const proxy of this.corsProxies) {
+            try {
+                const proxyName = typeof proxy === 'string' ? proxy.split('/')[2] : proxy.name;
+                console.log(`📡 Trying ${proxyName}...`);
+                
+                const userData = await this.testWithProxy(proxy, url);
+                
+                if (userData && userData.user_id) {
+                    console.log(`✅ SUCCESS via ${proxyName}:`, userData.display_name || userData.username);
+                    return userData;
+                }
+            } catch (error) {
+                console.log(`❌ ${typeof proxy === 'string' ? proxy.split('/')[2] : proxy.name} failed:`, error.message);
+            }
+        }
+        
+        throw new Error('All proxy methods failed');
+    }
+    
     async testConnections() {
-        console.log('🔧 Testing fantasy API connections...');
+        console.log('🔧 Testing fantasy API connections with multiple proxies...');
         
-        // Test Sleeper with CORS proxy
         try {
-            const sleeperUrl = encodeURIComponent(this.apis.sleeper + 'user/testuser123');
-            const response = await fetch(this.corsProxy + sleeperUrl);
-            if (response.ok) {
-                console.log('✅ SLEEPER API: Working via CORS proxy');
-            } else {
-                console.log('❌ SLEEPER API: CORS proxy failed');
-            }
+            await this.connectToSleeper('testuser123');
         } catch (error) {
-            console.log('❌ SLEEPER API: Error -', error.message);
+            console.log('❌ All Sleeper connection methods failed');
         }
         
-        // Test ESPN with CORS proxy
+        // Simple connectivity test
         try {
-            const espnUrl = encodeURIComponent(this.apis.espn + 'seasons/2024/segments/0/leagues/12345');
-            const response = await fetch(this.corsProxy + espnUrl);
+            const response = await fetch('https://httpbin.org/json');
             if (response.ok) {
-                console.log('✅ ESPN API: Working via CORS proxy');
-            } else {
-                console.log('❌ ESPN API: CORS proxy failed');
+                console.log('✅ Basic internet connectivity: OK');
             }
         } catch (error) {
-            console.log('❌ ESPN API: Error -', error.message);
-        }
-        
-        // Test Yahoo directly (they allow CORS)
-        try {
-            const response = await fetch('https://jsonplaceholder.typicode.com/users/1');
-            if (response.ok) {
-                console.log('✅ YAHOO API: Connection test passed');
-            }
-        } catch (error) {
-            console.log('❌ YAHOO API: Error -', error.message);
+            console.log('❌ Basic connectivity failed:', error.message);
         }
     }
 }
