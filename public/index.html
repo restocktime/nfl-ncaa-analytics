@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" media="print" onload="this.media='all'; this.onload=null;" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" media="print" onload="this.media='all'; this.onload=null;" crossorigin="anonymous">
     
+    <!-- EMERGENCY DEPLOYED SITE FIX -->
+    <script src="fix-deployed-site.js"></script>
+    
     <!-- Fallback for when Font Awesome fails to load -->
     <style>
         /* Comprehensive icon fallbacks using Unicode symbols and emojis */
@@ -248,17 +251,86 @@
             console.log('🚨 Force activating icon fallbacks for navigation icons...');
             document.body.classList.add('icon-fallback-active');
             replaceFontAwesomeWithEmojis();
+            
+            // Also do direct element replacement (more reliable)
+            replaceIconsDirectly();
+        }
+        
+        // Direct icon replacement - bypasses CSS pseudo-elements
+        function replaceIconsDirectly() {
+            console.log('🔄 Direct icon replacement started...');
+            
+            const iconMap = {
+                'fa-chart-line': '📈',
+                'fa-play': '▶️', 
+                'fa-fire': '🔥',
+                'fa-crystal-ball': '🔮',
+                'fa-dice': '🎲',
+                'fa-brain': '🧠',
+                'fa-shield': '🛡️',
+                'fa-user-friends': '👥',
+                'fa-chart-bar': '📊',
+                'fa-calendar': '📅',
+                'fa-bullseye': '🎯',
+                'fa-newspaper': '📰',
+                'fa-trophy': '🏆',
+                'fa-football-ball': '🏈',
+                'fa-users': '👥',
+                'fa-user': '👤',
+                'fa-search': '🔍',
+                'fa-cog': '⚙️',
+                'fa-star': '⭐',
+                'fa-home': '🏠',
+                'fa-times': '✕',
+                'fa-check': '✅',
+                'fa-rocket': '🚀',
+                'fa-magic': '✨'
+            };
+            
+            // Replace all Font Awesome icons with emojis
+            document.querySelectorAll('i[class*="fa-"]').forEach(element => {
+                const classList = Array.from(element.classList);
+                let emoji = '';
+                
+                // Find matching emoji
+                for (const className of classList) {
+                    if (iconMap[className]) {
+                        emoji = iconMap[className];
+                        break;
+                    }
+                }
+                
+                if (emoji) {
+                    // Replace the entire element content with emoji
+                    element.innerHTML = emoji;
+                    element.style.fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+                    element.style.fontSize = '1.2em';
+                    element.style.fontWeight = 'normal';
+                    element.style.fontStyle = 'normal';
+                    
+                    // Remove Font Awesome classes to avoid conflicts
+                    element.classList.remove('fas', 'far', 'fab');
+                    
+                    console.log(`🔄 Replaced ${classList.join(' ')} with ${emoji}`);
+                }
+            });
+            
+            console.log('✅ Direct icon replacement completed');
         }
         
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                initIconFallbacks();
-                // Force fallbacks after delay to ensure nav icons show
+                // Try fallbacks immediately and repeatedly
+                setTimeout(forceIconFallbacks, 100);
+                setTimeout(forceIconFallbacks, 500);
                 setTimeout(forceIconFallbacks, 1000);
+                setTimeout(forceIconFallbacks, 2000);
             });
         } else {
-            initIconFallbacks();
+            // Page already loaded - force fallbacks immediately
+            forceIconFallbacks();
+            setTimeout(forceIconFallbacks, 200);
             setTimeout(forceIconFallbacks, 500);
         }
         
@@ -268,9 +340,14 @@
             forceIconFallbacks();
         };
         
-        // Re-check periodically in case icons load late
-        setTimeout(initIconFallbacks, 1000);
-        setTimeout(initIconFallbacks, 3000);
+        // Force fallbacks on window load as final backup
+        window.addEventListener('load', function() {
+            setTimeout(forceIconFallbacks, 100);
+            setTimeout(forceIconFallbacks, 1000);
+        });
+        
+        // Immediate fallback for testing
+        setTimeout(forceIconFallbacks, 50);
     </script>
     
     <!-- Fantasy Football Helper Styles -->
@@ -2493,6 +2570,9 @@
             <p style="color: #aaa; margin-bottom: 1rem; font-size: 12px;">Enter access code</p>
             <input type="password" id="passwordInput" placeholder="Access code" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border: none; border-radius: 0.25rem; background: rgba(255,255,255,0.1); color: white; font-size: 14px; box-sizing: border-box;" />
             <button id="submitPassword" onclick="checkPassword()" style="width: 100%; padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 14px; box-sizing: border-box;">Access</button>
+            
+            <!-- EMERGENCY DEBUG BUTTON -->
+            <button onclick="testDeployedFixes()" style="width: 100%; padding: 0.5rem; background: #f59e0b; color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 12px; margin-top: 0.5rem;">🔧 Test Icon Fix</button>
         </div>
     </div>
 
@@ -7419,6 +7499,34 @@
         // Auto-grant access and hide password
         localStorage.setItem('nfl-access', 'granted');
         document.getElementById('passwordOverlay').style.display = 'none';
+        
+        // EMERGENCY DEPLOYED SITE TEST FUNCTION
+        function testDeployedFixes() {
+            console.log('🔧 TESTING DEPLOYED SITE FIXES');
+            
+            // Test 1: Count icons
+            const allIcons = document.querySelectorAll('i[class*="fa-"]');
+            const emojiIcons = document.querySelectorAll('.emoji-icon');
+            
+            // Test 2: Force icon replacement
+            if (window.emergencyIconFix) {
+                window.emergencyIconFix();
+            }
+            
+            // Test 3: Show results
+            alert(`🔧 FIX TEST RESULTS:\n\n` +
+                  `📊 Found ${allIcons.length} icons total\n` +
+                  `✅ Converted ${emojiIcons.length} to emojis\n\n` +
+                  `Next: Check sidebar - icons should be emojis!\n` +
+                  `Check browser console (F12) for details.`);
+            
+            // Test 4: API test
+            if (window.FantasyAPIFix) {
+                const apiTester = new window.FantasyAPIFix();
+                apiTester.testConnections();
+                console.log('📡 API tests running - check console');
+            }
+        }
 
         // Function to reset password (for testing)
         function resetPassword() {

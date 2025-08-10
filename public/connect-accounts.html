@@ -449,6 +449,9 @@
                 <button class="connect-btn" onclick="connectSleeperProxy()" style="background: linear-gradient(135deg, var(--accent-success), #059669);">
                     🔄 Connect via Proxy
                 </button>
+                <button class="connect-btn" onclick="connectSleeperCORSProxy()" style="background: linear-gradient(135deg, var(--accent-warning), #d97706);">
+                    🌐 Connect via CORS Service
+                </button>
                 
                 <div class="league-selector" id="sleeperLeagues" style="display: none;">
                     <h4>Select League:</h4>
@@ -605,6 +608,89 @@
                 showStatus('sleeperStatus', 'error', `Proxy connection failed: ${error.message}`);
                 connectBtn.disabled = false;
                 connectBtn.textContent = '🔄 Connect via Proxy';
+            }
+        }
+
+        async function connectSleeperCORSProxy() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                showStatus('sleeperStatus', 'error', 'Please enter your Sleeper username');
+                return;
+            }
+
+            const connectBtn = document.querySelector('button[onclick="connectSleeperCORSProxy()"]');
+            connectBtn.disabled = true;
+            connectBtn.textContent = '🌐 Connecting via CORS...';
+            
+            showStatus('sleeperStatus', 'info', 'Connecting to Sleeper via CORS proxy service...');
+
+            try {
+                // Use AllOrigins CORS proxy service
+                const corsProxy = 'https://api.allorigins.win/get?url=';
+                const apiUrl = encodeURIComponent(`https://api.sleeper.app/v1/user/${username}`);
+                
+                const response = await fetch(corsProxy + apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const proxyData = await response.json();
+                
+                if (!proxyData.contents) {
+                    throw new Error('No data received from CORS proxy');
+                }
+                
+                const userData = JSON.parse(proxyData.contents);
+                
+                if (!userData || !userData.user_id) {
+                    showStatus('sleeperStatus', 'error', 'User not found on Sleeper');
+                    return;
+                }
+                
+                showStatus('sleeperStatus', 'success', `✅ Connected to ${userData.display_name || username}!`);
+                
+                // Now get leagues
+                const leaguesUrl = encodeURIComponent(`https://api.sleeper.app/v1/user/${userData.user_id}/leagues/nfl/2024`);
+                const leaguesResponse = await fetch(corsProxy + leaguesUrl);
+                
+                if (leaguesResponse.ok) {
+                    const leaguesProxyData = await leaguesResponse.json();
+                    const leaguesData = JSON.parse(leaguesProxyData.contents || '[]');
+                    
+                    if (leaguesData && leaguesData.length > 0) {
+                        displaySleeperLeagues(leaguesData);
+                        
+                        // Store connection info
+                        window.sleeperCORSConnection = {
+                            userId: userData.user_id,
+                            user: userData,
+                            leagues: leaguesData,
+                            method: 'cors-proxy'
+                        };
+                        
+                        showStatus('sleeperStatus', 'success', `Found ${leaguesData.length} leagues!`);
+                    } else {
+                        showStatus('sleeperStatus', 'info', 'No active leagues found for 2024 season');
+                    }
+                }
+                
+                // Update UI
+                const card = document.getElementById('sleeperCard');
+                card.classList.add('connected');
+                connectBtn.textContent = 'Connected via CORS ✅';
+                connectBtn.classList.add('connected-btn');
+                
+                updateConnectionStatus();
+                
+            } catch (error) {
+                showStatus('sleeperStatus', 'error', `CORS connection failed: ${error.message}`);
+                connectBtn.disabled = false;
+                connectBtn.textContent = '🌐 Connect via CORS Service';
+                
+                // Additional debugging
+                console.error('CORS Proxy Error:', error);
+                showStatus('sleeperStatus', 'info', 'Try the "Test Proxy API Connections" button to debug further');
             }
         }
 

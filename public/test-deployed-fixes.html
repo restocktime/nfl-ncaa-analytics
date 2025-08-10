@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>🧪 Deployed Site Fix Test</title>
+    
+    <!-- Load the emergency fix -->
+    <script src="fix-deployed-site.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1419;
+            color: white;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: #1e1e1e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .icon-test {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px;
+            padding: 8px 12px;
+            background: #2a2a2a;
+            border-radius: 5px;
+        }
+        
+        .test-btn {
+            background: #4a9eff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-btn:hover {
+            background: #357abd;
+        }
+        
+        .result {
+            background: #2a2a2a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+    </style>
+</head>
+<body>
+    <h1>🔧 DEPLOYED SITE FIX TESTER</h1>
+    <p><strong>This page tests both icon replacement and API connections for the deployed site.</strong></p>
+    
+    <div class="test-section">
+        <h2>🎭 Icon Replacement Test</h2>
+        <p>These icons should display as emojis, not white boxes:</p>
+        
+        <div class="icon-test">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-play"></i>
+            <span>Live Games</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-fire"></i>
+            <span>Predictions</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-crystal-ball"></i>
+            <span>AI Models</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-dice"></i>
+            <span>Monte Carlo</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-brain"></i>
+            <span>Neural Networks</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-shield"></i>
+            <span>Defense</span>
+        </div>
+        
+        <div class="icon-test">
+            <i class="fas fa-user-friends"></i>
+            <span>Players</span>
+        </div>
+        
+        <button class="test-btn" onclick="window.emergencyIconFix()">🔄 Force Icon Fix</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 Fantasy API Connection Test</h2>
+        <button class="test-btn" onclick="testAPIs()">Test All APIs</button>
+        <div id="apiResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Test Results</h2>
+        <div id="testResults">
+            <p>Click the buttons above to run tests...</p>
+        </div>
+    </div>
+    
+    <script>
+        // Test the API connections
+        async function testAPIs() {
+            const resultsDiv = document.getElementById('apiResults');
+            const testResultsDiv = document.getElementById('testResults');
+            
+            resultsDiv.innerHTML = '<p>🔄 Testing APIs...</p>';
+            testResultsDiv.innerHTML = '<p>🔄 Running API tests...</p>';
+            
+            const apiTester = new window.FantasyAPIFix();
+            await apiTester.testConnections();
+            
+            resultsDiv.innerHTML = '<p>✅ API tests completed - check console for details</p>';
+            testResultsDiv.innerHTML = `
+                <h3>Expected Results:</h3>
+                <p class="success">✅ Icons should be emojis (📊▶️🔥🔮🎲🧠🛡️👥)</p>
+                <p class="success">✅ SLEEPER API: Should work via CORS proxy</p>
+                <p class="success">✅ ESPN API: Should work via CORS proxy</p>
+                <p class="success">✅ YAHOO API: Should work directly</p>
+                <p><strong>Check browser console (F12) for detailed test results.</strong></p>
+            `;
+        }
+        
+        // Auto-run icon test when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const iconCount = document.querySelectorAll('i[class*="fa-"]').length;
+                const emojiCount = document.querySelectorAll('.emoji-icon').length;
+                
+                document.getElementById('testResults').innerHTML = `
+                    <p>📊 <strong>Icon Status:</strong></p>
+                    <p>Found ${iconCount} icons total</p>
+                    <p>Converted ${emojiCount} icons to emojis</p>
+                    <p class="${emojiCount > 0 ? 'success' : 'error'}">
+                        ${emojiCount > 0 ? '✅ Icon replacement working!' : '❌ Icon replacement failed'}
+                    </p>
+                `;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
