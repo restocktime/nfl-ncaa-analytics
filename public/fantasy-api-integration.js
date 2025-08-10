@@ -5,9 +5,11 @@
 
 class FantasyAPIIntegration {
     constructor() {
+        // Use deployed Vercel proxy to bypass CORS
+        this.proxyBaseUrl = 'https://sleeper-api-proxy.vercel.app';
         this.apis = {
             sleeper: {
-                baseUrl: 'https://api.sleeper.app/v1',
+                baseUrl: `${this.proxyBaseUrl}/api/sleeper`,
                 requiresAuth: false,
                 status: 'available'
             },
@@ -27,16 +29,16 @@ class FantasyAPIIntegration {
         this.userConnections = new Map();
         this.cachedData = new Map();
         
-        console.log('🔗 Fantasy API Integration Service initialized');
+        console.log(`🔗 Fantasy API Integration Service initialized with Vercel proxy: ${this.proxyBaseUrl}`);
     }
 
-    // SLEEPER API INTEGRATION (No Auth Required)
+    // SLEEPER API INTEGRATION (Vercel Proxy for CORS)
     async connectToSleeper(username) {
         try {
-            console.log(`🏈 Connecting to Sleeper for user: ${username}`);
+            console.log(`🏈 Connecting to Sleeper for user: ${username} via Vercel proxy`);
             
-            // Get user info
-            const userResponse = await fetch(`${this.apis.sleeper.baseUrl}/user/${username}`, {
+            // Use Vercel proxy to bypass CORS
+            const userResponse = await fetch(`${this.apis.sleeper.baseUrl}/user/${encodeURIComponent(username)}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -53,10 +55,10 @@ class FantasyAPIIntegration {
             const userData = await userResponse.json();
             console.log(`✅ Found Sleeper user: ${userData.display_name}`);
             
-            // Get user's leagues for current season
+            // Get user's leagues for current season via Vercel proxy
             const currentSeason = new Date().getFullYear().toString();
             const leaguesResponse = await fetch(
-                `${this.apis.sleeper.baseUrl}/user/${userData.user_id}/leagues/nfl/${currentSeason}`,
+                `${this.apis.sleeper.baseUrl}/leagues/${userData.user_id}`,
                 {
                     method: 'GET',
                     headers: {

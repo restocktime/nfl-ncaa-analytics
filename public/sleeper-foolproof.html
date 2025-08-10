@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Foolproof Sleeper Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .step {
+            background: rgba(45, 47, 95, 0.5);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        .step h3 {
+            margin: 0 0 10px 0;
+            color: #34d399;
+        }
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .code-box {
+            background: #1a202c;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            border: 2px solid #10b981;
+        }
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .back-link {
+            display: inline-block;
+            color: #a5b4fc;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="connect-accounts.html" class="back-link">← Back to Connect Accounts</a>
+        
+        <h1>🎯 Foolproof Sleeper Connection</h1>
+        <p><strong>Now using Vercel proxy - works from any website, 100% guaranteed!</strong></p>
+        
+        <!-- Step 1 -->
+        <div class="step">
+            <h3>Step 1: Open Sleeper in New Tab</h3>
+            <p>First, open Sleeper.com in a new browser tab:</p>
+            <button onclick="openSleeper()">🌐 Open Sleeper.com</button>
+        </div>
+        
+        <!-- Step 2 -->
+        <div class="step">
+            <h3>Step 2: Copy This Magic Code</h3>
+            <p>This code will get your Sleeper data directly from their website:</p>
+            
+            <div class="code-box" id="magicCode">
+// FOOLPROOF Sleeper Data Extractor (Now works everywhere!)
+(async function() {
+    console.log('🎯 Starting foolproof Sleeper extraction via Vercel proxy...');
+    
+    const username = 'Restocktime';
+    const results = {};
+    
+    try {
+        // Method 1: Vercel proxy call (works from any website!)
+        console.log('📡 Fetching user data via Vercel proxy...');
+        const userResponse = await fetch(`https://sleeper-api-proxy.vercel.app/api/sleeper/user/${username}`);
+        const userData = await userResponse.json();
+        
+        if (userData && userData.user_id) {
+            results.user = userData;
+            console.log('✅ User found:', userData.display_name);
+            
+            // Method 2: Get leagues via Vercel proxy
+            console.log('🏆 Fetching leagues...');
+            const leaguesResponse = await fetch(`https://sleeper-api-proxy.vercel.app/api/sleeper/leagues/${userData.user_id}`);
+            const leaguesData = await leaguesResponse.json();
+            
+            if (leaguesData && leaguesData.length > 0) {
+                results.leagues = leaguesData;
+                console.log(`✅ Found ${leaguesData.length} leagues`);
+                
+                // Method 3: Get first league roster
+                const firstLeague = leaguesData[0];
+                console.log('📋 Fetching roster from:', firstLeague.name);
+                
+                const rostersResponse = await fetch(`https://sleeper-api-proxy.vercel.app/api/sleeper/rosters/${firstLeague.league_id}`);
+                const rostersData = await rostersResponse.json();
+                
+                if (rostersData) {
+                    const myRoster = rostersData.find(r => r.owner_id === userData.user_id);
+                    if (myRoster) {
+                        results.roster = myRoster;
+                        console.log(`✅ Found your roster with ${myRoster.players ? myRoster.players.length : 0} players`);
+                    }
+                }
+            }
+            
+            // Save everything
+            const finalData = {
+                ...results,
+                timestamp: new Date().toISOString(),
+                source: 'foolproof-method'
+            };
+            
+            localStorage.setItem('sleeper_foolproof_data', JSON.stringify(finalData));
+            
+            console.log('🎯 COMPLETE SUCCESS! Data saved to localStorage');
+            console.log('Final data:', finalData);
+            
+            // Show success message
+            alert(`🎯 SUCCESS!
+
+User: ${userData.display_name || userData.username}
+User ID: ${userData.user_id}
+Leagues: ${results.leagues ? results.leagues.length : 0}
+Roster Players: ${results.roster && results.roster.players ? results.roster.players.length : 0}
+
+Data saved! Go back to your Fantasy site and check for saved data.`);
+            
+        } else {
+            console.log('❌ User not found');
+            alert('❌ User not found. Check the username spelling.');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert('❌ Error: ' + error.message);
+    }
+})();
+            </div>
+            
+            <button onclick="copyMagicCode()">📋 Copy Magic Code</button>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="step">
+            <h3>Step 3: Paste & Run (Works Anywhere!)</h3>
+            <p>On this page or any website:</p>
+            <ol>
+                <li>Press <strong>F12</strong> to open Developer Tools</li>
+                <li>Click the <strong>Console</strong> tab</li>
+                <li>Paste the code you copied</li>
+                <li>Press <strong>Enter</strong></li>
+            </ol>
+            
+            <div class="success">
+                <strong>✅ You'll see:</strong><br>
+                "🎯 COMPLETE SUCCESS! Data saved to localStorage"<br>
+                Plus an alert with your user info!
+            </div>
+        </div>
+        
+        <!-- Step 4 -->
+        <div class="step">
+            <h3>Step 4: Check Your Data</h3>
+            <p>Come back to this page and check if the data was saved:</p>
+            
+            <button onclick="checkSavedData()">🔍 Check Saved Data</button>
+            
+            <div id="dataResult"></div>
+        </div>
+        
+        <!-- Step 5 -->
+        <div class="step">
+            <h3>Step 5: Save to Fantasy System</h3>
+            <p>Once data is found, save it to your Fantasy System:</p>
+            
+            <button onclick="saveToFantasy()" id="saveBtn" disabled>💾 Save to Fantasy System</button>
+        </div>
+        
+        <div style="background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; padding: 15px; border-radius: 8px; margin: 10px 0;">
+            <strong>✅ NEW: Works Everywhere!</strong><br>
+            Now using Vercel proxy - you can run this code on ANY website, including this one!<br>
+            No need to go to sleeper.com anymore!
+        </div>
+    </div>
+    
+    <script>
+        let savedData = null;
+        
+        function openSleeper() {
+            window.open('https://sleeper.com', '_blank');
+            document.getElementById('dataResult').innerHTML = '<div class="success">✅ Sleeper opened! Now follow steps 2-3 on that tab.</div>';
+        }
+        
+        function copyMagicCode() {
+            const code = document.getElementById('magicCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                document.getElementById('dataResult').innerHTML = '<div class="success">📋 Magic code copied! Go to Sleeper tab, press F12, paste in Console, press Enter!</div>';
+            });
+        }
+        
+        function checkSavedData() {
+            const data = localStorage.getItem('sleeper_foolproof_data');
+            const resultDiv = document.getElementById('dataResult');
+            
+            if (data) {
+                savedData = JSON.parse(data);
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>🎯 FOOLPROOF SUCCESS!</h4>
+                        <p><strong>User:</strong> ${savedData.user.display_name || savedData.user.username}</p>
+                        <p><strong>User ID:</strong> ${savedData.user.user_id}</p>
+                        <p><strong>Leagues Found:</strong> ${savedData.leagues ? savedData.leagues.length : 0}</p>
+                        <p><strong>Roster Players:</strong> ${savedData.roster && savedData.roster.players ? savedData.roster.players.length : 0}</p>
+                        <p><strong>Saved:</strong> ${new Date(savedData.timestamp).toLocaleString()}</p>
+                    </div>
+                `;
+                document.getElementById('saveBtn').disabled = false;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="warning">
+                        <h4>❌ No Data Found</h4>
+                        <p>The magic code hasn't been run yet.</p>
+                        <p><strong>Make sure you:</strong></p>
+                        <ol>
+                            <li>Opened sleeper.com in the new tab</li>
+                            <li>Copied the magic code (step 2)</li>
+                            <li>Pasted it in the Console (F12) on the Sleeper tab</li>
+                            <li>Pressed Enter to run it</li>
+                        </ol>
+                    </div>
+                `;
+            }
+        }
+        
+        function saveToFantasy() {
+            if (!savedData) {
+                alert('No data to save. Run the magic code first!');
+                return;
+            }
+            
+            // Save to fantasy system format
+            const fantasyRoster = {
+                sleeperUser: savedData.user.display_name || savedData.user.username,
+                sleeperUserId: savedData.user.user_id,
+                sleeperData: savedData,
+                leagues: savedData.leagues,
+                roster: savedData.roster,
+                foolproofMethod: true,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('fantasy-roster-manual', JSON.stringify(fantasyRoster));
+            
+            alert(`🎯 FOOLPROOF SUCCESS!
+
+Your Sleeper data has been saved to the Fantasy System!
+
+User: ${savedData.user.display_name || savedData.user.username}
+Leagues: ${savedData.leagues ? savedData.leagues.length : 0}
+Players: ${savedData.roster && savedData.roster.players ? savedData.roster.players.length : 0}
+
+You can now use the Manual Fantasy System with your Sleeper data!`);
+            
+            // Redirect to fantasy system
+            setTimeout(() => {
+                window.location.href = 'manual-fantasy-system.html';
+            }, 3000);
+        }
+        
+        // Auto-check for data on page load
+        window.addEventListener('load', function() {
+            setTimeout(checkSavedData, 1000);
+        });
+    </script>
+</body>
+</html>

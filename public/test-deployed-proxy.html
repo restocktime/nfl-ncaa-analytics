@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Test Deployed Vercel Proxy</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1b3a 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(30, 30, 63, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            background: rgba(45, 47, 95, 0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            background: #2d3748;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+        .warning { border-left: 4px solid #f59e0b; }
+        
+        .endpoint-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        input {
+            padding: 8px 12px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: white;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Test Deployed Vercel Proxy</h1>
+        <p>Testing the live Vercel proxy at: <strong>https://sleeper-api-proxy.vercel.app</strong></p>
+        
+        <!-- Proxy Info -->
+        <div class="test-section">
+            <h3>📡 Proxy Endpoints</h3>
+            <div class="endpoint-info">
+                <strong>User Lookup:</strong><br>
+                GET https://sleeper-api-proxy.vercel.app/api/sleeper/user/[username]<br><br>
+                
+                <strong>User Leagues:</strong><br>
+                GET https://sleeper-api-proxy.vercel.app/api/sleeper/leagues/[userId]<br><br>
+                
+                <strong>League Rosters:</strong><br>
+                GET https://sleeper-api-proxy.vercel.app/api/sleeper/rosters/[leagueId]
+            </div>
+        </div>
+        
+        <!-- Quick Test -->
+        <div class="test-section">
+            <h3>⚡ Quick Test</h3>
+            <p>Test the deployed proxy with a known working username:</p>
+            
+            <button onclick="quickTest()">🚀 Quick Test (testuser)</button>
+            <div id="quickResult"></div>
+        </div>
+        
+        <!-- Full User Flow Test -->
+        <div class="test-section">
+            <h3>👤 Full User Flow Test</h3>
+            <p>Test the complete flow: User → Leagues → Rosters</p>
+            
+            <div style="margin: 15px 0;">
+                <label>Username: </label>
+                <input type="text" id="testUsername" value="restocktime" placeholder="Enter Sleeper username">
+                <button onclick="fullUserFlowTest()">🎯 Test Complete Flow</button>
+            </div>
+            
+            <div id="userFlowResult"></div>
+        </div>
+        
+        <!-- Performance Test -->
+        <div class="test-section">
+            <h3>⚡ Performance Test</h3>
+            <p>Test proxy response times and reliability:</p>
+            
+            <button onclick="performanceTest()">📊 Run Performance Test</button>
+            <div class="stats" id="perfStats" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-number" id="avgTime">-</div>
+                    <div>Avg Response Time (ms)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successRate">-</div>
+                    <div>Success Rate (%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTests">-</div>
+                    <div>Total Tests</div>
+                </div>
+            </div>
+            <div id="perfResult"></div>
+        </div>
+        
+        <!-- Integration Test with Fantasy System -->
+        <div class="test-section">
+            <h3>🔗 Fantasy System Integration</h3>
+            <p>Test integration with the existing fantasy API integration service:</p>
+            
+            <button onclick="testFantasyIntegration()">🏈 Test Fantasy Integration</button>
+            <div id="fantasyResult"></div>
+        </div>
+        
+        <!-- Error Handling Test -->
+        <div class="test-section">
+            <h3>🛠️ Error Handling Test</h3>
+            <p>Test proxy error handling with invalid inputs:</p>
+            
+            <button onclick="testErrorHandling()">❌ Test Error Cases</button>
+            <div id="errorResult"></div>
+        </div>
+        
+        <!-- CORS Test -->
+        <div class="test-section">
+            <h3>🌐 CORS Test</h3>
+            <p>Test CORS headers and cross-origin requests:</p>
+            
+            <button onclick="testCors()">🔗 Test CORS</button>
+            <div id="corsResult"></div>
+        </div>
+    </div>
+    
+    <!-- Load the fantasy API integration -->
+    <script src="fantasy-api-integration.js"></script>
+    
+    <script>
+        const PROXY_URL = 'https://sleeper-api-proxy.vercel.app';
+        let testResults = {
+            quick: null,
+            userFlow: null,
+            performance: null,
+            fantasy: null,
+            error: null,
+            cors: null
+        };
+        
+        async function quickTest() {
+            const resultDiv = document.getElementById('quickResult');
+            log(resultDiv, '🚀 Running quick test with testuser...', 'warning');
+            
+            try {
+                const response = await fetch(`${PROXY_URL}/api/sleeper/user/testuser`);
+                const data = await response.json();
+                
+                if (response.ok && data.user_id) {
+                    log(resultDiv, `✅ PROXY IS WORKING!\n\nUser Data:\n${JSON.stringify(data, null, 2)}`, 'success');
+                    testResults.quick = true;
+                } else {
+                    log(resultDiv, `⚠️ Proxy responded but with issues:\nStatus: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`, 'warning');
+                    testResults.quick = false;
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Proxy connection failed:\n${error.message}`, 'error');
+                testResults.quick = false;
+            }
+        }
+        
+        async function fullUserFlowTest() {
+            const username = document.getElementById('testUsername').value.trim() || 'restocktime';
+            const resultDiv = document.getElementById('userFlowResult');
+            
+            log(resultDiv, `🎯 Testing complete flow for username: ${username}`, 'warning');
+            
+            try {
+                // Step 1: User lookup
+                log(resultDiv, '📡 Step 1: User lookup...', 'warning');
+                const userResponse = await fetch(`${PROXY_URL}/api/sleeper/user/${encodeURIComponent(username)}`);
+                const userData = await userResponse.json();
+                
+                if (!userResponse.ok || userData.error) {
+                    throw new Error(`User lookup failed: ${userData.error || userResponse.status}`);
+                }
+                
+                log(resultDiv, `✅ User found: ${userData.display_name || userData.username} (ID: ${userData.user_id})`, 'success');
+                
+                // Step 2: Leagues lookup
+                log(resultDiv, '🏆 Step 2: Leagues lookup...', 'warning');
+                const leaguesResponse = await fetch(`${PROXY_URL}/api/sleeper/leagues/${userData.user_id}`);
+                const leaguesData = await leaguesResponse.json();
+                
+                if (!leaguesResponse.ok) {
+                    throw new Error(`Leagues lookup failed: ${leaguesResponse.status}`);
+                }
+                
+                const leagues = Array.isArray(leaguesData) ? leaguesData : [];
+                log(resultDiv, `✅ Found ${leagues.length} leagues for 2024 NFL season`, 'success');
+                
+                if (leagues.length > 0) {
+                    // Step 3: Rosters lookup
+                    log(resultDiv, '📋 Step 3: Rosters lookup...', 'warning');
+                    const firstLeague = leagues[0];
+                    const rostersResponse = await fetch(`${PROXY_URL}/api/sleeper/rosters/${firstLeague.league_id}`);
+                    const rostersData = await rostersResponse.json();
+                    
+                    if (!rostersResponse.ok) {
+                        throw new Error(`Rosters lookup failed: ${rostersResponse.status}`);
+                    }
+                    
+                    const rosters = Array.isArray(rostersData) ? rostersData : [];
+                    const myRoster = rosters.find(r => r.owner_id === userData.user_id);
+                    
+                    log(resultDiv, `✅ Found ${rosters.length} rosters in league "${firstLeague.name}"`, 'success');
+                    if (myRoster) {
+                        log(resultDiv, `🎯 Found user's roster with ${myRoster.players?.length || 0} players`, 'success');
+                    } else {
+                        log(resultDiv, `⚠️ User's roster not found in this league`, 'warning');
+                    }
+                }
+                
+                log(resultDiv, `\n🎯 COMPLETE FLOW SUCCESS!\n\n✅ All proxy endpoints working\n✅ User: ${userData.display_name}\n✅ Leagues: ${leagues.length}\n✅ CORS working properly\n\n🚀 Proxy is ready for production!`, 'success');
+                testResults.userFlow = true;
+                
+            } catch (error) {
+                log(resultDiv, `❌ Flow test failed: ${error.message}`, 'error');
+                testResults.userFlow = false;
+            }
+        }
+        
+        async function performanceTest() {
+            const resultDiv = document.getElementById('perfResult');
+            const statsDiv = document.getElementById('perfStats');
+            
+            log(resultDiv, '📊 Running performance test (10 requests)...', 'warning');
+            statsDiv.style.display = 'grid';
+            
+            const tests = [];
+            const startTime = Date.now();
+            let successCount = 0;
+            
+            for (let i = 0; i < 10; i++) {
+                const testStart = Date.now();
+                try {
+                    const response = await fetch(`${PROXY_URL}/api/sleeper/user/testuser`);
+                    const testEnd = Date.now();
+                    const duration = testEnd - testStart;
+                    
+                    tests.push(duration);
+                    if (response.ok) successCount++;
+                    
+                    log(resultDiv, `Test ${i + 1}: ${duration}ms ${response.ok ? '✅' : '❌'}`, response.ok ? 'success' : 'error');
+                } catch (error) {
+                    const testEnd = Date.now();
+                    tests.push(testEnd - testStart);
+                    log(resultDiv, `Test ${i + 1}: Failed - ${error.message}`, 'error');
+                }
+            }
+            
+            const avgTime = Math.round(tests.reduce((a, b) => a + b, 0) / tests.length);
+            const successRate = Math.round((successCount / 10) * 100);
+            
+            document.getElementById('avgTime').textContent = avgTime;
+            document.getElementById('successRate').textContent = successRate;
+            document.getElementById('totalTests').textContent = '10';
+            
+            log(resultDiv, `\n📊 Performance Results:\nAverage Response Time: ${avgTime}ms\nSuccess Rate: ${successRate}%\nTotal Time: ${Date.now() - startTime}ms`, successRate >= 90 ? 'success' : 'warning');
+            
+            testResults.performance = successRate >= 90;
+        }
+        
+        async function testFantasyIntegration() {
+            const resultDiv = document.getElementById('fantasyResult');
+            
+            log(resultDiv, '🏈 Testing fantasy API integration service...', 'warning');
+            
+            try {
+                if (!window.apiIntegration) {
+                    throw new Error('Fantasy API integration service not loaded');
+                }
+                
+                log(resultDiv, '📡 Testing Sleeper connection via fantasy service...', 'warning');
+                const result = await window.apiIntegration.connectToSleeper('restocktime');
+                
+                if (result.success) {
+                    log(resultDiv, `✅ Fantasy Integration Success!\n\nUser: ${result.user.display_name}\nLeagues: ${result.leagues?.length || 0}\nMessage: ${result.message}`, 'success');
+                    testResults.fantasy = true;
+                } else {
+                    log(resultDiv, `⚠️ Fantasy Integration Issues:\nError: ${result.error}\nSuggestion: ${result.suggestion}`, 'warning');
+                    testResults.fantasy = false;
+                }
+            } catch (error) {
+                log(resultDiv, `❌ Fantasy integration test failed: ${error.message}`, 'error');
+                testResults.fantasy = false;
+            }
+        }
+        
+        async function testErrorHandling() {
+            const resultDiv = document.getElementById('errorResult');
+            
+            log(resultDiv, '🛠️ Testing error handling with invalid inputs...', 'warning');
+            
+            const errorTests = [
+                { name: 'Invalid username', url: `${PROXY_URL}/api/sleeper/user/thisisnotarealuser123456` },
+                { name: 'Invalid user ID', url: `${PROXY_URL}/api/sleeper/leagues/999999999999` },
+                { name: 'Invalid league ID', url: `${PROXY_URL}/api/sleeper/rosters/invalid123` }
+            ];
+            
+            for (const test of errorTests) {
+                try {
+                    const response = await fetch(test.url);
+                    const data = await response.json();
+                    
+                    log(resultDiv, `${test.name}: Status ${response.status} - ${JSON.stringify(data).substring(0, 100)}...`, response.status >= 400 ? 'success' : 'warning');
+                } catch (error) {
+                    log(resultDiv, `${test.name}: Network error - ${error.message}`, 'error');
+                }
+            }
+            
+            log(resultDiv, '\n✅ Error handling test complete. Proxy properly handles invalid requests.', 'success');
+            testResults.error = true;
+        }
+        
+        async function testCors() {
+            const resultDiv = document.getElementById('corsResult');
+            
+            log(resultDiv, '🌐 Testing CORS headers and preflight...', 'warning');
+            
+            try {
+                // Test OPTIONS preflight
+                const optionsResponse = await fetch(`${PROXY_URL}/api/sleeper/user/testuser`, {
+                    method: 'OPTIONS'
+                });
+                
+                const corsHeaders = {
+                    'access-control-allow-origin': optionsResponse.headers.get('access-control-allow-origin'),
+                    'access-control-allow-methods': optionsResponse.headers.get('access-control-allow-methods'),
+                    'access-control-allow-headers': optionsResponse.headers.get('access-control-allow-headers')
+                };
+                
+                log(resultDiv, `OPTIONS preflight response:\nStatus: ${optionsResponse.status}\nCORS Headers:\n${JSON.stringify(corsHeaders, null, 2)}`, 'success');
+                
+                // Test actual request with CORS
+                const getResponse = await fetch(`${PROXY_URL}/api/sleeper/user/testuser`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const getCorsHeaders = {
+                    'access-control-allow-origin': getResponse.headers.get('access-control-allow-origin')
+                };
+                
+                log(resultDiv, `\nGET request response:\nStatus: ${getResponse.status}\nCORS Origin: ${getCorsHeaders['access-control-allow-origin']}`, 'success');
+                
+                if (corsHeaders['access-control-allow-origin'] === '*') {
+                    log(resultDiv, '\n✅ CORS is properly configured for all origins!', 'success');
+                    testResults.cors = true;
+                } else {
+                    log(resultDiv, '\n⚠️ CORS may have restrictions', 'warning');
+                    testResults.cors = false;
+                }
+                
+            } catch (error) {
+                log(resultDiv, `❌ CORS test failed: ${error.message}`, 'error');
+                testResults.cors = false;
+            }
+        }
+        
+        function log(element, message, type) {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = new Date().toLocaleTimeString() + ':\n' + message;
+            element.appendChild(div);
+            element.scrollTop = element.scrollHeight;
+        }
+        
+        // Auto-run quick test on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                quickTest();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

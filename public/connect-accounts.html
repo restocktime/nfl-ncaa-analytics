@@ -466,10 +466,10 @@
                     Connect Sleeper Account
                 </button>
                 <button class="connect-btn" onclick="connectSleeperProxy()" style="background: linear-gradient(135deg, var(--accent-success), #059669);">
-                    🔄 Connect via Proxy
+                    🚀 Vercel Proxy (Working)
                 </button>
-                <button class="connect-btn" onclick="connectSleeperCORSProxy()" style="background: linear-gradient(135deg, var(--accent-warning), #d97706);">
-                    🌐 Connect via CORS Service
+                <button class="connect-btn" onclick="openSleeperConsole()" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    🖥️ Foolproof Console Method
                 </button>
                 
                 <div class="league-selector" id="sleeperLeagues" style="display: none;">
@@ -1122,6 +1122,68 @@
             } finally {
                 testButton.disabled = false;
                 testButton.textContent = '🧪 Test API Connections';
+            }
+        }
+        
+        // New improved connection methods using Vercel proxy
+        async function connectSleeperProxy() {
+            const username = document.getElementById('sleeperUsername').value.trim();
+            if (!username) {
+                showStatus('sleeperStatus', 'error', 'Please enter your Sleeper username');
+                return;
+            }
+            
+            const connectBtn = document.querySelector('button[onclick="connectSleeperProxy()"]');
+            connectBtn.disabled = true;
+            connectBtn.textContent = '🔄 Connecting via Vercel Proxy...';
+            
+            showStatus('sleeperStatus', 'info', 'Connecting via Vercel proxy...');
+            
+            try {
+                const proxyUrl = 'https://sleeper-api-proxy.vercel.app';
+                const response = await fetch(`${proxyUrl}/api/sleeper/user/${encodeURIComponent(username)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Proxy responded with ${response.status}`);
+                }
+                
+                const userData = await response.json();
+                if (userData.error) {
+                    throw new Error(userData.error || 'Proxy returned error');
+                }
+                
+                // Success - save the connection
+                localStorage.setItem('sleeper_connection', JSON.stringify({
+                    username: userData.username || userData.display_name,
+                    userId: userData.user_id,
+                    displayName: userData.display_name,
+                    connected: true,
+                    method: 'vercel-proxy',
+                    timestamp: new Date().toISOString()
+                }));
+                
+                showStatus('sleeperStatus', 'success', `Connected to Sleeper as ${userData.display_name || userData.username}!`);
+                document.getElementById('sleeperCard').classList.add('connected');
+                
+            } catch (error) {
+                showStatus('sleeperStatus', 'error', `Connection failed: ${error.message}`);
+                console.error('Sleeper proxy connection error:', error);
+            } finally {
+                connectBtn.disabled = false;
+                connectBtn.textContent = '🚀 Vercel Proxy (Working)';
+            }
+        }
+        
+        function openSleeperConsole() {
+            const username = document.getElementById('sleeperUsername').value.trim() || 'restocktime';
+            
+            // Open the foolproof method page
+            const newWindow = window.open('sleeper-foolproof.html', '_blank');
+            
+            if (newWindow) {
+                showStatus('sleeperStatus', 'info', `Opened Foolproof Sleeper method in new tab for username: ${username}`);
+            } else {
+                showStatus('sleeperStatus', 'error', 'Could not open new window. Please disable popup blocker.');
             }
         }
     </script>
