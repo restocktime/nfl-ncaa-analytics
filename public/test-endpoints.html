@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Endpoint Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #0f172a; 
+            color: white; 
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        button { 
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 10px 5px;
+            font-weight: 600;
+        }
+        button:hover { transform: translateY(-2px); }
+        .result { 
+            margin: 15px 0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            font-family: monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        h1 { color: #60a5fa; text-align: center; }
+        .endpoint-list {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .endpoint-list code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Live API Endpoint Test</h1>
+        <p style="text-align: center; color: #94a3b8;">Testing Hard Rock Bet API endpoints on production deployment</p>
+        
+        <div class="endpoint-list">
+            <h3>🎯 Endpoints to Test:</h3>
+            <ul>
+                <li><code>/api/hardrock?action=health</code> - Health check</li>
+                <li><code>/api/hardrock?action=events</code> - NFL events</li>
+                <li><code>/api/hardrock?action=live</code> - Live events</li>
+                <li><code>/api/hardrock?action=odds&eventId=123</code> - Event odds</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center;">
+            <button onclick="testHealth()">🔍 Test Health</button>
+            <button onclick="testEvents()">🏈 Test Events</button>
+            <button onclick="testLive()">🔴 Test Live</button>
+            <button onclick="testAll()">🧪 Test All</button>
+            <button onclick="clearResults()">🧹 Clear</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        let testCount = 0;
+
+        function log(message, type = 'info', data = null) {
+            testCount++;
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            
+            let content = `[${testCount}] ${new Date().toLocaleTimeString()} - ${message}`;
+            if (data) {
+                content += `\n\nResponse Data:\n${JSON.stringify(data, null, 2)}`;
+            }
+            
+            div.textContent = content;
+            results.appendChild(div);
+            div.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function testEndpoint(action, description) {
+            const url = `/api/hardrock?action=${action}`;
+            log(`Testing ${description}: ${url}`, 'info');
+            
+            try {
+                const start = Date.now();
+                const response = await fetch(url);
+                const duration = Date.now() - start;
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log(`✅ ${description} SUCCESS (${duration}ms)`, 'success', data);
+                } else {
+                    log(`❌ ${description} FAILED: ${data.error || 'Unknown error'}`, 'error', data);
+                }
+            } catch (error) {
+                log(`❌ ${description} ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHealth() {
+            await testEndpoint('health', 'Health Check');
+        }
+
+        async function testEvents() {
+            await testEndpoint('events', 'NFL Events');
+        }
+
+        async function testLive() {
+            await testEndpoint('live', 'Live Events');
+        }
+
+        async function testAll() {
+            log('🚀 Starting comprehensive test suite...', 'info');
+            
+            await testHealth();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testEvents();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testLive();
+            
+            log('🎉 Test suite completed!', 'info');
+        }
+
+        function clearResults() {
+            results.innerHTML = '';
+            testCount = 0;
+        }
+
+        // Auto-run health check on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('🚀 Auto-running health check...', 'info');
+                testHealth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
