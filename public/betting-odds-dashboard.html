@@ -1198,7 +1198,7 @@
 
                 try {
                     // Check if we have odds data first
-                    if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                    if (!this.currentOdds || !Array.isArray(this.currentOdds) || this.currentOdds.length === 0) {
                         console.warn('⚠️ No odds data available for analysis');
                         throw new Error('No odds data available. Please refresh odds first.');
                     }
@@ -1237,9 +1237,14 @@
 
             displayBestBets() {
                 const container = document.getElementById('bestBetsContainer');
+                if (!container) {
+                    console.warn('⚠️ displayBestBets: bestBetsContainer element not found');
+                    return;
+                }
+                
                 container.innerHTML = '';
 
-                if (!this.bestBets || this.bestBets.bestBets.length === 0) {
+                if (!this.bestBets || !this.bestBets.bestBets || !Array.isArray(this.bestBets.bestBets) || this.bestBets.bestBets.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-12 text-gray-400">
                             <div class="text-6xl mb-4">🤷</div>
@@ -1476,7 +1481,15 @@
             }
 
             updateAnalyticsChart() {
-                if (!this.bestBets || !this.chart) return;
+                if (!this.bestBets || !this.chart) {
+                    console.warn('⚠️ updateAnalyticsChart: Missing bestBets or chart');
+                    return;
+                }
+
+                if (!this.bestBets.bestBets || !Array.isArray(this.bestBets.bestBets)) {
+                    console.warn('⚠️ updateAnalyticsChart: bestBets.bestBets is not a valid array');
+                    return;
+                }
 
                 const high = this.bestBets.bestBets.filter(bet => bet.confidence >= 0.8).length;
                 const medium = this.bestBets.bestBets.filter(bet => bet.confidence >= 0.6 && bet.confidence < 0.8).length;
@@ -1484,6 +1497,8 @@
 
                 this.chart.data.datasets[0].data = [high, medium, low];
                 this.chart.update();
+                
+                console.log('✅ Analytics chart updated:', { high, medium, low });
             }
 
             showBetDetails(bet) {
@@ -1610,10 +1625,18 @@
                 // Sort by confidence and return top recommendations
                 bestBets.sort((a, b) => b.confidence - a.confidence);
                 
-                return {
+                const result = {
                     bestBets: bestBets.slice(0, 6), // Top 6 recommendations
                     confidence: bestBets.length > 0 ? bestBets.reduce((sum, bet) => sum + bet.confidence, 0) / bestBets.length : 0
                 };
+                
+                console.log('🎯 generateFallbackAnalysis result:', {
+                    totalRecommendations: bestBets.length,
+                    returnedBets: result.bestBets.length,
+                    avgConfidence: result.confidence
+                });
+                
+                return result;
             }
 
             generateMLRecommendations(game, betType) {
