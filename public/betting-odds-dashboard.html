@@ -89,58 +89,149 @@
         .odds-positive { color: #10B981; }
         .odds-negative { color: #EF4444; }
         
-        /* Mobile optimizations */
+        /* Enhanced Mobile optimizations - Fix broken layout */
         @media (max-width: 640px) {
-            .max-w-7xl {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-            
-            /* Compact spacing for mobile */
-            header {
-                padding-top: 0.5rem;
-                padding-bottom: 0.5rem;
-            }
-            
-            /* Ensure cards fit properly */
-            .glass-effect {
-                padding: 0.75rem;
-            }
-            
-            button, a[role="button"], .cursor-pointer {
-                min-height: 44px;
-                min-width: 44px;
-            }
-            
-            select, input {
-                min-height: 44px;
-            }
-            
-            .bet-card {
-                margin-bottom: 0.75rem;
-                padding: 1rem;
-            }
-            
-            /* Ensure content doesn't overflow */
+            /* Fix fundamental layout issues */
             body {
                 overflow-x: hidden;
                 padding: 0;
                 margin: 0;
+                min-height: 100vh;
             }
             
-            /* Fix any potential layout issues */
-            .container, .max-w-7xl {
+            /* Fix header overlap issue */
+            header {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                margin-bottom: 1.5rem;
+                position: relative;
+                z-index: 10;
+            }
+            
+            /* Better container spacing */
+            .max-w-7xl {
+                padding-left: 1rem;
+                padding-right: 1rem;
                 max-width: 100vw;
                 width: 100%;
             }
             
-            /* Smaller text for mobile cards */
-            .glass-effect p {
-                font-size: 0.75rem;
+            /* Status cards - proper 2x2 grid */
+            .grid.grid-cols-2.sm\\:grid-cols-4 {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 2rem;
             }
             
-            .glass-effect h1, .glass-effect h2, .glass-effect h3 {
+            /* Fix card spacing and sizing */
+            .glass-effect {
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+                border-radius: 1rem;
+            }
+            
+            /* Status card improvements - fix cramped appearance */
+            .glass-effect .grid > div {
+                min-height: 90px;
+                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            /* Better text sizing for mobile */
+            .glass-effect h1 {
+                font-size: 1.25rem;
+                line-height: 1.2;
+                margin-bottom: 0.25rem;
+            }
+            
+            .glass-effect h2 {
+                font-size: 1.125rem;
+                line-height: 1.3;
+                margin-bottom: 0.25rem;
+            }
+            
+            .glass-effect h3 {
+                font-size: 1rem;
+                line-height: 1.3;
+            }
+            
+            .glass-effect p {
                 font-size: 0.875rem;
+                line-height: 1.4;
+            }
+            
+            /* Improve button touch targets */
+            button, a[role="button"], .cursor-pointer {
+                min-height: 48px;
+                min-width: 48px;
+                font-size: 0.9rem;
+                padding: 0.75rem 1rem;
+                border-radius: 0.5rem;
+            }
+            
+            input, select {
+                min-height: 48px;
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+            
+            /* Better bet card layout */
+            .bet-card {
+                margin-bottom: 1.25rem;
+                padding: 1.5rem;
+                border-radius: 1rem;
+            }
+            
+            .bet-card:hover {
+                transform: none;
+            }
+            
+            .bet-card:active {
+                transform: scale(0.98);
+            }
+            
+            /* Section spacing fixes */
+            .mb-3.sm\\:mb-4 {
+                margin-bottom: 2rem;
+            }
+            
+            /* Grid responsiveness */
+            .grid.grid-cols-1.md\\:grid-cols-3 {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+            
+            /* Widget loading area */
+            #widget-loading {
+                padding: 2rem 1rem;
+                text-align: center;
+                min-height: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Better responsive text scaling */
+            .text-xl.sm\\:text-2xl {
+                font-size: 1.375rem;
+            }
+            
+            .text-lg.sm\\:text-xl {
+                font-size: 1.25rem;
+            }
+            
+            .text-base.sm\\:text-lg {
+                font-size: 1.125rem;
+            }
+            
+            /* Fix any remaining layout issues */
+            * {
+                box-sizing: border-box;
             }
         }
         
