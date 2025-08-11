@@ -180,11 +180,56 @@
                 padding: 0.75rem;
             }
             
-            /* Better bet card layout */
+            /* Better bet card layout for mobile */
             .bet-card {
-                margin-bottom: 1.25rem;
+                margin-bottom: 1.5rem;
                 padding: 1.5rem;
                 border-radius: 1rem;
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+            
+            .bet-card h3 {
+                font-size: 1.1rem !important;
+                font-weight: 700;
+                margin-bottom: 0.75rem;
+            }
+            
+            .bet-card p {
+                font-size: 0.85rem !important;
+                line-height: 1.4;
+                margin-bottom: 0.5rem;
+            }
+            
+            .bet-card .text-xs {
+                font-size: 0.75rem !important;
+            }
+            
+            .bet-card .text-sm {
+                font-size: 0.8rem !important;
+            }
+            
+            /* Mobile confidence display improvements */
+            .bet-card .text-2xl {
+                font-size: 1.5rem !important;
+                font-weight: 800;
+            }
+            
+            .bet-card .text-lg {
+                font-size: 1rem !important;
+            }
+            
+            /* Better spacing for bet recommendation text */
+            .bet-card .rounded-lg.p-3 {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Improve button spacing */
+            .bet-card button {
+                padding: 1rem !important;
+                font-size: 0.9rem !important;
+                font-weight: 600;
             }
             
             .bet-card:hover {
@@ -214,6 +259,36 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+            
+            /* Analytics chart mobile improvements */
+            #analyticsChart {
+                width: 100% !important;
+                height: auto !important;
+                max-height: 300px;
+            }
+            
+            /* Better section headers on mobile */
+            .glass-effect .card-title,
+            .glass-effect h2,
+            .glass-effect h3 {
+                font-size: 1.125rem !important;
+                font-weight: 700;
+                margin-bottom: 1rem;
+            }
+            
+            /* Improve loading states */
+            #loadingOverlay .rounded-xl {
+                margin: 1rem;
+                padding: 2rem 1.5rem !important;
+            }
+            
+            #loadingOverlay h3 {
+                font-size: 1.25rem !important;
+            }
+            
+            #loadingOverlay p {
+                font-size: 1rem !important;
             }
             
             /* Better responsive text scaling */
@@ -1020,16 +1095,23 @@
 
             async analyzeBets() {
                 const betType = document.getElementById('betTypeFilter').value;
+                console.log('🧠 Starting bet analysis for:', betType);
+                
                 this.showLoadingOverlay();
 
                 try {
                     // Check if we have odds data first
                     if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                        console.warn('⚠️ No odds data available for analysis');
                         throw new Error('No odds data available. Please refresh odds first.');
                     }
                     
+                    console.log('📊 Generating analysis from data:', this.currentOdds);
+                    
                     // Generate analysis from available data
                     this.bestBets = this.generateFallbackAnalysis(betType);
+                    
+                    console.log('🎯 Generated best bets:', this.bestBets);
                     
                     this.displayBestBets();
                     this.updateAnalyticsChart();
@@ -1041,12 +1123,18 @@
                         this.bestBets && this.bestBets.confidence ? 
                         (this.bestBets.confidence * 100).toFixed(1) + '%' : 'N/A';
                         
-                    console.log('✅ Bet analysis complete');
+                    console.log('✅ Bet analysis complete - found', betsCount, 'recommendations');
                 } catch (error) {
                     console.error('❌ Bet analysis failed:', error);
                     this.showBetAnalysisError(error.message);
                 } finally {
+                    console.log('🔄 Hiding loading overlay...');
                     this.hideLoadingOverlay();
+                    
+                    // Force hide overlay after a delay as backup
+                    setTimeout(() => {
+                        this.hideLoadingOverlay();
+                    }, 500);
                 }
             }
 
