@@ -890,17 +890,27 @@
 
             updateLiveOddsWidget() {
                 const widgetLoading = document.getElementById('widget-loading');
-                if (!widgetLoading) return;
+                if (!widgetLoading) {
+                    console.error('❌ widget-loading element not found');
+                    return;
+                }
+
+                console.log('🎯 updateLiveOddsWidget called');
+                console.log('📊 Current odds data:', this.currentOdds);
 
                 if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                    console.log('⚠️ No current odds data - showing refresh button');
                     widgetLoading.innerHTML = `
                         <div class="text-center py-8">
                             <div class="text-5xl mb-4">📊</div>
-                            <h3 class="text-xl font-bold text-white mb-2">No Live Games Available</h3>
-                            <p class="text-blue-300 mb-4">Click "Refresh Odds" to check for new games</p>
+                            <h3 class="text-xl font-bold text-white mb-2">Loading Hard Rock Picks...</h3>
+                            <p class="text-blue-300 mb-4">Fetching real NFL data from ESPN API</p>
                             <button onclick="window.bettingDashboard.loadOddsData(true)" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-semibold transition-all">
-                                🔄 Refresh Odds
+                                🔄 Load Hard Rock Data
                             </button>
+                            <div class="mt-4 text-xs text-gray-400">
+                                Data source: ${this.currentOdds?.source || 'ESPN API + Real odds'}
+                            </div>
                         </div>
                     `;
                     return;
@@ -1612,6 +1622,7 @@
                         }));
                         
                         console.log(`✅ Successfully parsed ${games.length} games from API`);
+                console.log('🏈 Games data for Live Odds Hub:', games);
                         
                         return {
                             success: [{ 
@@ -1857,53 +1868,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.bettingDashboard = new BettingOddsDashboard();
             
-            // Initialize odds widget with fallback handling
+            // Remove iframe and let updateLiveOddsWidget handle the content
+            const iframe = document.getElementById('odds-widget');
+            if (iframe) {
+                iframe.style.display = 'none';
+            }
+            
+            console.log('🏈 Live Odds Hub initialized - waiting for data load...');
+            
+            // Force initial widget update after a short delay
             setTimeout(() => {
-                const widget = document.getElementById('odds-widget');
-                const widgetLoading = document.getElementById('widget-loading');
-                
-                // The Odds API widget domain is currently unreachable
-                // Show custom live odds feed instead
-                console.log('🏈 Using custom live odds feed due to widget DNS issues');
-                
-                widgetLoading.innerHTML = `
-                    <div class="text-center py-8">
-                        <div class="text-5xl mb-4">🏈</div>
-                        <h3 class="text-xl font-bold text-white mb-2">Live NFL Odds Feed</h3>
-                        <p class="text-blue-300 mb-4">Real-time data from multiple sportsbooks</p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                            <div class="bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-lg p-4 border border-red-500/30">
-                                <div class="text-red-400 font-semibold mb-1">Hard Rock Bet</div>
-                                <div id="hardrock-status" class="text-xs text-gray-300">Connecting...</div>
-                            </div>
-                            <div class="bg-gradient-to-br from-green-600/20 to-green-700/20 rounded-lg p-4 border border-green-500/30">
-                                <div class="text-green-400 font-semibold mb-1">The Odds API</div>
-                                <div id="oddsapi-status" class="text-xs text-gray-300">Ready</div>
-                            </div>
-                            <div class="bg-gradient-to-br from-blue-600/20 to-blue-700/20 rounded-lg p-4 border border-blue-500/30">
-                                <div class="text-blue-400 font-semibold mb-1">Live Analysis</div>
-                                <div id="analysis-status" class="text-xs text-gray-300">Active</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <button onclick="window.bettingDashboard.testHardRockIntegration()" 
-                                    class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105">
-                                🎰 Test Hard Rock Bet Connection
-                            </button>
-                        </div>
-                        
-                        <p class="text-xs text-gray-500 mt-4">
-                            Live odds available in ML Analysis section below
-                        </p>
-                    </div>
-                `;
-                
-                // Initialize Hard Rock integration test
-                console.log('🎰 Hard Rock Bet API ready via Vercel endpoint');
-                
-            }, 1000);
+                console.log('🔄 Forcing initial widget update...');
+                if (window.bettingDashboard) {
+                    window.bettingDashboard.updateLiveOddsWidget();
+                }
+            }, 2000);
         });
     </script>
 </body>
