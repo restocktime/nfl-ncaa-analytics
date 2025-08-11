@@ -705,49 +705,84 @@
                 console.log('🎰 Betting Odds Dashboard initialized with simplified API');
             }
             
-            // Simple data loading from Vercel API
+            // Enhanced data loading from Vercel API
             async loadFromVercelAPI() {
                 try {
-                    console.log('📡 Loading data from Vercel API...');
+                    console.log('📡 Loading data from Vercel API endpoint: /api/hardrock?action=events');
+                    
                     const response = await fetch('/api/hardrock?action=events');
+                    console.log('📡 API Response status:', response.status, response.statusText);
+                    
+                    if (!response.ok) {
+                        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('📊 Raw API Response structure:', {
+                        success: data.success,
+                        dataType: typeof data.data,
+                        dataLength: Array.isArray(data.data) ? data.data.length : 'not array',
+                        source: data.source,
+                        timestamp: data.timestamp
+                    });
                     
                     if (data.success && data.data && Array.isArray(data.data)) {
-                        // Create mock odds structure for compatibility
-                        const games = data.data.map(event => ({
-                            id: event.id,
-                            homeTeam: event.teams?.home?.name || 'Home Team',
-                            awayTeam: event.teams?.away?.name || 'Away Team',
-                            gameTime: event.date || new Date().toISOString(),
-                            bets: {
-                                moneyline: { home: { odds: -120 }, away: { odds: 110 } },
-                                spread: { home: { line: -3.5, odds: -110 }, away: { line: 3.5, odds: -110 } },
-                                totals: { over: { line: 47.5, odds: -110 }, under: { line: 47.5, odds: -110 } }
-                            }
-                        }));
+                        console.log('✅ Valid API data structure - processing', data.data.length, 'games');
+                        
+                        // Transform ESPN API data to dashboard format
+                        const games = data.data.map((event, index) => {
+                            console.log(`🏈 Processing game ${index + 1}:`, event.name || `${event.teams?.away?.name} @ ${event.teams?.home?.name}`);
+                            
+                            return {
+                                id: event.id,
+                                homeTeam: event.teams?.home?.name || 'Home Team',
+                                awayTeam: event.teams?.away?.name || 'Away Team',
+                                gameTime: event.date || new Date().toISOString(),
+                                status: event.status || 'scheduled',
+                                venue: event.venue || 'TBD',
+                                bets: {
+                                    moneyline: { home: { odds: -120 }, away: { odds: 110 } },
+                                    spread: { home: { line: -3.5, odds: -110 }, away: { line: 3.5, odds: -110 } },
+                                    totals: { over: { line: 47.5, odds: -110 }, under: { line: 47.5, odds: -110 } }
+                                }
+                            };
+                        });
                         
                         const totalBets = games.length * 3; // 3 bet types per game
+                        console.log('🎯 Dashboard data created:', {
+                            games: games.length,
+                            totalBets: totalBets,
+                            sampleGame: games[0]?.homeTeam && games[0]?.awayTeam ? `${games[0].awayTeam} @ ${games[0].homeTeam}` : 'No sample'
+                        });
                         
                         return {
                             success: [{
                                 provider: 'hardrock',
-                                name: 'Hard Rock Bet (Upcoming Games)',
+                                name: 'Hard Rock Bet (Real NFL Games)',
                                 games: games,
                                 bets: totalBets
                             }],
                             failed: [],
                             totalGames: games.length,
-                            totalBets: totalBets
+                            totalBets: totalBets,
+                            source: data.source || 'ESPN API'
                         };
                     } else {
-                        throw new Error('No games available');
+                        const errorMsg = !data.success ? 'API returned success=false' : 
+                                       !data.data ? 'API returned no data field' :
+                                       !Array.isArray(data.data) ? 'API data is not an array' :
+                                       'Unknown data structure issue';
+                        console.error('❌ Invalid API response structure:', errorMsg, data);
+                        throw new Error(errorMsg);
                     }
                 } catch (error) {
-                    console.error('❌ API Error:', error);
-                    // Return empty structure to prevent crashes
+                    console.error('❌ loadFromVercelAPI Error:', error);
+                    console.error('❌ Error stack:', error.stack);
+                    
+                    // Return structure that will trigger proper error handling
                     return {
                         success: [],
-                        failed: [{ name: 'Vercel API', error: error.message }],
+                        failed: [{ name: 'Hard Rock Bet API', error: error.message }],
                         totalGames: 0,
                         totalBets: 0
                     };
@@ -925,36 +960,99 @@
                 const spinner = document.getElementById('refreshSpinner');
                 const text = document.getElementById('refreshText');
 
-                // Show loading state
-                spinner.classList.remove('hidden');
-                text.textContent = 'Loading...';
-                refreshBtn.disabled = true;
+                // Show loading state with null checks
+                if (spinner) spinner.classList.remove('hidden');
+                if (text) text.textContent = 'Loading...';
+                if (refreshBtn) refreshBtn.disabled = true;
 
                 try {
+                    console.log('🔄 loadOddsData: Starting to load data...');
+                    
                     // Load data from Vercel API
                     this.currentOdds = await this.loadFromVercelAPI();
+                    console.log('📊 loadOddsData: Data loaded from API:', this.currentOdds);
+                    
+                    // Check if we got valid data structure
+                    if (!this.currentOdds) {
+                        throw new Error('loadFromVercelAPI returned null/undefined');
+                    }
+                    
+                    // Check if we have proper data structure from API
+                    if (this.currentOdds && this.currentOdds.success && Array.isArray(this.currentOdds.success) && this.currentOdds.success.length > 0) {
+                        // Extract games from the first successful provider
+                        const provider = this.currentOdds.success[0];
+                        if (provider.games && Array.isArray(provider.games) && provider.games.length > 0) {
+                            console.log(`✅ Found ${provider.games.length} games from ${provider.name}`);
+                            // Replace currentOdds with just the games array for compatibility
+                            this.currentOdds = provider.games;
+                        } else {
+                            throw new Error(`Provider ${provider.name} has no games`);
+                        }
+                    } else {
+                        console.warn('⚠️ loadOddsData: No successful providers in data');
+                        if (this.currentOdds && this.currentOdds.failed && this.currentOdds.failed.length > 0) {
+                            const errors = this.currentOdds.failed.map(f => f.error || f.name).join(', ');
+                            throw new Error(`All providers failed: ${errors}`);
+                        } else {
+                            throw new Error('No data available from any provider');
+                        }
+                    }
+                    
+                    // Update dashboard components
+                    console.log('🎯 loadOddsData: Updating dashboard components...');
                     this.updateDashboard();
                     this.displayOddsComparison();
                     
-                    console.log('✅ Odds data loaded successfully');
+                    const gameCount = this.currentOdds?.length || 0;
+                    const betCount = gameCount * 3;
+                    console.log(`✅ Odds data loaded successfully - Games: ${gameCount}, Bets: ${betCount}`);
+                    this.showNotification(`✅ Loaded ${gameCount} games with ${betCount} betting lines!`, 'success');
+                    
                 } catch (error) {
                     console.error('❌ Failed to load odds data:', error);
-                    this.showNotification('No live games available right now', 'info');
+                    console.error('❌ Error details:', {
+                        message: error.message,
+                        stack: error.stack,
+                        currentOdds: this.currentOdds
+                    });
+                    
+                    // Show specific error message instead of generic message
+                    this.showNotification(`❌ Error: ${error.message}`, 'error');
                     this.showEmptyState();
                 } finally {
-                    // Hide loading state
-                    spinner.classList.add('hidden');
-                    text.textContent = '🔄 Refresh Odds';
-                    refreshBtn.disabled = false;
+                    // Hide loading state with null checks
+                    if (spinner) spinner.classList.add('hidden');
+                    if (text) text.textContent = '🔄 Refresh Odds';
+                    if (refreshBtn) refreshBtn.disabled = false;
                 }
             }
 
             updateDashboard() {
-                if (!this.currentOdds) return;
+                if (!this.currentOdds || !Array.isArray(this.currentOdds)) {
+                    console.warn('⚠️ updateDashboard: currentOdds is not a valid array');
+                    return;
+                }
+                
+                const gameCount = this.currentOdds.length;
+                const betCount = gameCount * 3; // 3 bet types per game
+                
+                console.log(`🎯 updateDashboard: Updating status cards with ${gameCount} games, ${betCount} bets`);
 
-                // Update status cards
-                document.getElementById('totalGames').textContent = this.currentOdds.totalGames;
-                document.getElementById('totalBets').textContent = this.currentOdds.totalBets;
+                // Update status cards with null checks
+                const totalGamesElement = document.getElementById('totalGames');
+                const totalBetsElement = document.getElementById('totalBets');
+                
+                if (totalGamesElement) {
+                    totalGamesElement.textContent = gameCount.toString();
+                } else {
+                    console.warn('⚠️ totalGames element not found');
+                }
+                
+                if (totalBetsElement) {
+                    totalBetsElement.textContent = betCount.toString();
+                } else {
+                    console.warn('⚠️ totalBets element not found');
+                }
 
                 // Update providers status
                 this.updateProvidersStatus();
@@ -973,7 +1071,7 @@
                 console.log('🎯 updateLiveOddsWidget called');
                 console.log('📊 Current odds data:', this.currentOdds);
 
-                if (!this.currentOdds || this.currentOdds.success.length === 0) {
+                if (!this.currentOdds || !Array.isArray(this.currentOdds) || this.currentOdds.length === 0) {
                     console.log('⚠️ No current odds data - showing refresh button');
                     widgetLoading.innerHTML = `
                         <div class="text-center py-8">
@@ -1000,8 +1098,8 @@
                         </div>
                 `;
 
-                this.currentOdds.success.forEach(provider => {
-                    provider.games.slice(0, 3).forEach(game => { // Show first 3 games
+                // Show first 3 games from current odds
+                this.currentOdds.slice(0, 3).forEach(game => {
                         const gameTime = new Date(game.gameTime).toLocaleString('en-US', { 
                             month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
                         });
@@ -1039,7 +1137,6 @@
                                 </div>
                             </div>
                         `;
-                    });
                 });
 
                 oddsHTML += `
