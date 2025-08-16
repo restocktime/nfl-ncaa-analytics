@@ -786,20 +786,68 @@
                         const awayTeam = game.awayTeam?.abbreviation || game.awayTeam?.name || game.awayTeam || 'AWAY';
                         const gameTime = new Date(game.gameTime);
                         
-                        // Generate AI prediction based on available betting data
-                        let pick = `${homeTeam} vs ${awayTeam}`;
-                        let betType = 'moneyline';
-                        let confidence = (75 + Math.random() * 15).toFixed(1); // 75-90% confidence
+                        // Generate CLEAR AI prediction with specific team picks and lines
+                        let pick, betType, confidence;
                         
                         if (game.bets?.spread?.home?.line) {
-                            const spread = game.bets.spread.home.line;
-                            pick = spread > 0 ? `${homeTeam} +${spread}` : `${homeTeam} ${spread}`;
+                            // SPREAD BET with clear team recommendation
+                            const homeSpread = game.bets.spread.home.line;
+                            const awaySpread = game.bets.spread.away?.line || -homeSpread;
+                            
+                            // AI picks the better value (simulate smart analysis)
+                            if (Math.abs(homeSpread) <= 3.5) {
+                                // Close spread - pick home team
+                                pick = `TAKE ${homeTeam} ${homeSpread > 0 ? '+' : ''}${homeSpread}`;
+                                confidence = (85 + Math.random() * 10).toFixed(1);
+                            } else {
+                                // Big spread - pick away team  
+                                pick = `TAKE ${awayTeam} ${awaySpread > 0 ? '+' : ''}${awaySpread}`;
+                                confidence = (82 + Math.random() * 13).toFixed(1);
+                            }
                             betType = 'spread';
-                            confidence = (80 + Math.random() * 15).toFixed(1);
+                            
+                        } else if (game.bets?.totals?.over?.line) {
+                            // TOTAL BET with clear over/under pick
+                            const total = game.bets.totals.over.line;
+                            const overOdds = game.bets.totals.over.odds;
+                            const underOdds = game.bets.totals.under?.odds;
+                            
+                            // AI picks over/under based on total value
+                            if (total < 45) {
+                                pick = `TAKE OVER ${total} (${overOdds > 0 ? '+' : ''}${overOdds})`;
+                            } else if (total > 52) {
+                                pick = `TAKE UNDER ${total} (${underOdds > 0 ? '+' : ''}${underOdds})`;
+                            } else {
+                                pick = `TAKE OVER ${total} (${overOdds > 0 ? '+' : ''}${overOdds})`;
+                            }
+                            betType = 'totals';
+                            confidence = (78 + Math.random() * 17).toFixed(1);
+                            
                         } else if (game.bets?.moneyline?.home?.odds) {
+                            // MONEYLINE with clear team pick
                             const homeOdds = game.bets.moneyline.home.odds;
-                            pick = `${homeTeam} ML (${homeOdds > 0 ? '+' : ''}${homeOdds})`;
-                            confidence = (82 + Math.random() * 13).toFixed(1);
+                            const awayOdds = game.bets.moneyline.away?.odds;
+                            
+                            // AI picks underdog if reasonable odds, otherwise favorite
+                            if (homeOdds > 120) {
+                                pick = `TAKE ${homeTeam} MONEYLINE (+${homeOdds})`;
+                            } else if (awayOdds && awayOdds > 120) {
+                                pick = `TAKE ${awayTeam} MONEYLINE (+${awayOdds})`;
+                            } else {
+                                // Pick favorite
+                                const favorite = homeOdds < awayOdds ? homeTeam : awayTeam;
+                                const favoriteOdds = homeOdds < awayOdds ? homeOdds : awayOdds;
+                                pick = `TAKE ${favorite} MONEYLINE (${favoriteOdds})`;
+                            }
+                            betType = 'moneyline';
+                            confidence = (80 + Math.random() * 15).toFixed(1);
+                            
+                        } else {
+                            // FALLBACK - Generic prediction with team recommendation
+                            const teamToTake = Math.random() > 0.5 ? homeTeam : awayTeam;
+                            pick = `TAKE ${teamToTake} - VALUE PLAY`;
+                            betType = 'value';
+                            confidence = (75 + Math.random() * 15).toFixed(1);
                         }
                         
                         return {
@@ -815,6 +863,7 @@
                             reasoning: `${game.status || 'Scheduled'}: ${awayTeam} @ ${homeTeam} - ${game.season || 'NFL'} game`,
                             season: game.season || 'regular',
                             isLive: game.isLive || false,
+                            bets: game.bets || {}, // Pass through the betting data
                             factors: {
                                 '🏈 LIVE API': 'Real Data',
                                 'Game Status': game.status || 'Scheduled',
@@ -853,108 +902,10 @@
                 renderPicks();
                 return;
             } catch (error) {
-                    type: 'spread',
-                    homeTeam: 'DET',
-                    awayTeam: 'MIA',
-                    gameTime: '2025-08-16T17:00:00Z',
-                    gameDate: 'Today - Aug 16',
-                    gameTimeFormatted: '1:00 PM',
-                    pick: 'DET -2.5',
-                    confidence: '88.5',
-                    reasoning: 'ESPN LIVE: Miami Dolphins @ Detroit Lions - Preseason game happening NOW',
-                    factors: {
-                        '🏈 ESPN LIVE': 'Happening Now',
-                        'Game Status': 'Live/Today',
-                        'Week': 'Preseason',
-                        'Venue': 'Ford Field'
-                    }
-                },
-                {
-                    id: 'live_2',
-                    type: 'moneyline',
-                    homeTeam: 'IND',
-                    awayTeam: 'GB',
-                    gameTime: '2025-08-16T17:00:00Z',
-                    gameDate: 'Today - Aug 16',
-                    gameTimeFormatted: '1:00 PM',
-                    pick: 'GB ML (-150)',
-                    confidence: '82.1',
-                    reasoning: 'ESPN LIVE: Green Bay Packers @ Indianapolis Colts - Preseason matchup',
-                    factors: {
-                        '🏈 ESPN LIVE': 'Happening Now',
-                        'Game Status': 'Live/Today',
-                        'Week': 'Preseason',
-                        'Venue': 'Lucas Oil Stadium'
-                    }
-                },
-                {
-                    id: 'live_3',
-                    type: 'spread',
-                    homeTeam: 'MIN',
-                    awayTeam: 'NE',
-                    gameTime: '2025-08-16T17:00:00Z',
-                    gameDate: 'Today - Aug 16',
-                    gameTimeFormatted: '1:00 PM',
-                    pick: 'NE +3.5',
-                    confidence: '79.8',
-                    reasoning: 'ESPN LIVE: New England Patriots @ Minnesota Vikings - Preseason action',
-                    factors: {
-                        '🏈 ESPN LIVE': 'Happening Now',
-                        'Game Status': 'Live/Today',
-                        'Week': 'Preseason',
-                        'Venue': 'U.S. Bank Stadium'
-                    }
-                },
-                {
-                    id: 'live_4',
-                    type: 'totals',
-                    homeTeam: 'PHI',
-                    awayTeam: 'CLE',
-                    gameTime: '2025-08-16T17:00:00Z',
-                    gameDate: 'Today - Aug 16',
-                    gameTimeFormatted: '1:00 PM',
-                    pick: 'OVER 38.5',
-                    confidence: '85.3',
-                    reasoning: 'ESPN LIVE: Cleveland Browns @ Philadelphia Eagles - High-scoring potential',
-                    factors: {
-                        '🏈 ESPN LIVE': 'Happening Now',
-                        'Game Status': 'Live/Today',
-                        'Week': 'Preseason',
-                        'Venue': 'Lincoln Financial Field'
-                    }
-                },
-                {
-                    id: 'live_5',
-                    type: 'spread',
-                    homeTeam: 'HOU',
-                    awayTeam: 'CAR',
-                    gameTime: '2025-08-16T17:00:00Z',
-                    gameDate: 'Today - Aug 16',
-                    gameTimeFormatted: '1:00 PM',
-                    pick: 'HOU -4.5',
-                    confidence: '87.2',
-                    reasoning: 'ESPN LIVE: Carolina Panthers @ Houston Texans - Home field advantage',
-                    factors: {
-                        '🏈 ESPN LIVE': 'Happening Now',
-                        'Game Status': 'Live/Today',
-                        'Week': 'Preseason',
-                        'Venue': 'NRG Stadium'
-                    }
-                }
-            ];
-            
-            // FORCE set the games
-            aiPicks = todaysGames;
-            
-            // Organize by week for calendar
-            allWeekGames.set('current', todaysGames);
-            allWeekGames.set('preseason', todaysGames);
-            allWeekGames.set(1, []); // Empty for now
-            allWeekGames.set(2, []);
-            
                 console.error('❌ Error loading today\'s games:', error);
-                updateStatus('❌ Failed to load games - using fallback data');
-            }
+                updateStatus('❌ Failed to load games from API');
+                aiPicks = [];
+                renderPicks();
         }
 
         async function generateAIPicks() {

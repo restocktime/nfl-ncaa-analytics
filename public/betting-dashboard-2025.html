@@ -582,29 +582,33 @@
             
             quantumData.success.forEach(provider => {
                 if (provider.games && provider.games.length > 0) {
-                    // Filter games to current week only (temporarily showing all games while debugging)
+                    // Filter games to current week only - STRICT FILTERING
                     const currentWeekGames = provider.games.filter(game => {
                         try {
                             return isGameInCurrentWeek(game);
                         } catch (error) {
-                            console.warn('Week filtering error, showing all games:', error);
-                            return true; // Show all games if filtering fails
+                            console.warn('Week filtering error for game, excluding:', error);
+                            return false; // Exclude games that fail filtering - NO MORE 286 GAMES!
                         }
                     });
                     
-                    if (currentWeekGames.length > 0) {
+                    // Cap at maximum games per week (NFL realistic limit)
+                    const MAX_GAMES_PER_WEEK = 16;
+                    const weeklyLimitedGames = currentWeekGames.slice(0, MAX_GAMES_PER_WEEK);
+                    
+                    if (weeklyLimitedGames.length > 0) {
                         html += `<div class="quantum-betting-card">`;
                         html += `<div class="quantum-market-header">`;
-                        html += `<h3>📡 ${provider.provider.toUpperCase()} Live Data - Week ${getCurrentWeek()} (${currentWeekGames.length} Games)</h3>`;
+                        html += `<h3>📡 ${provider.provider.toUpperCase()} Live Data - Week ${getCurrentWeek()} (${weeklyLimitedGames.length} Games)</h3>`;
                         html += `<div class="ai-status-badge neural-active">CURRENT WEEK: ACTIVE</div>`;
                         html += `</div>`;
                         
-                        currentWeekGames.forEach(game => {
+                        weeklyLimitedGames.forEach(game => {
                             html += createQuantumGameCard(game);
                         });
                         
                         html += `</div>`;
-                        totalCurrentWeekGames += currentWeekGames.length;
+                        totalCurrentWeekGames += weeklyLimitedGames.length;
                     }
                 }
             });
@@ -825,12 +829,22 @@
             const gameDate = new Date(game.gameTime);
             const currentWeek = getCurrentWeek();
             
-            // Handle preseason and playoffs
-            if (currentWeek === 'preseason' || currentWeek === 'playoffs') {
-                return true; // Show all games during preseason/playoffs
+            // FIXED: Limit preseason games to realistic weekly amounts
+            if (currentWeek === 'preseason') {
+                // Only show games for today and within the next 7 days (1 week)
+                const now = new Date();
+                const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                return gameDate >= now && gameDate <= weekFromNow;
             }
             
-            // Calculate which week this game belongs to
+            // Handle playoffs
+            if (currentWeek === 'playoffs') {
+                const now = new Date();
+                const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                return gameDate >= now && gameDate <= weekFromNow;
+            }
+            
+            // Calculate which week this game belongs to for regular season
             const seasonStart = new Date('2025-09-04');
             const daysSinceStart = Math.floor((gameDate - seasonStart) / (24 * 60 * 60 * 1000));
             const gameWeek = Math.floor(daysSinceStart / 7) + 1;
