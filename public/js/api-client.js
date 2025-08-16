@@ -178,10 +178,15 @@ class SundayEdgeAPIClient {
         console.log('🗑️ API cache cleared');
     }
 
-    // Check if API service is online - Railway having deployment issues
+    // Check if API service is online
     async isOnline() {
-        console.log('🔄 Railway deployment unstable - using ESPN direct');
-        return false; // Force use of ESPN fallback until Railway is stable
+        try {
+            await this.getStatus();
+            return true;
+        } catch (error) {
+            console.warn('⚠️ Railway API offline, will use ESPN fallback:', error.message);
+            return false;
+        }
     }
 
     // Fallback ESPN integration for when Railway API is down
