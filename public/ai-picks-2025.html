@@ -749,10 +749,6 @@
             
             try {
                 // Initialize secure API client
-                if (!window.sundayEdgeAPI) {
-                    console.error('❌ API Client not loaded - check js/api-client.js');
-                    throw new Error('sundayEdgeAPI not available');
-                }
                 picksIntegration = window.sundayEdgeAPI;
                 
                 const isOnline = await picksIntegration.isOnline();
@@ -769,50 +765,17 @@
                 
             } catch (error) {
                 console.error('❌ Secure API initialization failed:', error);
-                updateStatus('❌ API Client error - creating fallback...');
-                
-                // Create fallback API client if external script failed
-                if (!picksIntegration) {
-                    console.log('🔄 Creating fallback API client...');
-                    picksIntegration = {
-                        getTodaysGames: async () => {
-                            try {
-                                const response = await fetch('https://sunday-edge-pro-api-production.up.railway.app/api/nfl/today');
-                                return await response.json();
-                            } catch (err) {
-                                console.error('Fallback API failed:', err);
-                                return { success: false, games: [] };
-                            }
-                        },
-                        isOnline: async () => {
-                            try {
-                                const response = await fetch('https://sunday-edge-pro-api-production.up.railway.app/api/status');
-                                return response.ok;
-                            } catch {
-                                return false;
-                            }
-                        }
-                    };
-                }
-                
-                await loadTodaysGames(); // Force it with fallback
+                updateStatus('❌ Loading backup games...');
+                loadTodaysGames(); // Force it anyway
             }
         }
         
         async function loadTodaysGames() {
             console.log('🔥 LOADING TODAY\'S ACTUAL NFL GAMES FROM SECURE API');
             
-            if (!picksIntegration) {
-                console.error('❌ picksIntegration is null - API client not initialized');
-                updateStatus('❌ API client not ready');
-                return;
-            }
-            
             try {
-                console.log('📡 Calling picksIntegration.getTodaysGames()...');
                 // Get today's games from Railway API (includes preseason)
                 const todaysData = await picksIntegration.getTodaysGames();
-                console.log('📊 API Response:', todaysData);
                 
                 if (todaysData.success && todaysData.games.length > 0) {
                     console.log(`✅ Found ${todaysData.games.length} games for today`);
@@ -943,31 +906,10 @@
                 updateStatus('❌ Failed to load games from API');
                 aiPicks = [];
                 renderPicks();
+            }
         }
 
-        async function generateAIPicks() {
-            console.log('\n🔥 generateAIPicks called - but we already loaded games!');
-            
-            // If we don't have games yet, force load them
-            if (aiPicks.length === 0) {
-                console.log('⚠️ No games loaded yet, forcing load...');
-                await loadTodaysGames();
-            } else {
-                console.log(`✅ Already have ${aiPicks.length} games loaded`);
-            }
-                
-                console.log(`\n🔍 DATA CHECK: hasLiveData=${hasLiveData}, allBets.length=${allBets.length}`);
-                
-                if (hasLiveData && allBets.length > 0) {
-                    console.log(`\n🎯 PROCESSING ${allBets.length} LIVE NFL GAMES FROM ESPN:`);
-                    allBets.forEach((bet, i) => {
-                        const status = bet.isLive ? '🔴 LIVE' : bet.status;
-                        console.log(`  ${i+1}. ${bet.awayTeam} @ ${bet.homeTeam} - ${status}`);
-                    });
-                    
-                    // Organize games by week for calendar
-                    allWeekGames = organizeGamesByWeek(allBets);
-                    console.log('📅 Games organized by week:', Array.from(allWeekGames.keys()));
+        // generateAIPicks removed - loadTodaysGames handles everything
                     
                     // Get games for current selected week
                     const weekGames = getGamesForWeek(currentWeek);
