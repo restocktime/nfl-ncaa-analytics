@@ -808,6 +808,7 @@
                 
                 if (todaysData.success && todaysData.games.length > 0) {
                     console.log(`✅ Found ${todaysData.games.length} games for today`);
+                    console.log('🔥 FIRST GAME:', todaysData.games[0]);
                     
                     // Convert API data to prediction format
                     const todaysGames = todaysData.games.map((game, index) => {
@@ -904,6 +905,7 @@
                     
                     // Set the games to aiPicks and organize by week
                     aiPicks = todaysGames;
+                    console.log('🎯 TRANSFORMED GAMES:', aiPicks.length, 'FIRST PICK:', aiPicks[0]);
                     
                     // Organize games by week for proper filtering
                     allWeekGames = organizeGamesByWeek(todaysGames);
@@ -911,7 +913,15 @@
                     
                     // Get games for current selected week (this applies the 16-game limit)
                     const weekGames = getGamesForWeek(currentWeek);
-                    aiPicks = weekGames; // Use the filtered week games
+                    console.log('🔍 WEEK FILTER RESULT:', weekGames.length, 'games for week', currentWeek);
+                    
+                    // TEMP: Skip week filtering to test if this is the issue
+                    if (weekGames.length === 0) {
+                        console.log('⚠️ Week filtering returned 0 games, using all games instead');
+                        aiPicks = todaysGames; // Use all games instead of filtered
+                    } else {
+                        aiPicks = weekGames; // Use the filtered week games
+                    }
                     
                     console.log(`✅ Displaying ${aiPicks.length} games for week ${currentWeek}`);
                     
@@ -1124,6 +1134,7 @@
 
         function renderPicks() {
             console.log(`🔄 Rendering picks: ${aiPicks.length} total, filter: ${currentFilter}, week: ${currentWeek}`);
+            console.log('🎯 ACTUAL aiPicks ARRAY:', aiPicks);
             
             const container = document.getElementById('ai-picks-container');
             let filteredPicks = aiPicks;
