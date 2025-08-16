@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api-service.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api-service.js"
+    }
+  ],
+  "env": {
+    "ODDS_API_KEY": "22e59e4eccd8562ad4b697aeeaccb0fb",
+    "NODE_ENV": "production"
+  }
+}
