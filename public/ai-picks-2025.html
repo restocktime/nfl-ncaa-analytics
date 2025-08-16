@@ -251,6 +251,12 @@
             pointer-events: auto;
             position: relative;
             z-index: 10;
+            /* Touch-friendly */
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .filter-btn.active {
@@ -334,30 +340,241 @@
             font-weight: 600;
         }
         
+        /* Mobile-First Responsive Design */
         @media (max-width: 768px) {
-            .matchup {
-                flex-direction: column;
-                text-align: center;
+            .container {
+                padding: 10px !important;
+                margin: 0 !important;
+                max-width: 100% !important;
             }
             
-            .vs-separator {
-                margin: var(--space-md) 0;
-                font-size: 1.5rem;
+            .header {
+                padding: 15px 10px !important;
             }
             
-            .picks-filter {
-                flex-direction: column;
-                align-items: center;
+            .header h1 {
+                font-size: 1.8rem !important;
             }
             
-            .filter-btn {
-                width: 100%;
-                max-width: 200px;
-                text-align: center;
+            .header p {
+                font-size: 0.9rem !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .btn-group {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+            
+            .btn-group .btn {
+                width: 100% !important;
+                padding: 12px !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .neural-summary {
+                padding: 15px !important;
+                margin-bottom: 20px !important;
+            }
+            
+            .neural-summary h2 {
+                font-size: 1.5rem !important;
             }
             
             .summary-stats {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            
+            .stat-card {
+                padding: 15px !important;
+            }
+            
+            .stat-number {
+                font-size: 1.8rem !important;
+            }
+            
+            .picks-filter {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+            
+            .filter-btn {
+                width: 100% !important;
+                padding: 12px !important;
+                text-align: center !important;
+                font-size: 0.9rem !important;
+            }
+            
+            /* ML Controls Mobile */
+            .ml-controls {
+                padding: 15px !important;
+                margin: 15px 0 !important;
+            }
+            
+            .ml-controls-grid {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            
+            .ml-control {
+                width: 100% !important;
+            }
+            
+            .ml-control label {
+                font-size: 0.9rem !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .ml-control select {
+                font-size: 1rem !important;
+                padding: 15px !important;
+                min-height: 50px !important;
+                border-width: 2px !important;
+            }
+            
+            .ml-control input[type="range"] {
+                height: 50px !important;
+                -webkit-appearance: none !important;
+                appearance: none !important;
+            }
+            
+            .ml-control input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none !important;
+                appearance: none !important;
+                width: 25px !important;
+                height: 25px !important;
+                border-radius: 50% !important;
+                background: #ffffff !important;
+                cursor: pointer !important;
+                border: 2px solid #39ff14 !important;
+            }
+            
+            .ml-control input[type="range"]::-moz-range-thumb {
+                width: 25px !important;
+                height: 25px !important;
+                border-radius: 50% !important;
+                background: #ffffff !important;
+                cursor: pointer !important;
+                border: 2px solid #39ff14 !important;
+            }
+            
+            .ml-control button {
+                font-size: 1.1rem !important;
+                padding: 18px 20px !important;
+                min-height: 60px !important;
+                border-radius: 12px !important;
+            }
+            
+            #confidence-display {
+                font-size: 1.2rem !important;
+                min-width: 55px !important;
+            }
+            
+            #ml-status {
+                font-size: 0.9rem !important;
+                padding: 15px !important;
+                line-height: 1.4 !important;
+            }
+            
+            /* Game Cards Mobile */
+            .ai-picks-container > div {
+                margin: 10px 0 !important;
+                padding: 15px !important;
+            }
+            
+            .matchup {
+                flex-direction: column !important;
+                text-align: center !important;
+            }
+            
+            .vs-separator {
+                margin: 10px 0 !important;
+                font-size: 1.5rem !important;
+            }
+            
+            /* Analytics Cards Mobile */
+            .feature-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            
+            .card {
+                padding: 15px !important;
+            }
+            
+            .card-header h3 {
+                font-size: 1rem !important;
+            }
+            
+            .card-icon {
+                font-size: 1.5rem !important;
+            }
+            
+            /* Status Indicator Mobile */
+            .status-indicator {
+                bottom: 10px !important;
+                left: 10px !important;
+                right: 10px !important;
+                font-size: 0.8rem !important;
+                padding: 8px !important;
+                text-align: center !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem !important;
+            }
+            
+            .neural-summary h2 {
+                font-size: 1.2rem !important;
+            }
+            
+            .summary-stats {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem !important;
+            }
+            
+            .filter-btn {
+                padding: 10px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .ml-controls h3 {
+                font-size: 1rem !important;
+            }
+            
+            /* Ultra-mobile game cards */
+            .ai-picks-container > div {
+                padding: 12px !important;
+            }
+            
+            .ai-picks-container > div > div:first-child {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+            }
+            
+            .ai-picks-container span[style*="background: #007acc"] {
+                font-size: 0.7rem !important;
+            }
+            
+            .ai-picks-container div[style*="font-size: 1.5rem"] {
+                font-size: 1.2rem !important;
+            }
+            
+            .ai-picks-container div[style*="font-size: 1.2rem"] {
+                font-size: 1rem !important;
+            }
+            
+            .ai-picks-container button {
+                font-size: 0.7rem !important;
+                padding: 4px 8px !important;
             }
         }
 
@@ -512,26 +729,28 @@
                 <div class="filter-btn" onclick="filterPicks('props', this)">⚡ Player Props</div>
             </div>
 
-            <!-- ML Analysis Controls - FIXED VERSION -->
+            <!-- ML Analysis Controls - MOBILE OPTIMIZED -->
             <div class="ml-controls" style="margin-top: 20px; padding: 20px; background: rgba(26, 26, 46, 0.8); border-radius: 15px; border: 1px solid rgba(57, 255, 20, 0.3);">
-                <h3 style="color: #39ff14; margin-bottom: 15px;">🤖 Neural ML Analysis Engine</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <h3 style="color: #39ff14; margin-bottom: 15px; text-align: center;">🤖 Neural ML Analysis Engine</h3>
+                <div class="ml-controls-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                     <div class="ml-control">
-                        <label style="color: #888; font-size: 0.9rem; display: block; margin-bottom: 5px;">Model Complexity</label>
-                        <select id="ml-complexity" onchange="runMLAnalysis()" style="width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #39ff14; border-radius: 8px; color: #ffffff; cursor: pointer;">
+                        <label style="color: #888; font-size: 0.9rem; display: block; margin-bottom: 8px;">Model Complexity</label>
+                        <select id="ml-complexity" onchange="runMLAnalysis()" style="width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #39ff14; border-radius: 8px; color: #ffffff; cursor: pointer; font-size: 1rem; -webkit-appearance: none; appearance: none;">
                             <option value="basic">Basic (Fast)</option>
                             <option value="advanced" selected>Advanced (Recommended)</option>
                             <option value="neural">Neural Network (Slow)</option>
                         </select>
                     </div>
                     <div class="ml-control">
-                        <label style="color: #888; font-size: 0.9rem; display: block; margin-bottom: 5px;">Confidence Threshold</label>
-                        <input type="range" id="confidence-threshold" min="60" max="95" value="75" onchange="updateConfidenceDisplay()" oninput="updateConfidenceDisplay()" style="width: 100%; cursor: pointer;">
-                        <span id="confidence-display" style="color: #00d4ff; font-weight: 600;">75%</span>
+                        <label style="color: #888; font-size: 0.9rem; display: block; margin-bottom: 8px;">Confidence Threshold</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="range" id="confidence-threshold" min="60" max="95" value="75" onchange="updateConfidenceDisplay()" oninput="updateConfidenceDisplay()" style="flex: 1; cursor: pointer; height: 40px; -webkit-appearance: none; background: linear-gradient(to right, #39ff14, #00d4ff); border-radius: 20px;">
+                            <span id="confidence-display" style="color: #00d4ff; font-weight: 600; min-width: 45px; text-align: center;">75%</span>
+                        </div>
                     </div>
                     <div class="ml-control">
-                        <label style="color: #888; font-size: 0.9rem; display: block; margin-bottom: 5px;">Focus Area</label>
-                        <select id="ml-focus" onchange="runMLAnalysis()" style="width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #39ff14; border-radius: 8px; color: #ffffff; cursor: pointer;">
+                        <label style="color: #888; font-size: 0.9rem; display: block; margin-bottom: 8px;">Focus Area</label>
+                        <select id="ml-focus" onchange="runMLAnalysis()" style="width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #39ff14; border-radius: 8px; color: #ffffff; cursor: pointer; font-size: 1rem; -webkit-appearance: none; appearance: none;">
                             <option value="balanced">Balanced Analysis</option>
                             <option value="offense">Offensive Focus</option>
                             <option value="defense">Defensive Focus</option>
@@ -540,12 +759,12 @@
                         </select>
                     </div>
                     <div class="ml-control">
-                        <button onclick="runAdvancedMLAnalysis()" style="padding: 12px 20px; background: linear-gradient(135deg, #39ff14, #00d4ff); border: none; border-radius: 8px; color: #000000; font-weight: 600; cursor: pointer; width: 100%;">
+                        <button onclick="runAdvancedMLAnalysis()" style="padding: 15px 20px; background: linear-gradient(135deg, #39ff14, #00d4ff); border: none; border-radius: 8px; color: #000000; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; min-height: 50px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
                             🧠 Run Deep Analysis
                         </button>
                     </div>
                 </div>
-                <div id="ml-status" style="margin-top: 15px; padding: 10px; background: #0a0a1a; border-radius: 8px; color: #888; font-size: 0.9rem;">
+                <div id="ml-status" style="margin-top: 15px; padding: 12px; background: #0a0a1a; border-radius: 8px; color: #888; font-size: 0.9rem; min-height: 20px;">
                     Ready for ML analysis...
                 </div>
             </div>
