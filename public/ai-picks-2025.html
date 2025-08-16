@@ -910,6 +910,11 @@
             console.log(`✅ FORCED ${aiPicks.length} TODAY'S GAMES TO DISPLAY`);
             updateStatus(`🏈 LIVE: ${aiPicks.length} NFL games happening TODAY!`);
             updateSummaryStats();
+            
+            } catch (error) {
+                console.error('❌ Error loading today\'s games:', error);
+                updateStatus('❌ Failed to load games - using fallback data');
+            }
         }
 
         async function generateAIPicks() {
