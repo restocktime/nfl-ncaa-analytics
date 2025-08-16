@@ -291,13 +291,16 @@ const apiService = new APIService();
 
 // API Routes
 app.get('/api/status', (req, res) => {
+    const origin = req.get('origin') || req.get('host') || 'unknown';
+    console.log('📊 API status requested from:', origin);
     res.json({
         status: 'online',
         timestamp: new Date().toISOString(),
         apiKeys: {
             oddsAPI: !!API_KEYS.ODDS_API,
             espnAPI: !!API_KEYS.ESPN_API
-        }
+        },
+        requestOrigin: origin
     });
 });
 
@@ -425,10 +428,20 @@ app.get('/api/nfl/today', async (req, res) => {
     }
 });
 
-// Health check
+// Health check - Railway uses this endpoint
 app.get('/health', (req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    console.log('🏥 Health check requested');
+    res.status(200).json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        apiKeys: {
+            oddsAPI: !!API_KEYS.ODDS_API,
+            espnAPI: !!API_KEYS.ESPN_API
+        },
+        cors: 'enabled'
+    });
 });
+
 
 // Start server
 app.listen(PORT, () => {
