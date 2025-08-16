@@ -14,7 +14,13 @@ const PORT = process.env.PORT || 3001;
 
 // Enable CORS for your domain
 app.use(cors({
-    origin: ['https://sundayedgepro.com', 'https://www.sundayedgepro.com', 'http://localhost:3000', 'http://localhost:8000'],
+    origin: [
+        'https://sundayedgepro.com', 
+        'https://www.sundayedgepro.com', 
+        'https://nfl-ncaa-analytics-mj7g.vercel.app',
+        'http://localhost:3000', 
+        'http://localhost:8000'
+    ],
     credentials: true
 }));
 
