@@ -832,10 +832,18 @@ class RealOddsAPIIntegration {
             lastUpdate: new Date().toISOString()
         };
 
+        // Convert sport parameter to API endpoint format
+        let apiSport = 'americanfootball_nfl';
+        if (sport === 'nfl_preseason') {
+            apiSport = 'americanfootball_nfl_preseason';
+        } else if (sport === 'nfl' || sport === 'americanfootball_nfl') {
+            apiSport = 'americanfootball_nfl';
+        }
+
         // Try The Odds API first (most reliable) - only if user has API key
         if (this.apiProviders.oddsapi.apiKey) {
             try {
-                const data = await this.fetchOddsAPI();
+                const data = await this.fetchOddsAPI(apiSport);
                 results.success.push(data);
                 results.totalGames += data.games.length;
                 results.totalBets += data.totalBets;

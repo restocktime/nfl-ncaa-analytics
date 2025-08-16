@@ -537,7 +537,28 @@
             try {
                 updateStatus('🌌 Scanning quantum sports matrix...');
                 
-                const oddsData = await scoresIntegration.fetchAllOdds('nfl');
+                // Try to fetch both regular season and preseason games
+                let allGames = [];
+                
+                try {
+                    const regularSeasonData = await scoresIntegration.fetchAllOdds('nfl');
+                    if (regularSeasonData && regularSeasonData.success) {
+                        allGames.push(...regularSeasonData.success);
+                    }
+                } catch (error) {
+                    console.warn('Regular season games not available:', error.message);
+                }
+                
+                try {
+                    const preseasonData = await scoresIntegration.fetchAllOdds('nfl_preseason');
+                    if (preseasonData && preseasonData.success) {
+                        allGames.push(...preseasonData.success);
+                    }
+                } catch (error) {
+                    console.warn('Preseason games not available:', error.message);
+                }
+                
+                const oddsData = { success: allGames };
                 
                 if (oddsData && oddsData.success && oddsData.success.length > 0) {
                     // Convert odds data to live scores format

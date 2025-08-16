@@ -528,14 +528,35 @@
                 const container = document.getElementById('todays-games');
                 
                 if (analyticsSystem) {
-                    const oddsData = await analyticsSystem.fetchAllOdds('nfl');
+                    // Try to fetch both regular season and preseason games
+                    let allGames = [];
                     
-                    if (oddsData && oddsData.success && oddsData.success.length > 0) {
+                    // Fetch regular season games
+                    try {
+                        const regularSeasonData = await analyticsSystem.fetchAllOdds('nfl');
+                        if (regularSeasonData && regularSeasonData.success) {
+                            allGames.push(...regularSeasonData.success);
+                        }
+                    } catch (error) {
+                        console.warn('Regular season games not available:', error.message);
+                    }
+                    
+                    // Fetch preseason games
+                    try {
+                        const preseasonData = await analyticsSystem.fetchAllOdds('nfl_preseason');
+                        if (preseasonData && preseasonData.success) {
+                            allGames.push(...preseasonData.success);
+                        }
+                    } catch (error) {
+                        console.warn('Preseason games not available:', error.message);
+                    }
+                    
+                    if (allGames.length > 0) {
                         let gamesHTML = '';
                         const today = new Date().toDateString();
                         
-                        // Filter games for today
-                        oddsData.success.forEach(provider => {
+                        // Filter games for today from all sources
+                        allGames.forEach(provider => {
                             if (provider.games) {
                                 provider.games.forEach(game => {
                                     const gameDate = new Date(game.gameTime);

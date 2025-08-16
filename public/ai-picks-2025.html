@@ -629,11 +629,30 @@
             try {
                 updateStatus('🌌 Neural networks analyzing quantum probabilities...');
                 
-                const betsData = await picksIntegration.getBestBets('nfl', 'all');
+                // Try to get picks from both regular season and preseason
+                let allBets = [];
                 
-                if (betsData && betsData.bestBets && betsData.bestBets.length > 0) {
+                try {
+                    const regularBetsData = await picksIntegration.getBestBets('nfl', 'all');
+                    if (regularBetsData && regularBetsData.bestBets) {
+                        allBets.push(...regularBetsData.bestBets);
+                    }
+                } catch (error) {
+                    console.warn('Regular season picks not available:', error.message);
+                }
+                
+                try {
+                    const preseasonBetsData = await picksIntegration.getBestBets('nfl_preseason', 'all');
+                    if (preseasonBetsData && preseasonBetsData.bestBets) {
+                        allBets.push(...preseasonBetsData.bestBets);
+                    }
+                } catch (error) {
+                    console.warn('Preseason picks not available:', error.message);
+                }
+                
+                if (allBets.length > 0) {
                     // Filter to only upcoming week's games
-                    const upcomingWeekBets = filterUpcomingWeekGames(betsData.bestBets);
+                    const upcomingWeekBets = filterUpcomingWeekGames(allBets);
                     
                     // Convert betting data to AI picks format
                     aiPicks = upcomingWeekBets.map((bet, index) => ({
