@@ -374,7 +374,8 @@
     </div>
 
     <!-- Load API Integration -->
-    <script src="api-sports-odds-integration.js"></script>
+    <!-- Load New Secure API Integration -->
+    <script src="js/api-client.js"></script>
 
     <script>
         // Quantum Calendar System 2025
@@ -386,65 +387,73 @@
         let nflSchedule = {};
         let oddsIntegration = null;
 
-        // Initialize real NFL data integration
+        // Initialize secure Railway API integration
         async function initializeNFLData() {
             try {
-                // Connect to our betting odds integration for game data
-                if (typeof RealOddsAPIIntegration !== 'undefined') {
-                    oddsIntegration = new RealOddsAPIIntegration();
-                    oddsIntegration.loadStoredAPIKeys();
-                    
-                    updateStatus('🔄 Loading neural NFL schedule from quantum APIs...');
+                // Use secure Railway API client
+                oddsIntegration = window.sundayEdgeAPI;
+                
+                const isOnline = await oddsIntegration.isOnline();
+                if (isOnline) {
+                    console.log('✅ Secure Railway API connected');
+                    updateStatus('🔄 Loading complete NFL schedule from secure API (regular + preseason)...');
                     await loadRealNFLSchedule();
                 } else {
-                    console.warn('⚠️ Odds API integration not loaded, using static data');
+                    console.warn('⚠️ Secure API offline, using static data');
+                    updateStatus('⚠️ API offline - using static schedule');
                     loadStaticSchedule();
                 }
             } catch (error) {
-                console.error('❌ Failed to initialize NFL data:', error);
+                console.error('❌ Failed to initialize secure API:', error);
+                updateStatus('❌ API connection failed - using static data');
                 loadStaticSchedule();
             }
         }
 
         async function loadRealNFLSchedule() {
             try {
-                const oddsData = await oddsIntegration.fetchAllRealOdds('nfl');
+                // Get all NFL games (regular season + preseason)
+                const allGamesData = await oddsIntegration.getAllNFLGames();
                 
-                if (oddsData.success && oddsData.success.length > 0) {
-                    // Convert odds data to calendar format
+                if (allGamesData.success && allGamesData.games.length > 0) {
+                    console.log(`✅ Loaded ${allGamesData.totalGames} total games (${allGamesData.regularSeasonGames} regular + ${allGamesData.preseasonGames} preseason)`);
+                    
+                    // Convert API data to calendar format
                     nflSchedule = {};
                     
-                    oddsData.success.forEach(provider => {
-                        if (provider.games) {
-                            provider.games.forEach(game => {
-                                const gameDate = new Date(game.gameTime).toISOString().split('T')[0];
-                                const gameTime = new Date(game.gameTime);
-                                const timeString = gameTime.toLocaleTimeString('en-US', { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit', 
-                                    hour12: false 
-                                });
-                                
-                                // Determine if primetime (evening games)
-                                const hour = gameTime.getHours();
-                                const isPrimetime = hour >= 19 || (gameTime.getDay() === 4 && hour >= 20) || (gameTime.getDay() === 1 && hour >= 20);
-                                
-                                const calendarGame = {
-                                    home: game.homeTeam,
-                                    away: game.awayTeam,
-                                    time: timeString,
-                                    type: isPrimetime ? 'primetime' : 'regular',
-                                    spread: game.bets?.spread ? `${game.homeTeam} ${game.bets.spread.home.line}` : 'TBD',
-                                    total: game.bets?.totals ? `O/U ${game.bets.totals.over.line}` : 'TBD',
-                                    provider: provider.provider
-                                };
-                                
-                                if (!nflSchedule[gameDate]) {
-                                    nflSchedule[gameDate] = [];
-                                }
-                                nflSchedule[gameDate].push(calendarGame);
-                            });
+                    allGamesData.games.forEach(game => {
+                        const gameDate = new Date(game.gameTime).toISOString().split('T')[0];
+                        const gameTime = new Date(game.gameTime);
+                        const timeString = gameTime.toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: false 
+                        });
+                        
+                        // Determine if primetime (evening games)
+                        const hour = gameTime.getHours();
+                        const isPrimetime = hour >= 19 || (gameTime.getDay() === 4 && hour >= 20) || (gameTime.getDay() === 1 && hour >= 20);
+                        
+                        // Format team names consistently
+                        const homeTeam = game.homeTeam?.abbreviation || game.homeTeam?.name || game.homeTeam || 'HOME';
+                        const awayTeam = game.awayTeam?.abbreviation || game.awayTeam?.name || game.awayTeam || 'AWAY';
+                        
+                        const calendarGame = {
+                            home: homeTeam,
+                            away: awayTeam,
+                            time: timeString,
+                            type: isPrimetime ? 'primetime' : 'regular',
+                            season: game.season || 'regular',
+                            spread: game.bets?.spread ? `${homeTeam} ${game.bets.spread.home.line}` : 'TBD',
+                            total: game.bets?.totals ? `O/U ${game.bets.totals.over.line}` : 'TBD',
+                            provider: 'Railway API',
+                            gameId: game.gameId
+                        };
+                        
+                        if (!nflSchedule[gameDate]) {
+                            nflSchedule[gameDate] = [];
                         }
+                        nflSchedule[gameDate].push(calendarGame);
                     });
                     
                     const totalGames = Object.values(nflSchedule).reduce((sum, games) => sum + games.length, 0);

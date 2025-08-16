@@ -653,9 +653,8 @@
     </div>
 
     <!-- Load API Integration -->
-    <script src="api-sports-odds-integration.js"></script>
-    <script src="betting-odds-integration.js"></script>
-    <script src="api-config.js"></script>
+    <!-- Load New Secure API Integration -->
+    <script src="js/api-client.js"></script>
 
     <script>
         // Neural Live Scores System 2025
@@ -724,27 +723,23 @@
 
         async function initializeLiveScores() {
             try {
-                // Connect to betting odds integration for live data
-                if (typeof BettingOddsIntegration !== 'undefined') {
-                    scoresIntegration = new BettingOddsIntegration();
-                    
-                    // Use the pre-configured API key
-                    if (window.apiConfig && window.apiConfig.getKey('oddsapi')) {
-                        scoresIntegration.setupAPIKeys({ oddsapi: window.apiConfig.getKey('oddsapi') });
-                        console.log('✅ Neural scores integration established with API key');
-                        updateStatus('🔑 API key configured - Loading live scores');
-                        await loadLiveScores();
-                    } else {
-                        console.log('✅ Neural scores integration established - Loading ESPN data');
-                        await loadStaticScores();
-                    }
+                // Use secure Railway API client
+                scoresIntegration = window.sundayEdgeAPI;
+                
+                const isOnline = await scoresIntegration.isOnline();
+                if (isOnline) {
+                    console.log('✅ Secure Railway API connected - No API key setup needed');
+                    updateStatus('🚀 SECURE API: Loading live NFL scores + preseason...');
+                    await loadLiveScores();
                 } else {
-                    console.warn('⚠️ Scores integration not loaded, loading ESPN data directly');
-                    await loadStaticScores();
+                    console.warn('⚠️ Secure API offline, loading ESPN directly');
+                    updateStatus('⚠️ API offline - loading ESPN data');
+                    await loadESPNDirectScores();
                 }
             } catch (error) {
-                console.error('❌ Failed to initialize live scores:', error);
-                await loadStaticScores();
+                console.error('❌ Failed to initialize secure API:', error);
+                updateStatus('❌ API connection failed - loading ESPN data');
+                await loadESPNDirectScores();
             }
         }
 
@@ -752,53 +747,97 @@
             try {
                 updateStatus('🌌 Scanning quantum sports matrix...');
                 
-                // Try to fetch both regular season and preseason games
-                let allGames = [];
+                // Use secure Railway API to get comprehensive data (ESPN scores + odds + preseason)
+                const comprehensiveData = await scoresIntegration.getComprehensiveNFLData();
                 
-                // First try to get live scores from ESPN
-                try {
-                    const espnScores = await fetchESPNScores();
-                    if (espnScores && espnScores.length > 0) {
-                        allGames.push(...espnScores);
-                        console.log(`✅ Fetched ${espnScores.length} games from ESPN`);
+                if (comprehensiveData.success) {
+                    let allGames = [];
+                    
+                    // Process ESPN live scores data
+                    if (comprehensiveData.liveScores && comprehensiveData.liveScores.games) {
+                        allGames.push(...comprehensiveData.liveScores.games.map(game => ({
+                            id: `espn_${game.gameId}`,
+                            provider: 'ESPN',
+                            homeTeam: game.homeTeam?.abbreviation || game.homeTeam?.name || game.homeTeam || 'HOME',
+                            awayTeam: game.awayTeam?.abbreviation || game.awayTeam?.name || game.awayTeam || 'AWAY',
+                            homeTeamName: game.homeTeam?.name || game.homeTeam || 'Home Team',
+                            awayTeamName: game.awayTeam?.name || game.awayTeam || 'Away Team',
+                            homeScore: game.homeTeam?.score || '0',
+                            awayScore: game.awayTeam?.score || '0',
+                            gameTime: game.gameTime,
+                            status: game.isLive ? 'live' : (game.status?.includes('Final') ? 'final' : 'upcoming'),
+                            statusLabel: game.status || 'Scheduled',
+                            clock: '',
+                            period: 0,
+                            spread: 'N/A',
+                            total: 'N/A',
+                            venue: '',
+                            logos: {
+                                home: game.logos?.home || '',
+                                away: game.logos?.away || ''
+                            }
+                        })));
                     }
-                } catch (error) {
-                    console.warn('ESPN scores not available:', error.message);
-                }
-                
-                // Then try odds data for betting lines
-                try {
-                    const regularSeasonData = await scoresIntegration.fetchAllOdds('nfl');
-                    if (regularSeasonData && regularSeasonData.success) {
-                        // Merge ESPN scores with odds data
-                        allGames = mergeScoresWithOdds(allGames, regularSeasonData.success);
+                    
+                    // Add odds data games that might not be in ESPN (like future games)
+                    if (comprehensiveData.odds && comprehensiveData.odds.games) {
+                        comprehensiveData.odds.games.forEach(oddsGame => {
+                            const homeTeam = oddsGame.homeTeam?.abbreviation || oddsGame.homeTeam?.name || oddsGame.homeTeam || 'HOME';
+                            const awayTeam = oddsGame.awayTeam?.abbreviation || oddsGame.awayTeam?.name || oddsGame.awayTeam || 'AWAY';
+                            
+                            // Check if this game already exists in our ESPN data
+                            const existingGame = allGames.find(g => 
+                                (g.homeTeam === homeTeam && g.awayTeam === awayTeam) ||
+                                (g.homeTeamName?.includes(homeTeam) || g.awayTeamName?.includes(awayTeam))
+                            );
+                            
+                            if (existingGame) {
+                                // Add betting data to existing game
+                                if (oddsGame.bets?.spread) {
+                                    existingGame.spread = `${homeTeam} ${oddsGame.bets.spread.home.line > 0 ? '+' : ''}${oddsGame.bets.spread.home.line}`;
+                                }
+                                if (oddsGame.bets?.totals) {
+                                    existingGame.total = `O/U ${oddsGame.bets.totals.over.line}`;
+                                }
+                                existingGame.season = oddsGame.season || 'regular';
+                            } else {
+                                // Add new game from odds data (future games)
+                                allGames.push({
+                                    id: `odds_${oddsGame.gameId}`,
+                                    provider: 'OddsAPI',
+                                    homeTeam: homeTeam,
+                                    awayTeam: awayTeam,
+                                    homeTeamName: oddsGame.homeTeam?.name || homeTeam,
+                                    awayTeamName: oddsGame.awayTeam?.name || awayTeam,
+                                    homeScore: '0',
+                                    awayScore: '0',
+                                    gameTime: oddsGame.gameTime,
+                                    status: 'upcoming',
+                                    statusLabel: 'Scheduled',
+                                    spread: oddsGame.bets?.spread ? `${homeTeam} ${oddsGame.bets.spread.home.line > 0 ? '+' : ''}${oddsGame.bets.spread.home.line}` : 'N/A',
+                                    total: oddsGame.bets?.totals ? `O/U ${oddsGame.bets.totals.over.line}` : 'N/A',
+                                    season: oddsGame.season || 'regular',
+                                    venue: '',
+                                    logos: { home: '', away: '' }
+                                });
+                            }
+                        });
                     }
-                } catch (error) {
-                    console.warn('Regular season odds not available:', error.message);
-                }
-                
-                try {
-                    const preseasonData = await scoresIntegration.fetchAllOdds('nfl_preseason');
-                    if (preseasonData && preseasonData.success) {
-                        allGames = mergeScoresWithOdds(allGames, preseasonData.success);
-                    }
-                } catch (error) {
-                    console.warn('Preseason odds not available:', error.message);
-                }
-                
-                if (allGames && allGames.length > 0) {
+                    
+                    console.log(`✅ Loaded ${allGames.length} games from secure Railway API`);
+                    
                     // Organize games by week
                     allWeekGames = organizeGamesByWeek(allGames);
                     
                     // Get games for current week
                     liveGames = getGamesForWeek(currentWeek);
                     
-                    updateStatus(`✅ Real NFL data loaded - ${liveGames.length} games for ${getCurrentWeekDisplay()}`);
-                    console.log(`📊 Loaded ${allGames.length} real NFL games from ESPN and/or API`);
+                    updateStatus(`✅ Secure API data loaded - ${liveGames.length} games for ${getCurrentWeekDisplay()}`);
+                    console.log(`📊 Railway API: ${allGames.length} total games (regular + preseason)`);
                     
                 } else {
-                    console.warn('⚠️ No games available from any API source');
-                    // Fall back to ESPN only
+                    console.warn('⚠️ No games available from Railway API, falling back to ESPN');
+                    await loadESPNDirectScores();
                     await loadStaticScores();
                     return;
                 }
@@ -810,6 +849,32 @@
             }
             
             renderScoreboard();
+        }
+        
+        // Fallback function for direct ESPN API calls when Railway API is offline
+        async function loadESPNDirectScores() {
+            try {
+                console.log('🏈 Fallback: Loading ESPN data directly...');
+                updateStatus('📡 Loading ESPN scores directly...');
+                
+                const espnScores = await fetchESPNScores();
+                if (espnScores && espnScores.length > 0) {
+                    // Organize games by week
+                    allWeekGames = organizeGamesByWeek(espnScores);
+                    
+                    // Get games for current week
+                    liveGames = getGamesForWeek(currentWeek);
+                    
+                    updateStatus(`✅ ESPN fallback loaded - ${liveGames.length} games for ${getCurrentWeekDisplay()}`);
+                    console.log(`📊 ESPN Direct: ${espnScores.length} games loaded`);
+                    renderScoreboard();
+                } else {
+                    throw new Error('No ESPN data available');
+                }
+            } catch (error) {
+                console.error('❌ ESPN direct load failed:', error);
+                await loadStaticScores();
+            }
         }
 
         async function loadStaticScores() {

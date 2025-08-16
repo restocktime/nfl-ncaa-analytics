@@ -213,19 +213,39 @@ class APIService {
         }
     }
 
-    // Get comprehensive NFL data
+    // Get comprehensive NFL data (includes preseason)
     async getComprehensiveNFLData() {
         try {
-            console.log('🔄 Fetching comprehensive NFL data...');
+            console.log('🔄 Fetching comprehensive NFL data (regular season + preseason)...');
             
-            const [oddsData, scoresData] = await Promise.all([
-                this.fetchNFLOdds(),
+            const [regularSeasonData, preseasonData, scoresData] = await Promise.all([
+                this.fetchNFLOdds('americanfootball_nfl'),
+                this.fetchNFLOdds('americanfootball_nfl_preseason'),
                 this.fetchESPNScores()
             ]);
 
+            // Combine regular season and preseason games
+            const allGames = [];
+            if (regularSeasonData.success) {
+                allGames.push(...regularSeasonData.games.map(g => ({...g, season: 'regular'})));
+            }
+            if (preseasonData.success) {
+                allGames.push(...preseasonData.games.map(g => ({...g, season: 'preseason'})));
+            }
+
+            const combinedOddsData = {
+                success: true,
+                games: allGames,
+                totalGames: allGames.length,
+                regularSeasonGames: regularSeasonData.success ? regularSeasonData.games.length : 0,
+                preseasonGames: preseasonData.success ? preseasonData.games.length : 0,
+                lastUpdate: new Date().toISOString(),
+                provider: 'The Odds API'
+            };
+
             return {
                 success: true,
-                odds: oddsData,
+                odds: combinedOddsData,
                 liveScores: scoresData,
                 lastUpdate: new Date().toISOString()
             };
@@ -275,11 +295,104 @@ app.get('/api/nfl/scores', async (req, res) => {
     }
 });
 
-// Get comprehensive NFL data (odds + scores)
+// Get comprehensive NFL data (odds + scores + preseason)
 app.get('/api/nfl/comprehensive', async (req, res) => {
     try {
         const data = await apiService.getComprehensiveNFLData();
         res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get all NFL games (regular season + preseason) 
+app.get('/api/nfl/all-games', async (req, res) => {
+    try {
+        const [regularSeasonData, preseasonData] = await Promise.all([
+            apiService.fetchNFLOdds('americanfootball_nfl'),
+            apiService.fetchNFLOdds('americanfootball_nfl_preseason')
+        ]);
+
+        const allGames = [];
+        if (regularSeasonData.success) {
+            allGames.push(...regularSeasonData.games.map(g => ({...g, season: 'regular'})));
+        }
+        if (preseasonData.success) {
+            allGames.push(...preseasonData.games.map(g => ({...g, season: 'preseason'})));
+        }
+
+        res.json({
+            success: true,
+            games: allGames,
+            totalGames: allGames.length,
+            regularSeasonGames: regularSeasonData.success ? regularSeasonData.games.length : 0,
+            preseasonGames: preseasonData.success ? preseasonData.games.length : 0,
+            lastUpdate: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get today's games specifically (includes preseason)
+app.get('/api/nfl/today', async (req, res) => {
+    try {
+        const data = await apiService.getComprehensiveNFLData();
+        
+        if (!data.success) {
+            return res.status(500).json(data);
+        }
+
+        const today = new Date().toDateString();
+        const todaysGames = [];
+
+        // Filter ESPN live scores for today
+        if (data.liveScores && data.liveScores.games) {
+            data.liveScores.games.forEach(game => {
+                const gameDate = new Date(game.gameTime).toDateString();
+                if (gameDate === today) {
+                    todaysGames.push({
+                        ...game,
+                        hasLiveScore: true,
+                        source: 'ESPN'
+                    });
+                }
+            });
+        }
+
+        // Add odds data for today's games
+        if (data.odds && data.odds.games) {
+            data.odds.games.forEach(game => {
+                const gameDate = new Date(game.gameTime).toDateString();
+                if (gameDate === today) {
+                    const existingGame = todaysGames.find(g => 
+                        (g.homeTeam?.abbreviation === game.homeTeam || g.homeTeam?.name?.includes(game.homeTeam)) &&
+                        (g.awayTeam?.abbreviation === game.awayTeam || g.awayTeam?.name?.includes(game.awayTeam))
+                    );
+
+                    if (existingGame) {
+                        existingGame.bets = game.bets;
+                        existingGame.hasOdds = true;
+                        existingGame.season = game.season;
+                    } else {
+                        todaysGames.push({
+                            ...game,
+                            hasOdds: true,
+                            hasLiveScore: false,
+                            source: 'OddsAPI'
+                        });
+                    }
+                }
+            });
+        }
+
+        res.json({
+            success: true,
+            games: todaysGames,
+            totalGames: todaysGames.length,
+            lastUpdate: new Date().toISOString()
+        });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

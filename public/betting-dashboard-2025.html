@@ -475,9 +475,8 @@
     </div>
 
     <!-- Load Betting Services -->
-    <script src="api-config.js"></script>
-    <script src="api-sports-odds-integration.js"></script>
-    <script src="betting-odds-integration.js"></script>
+    <!-- Load New Secure API Integration -->
+    <script src="js/api-client.js"></script>
     <script src="hardrock-integration.js"></script>
 
     <script>
@@ -501,38 +500,24 @@
 
         async function initializeQuantumBetting() {
             try {
-                // Wait for quantum odds integration
-                let attempts = 0;
-                while (!window.RealOddsAPIIntegration && attempts < 50) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    attempts++;
-                }
-
-                if (window.RealOddsAPIIntegration) {
-                    oddsIntegration = new window.RealOddsAPIIntegration();
-                    
-                    // Load API keys from the global config or localStorage
-                    oddsIntegration.loadStoredAPIKeys();
-                    
-                    console.log('✅ Betting API integration established');
-                    updateQuantumStatus('neural-active', '📡 LIVE DATA: CONNECTED');
-                    
-                    // Additional API key setup from global config (backup)
-                    if (window.apiConfig) {
-                        const apiKey = window.apiConfig.getKey('oddsapi');
-                        if (apiKey) {
-                            oddsIntegration.setupAPIKeys({ oddsapi: apiKey });
-                            console.log('🔑 Betting API keys configured from global config');
-                        }
-                    }
+                // Use secure Railway API client
+                oddsIntegration = window.sundayEdgeAPI;
+                
+                // Test secure API connection
+                const isOnline = await oddsIntegration.isOnline();
+                if (isOnline) {
+                    console.log('✅ Secure Railway API connected - No API key setup needed');
+                    updateQuantumStatus('neural-active', '🚀 SECURE API: CONNECTED');
                 } else {
-                    console.warn('⚠️ API integration failed - check connection');
-                    updateQuantumStatus('quantum-error', '⚠️ CONNECTION ERROR DETECTED');
+                    console.warn('⚠️ Secure API service offline - retrying...');
+                    updateQuantumStatus('quantum-processing', '⚠️ CONNECTING TO SECURE SYSTEMS...');
                 }
+                
+                console.log('✅ Quantum Betting Intelligence System initialized with Railway API');
 
             } catch (error) {
-                console.error('❌ Initialization error:', error);
-                updateQuantumStatus('quantum-error', '❌ CONNECTION FAILED');
+                console.error('❌ Secure API initialization error:', error);
+                updateQuantumStatus('quantum-error', '❌ SECURE CONNECTION FAILED');
             }
         }
 
@@ -543,46 +528,39 @@
             }
 
             try {
-                updateStatus('📡 Loading live NFL betting odds...', 'processing');
+                updateStatus('📡 Loading live NFL betting odds via secure API...', 'processing');
                 
-                // Fetch live NFL data for the quantum odds matrix
-                const quantumData = await oddsIntegration.fetchAllRealOdds('nfl');
+                // Fetch comprehensive NFL data (includes regular season + preseason)
+                const quantumData = await oddsIntegration.getAllNFLGames();
                 
-                // Also try to get preseason data if regular season is not available
-                if (!quantumData || !quantumData.success || quantumData.success.length === 0) {
-                    console.log('📡 Regular season data not available, trying preseason...');
-                    const preseasonData = await oddsIntegration.fetchAllRealOdds('nfl_preseason');
-                    if (preseasonData && preseasonData.success && preseasonData.success.length > 0) {
-                        displayQuantumOdds(preseasonData);
-                        updateStatus(`✅ Live data loaded: ${preseasonData.totalGames} preseason games available`, 'success');
-                        return;
-                    }
-                }
-                
-                if (quantumData.success.length > 0) {
-                    displayQuantumOdds(quantumData);
-                    loadQuantumAnalytics(quantumData);
-                    updateStatus(`✅ Live data loaded: ${quantumData.totalGames} games, ${quantumData.totalBets} betting markets`);
+                if (quantumData.success && quantumData.games.length > 0) {
+                    // Convert to the format expected by displayQuantumOdds
+                    const formattedData = {
+                        success: [{ 
+                            games: quantumData.games,
+                            provider: 'Railway API'
+                        }],
+                        totalGames: quantumData.totalGames,
+                        totalBets: quantumData.games.length * 3, // Average 3 bet types per game
+                        lastUpdate: quantumData.lastUpdate
+                    };
+                    
+                    displayQuantumOdds(formattedData);
+                    loadQuantumAnalytics(formattedData);
+                    
+                    const regularCount = quantumData.regularSeasonGames || 0;
+                    const preseasonCount = quantumData.preseasonGames || 0;
+                    updateStatus(`✅ Secure API loaded: ${regularCount} regular + ${preseasonCount} preseason games`, 'success');
                 } else {
-                    displayQuantumKeySetup();
-                    updateStatus('🔑 API key required for live betting data');
+                    console.warn('❌ No games available from secure API');
+                    displayQuantumError('No games currently available');
+                    updateStatus('❌ No games available - check back during NFL season');
                 }
                 
             } catch (error) {
-                console.error('❌ Betting data error:', error);
-                
-                // Show specific error messages based on the error type
-                let errorMessage = error.message;
-                if (error.message.includes('CORS')) {
-                    errorMessage = 'CORS policy blocking request - trying alternative methods...';
-                } else if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Network connection issue - retrying with proxy...';
-                } else if (error.message.includes('isGameInCurrentWeek')) {
-                    errorMessage = 'Week filtering error - showing all available games';
-                }
-                
-                displayQuantumError(errorMessage);
-                updateStatus('❌ Connection issue - Using fallback methods...');
+                console.error('❌ Secure API error:', error);
+                displayQuantumError(`Secure API connection failed: ${error.message}`);
+                updateStatus('❌ Secure API connection failed - please try again');
                 
                 // Show detailed error information
                 setTimeout(() => {

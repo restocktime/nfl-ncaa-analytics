@@ -93,78 +93,14 @@ class SundayEdgeAPIClient {
         return await this.fetchWithCache('/api/nfl/comprehensive', { forceRefresh });
     }
 
-    // Get today's games with odds and scores
+    // Get today's games (includes preseason) - uses dedicated endpoint
     async getTodaysGames(forceRefresh = false) {
-        try {
-            const data = await this.getComprehensiveNFLData(forceRefresh);
-            
-            if (!data.success) {
-                throw new Error(data.error || 'Failed to fetch NFL data');
-            }
+        return await this.fetchWithCache('/api/nfl/today', { forceRefresh });
+    }
 
-            // Combine odds and live scores
-            const games = [];
-            const today = new Date().toDateString();
-
-            // Process live scores from ESPN
-            if (data.liveScores && data.liveScores.games) {
-                data.liveScores.games.forEach(scoreGame => {
-                    const gameDate = new Date(scoreGame.gameTime).toDateString();
-                    if (gameDate === today) {
-                        games.push({
-                            ...scoreGame,
-                            hasLiveScore: true,
-                            source: 'ESPN'
-                        });
-                    }
-                });
-            }
-
-            // Add odds data if available
-            if (data.odds && data.odds.games) {
-                data.odds.games.forEach(oddsGame => {
-                    const gameDate = new Date(oddsGame.gameTime).toDateString();
-                    if (gameDate === today) {
-                        // Try to find matching live score game
-                        const existingGame = games.find(g => 
-                            (g.homeTeam.abbreviation === oddsGame.homeTeam && 
-                             g.awayTeam.abbreviation === oddsGame.awayTeam) ||
-                            (g.homeTeam.name && g.homeTeam.name.includes(oddsGame.homeTeam))
-                        );
-
-                        if (existingGame) {
-                            // Merge odds with live score
-                            existingGame.bets = oddsGame.bets;
-                            existingGame.hasOdds = true;
-                        } else {
-                            // Add as new game with odds only
-                            games.push({
-                                ...oddsGame,
-                                hasOdds: true,
-                                hasLiveScore: false,
-                                source: 'OddsAPI'
-                            });
-                        }
-                    }
-                });
-            }
-
-            return {
-                success: true,
-                games,
-                totalGames: games.length,
-                lastUpdate: data.lastUpdate || new Date().toISOString()
-            };
-
-        } catch (error) {
-            console.error('❌ Error fetching today\'s games:', error);
-            return {
-                success: false,
-                error: error.message,
-                games: [],
-                totalGames: 0
-            };
-        }
+    // Get all NFL games (regular season + preseason)
+    async getAllNFLGames(forceRefresh = false) {
+        return await this.fetchWithCache('/api/nfl/all-games', { forceRefresh });
     }
 
     // Get best betting recommendations
