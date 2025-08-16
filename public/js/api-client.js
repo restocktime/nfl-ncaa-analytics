@@ -184,8 +184,94 @@ class SundayEdgeAPIClient {
             await this.getStatus();
             return true;
         } catch (error) {
-            console.warn('⚠️ API service offline:', error.message);
+            console.warn('⚠️ Railway API offline, will use ESPN fallback:', error.message);
             return false;
+        }
+    }
+
+    // Fallback ESPN integration for when Railway API is down
+    async getESPNFallback() {
+        try {
+            console.log('📡 Using ESPN fallback API...');
+            const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+            
+            if (!response.ok) {
+                throw new Error(`ESPN API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            const games = data.events?.map(event => {
+                const competition = event.competitions[0];
+                const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
+                const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
+                
+                return {
+                    gameId: event.id,
+                    homeTeam: homeTeam.team.abbreviation,
+                    awayTeam: awayTeam.team.abbreviation,
+                    homeTeamName: homeTeam.team.displayName,
+                    awayTeamName: awayTeam.team.displayName,
+                    homeScore: homeTeam.score || '0',
+                    awayScore: awayTeam.score || '0',
+                    gameTime: event.date,
+                    status: event.status.type.description,
+                    isLive: event.status.type.name === 'STATUS_IN_PROGRESS',
+                    season: 'preseason' // Current season context
+                };
+            }) || [];
+
+            return {
+                success: true,
+                games,
+                totalGames: games.length,
+                lastUpdate: new Date().toISOString(),
+                provider: 'ESPN Direct'
+            };
+        } catch (error) {
+            console.error('❌ ESPN fallback failed:', error);
+            return {
+                success: false,
+                error: error.message,
+                games: []
+            };
+        }
+    }
+
+    // Enhanced methods that use fallback when Railway API is down
+    async getTodaysGames(forceRefresh = false) {
+        // Try Railway API first
+        try {
+            return await this.fetchWithCache('/api/nfl/today', { forceRefresh });
+        } catch (error) {
+            console.log('🔄 Railway API failed, using ESPN fallback...');
+            return await this.getESPNFallback();
+        }
+    }
+
+    async getAllNFLGames(forceRefresh = false) {
+        // Try Railway API first
+        try {
+            return await this.fetchWithCache('/api/nfl/all-games', { forceRefresh });
+        } catch (error) {
+            console.log('🔄 Railway API failed, using ESPN fallback...');
+            return await this.getESPNFallback();
+        }
+    }
+
+    async getComprehensiveNFLData(forceRefresh = false) {
+        // Try Railway API first
+        try {
+            return await this.fetchWithCache('/api/nfl/comprehensive', { forceRefresh });
+        } catch (error) {
+            console.log('🔄 Railway API failed, using ESPN fallback...');
+            const espnData = await this.getESPNFallback();
+            return {
+                success: espnData.success,
+                odds: { success: false, games: [] },
+                liveScores: espnData,
+                lastUpdate: espnData.lastUpdate
+            };
         }
     }
 }
