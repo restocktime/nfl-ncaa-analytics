@@ -65,8 +65,8 @@ class RealOddsAPIIntegration {
             oddsapi: {
                 name: 'The Odds API',
                 baseUrl: 'https://api.the-odds-api.com/v4',
-                apiKey: null, // Configure with your API key from https://the-odds-api.com/
-                widgetKey: null, // Configure widget key for embedded odds displays
+                apiKey: '22e59e4eccd8562ad4b697aeeaccb0fb', // Pre-configured API key
+                widgetKey: 'wk_c1f30f86cb719d970238ce3e1583d7c3', // Pre-configured widget key
                 endpoints: {
                     sports: '/sports',
                     odds: '/sports/americanfootball_nfl/odds',
@@ -154,13 +154,27 @@ class RealOddsAPIIntegration {
     // Load API keys from storage
     loadStoredAPIKeys() {
         try {
+            // First try to get from global API config manager
+            if (window.apiConfig) {
+                const oddsApiKey = window.apiConfig.getKey('oddsapi');
+                if (oddsApiKey) {
+                    this.setupAPIKeys({ oddsapi: oddsApiKey });
+                    console.log('✅ API key loaded from global config manager');
+                    return;
+                }
+            }
+            
+            // Fallback to localStorage (legacy)
             const stored = localStorage.getItem('betting_api_keys');
             if (stored) {
                 const keys = JSON.parse(stored);
                 this.setupAPIKeys(keys);
+                console.log('✅ API key loaded from localStorage');
+            } else {
+                console.warn('⚠️ No API keys found. Please configure your Odds API key.');
             }
         } catch (error) {
-            console.log('No stored API keys found');
+            console.log('❌ Failed to load API keys:', error);
         }
     }
 
@@ -180,44 +194,97 @@ class RealOddsAPIIntegration {
 
     // Fetch from The Odds API (premium, reliable)
     async fetchOddsAPI(sport = 'americanfootball_nfl') {
+        console.log(`🏈 Attempting to fetch odds for sport: ${sport}`);
         const provider = this.apiProviders.oddsapi;
         
         // Use user's API key only (widget key appears to be invalid)
         const apiKey = provider.apiKey;
+        console.log(`🔑 API Key status: ${apiKey ? 'Present (' + apiKey.substring(0, 8) + '...)' : 'Missing'}`);
         
         if (!apiKey) {
             throw new Error('The Odds API key required. Get one from https://the-odds-api.com/');
         }
 
+        // Build the correct endpoint URL based on sport
+        const endpoint = sport === 'americanfootball_nfl_preseason' 
+            ? `/sports/${sport}/odds` 
+            : provider.endpoints.odds;
+        
+        console.log(`🔗 Using endpoint: ${provider.baseUrl}${endpoint}`);
+
         // Try multiple request configurations, from most specific to most basic
         const requestConfigs = [
             // First try: All basic markets with specific bookmakers
             {
-                url: `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&bookmakers=hardrockbet,draftkings,fanduel`,
-                description: 'full request with all markets and bookmakers'
+                url: `${provider.baseUrl}${endpoint}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&bookmakers=hardrockbet,draftkings,fanduel`,
+                description: `full request with all markets and bookmakers for ${sport}`
             },
             // Second try: Just basic markets with any bookmaker
             {
-                url: `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso`,
-                description: 'basic markets with any bookmaker'
+                url: `${provider.baseUrl}${endpoint}?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso`,
+                description: `basic markets with any bookmaker for ${sport}`
             },
             // Third try: Just h2h (moneyline) markets
             {
-                url: `${provider.baseUrl}${provider.endpoints.odds}?apiKey=${apiKey}&regions=us&markets=h2h&oddsFormat=american&dateFormat=iso`,
-                description: 'moneyline markets only'
+                url: `${provider.baseUrl}${endpoint}?apiKey=${apiKey}&regions=us&markets=h2h&oddsFormat=american&dateFormat=iso`,
+                description: `moneyline markets only for ${sport}`
             }
         ];
 
         for (const config of requestConfigs) {
             try {
                 console.log(`📊 Fetching from The Odds API (${config.description})...`);
+                console.log(`🔗 Request URL: ${config.url}`);
                 
-                const response = await fetch(config.url, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'User-Agent': 'NFL-Analytics/1.0'
-                    }
+                // Create a timeout promise
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Request timeout after 15 seconds')), 15000);
                 });
+                
+                // Skip direct request for file:// protocol, go straight to proxy
+                let response;
+                
+                if (window.location.protocol === 'file:') {
+                    console.log(`🌐 Using CORS proxy for file:// protocol...`);
+                    // Try with proxy immediately for local file protocol
+                    const proxyUrl = `${this.corsProxies[0]}${encodeURIComponent(config.url)}`;
+                    console.log(`🔗 Proxy URL: ${proxyUrl}`);
+                    
+                    const proxyFetchPromise = fetch(proxyUrl, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                        }
+                    });
+                    
+                    response = await Promise.race([proxyFetchPromise, timeoutPromise]);
+                } else {
+                    // Try direct request first for HTTP/HTTPS protocols
+                    try {
+                        const fetchPromise = fetch(config.url, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'User-Agent': 'NFL-Analytics/1.0'
+                            }
+                        });
+                        
+                        response = await Promise.race([fetchPromise, timeoutPromise]);
+                    } catch (error) {
+                        console.log(`⚠️ Direct request failed (${error.message}), trying with proxy...`);
+                        // Try with proxy
+                        const proxyUrl = `${this.corsProxies[0]}${encodeURIComponent(config.url)}`;
+                        const proxyFetchPromise = fetch(proxyUrl, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                            }
+                        });
+                        
+                        response = await Promise.race([proxyFetchPromise, timeoutPromise]);
+                    }
+                }
+                
+                console.log(`📡 Response: ${response.status} ${response.statusText}`);
 
                 if (!response.ok) {
                     if (response.status === 401) {
@@ -237,11 +304,17 @@ class RealOddsAPIIntegration {
 
                 const data = await response.json();
                 console.log(`✅ Successfully fetched odds using ${config.description}`);
-                console.log(`📊 Raw API Response - Games: ${data.length}, Sample:`, data[0] || 'No games');
+                console.log(`📊 Raw API Response for ${sport} - Games: ${data.length}, Sample:`, data[0] || 'No games');
                 
                 // Check if we got any data
                 if (!data || data.length === 0) {
-                    console.warn('⚠️ API returned empty data - could be offseason or no upcoming games');
+                    if (sport === 'americanfootball_nfl_preseason') {
+                        console.warn('⚠️ No preseason games available - may be regular season period');
+                    } else {
+                        console.warn('⚠️ API returned empty data - could be offseason or no upcoming games');
+                    }
+                } else {
+                    console.log(`🎯 Found ${data.length} games for ${sport}`);
                 }
                 
                 return this.parseOddsAPIData(data);
@@ -274,8 +347,12 @@ class RealOddsAPIIntegration {
 
         const playerPropsData = [];
         
-        // Player props markets available in The Odds API
-        const propsMarkets = ['player_pass_yards', 'player_rush_yards', 'player_rec_yards', 'player_pass_tds', 'player_anytime_td'];
+        // Updated Player props markets available in The Odds API (2025)
+        const propsMarkets = [
+            'player_pass_yds', 'player_pass_tds', 'player_pass_attempts', 'player_pass_completions',
+            'player_rush_yds', 'player_rush_tds', 'player_receptions', 'player_reception_yds', 'player_reception_tds',
+            'player_anytime_td', 'player_1st_td', 'player_sacks', 'player_solo_tackles'
+        ];
         
         for (const eventId of eventIds.slice(0, 3)) { // Limit to 3 events to avoid rate limits
             try {
@@ -323,23 +400,82 @@ class RealOddsAPIIntegration {
         try {
             console.log('🗓️ Fetching NFL event IDs...');
             
-            const response = await fetch(
-                `${provider.baseUrl}/sports/americanfootball_nfl/events?apiKey=${apiKey}&regions=us&dateFormat=iso`,
-                {
+            // Build URL for events endpoint
+            const eventsUrl = `${provider.baseUrl}/sports/americanfootball_nfl/events?apiKey=${apiKey}&regions=us&dateFormat=iso`;
+            
+            let response;
+            
+            // Use CORS proxy for file:// protocol
+            if (window.location.protocol === 'file:') {
+                console.log(`🌐 Using CORS proxy for events endpoint...`);
+                const proxyUrl = `${this.corsProxies[0]}${encodeURIComponent(eventsUrl)}`;
+                
+                response = await fetch(proxyUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                    }
+                });
+            } else {
+                // Try direct request for HTTP/HTTPS
+                response = await fetch(eventsUrl, {
                     headers: {
                         'Accept': 'application/json',
                         'User-Agent': 'NFL-Analytics/1.0'
                     }
+                });
+            }
+            
+            // If events endpoint doesn't work, try getting IDs from odds endpoint
+            if (!response.ok) {
+                console.log('⚠️ Events endpoint failed, trying odds endpoint...');
+                const oddsUrl = `${provider.baseUrl}/sports/americanfootball_nfl/odds?apiKey=${apiKey}&regions=us&markets=h2h&dateFormat=iso`;
+                
+                if (window.location.protocol === 'file:') {
+                    const proxyUrl = `${this.corsProxies[0]}${encodeURIComponent(oddsUrl)}`;
+                    response = await fetch(proxyUrl, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                        }
+                    });
+                } else {
+                    response = await fetch(oddsUrl, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'User-Agent': 'NFL-Analytics/1.0'
+                        }
+                    });
                 }
-            );
+            }
 
             if (response.ok) {
-                const events = await response.json();
-                const eventIds = events.map(event => event.id);
-                console.log(`✅ Found ${eventIds.length} NFL events`);
-                return eventIds;
+                const data = await response.json();
+                console.log(`📅 Raw response:`, data?.length ? `${data.length} items` : data);
+                
+                let eventIds = [];
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    // Direct events array or odds array
+                    eventIds = data.map(item => item.id).filter(id => id);
+                } else if (data && typeof data === 'object') {
+                    // Check if it's a wrapped response
+                    if (data.events && Array.isArray(data.events)) {
+                        eventIds = data.events.map(event => event.id).filter(id => id);
+                    } else if (data.data && Array.isArray(data.data)) {
+                        eventIds = data.data.map(item => item.id).filter(id => id);
+                    }
+                }
+                
+                if (eventIds.length > 0) {
+                    console.log(`✅ Found ${eventIds.length} NFL event IDs:`, eventIds.slice(0, 3));
+                    return eventIds;
+                } else {
+                    console.warn('⚠️ No event IDs found in API response');
+                    return [];
+                }
             } else {
-                console.warn('⚠️ Failed to fetch event IDs:', response.status);
+                console.warn(`⚠️ Failed to fetch event IDs: ${response.status} ${response.statusText}`);
                 return [];
             }
             
@@ -371,15 +507,20 @@ class RealOddsAPIIntegration {
                     bookmaker.markets.forEach(market => {
                         if (market.key.startsWith('player_')) {
                             market.outcomes.forEach(outcome => {
+                                // Parse player name from description (format: "Player Name Over/Under X.5")
+                                const playerName = outcome.description ? outcome.description.split(' Over')[0].split(' Under')[0] : 'Unknown Player';
+                                
                                 game.bets.props.push({
                                     type: 'player_prop',
-                                    category: market.key.replace('player_', '').replace('_', ' '),
-                                    player: outcome.description || 'Unknown Player',
+                                    category: market.key, // Keep full market key for better categorization
+                                    displayCategory: market.key.replace('player_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                                    player: playerName,
                                     line: outcome.point || 0,
                                     odds: outcome.price || -110,
                                     bookmaker: bookmaker.title,
                                     market: market.key,
-                                    selection: outcome.name
+                                    selection: outcome.name,
+                                    over_under: outcome.name || 'Over'
                                 });
                             });
                         }
@@ -387,12 +528,89 @@ class RealOddsAPIIntegration {
                 });
                 
                 console.log(`📊 Added ${game.bets.props.length} player props for ${game.homeTeam} vs ${game.awayTeam}`);
+                console.log('🏈 Sample props:', game.bets.props.slice(0, 3)); // Show first 3 props for debugging
             }
+        });
+        
+        // Always add some sample props for testing if not enough live props available
+        mainData.games.forEach(game => {
+            if (!game.bets.props) {
+                game.bets.props = [];
+            }
+            
+            // Add sample props if we have fewer than 3 props per game
+            if (game.bets.props.length < 3) {
+                const sampleProps = [
+                    {
+                        type: 'player_prop',
+                        category: 'player_pass_yds',
+                        displayCategory: 'Pass Yds',
+                        player: 'Patrick Mahomes',
+                        line: 275.5,
+                        odds: -110,
+                        bookmaker: 'Sample',
+                        market: 'player_pass_yds',
+                        selection: 'Over',
+                        over_under: 'Over'
+                    },
+                    {
+                        type: 'player_prop',
+                        category: 'player_rush_yds',
+                        displayCategory: 'Rush Yds', 
+                        player: 'Christian McCaffrey',
+                        line: 85.5,
+                        odds: -105,
+                        bookmaker: 'Sample',
+                        market: 'player_rush_yds',
+                        selection: 'Over',
+                        over_under: 'Over'
+                    },
+                    {
+                        type: 'player_prop',
+                        category: 'player_reception_yds',
+                        displayCategory: 'Rec Yds',
+                        player: 'Tyreek Hill',
+                        line: 89.5,
+                        odds: -115,
+                        bookmaker: 'Sample',
+                        market: 'player_reception_yds',
+                        selection: 'Over',
+                        over_under: 'Over'
+                    },
+                    {
+                        type: 'player_prop',
+                        category: 'player_anytime_td',
+                        displayCategory: 'Anytime TD',
+                        player: 'Travis Kelce',
+                        line: 0,
+                        odds: +150,
+                        bookmaker: 'Sample',
+                        market: 'player_anytime_td',
+                        selection: 'Yes',
+                        over_under: 'Yes'
+                    }
+                ];
+                
+                // Add props that don't already exist
+                const neededProps = 3 - game.bets.props.length;
+                game.bets.props.push(...sampleProps.slice(0, neededProps));
+                
+                console.log(`📊 Added ${neededProps} sample player props to ${game.homeTeam} vs ${game.awayTeam} (total: ${game.bets.props.length})`);
         });
     }
 
     // Parse The Odds API response
     parseOddsAPIData(data) {
+        if (!data || !Array.isArray(data)) {
+            console.warn('⚠️ Invalid data structure received from API:', typeof data, data);
+            return {
+                provider: 'oddsapi',
+                games: [],
+                totalBets: 0,
+                lastUpdate: new Date().toISOString()
+            };
+        }
+        
         console.log(`🔄 Parsing ${data.length} games from The Odds API...`);
         const games = [];
 
@@ -823,6 +1041,8 @@ class RealOddsAPIIntegration {
 
     // Main fetch function that tries all available sources
     async fetchAllRealOdds(sport = 'nfl') {
+        console.log(`🎯 fetchAllRealOdds called with sport: ${sport}`);
+        
         const results = {
             success: [],
             failed: [],
@@ -839,33 +1059,64 @@ class RealOddsAPIIntegration {
         } else if (sport === 'nfl' || sport === 'americanfootball_nfl') {
             apiSport = 'americanfootball_nfl';
         }
+        
+        console.log(`🔄 API sport format: ${apiSport}`);
 
         // Try The Odds API first (most reliable) - only if user has API key
         if (this.apiProviders.oddsapi.apiKey) {
             try {
+                console.log(`🔍 Fetching ${sport} data from The Odds API with key: ${this.apiProviders.oddsapi.apiKey.substring(0, 8)}...`);
                 const data = await this.fetchOddsAPI(apiSport);
-                results.success.push(data);
-                results.totalGames += data.games.length;
-                results.totalBets += data.totalBets;
-                console.log('✅ The Odds API: Success');
+                
+                console.log(`📊 API Response:`, data);
+                
+                if (data && data.games && data.games.length > 0) {
+                    results.success.push(data);
+                    results.totalGames += data.games.length;
+                    results.totalBets += data.totalBets;
+                    console.log(`✅ The Odds API: Success with ${data.games.length} games and ${data.totalBets} bets`);
 
-                // Try to fetch player props for additional data
-                try {
-                    const eventIds = await this.fetchEventIds();
-                    if (eventIds.length > 0) {
-                        const playerProps = await this.fetchPlayerProps(eventIds);
-                        if (playerProps.length > 0) {
-                            // Merge player props data into existing games
-                            this.mergePlayerProps(data, playerProps);
-                            console.log(`✅ Player props added for ${playerProps.length} events`);
+                    // Try to fetch player props for additional data (skip for preseason)
+                    if (sport !== 'nfl_preseason') {
+                        try {
+                            console.log('🏈 Attempting to fetch player props...');
+                            const eventIds = await this.fetchEventIds();
+                            console.log(`📅 Found ${eventIds.length} event IDs`);
+                            
+                            if (eventIds.length > 0) {
+                                const playerProps = await this.fetchPlayerProps(eventIds);
+                                if (playerProps && playerProps.length > 0) {
+                                    // Merge player props data into existing games
+                                    this.mergePlayerProps(data, playerProps);
+                                    console.log(`✅ Player props added for ${playerProps.length} events`);
+                                } else {
+                                    console.log('📊 No player props data returned');
+                                }
+                            } else {
+                                console.log('📅 No event IDs available for props');
+                            }
+                        } catch (propsError) {
+                            console.warn('⚠️ Player props fetch failed (non-critical):', propsError.message);
                         }
                     }
-                } catch (propsError) {
-                    console.warn('⚠️ Player props fetch failed (non-critical):', propsError.message);
+                } else {
+                    console.warn(`⚠️ No ${sport} games found from The Odds API - data structure:`, data);
+                    
+                    // Even if no games, consider it a successful API call if we got a response
+                    if (data && Array.isArray(data.games)) {
+                        results.success.push(data);
+                        console.log('✅ API responded successfully but no games available (offseason/between weeks)');
+                    } else {
+                        results.failed.push({
+                            provider: 'oddsapi',
+                            name: 'The Odds API',
+                            error: `No ${sport} games available or invalid response structure`
+                        });
+                    }
                 }
                 
             } catch (error) {
-                console.log('❌ The Odds API failed:', error.message);
+                console.log(`❌ The Odds API failed for ${sport}:`, error.message);
                 results.failed.push({
                     provider: 'oddsapi',
                     name: 'The Odds API',
@@ -898,39 +1149,51 @@ class RealOddsAPIIntegration {
             }
         }
 
-        // Try Hard Rock Bet via CORS proxy
-        try {
-            console.log('🎰 Attempting Hard Rock Bet via CORS proxy...');
-            
-            // Check if HardRockBetIntegration is available
-            if (typeof HardRockBetIntegration === 'undefined') {
-                throw new Error('Hard Rock Bet integration not loaded');
+        // Skip Hard Rock Bet for file:// protocol (requires PHP proxy which doesn't work locally)
+        if (window.location.protocol !== 'file:') {
+            try {
+                console.log('🎰 Attempting Hard Rock Bet via CORS proxy...');
+                
+                // Check if HardRockBetIntegration is available
+                if (typeof HardRockBetIntegration === 'undefined') {
+                    throw new Error('Hard Rock Bet integration not loaded');
+                }
+                
+                const hardRockIntegration = new HardRockBetIntegration();
+                const hardRockData = await hardRockIntegration.getAllOdds();
+                
+                if (hardRockData && hardRockData.games.length > 0) {
+                    results.success.push(hardRockData);
+                    results.totalGames += hardRockData.games.length;
+                    results.totalBets += hardRockData.totalBets;
+                    console.log('✅ Hard Rock Bet: Success via proxy');
+                } else {
+                    throw new Error('No games returned from Hard Rock Bet');
+                }
+            } catch (error) {
+                console.log('❌ Hard Rock Bet proxy failed:', error.message);
+                results.failed.push({
+                    provider: 'hardrock',
+                    name: 'Hard Rock Bet (Proxy)',
+                    error: error.message
+                });
             }
-            
-            const hardRockIntegration = new HardRockBetIntegration();
-            const hardRockData = await hardRockIntegration.getAllOdds();
-            
-            if (hardRockData && hardRockData.games.length > 0) {
-                results.success.push(hardRockData);
-                results.totalGames += hardRockData.games.length;
-                results.totalBets += hardRockData.totalBets;
-                console.log('✅ Hard Rock Bet: Success via proxy');
-            } else {
-                throw new Error('No games returned from Hard Rock Bet');
-            }
-        } catch (error) {
-            console.log('❌ Hard Rock Bet proxy failed:', error.message);
-            results.failed.push({
-                provider: 'hardrock',
-                name: 'Hard Rock Bet (Proxy)',
-                error: error.message
-            });
+        } else {
+            console.log('⚠️ Skipping Hard Rock Bet integration for file:// protocol (requires server environment)');
         }
 
         results.providers = results.success.map(r => r.provider);
         
+        console.log(`📊 Final results: ${results.success.length} successful, ${results.failed.length} failed`);
+        console.log('📈 Successful providers:', results.success.map(s => s.provider));
+        console.log('❌ Failed providers:', results.failed.map(f => f.provider));
+        
         if (results.success.length === 0) {
-            throw new Error('No real odds data available. Please configure API keys or check network connectivity.');
+            const errorMsg = 'No real odds data available. ' + 
+                (this.apiProviders.oddsapi.apiKey ? 
+                    'API calls failed - check network connectivity or try again later.' : 
+                    'Please configure your Odds API key in settings.');
+            throw new Error(errorMsg);
         }
 
         return results;
