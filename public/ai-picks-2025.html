@@ -648,6 +648,8 @@
 
     <script>
         // AI Picks System 2025
+        console.log('🔥 JAVASCRIPT IS LOADING - AI PICKS 2025');
+        
         let picksIntegration = null;
         let aiPicks = [];
         let currentFilter = 'all';
@@ -687,24 +689,59 @@
 
         // Initialize AI picks system
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 NFL PICKS 2025 - LOADING TODAY\'S GAMES IMMEDIATELY');
+            console.log('🚀 NFL PICKS 2025 - STARTING INITIALIZATION');
             console.log(`📅 TODAY: ${new Date().toDateString()}`);
+            
+            // First, verify basic DOM elements exist
+            const container = document.getElementById('ai-picks-container');
+            const statusIndicator = document.getElementById('statusIndicator');
+            
+            if (!container) {
+                console.error('❌ CRITICAL: ai-picks-container not found in DOM');
+                alert('Critical error: AI picks container missing');
+                return;
+            }
+            
+            if (!statusIndicator) {
+                console.error('❌ CRITICAL: statusIndicator not found in DOM');
+            }
+            
+            console.log('✅ DOM elements verified');
+            
+            // Immediately show something in the container to prove DOM manipulation works
+            container.innerHTML = '<div style="padding: 20px; background: #333; color: #00ff00; text-align: center;">🔥 JAVASCRIPT IS WORKING - Loading NFL games...</div>';
             
             updateStatus('🔥 Loading today\'s NFL games...');
             
             // Setup filter button event listeners
             setupFilterEventListeners();
             
-            // IMMEDIATELY initialize API and load today's games - no waiting
-            console.log('🔥 FORCING IMMEDIATE INITIALIZATION AND LOAD');
-            await initializeAIPicks();
+            // Wait for API client to be available, then initialize
+            let attempts = 0;
+            const maxAttempts = 10;
             
-            console.log(`✅ LOADED ${aiPicks.length} GAMES - NOW RENDERING`);
-            renderPicks();
-            startNeuralProcesses();
+            const waitForAPIClient = async () => {
+                attempts++;
+                console.log(`🔍 Attempt ${attempts}: Checking for API client...`);
+                
+                if (window.sundayEdgeAPI) {
+                    console.log('✅ API client found, initializing...');
+                    await initializeAIPicks();
+                    console.log(`✅ LOADED ${aiPicks.length} GAMES - NOW RENDERING`);
+                    renderPicks();
+                    startNeuralProcesses();
+                    debugCurrentState();
+                } else if (attempts < maxAttempts) {
+                    console.log(`⚠️ API client not ready, waiting... (${attempts}/${maxAttempts})`);
+                    setTimeout(waitForAPIClient, 500);
+                } else {
+                    console.error('❌ API client failed to load after 10 attempts');
+                    updateStatus('❌ API client failed to load - trying fallback');
+                    await initializeAIPicks(); // Try anyway with fallback
+                }
+            };
             
-            // Debug what we have
-            debugCurrentState();
+            waitForAPIClient();
         });
 
         function setupFilterEventListeners() {

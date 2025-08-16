@@ -1,15 +1,37 @@
-<!DOCTYPE html>
+<\!DOCTYPE html>
 <html>
 <head>
     <title>Simple Test</title>
 </head>
-<body style="background: white; color: black; padding: 20px; font-family: Arial;">
-    <h1>Simple Test Page</h1>
-    <p>If you can see this, static files are working.</p>
-    <p>Current time: <span id="time"></span></p>
+<body>
+    <h1>Simple Button Test</h1>
+    <button onclick="testClick()">Test Button</button>
+    <div id="output"></div>
+    
     <script>
-        document.getElementById('time').textContent = new Date().toLocaleString();
-        console.log('Simple test page loaded successfully');
+        function testClick() {
+            document.getElementById('output').innerHTML = 'Button clicked\! JavaScript is working.';
+            console.log('Button clicked successfully');
+        }
+        
+        // Test Railway API
+        async function testAPI() {
+            try {
+                const response = await fetch('https://sunday-edge-pro-api-production.up.railway.app/api/nfl/today');
+                const data = await response.json();
+                document.getElementById('output').innerHTML += '<br>API Response: ' + data.games.length + ' games found';
+                console.log('API test:', data);
+            } catch (error) {
+                document.getElementById('output').innerHTML += '<br>API Error: ' + error.message;
+                console.error('API error:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            testAPI();
+        });
     </script>
 </body>
 </html>
+EOF < /dev/null
