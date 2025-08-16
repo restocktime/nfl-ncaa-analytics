@@ -12,16 +12,37 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Enable CORS for your domain
+// Enable CORS for your domain - Allow all Vercel/Netlify deployments
 app.use(cors({
-    origin: [
-        'https://sundayedgepro.com', 
-        'https://www.sundayedgepro.com', 
-        'https://nfl-ncaa-analytics-mj7g.vercel.app',
-        'http://localhost:3000', 
-        'http://localhost:8000'
-    ],
-    credentials: true
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, etc)
+        if (!origin) return callback(null, true);
+        
+        // Allow all localhost and local development
+        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            return callback(null, true);
+        }
+        
+        // Allow specific domains
+        const allowedDomains = [
+            'sundayedgepro.com',
+            'vercel.app',
+            'netlify.app',
+            'railway.app'
+        ];
+        
+        // Check if origin contains any allowed domain
+        if (allowedDomains.some(domain => origin.includes(domain))) {
+            return callback(null, true);
+        }
+        
+        // For debugging - log rejected origins
+        console.log('❌ CORS rejected origin:', origin);
+        return callback(new Error('Not allowed by CORS'), false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -413,7 +434,7 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Sunday Edge Pro API Service running on port ${PORT}`);
     console.log(`📡 API Keys configured: ${Object.keys(API_KEYS).filter(k => API_KEYS[k]).join(', ')}`);
-    console.log(`🌐 CORS origins: sundayedgepro.com, nfl-ncaa-analytics-mj7g.vercel.app`);
+    console.log(`🌐 CORS enabled for: *.vercel.app, *.netlify.app, sundayedgepro.com`);
 });
 
 module.exports = app;
