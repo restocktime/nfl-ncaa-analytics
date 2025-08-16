@@ -60,16 +60,13 @@ class APIKeyDecoder {
 
 class RealOddsAPIIntegration {
     constructor() {
-        // Initialize key decoder
-        this.keyDecoder = new APIKeyDecoder();
-        
-        // Real odds API providers with obfuscated keys
+        // Real odds API providers - keys must be configured by user
         this.apiProviders = {
             oddsapi: {
                 name: 'The Odds API',
                 baseUrl: 'https://api.the-odds-api.com/v4',
-                apiKey: this.keyDecoder.decode('NTVyODJyN3JwcHExODk1bnE3bzkyMG5ycm5wcG8zc28='), // Obfuscated API key
-                widgetKey: this.keyDecoder.decode('anhfcDRzNjNzMTlwbzA0MnEyMDM1NjFwcjZyNDgxNnEwcDY='), // Obfuscated widget key
+                apiKey: null, // Configure with your API key from https://the-odds-api.com/
+                widgetKey: null, // Configure widget key for embedded odds displays
                 endpoints: {
                     sports: '/sports',
                     odds: '/sports/americanfootball_nfl/odds',

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum NFL Calendar 2025 - Time-Space Game Matrix</title>
+    
+    <!-- Futuristic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 2025 Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-2025-theme.css">
+    
+    <style>
+        .quantum-calendar {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-glass);
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .calendar-nav button {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-md);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+        }
+        
+        .calendar-nav button:hover {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-cyber);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-glass);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .calendar-day-header {
+            background: var(--bg-tertiary);
+            padding: var(--space-md);
+            text-align: center;
+            font-weight: 600;
+            color: var(--cyber-primary);
+            font-size: var(--text-sm);
+        }
+        
+        .calendar-day {
+            background: var(--bg-secondary);
+            min-height: 120px;
+            padding: var(--space-sm);
+            position: relative;
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+        }
+        
+        .calendar-day:hover {
+            background: var(--bg-glow);
+            transform: scale(1.02);
+        }
+        
+        .calendar-day.other-month {
+            opacity: 0.4;
+        }
+        
+        .calendar-day.today {
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.1) 0%,
+                rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid var(--cyber-primary);
+        }
+        
+        .calendar-day.has-games {
+            background: linear-gradient(135deg, 
+                rgba(57, 255, 20, 0.1) 0%,
+                rgba(0, 212, 255, 0.1) 100%);
+            border: 1px solid var(--cyber-accent);
+        }
+        
+        .day-number {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .game-indicator {
+            background: var(--cyber-accent);
+            color: var(--bg-primary);
+            font-size: var(--text-xs);
+            padding: 2px 4px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 2px;
+            display: block;
+            text-align: center;
+            font-weight: 600;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .game-indicator.primetime {
+            background: var(--cyber-secondary);
+            box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+        }
+        
+        .quantum-week-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+        
+        .week-game-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .week-game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--cyber-accent) 50%, 
+                transparent 100%);
+            opacity: 0;
+            transition: opacity var(--transition-smooth);
+        }
+        
+        .week-game-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-cyber);
+        }
+        
+        .week-game-card:hover::before {
+            opacity: 1;
+        }
+        
+        .game-time {
+            color: var(--cyber-primary);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .team-matchup {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: var(--space-md) 0;
+        }
+        
+        .team-info {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .team-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        
+        .team-record {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+        
+        .vs-indicator {
+            color: var(--cyber-secondary);
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--cyber-secondary);
+            margin: 0 var(--space-md);
+        }
+        
+        .game-odds {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-md);
+            font-size: var(--text-sm);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--border-glass);
+        }
+        
+        .spread-info {
+            color: var(--cyber-accent);
+        }
+        
+        .total-info {
+            color: var(--cyber-purple);
+        }
+        
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar-day-header {
+                display: none;
+            }
+            
+            .calendar-day {
+                border-radius: var(--radius-md);
+                margin-bottom: var(--space-sm);
+            }
+            
+            .quantum-week-view {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Futuristic Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Quantum NFL Calendar</h1>
+                <p>Time-space matrix of all NFL games with parallel universe scheduling</p>
+                
+                <div class="btn-group">
+                    <a href="index-2025.html" class="btn btn-secondary">
+                        <span>←</span> Neural Hub
+                    </a>
+                    <a href="fantasy-hub-2025.html" class="btn btn-primary">
+                        <span>🧠</span> Fantasy AI
+                    </a>
+                    <a href="betting-dashboard-2025.html" class="btn btn-success">
+                        <span>⚡</span> Quantum Betting
+                    </a>
+                    <a href="mock-draft-2025.html" class="btn btn-secondary">
+                        <span>🎯</span> AI Mock Draft
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Calendar Controls -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Quantum Time Matrix</h2>
+                <p class="section-subtitle">Neural-enhanced NFL schedule with multiverse game tracking</p>
+            </div>
+            
+            <div class="quantum-calendar">
+                <div class="calendar-header">
+                    <div>
+                        <h3 id="current-month">November 2024</h3>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--text-sm);">
+                            ⚛️ Quantum coherence: <span id="quantum-coherence">97.3%</span> | 
+                            🌌 Timeline: <span id="current-timeline">Primary Reality</span>
+                        </p>
+                    </div>
+                    <div class="calendar-nav">
+                        <button onclick="changeMonth(-1)">← Previous</button>
+                        <button onclick="goToToday()">Today</button>
+                        <button onclick="changeMonth(1)">Next →</button>
+                        <button onclick="toggleWeekView()" id="view-toggle">Week View</button>
+                    </div>
+                </div>
+                
+                <div id="calendar-container">
+                    <!-- Calendar will be rendered here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Week View -->
+        <section class="section" id="week-view-section" style="display: none;">
+            <div class="section-header">
+                <h2>Neural Game Analysis</h2>
+                <p class="section-subtitle">Quantum-enhanced matchup intelligence for optimal strategy</p>
+            </div>
+            
+            <div id="quantum-week-games" class="quantum-week-view">
+                <!-- Week games will be rendered here -->
+            </div>
+        </section>
+
+        <!-- Calendar Legend -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Quantum Calendar Legend</h2>
+                <p class="section-subtitle">Understanding the time-space game matrix indicators</p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📅</div>
+                        <div>
+                            <h3>Regular Games</h3>
+                        </div>
+                    </div>
+                    <p>Standard NFL games with neural probability analysis and quantum odds tracking</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⭐</div>
+                        <div>
+                            <h3>Primetime Events</h3>
+                        </div>
+                    </div>
+                    <p>Monday Night Football, Sunday Night Football, and Thursday Night Football with enhanced AI analysis</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏆</div>
+                        <div>
+                            <h3>Playoff Games</h3>
+                        </div>
+                    </div>
+                    <p>Post-season matchups with maximum quantum coherence and parallel universe predictions</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <div>
+                            <h3>Draft Events</h3>
+                        </div>
+                    </div>
+                    <p>NFL Draft, trade deadlines, and other critical fantasy football dates with AI predictions</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Futuristic Status -->
+    <div class="status-indicator" id="statusIndicator">
+        ⚛️ Quantum Calendar Matrix Online
+    </div>
+
+    <!-- Load API Integration -->
+    <script src="api-sports-odds-integration.js"></script>
+
+    <script>
+        // Quantum Calendar System 2025
+        let currentDate = new Date();
+        let currentView = 'month';
+        let quantumCoherence = 97.3;
+        
+        // Neural NFL Schedule Data - Connected to Real APIs
+        let nflSchedule = {};
+        let oddsIntegration = null;
+
+        // Initialize real NFL data integration
+        async function initializeNFLData() {
+            try {
+                // Connect to our betting odds integration for game data
+                if (typeof RealOddsAPIIntegration !== 'undefined') {
+                    oddsIntegration = new RealOddsAPIIntegration();
+                    oddsIntegration.loadStoredAPIKeys();
+                    
+                    updateStatus('🔄 Loading neural NFL schedule from quantum APIs...');
+                    await loadRealNFLSchedule();
+                } else {
+                    console.warn('⚠️ Odds API integration not loaded, using static data');
+                    loadStaticSchedule();
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize NFL data:', error);
+                loadStaticSchedule();
+            }
+        }
+
+        async function loadRealNFLSchedule() {
+            try {
+                const oddsData = await oddsIntegration.fetchAllRealOdds('nfl');
+                
+                if (oddsData.success && oddsData.success.length > 0) {
+                    // Convert odds data to calendar format
+                    nflSchedule = {};
+                    
+                    oddsData.success.forEach(provider => {
+                        if (provider.games) {
+                            provider.games.forEach(game => {
+                                const gameDate = new Date(game.gameTime).toISOString().split('T')[0];
+                                const gameTime = new Date(game.gameTime);
+                                const timeString = gameTime.toLocaleTimeString('en-US', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit', 
+                                    hour12: false 
+                                });
+                                
+                                // Determine if primetime (evening games)
+                                const hour = gameTime.getHours();
+                                const isPrimetime = hour >= 19 || (gameTime.getDay() === 4 && hour >= 20) || (gameTime.getDay() === 1 && hour >= 20);
+                                
+                                const calendarGame = {
+                                    home: game.homeTeam,
+                                    away: game.awayTeam,
+                                    time: timeString,
+                                    type: isPrimetime ? 'primetime' : 'regular',
+                                    spread: game.bets?.spread ? `${game.homeTeam} ${game.bets.spread.home.line}` : 'TBD',
+                                    total: game.bets?.totals ? `O/U ${game.bets.totals.over.line}` : 'TBD',
+                                    provider: provider.provider
+                                };
+                                
+                                if (!nflSchedule[gameDate]) {
+                                    nflSchedule[gameDate] = [];
+                                }
+                                nflSchedule[gameDate].push(calendarGame);
+                            });
+                        }
+                    });
+                    
+                    const totalGames = Object.values(nflSchedule).reduce((sum, games) => sum + games.length, 0);
+                    updateStatus(`✅ Neural schedule synchronized - ${totalGames} quantum games loaded`);
+                    console.log(`🧠 Real NFL schedule loaded: ${totalGames} games`);
+                    
+                } else {
+                    throw new Error('No game data available from APIs');
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to load real NFL schedule:', error);
+                updateStatus('⚠️ API key required for real schedule - using quantum simulation');
+                loadStaticSchedule();
+            }
+        }
+
+        function loadStaticSchedule() {
+            // Fallback static schedule when API is not available
+            nflSchedule = {
+                '2024-11-17': [
+                    { home: 'BUF', away: 'KC', time: '16:25', type: 'regular', spread: 'KC -2.5', total: 'O/U 46', provider: 'Static' },
+                    { home: 'LAR', away: 'NE', time: '13:00', type: 'regular', spread: 'LAR -4.5', total: 'O/U 42.5', provider: 'Static' },
+                    { home: 'DET', away: 'JAX', time: '13:00', type: 'regular', spread: 'DET -13', total: 'O/U 46.5', provider: 'Static' },
+                    { home: 'MIN', away: 'TEN', time: '13:00', type: 'regular', spread: 'MIN -5.5', total: 'O/U 39.5', provider: 'Static' }
+                ],
+                '2024-11-21': [
+                    { home: 'PIT', away: 'CLE', time: '20:15', type: 'primetime', spread: 'PIT -3.5', total: 'O/U 36.5', provider: 'Static' }
+                ],
+                '2024-11-24': [
+                    { home: 'DET', away: 'CHI', time: '12:30', type: 'regular', spread: 'DET -10', total: 'O/U 48.5', provider: 'Static' },
+                    { home: 'DAL', away: 'NYG', time: '16:30', type: 'regular', spread: 'DAL -4', total: 'O/U 37.5', provider: 'Static' },
+                    { home: 'GB', away: 'MIA', time: '20:20', type: 'primetime', spread: 'GB -3', total: 'O/U 47', provider: 'Static' }
+                ],
+                '2024-11-28': [
+                    { home: 'KC', away: 'LV', time: '15:00', type: 'regular', spread: 'KC -12.5', total: 'O/U 42.5', provider: 'Static' }
+                ],
+                '2024-12-01': [
+                    { home: 'SEA', away: 'NYJ', time: '13:00', type: 'regular', spread: 'SEA -1', total: 'O/U 42', provider: 'Static' },
+                    { home: 'PHI', away: 'BAL', time: '16:25', type: 'regular', spread: 'BAL -2.5', total: 'O/U 51', provider: 'Static' }
+                ]
+            };
+            
+            updateStatus('📅 Quantum simulation schedule loaded - Configure API for real data');
+        }
+
+        // Initialize calendar
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Quantum NFL Calendar 2025 - Neural Matrix Initialized');
+            updateStatus('⚛️ Initializing quantum time matrix...');
+            
+            // Load NFL data first
+            await initializeNFLData();
+            
+            // Then render calendar
+            renderCalendar();
+            updateQuantumStatus();
+            startQuantumProcesses();
+        });
+
+        function renderCalendar() {
+            const container = document.getElementById('calendar-container');
+            const monthYear = document.getElementById('current-month');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            monthYear.textContent = new Intl.DateTimeFormat('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            }).format(currentDate);
+            
+            // Create calendar grid
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            let calendarHTML = `
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+            `;
+            
+            // Generate 42 days (6 weeks)
+            for (let i = 0; i < 42; i++) {
+                const currentDay = new Date(startDate);
+                currentDay.setDate(startDate.getDate() + i);
+                
+                const dayKey = currentDay.toISOString().split('T')[0];
+                const games = nflSchedule[dayKey] || [];
+                const isToday = currentDay.toDateString() === new Date().toDateString();
+                const isCurrentMonth = currentDay.getMonth() === month;
+                
+                let dayClasses = ['calendar-day'];
+                if (!isCurrentMonth) dayClasses.push('other-month');
+                if (isToday) dayClasses.push('today');
+                if (games.length > 0) dayClasses.push('has-games');
+                
+                let gamesHTML = '';
+                games.forEach(game => {
+                    const gameClass = game.type === 'primetime' ? 'game-indicator primetime' : 'game-indicator';
+                    gamesHTML += `<span class="${gameClass}">${game.away}@${game.home}</span>`;
+                });
+                
+                calendarHTML += `
+                    <div class="${dayClasses.join(' ')}" onclick="selectDay('${dayKey}')">
+                        <div class="day-number">${currentDay.getDate()}</div>
+                        ${gamesHTML}
+                    </div>
+                `;
+            }
+            
+            calendarHTML += '</div>';
+            container.innerHTML = calendarHTML;
+        }
+
+        function selectDay(dayKey) {
+            const games = nflSchedule[dayKey] || [];
+            if (games.length === 0) {
+                updateStatus('📅 No games scheduled for this quantum date');
+                return;
+            }
+            
+            updateStatus(`🏈 ${games.length} games detected in quantum matrix`);
+            
+            // Show week view for selected day
+            showWeekView(dayKey);
+        }
+
+        function showWeekView(selectedDay = null) {
+            const weekSection = document.getElementById('week-view-section');
+            const weekContainer = document.getElementById('quantum-week-games');
+            
+            let gamesToShow = [];
+            
+            if (selectedDay && nflSchedule[selectedDay]) {
+                gamesToShow = nflSchedule[selectedDay].map(game => ({...game, date: selectedDay}));
+            } else {
+                // Show current week's games
+                const today = new Date().toISOString().split('T')[0];
+                Object.keys(nflSchedule).forEach(date => {
+                    if (Math.abs(new Date(date) - new Date(today)) <= 3 * 24 * 60 * 60 * 1000) {
+                        nflSchedule[date].forEach(game => {
+                            gamesToShow.push({...game, date});
+                        });
+                    }
+                });
+            }
+            
+            let weekHTML = '';
+            gamesToShow.forEach(game => {
+                const gameDate = new Date(game.date);
+                const formattedDate = gameDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                weekHTML += `
+                    <div class="week-game-card">
+                        <div class="game-time">
+                            📅 ${formattedDate} • ⏰ ${game.time}
+                            ${game.type === 'primetime' ? ' • ⭐ PRIMETIME' : ''}
+                        </div>
+                        <div class="team-matchup">
+                            <div class="team-info">
+                                <div class="team-name">${game.away}</div>
+                                <div class="team-record">Away Team</div>
+                            </div>
+                            <div class="vs-indicator">⚛️</div>
+                            <div class="team-info">
+                                <div class="team-name">${game.home}</div>
+                                <div class="team-record">Home Team</div>
+                            </div>
+                        </div>
+                        <div class="game-odds">
+                            <span class="spread-info">🎯 ${game.spread}</span>
+                            <span class="total-info">📊 ${game.total}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            weekContainer.innerHTML = weekHTML;
+            weekSection.style.display = 'block';
+            
+            // Scroll to week view
+            weekSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function changeMonth(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            renderCalendar();
+            updateQuantumStatus();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            renderCalendar();
+            updateStatus('🕰️ Quantum timeline synchronized to present moment');
+        }
+
+        function toggleWeekView() {
+            const weekSection = document.getElementById('week-view-section');
+            const button = document.getElementById('view-toggle');
+            
+            if (weekSection.style.display === 'none') {
+                showWeekView();
+                button.textContent = 'Month View';
+            } else {
+                weekSection.style.display = 'none';
+                button.textContent = 'Week View';
+            }
+        }
+
+        function updateQuantumStatus() {
+            quantumCoherence += (Math.random() - 0.5) * 2;
+            quantumCoherence = Math.max(85, Math.min(99.9, quantumCoherence));
+            
+            document.getElementById('quantum-coherence').textContent = quantumCoherence.toFixed(1) + '%';
+            
+            const timelines = ['Primary Reality', 'Alpha Timeline', 'Beta Dimension', 'Gamma Universe'];
+            const randomTimeline = timelines[Math.floor(Math.random() * timelines.length)];
+            document.getElementById('current-timeline').textContent = randomTimeline;
+        }
+
+        function updateStatus(message, type = 'success') {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                
+                // Quantum pulse effect
+                indicator.style.animation = 'none';
+                setTimeout(() => {
+                    indicator.style.animation = 'statusPulse 2s ease-in-out infinite';
+                }, 10);
+            }
+        }
+
+        function startQuantumProcesses() {
+            // Update quantum status every 5 seconds
+            setInterval(updateQuantumStatus, 5000);
+            
+            // Rotate status messages
+            const statusMessages = [
+                '⚛️ Quantum Calendar Matrix Online',
+                '🕰️ Time-Space Continuum Stable',
+                '🌌 NFL Schedule Synchronized',
+                '🧠 Neural Predictions Active',
+                '⚡ Quantum Coherence Optimal'
+            ];
+            
+            let messageIndex = 0;
+            setInterval(() => {
+                messageIndex = (messageIndex + 1) % statusMessages.length;
+                updateStatus(statusMessages[messageIndex]);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

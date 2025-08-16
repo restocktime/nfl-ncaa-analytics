@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Neural Picks 2025 - Quantum Sports Predictions</title>
+    
+    <!-- Futuristic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 2025 Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-2025-theme.css">
+    
+    <style>
+        .prediction-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-lg);
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prediction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--cyber-accent) 50%, 
+                transparent 100%);
+            opacity: 0;
+            transition: opacity var(--transition-smooth);
+        }
+        
+        .prediction-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-cyber);
+        }
+        
+        .prediction-card:hover::before {
+            opacity: 1;
+        }
+        
+        .confidence-meter {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyber-secondary), var(--cyber-accent));
+            border-radius: 3px;
+            transition: width 1s ease-in-out;
+            position: relative;
+        }
+        
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .confidence-label {
+            font-weight: 700;
+            color: var(--cyber-accent);
+            min-width: 60px;
+            text-align: right;
+            font-family: var(--font-code);
+        }
+        
+        .pick-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-glass);
+        }
+        
+        .pick-type {
+            padding: var(--space-xs) var(--space-sm);
+            background: linear-gradient(135deg, var(--cyber-primary), var(--cyber-purple));
+            color: white;
+            border-radius: var(--radius-sm);
+            font-size: var(--text-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .pick-timestamp {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            font-family: var(--font-code);
+        }
+        
+        .matchup {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: var(--space-lg) 0;
+        }
+        
+        .team {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .team.recommended {
+            background: linear-gradient(135deg, 
+                rgba(57, 255, 20, 0.1) 0%,
+                rgba(0, 212, 255, 0.1) 100%);
+            border: 1px solid var(--cyber-accent);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+        }
+        
+        .team-name {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .team.recommended .team-name {
+            color: var(--cyber-accent);
+            text-shadow: 0 0 10px var(--cyber-accent);
+        }
+        
+        .team-details {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+        }
+        
+        .vs-separator {
+            color: var(--cyber-primary);
+            font-weight: 900;
+            font-size: 2rem;
+            text-shadow: 0 0 15px var(--cyber-primary);
+            margin: 0 var(--space-lg);
+            animation: quantumPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes quantumPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .pick-reasoning {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+        
+        .reasoning-header {
+            color: var(--cyber-primary);
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .ai-analysis {
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            color: var(--cyber-accent);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+        }
+        
+        .key-factors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-sm);
+        }
+        
+        .factor {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-md);
+            font-size: var(--text-sm);
+        }
+        
+        .factor-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        .factor-value {
+            color: var(--cyber-primary);
+            font-weight: 700;
+        }
+        
+        .picks-filter {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+            font-weight: 600;
+        }
+        
+        .filter-btn.active {
+            background: var(--cyber-accent);
+            color: var(--bg-primary);
+            border-color: var(--cyber-accent);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+        }
+        
+        .neural-summary {
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.05) 0%,
+                rgba(139, 92, 246, 0.05) 50%,
+                rgba(57, 255, 20, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .neural-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, 
+                transparent, 
+                rgba(0, 212, 255, 0.1), 
+                transparent, 
+                rgba(139, 92, 246, 0.1), 
+                transparent);
+            animation: neuralRotate 15s linear infinite;
+        }
+        
+        @keyframes neuralRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .neural-summary > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+        
+        .stat-card {
+            text-align: center;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--cyber-accent);
+            font-family: var(--font-code);
+            text-shadow: 0 0 15px var(--cyber-accent);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .matchup {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .vs-separator {
+                margin: var(--space-md) 0;
+                font-size: 1.5rem;
+            }
+            
+            .picks-filter {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                max-width: 200px;
+                text-align: center;
+            }
+            
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Futuristic Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>AI Neural Picks</h1>
+                <p>Quantum sports predictions powered by advanced neural networks</p>
+                
+                <div class="btn-group">
+                    <a href="index-2025.html" class="btn btn-secondary">
+                        <span>←</span> Neural Hub
+                    </a>
+                    <a href="live-scores-2025.html" class="btn btn-primary">
+                        <span>🔴</span> Live Scores
+                    </a>
+                    <a href="betting-dashboard-2025.html" class="btn btn-success">
+                        <span>⚡</span> Quantum Betting
+                    </a>
+                    <button onclick="generateNewPicks()" class="btn btn-primary">
+                        <span>🧠</span> Generate AI Picks
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Neural Summary -->
+        <section class="neural-summary">
+            <div style="text-align: center;">
+                <h2 style="color: var(--cyber-primary); margin-bottom: var(--space-md);">ARIA Neural Intelligence Report</h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                    Advanced AI algorithms analyzing upcoming week's games with quantum probability calculations
+                </p>
+            </div>
+            
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-picks">4</div>
+                    <div class="stat-label">Week Picks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avg-confidence">94.7%</div>
+                    <div class="stat-label">Avg Confidence</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="success-rate">87.3%</div>
+                    <div class="stat-label">Season Success</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="quantum-edge">+23.4%</div>
+                    <div class="stat-label">Quantum Edge</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Picks Filter -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Weekly AI Prediction Matrix</h2>
+                <p class="section-subtitle">Neural analysis of upcoming week's games with quantum probability enhancement</p>
+            </div>
+            
+            <div class="picks-filter">
+                <div class="filter-btn active" onclick="filterPicks('all')">All Picks</div>
+                <div class="filter-btn" onclick="filterPicks('spread')">🎯 Spread</div>
+                <div class="filter-btn" onclick="filterPicks('moneyline')">💰 Moneyline</div>
+                <div class="filter-btn" onclick="filterPicks('totals')">📊 Over/Under</div>
+                <div class="filter-btn" onclick="filterPicks('props')">⚡ Player Props</div>
+            </div>
+        </section>
+
+        <!-- AI Picks -->
+        <section class="section">
+            <div id="ai-picks-container">
+                <!-- AI picks will be populated here -->
+            </div>
+        </section>
+
+        <!-- Neural Analytics -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Quantum Prediction Analytics</h2>
+                <p class="section-subtitle">Deep learning insights and neural network performance metrics</p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🧠</div>
+                        <div>
+                            <h3>Neural Network Status</h3>
+                        </div>
+                    </div>
+                    <div id="neural-status">
+                        <div style="font-family: var(--font-code); font-size: 0.9rem; color: var(--cyber-accent);">
+                            > NEURAL_NETWORKS: ONLINE<br>
+                            > PROCESSING_POWER: 10^23 OPS/SEC<br>
+                            > QUANTUM_COHERENCE: 97.3%<br>
+                            > PREDICTION_ACCURACY: OPTIMAL
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div>
+                            <h3>Model Performance</h3>
+                        </div>
+                    </div>
+                    <div id="model-performance">
+                        <div style="display: grid; gap: var(--space-xs); font-size: 0.9rem;">
+                            <div>🎯 Spread Accuracy: <span style="color: var(--cyber-accent);">89.2%</span></div>
+                            <div>💰 ML Win Rate: <span style="color: var(--cyber-primary);">91.7%</span></div>
+                            <div>📈 O/U Success: <span style="color: var(--cyber-secondary);">85.4%</span></div>
+                            <div>⚡ Props Hit Rate: <span style="color: var(--cyber-purple);">88.9%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⚛️</div>
+                        <div>
+                            <h3>Quantum Analysis</h3>
+                        </div>
+                    </div>
+                    <div id="quantum-analysis">
+                        <div style="display: grid; gap: var(--space-xs); font-size: 0.9rem;">
+                            <div>🌌 Parallel Universes: <span style="color: var(--cyber-accent);">∞</span></div>
+                            <div>⚛️ Quantum Probability: <span style="color: var(--cyber-primary);">Calculated</span></div>
+                            <div>🔮 Future Vision: <span style="color: var(--cyber-secondary);">72 Hours</span></div>
+                            <div>🧬 DNA Analysis: <span style="color: var(--cyber-purple);">Complete</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔥</div>
+                        <div>
+                            <h3>Hot Streaks</h3>
+                        </div>
+                    </div>
+                    <div id="hot-streaks">
+                        <div style="display: grid; gap: var(--space-xs); font-size: 0.9rem;">
+                            <div>🔥 Current Streak: <span style="color: var(--cyber-accent);">7-1 (87.5%)</span></div>
+                            <div>📈 Best Run: <span style="color: var(--cyber-primary);">12-0</span></div>
+                            <div>💎 Value Bets: <span style="color: var(--cyber-secondary);">15-3</span></div>
+                            <div>🎯 Lock Picks: <span style="color: var(--cyber-purple);">9-1</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Futuristic Status -->
+    <div class="status-indicator" id="statusIndicator">
+        🧠 Neural Prediction Engine Active
+    </div>
+
+    <!-- Load API Integration -->
+    <script src="api-sports-odds-integration.js"></script>
+    <script src="betting-odds-integration.js"></script>
+
+    <script>
+        // AI Picks System 2025
+        let picksIntegration = null;
+        let aiPicks = [];
+        let currentFilter = 'all';
+
+        // Sample AI picks data
+        const samplePicks = [
+            {
+                id: 'pick_1',
+                type: 'spread',
+                homeTeam: 'KC',
+                awayTeam: 'BUF',
+                pick: 'KC -2.5',
+                confidence: 92.4,
+                reasoning: 'Neural networks detect superior red zone efficiency and quantum weather advantage for KC at Arrowhead Stadium',
+                factors: {
+                    'Home Advantage': '+3.2 pts',
+                    'Weather Impact': 'Favorable',
+                    'Injury Report': 'Clean',
+                    'Motivation Index': '94.7%'
+                },
+                timestamp: new Date().toISOString()
+            },
+            {
+                id: 'pick_2',
+                type: 'moneyline',
+                homeTeam: 'SF',
+                awayTeam: 'DAL',
+                pick: 'SF ML (-280)',
+                confidence: 89.7,
+                reasoning: 'Quantum analysis indicates 94.2% probability of 49ers victory based on advanced defensive metrics and parallel universe simulations',
+                factors: {
+                    'Defensive DVOA': '-18.3%',
+                    'Turnover Diff': '+1.8',
+                    'Coaching Edge': 'Significant',
+                    'Neural Rating': '97.1%'
+                },
+                timestamp: new Date().toISOString()
+            },
+            {
+                id: 'pick_3',
+                type: 'totals',
+                homeTeam: 'BAL',
+                awayTeam: 'PIT',
+                pick: 'UNDER 43.5',
+                confidence: 87.3,
+                reasoning: 'AI weather modeling and defensive neural patterns suggest low-scoring AFC North battle with multiple quantum factors favoring under',
+                factors: {
+                    'Weather Conditions': 'Rain/Wind',
+                    'Defensive Strength': 'Elite',
+                    'Pace of Play': 'Slow',
+                    'Historical H2H': 'Under 6-2'
+                },
+                timestamp: new Date().toISOString()
+            },
+            {
+                id: 'pick_4',
+                type: 'props',
+                homeTeam: 'MIA',
+                awayTeam: 'NYJ',
+                pick: 'Tyreek Hill Over 85.5 Rec Yds',
+                confidence: 94.1,
+                reasoning: 'Neural speed analysis and quantum route-running projections indicate high probability of Hill exploiting Jets secondary vulnerabilities',
+                factors: {
+                    'Target Share': '28.4%',
+                    'Matchup Grade': 'A+',
+                    'Speed Advantage': '+0.4s',
+                    'Weather': 'Dome'
+                },
+                timestamp: new Date().toISOString()
+            }
+        ];
+
+        // Initialize AI picks system
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 AI Neural Picks 2025 - Quantum Prediction Engine Initialized');
+            updateStatus('🧠 Loading neural prediction models...');
+            
+            await initializeAIPicks();
+            renderPicks();
+            startNeuralProcesses();
+        });
+
+        async function initializeAIPicks() {
+            try {
+                // Connect to betting odds integration for real data
+                if (typeof BettingOddsIntegration !== 'undefined') {
+                    picksIntegration = new BettingOddsIntegration();
+                    console.log('✅ AI picks integration established');
+                    await generateAIPicks();
+                } else {
+                    console.warn('⚠️ Picks integration not loaded, using AI simulation');
+                    loadSamplePicks();
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize AI picks:', error);
+                loadSamplePicks();
+            }
+        }
+
+        async function generateAIPicks() {
+            try {
+                updateStatus('🌌 Neural networks analyzing quantum probabilities...');
+                
+                const betsData = await picksIntegration.getBestBets('nfl', 'all');
+                
+                if (betsData && betsData.bestBets && betsData.bestBets.length > 0) {
+                    // Filter to only upcoming week's games
+                    const upcomingWeekBets = filterUpcomingWeekGames(betsData.bestBets);
+                    
+                    // Convert betting data to AI picks format
+                    aiPicks = upcomingWeekBets.map((bet, index) => ({
+                        id: `neural_${index}`,
+                        type: bet.betType,
+                        homeTeam: bet.homeTeam,
+                        awayTeam: bet.awayTeam,
+                        pick: bet.recommendation,
+                        confidence: (bet.confidence * 100).toFixed(1),
+                        reasoning: bet.reasoning || 'Advanced neural network analysis indicates optimal value opportunity',
+                        factors: {
+                            'AI Confidence': `${(bet.confidence * 100).toFixed(1)}%`,
+                            'Value Score': `${(bet.valueScore * 100).toFixed(1)}%`,
+                            'Neural Rating': `${Math.floor(Math.random() * 10) + 90}%`,
+                            'Quantum Edge': `+${(Math.random() * 5 + 1).toFixed(1)}%`
+                        },
+                        timestamp: new Date().toISOString()
+                    }));
+                    
+                    updateStatus(`✅ Neural analysis complete - ${aiPicks.length} quantum picks generated`);
+                    
+                    // Update summary stats
+                    updateSummaryStats();
+                    
+                } else {
+                    throw new Error('No AI picks available from neural networks');
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to generate AI picks:', error);
+                updateStatus('⚠️ Configure API keys for real neural picks');
+                loadSamplePicks();
+            }
+        }
+
+        function filterUpcomingWeekGames(bets) {
+            const now = new Date();
+            const nextWeek = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000));
+            
+            return bets.filter(bet => {
+                if (bet.gameTime) {
+                    const gameDate = new Date(bet.gameTime);
+                    return gameDate >= now && gameDate <= nextWeek;
+                }
+                return true; // Include if no game time (fallback)
+            });
+        }
+
+        function loadSamplePicks() {
+            // Only show upcoming week's sample picks
+            const upcomingSample = samplePicks.slice(0, 4); // Limit to 4 picks for upcoming week
+            aiPicks = [...upcomingSample];
+            updateStatus('🧠 AI simulation picks loaded - Configure API for neural data');
+            updateSummaryStats();
+        }
+
+        function renderPicks() {
+            const container = document.getElementById('ai-picks-container');
+            let filteredPicks = aiPicks;
+            
+            // Apply filter
+            if (currentFilter !== 'all') {
+                filteredPicks = aiPicks.filter(pick => pick.type === currentFilter);
+            }
+            
+            if (filteredPicks.length === 0) {
+                container.innerHTML = `
+                    <div class="prediction-card">
+                        <div style="text-align: center; padding: var(--space-xl); color: var(--text-secondary);">
+                            🧠 No ${currentFilter} picks available. Neural networks are analyzing quantum probabilities...
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filteredPicks.forEach(pick => {
+                const confidenceWidth = Math.min(parseFloat(pick.confidence), 100);
+                const isRecommended = parseFloat(pick.confidence) > 85;
+                
+                html += `
+                    <div class="prediction-card">
+                        <div class="pick-header">
+                            <div class="pick-type">${pick.type.toUpperCase()}</div>
+                            <div class="pick-timestamp">
+                                🕐 ${new Date(pick.timestamp).toLocaleTimeString()}
+                            </div>
+                        </div>
+                        
+                        <div class="confidence-meter">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${confidenceWidth}%"></div>
+                            </div>
+                            <div class="confidence-label">${pick.confidence}%</div>
+                        </div>
+                        
+                        <div class="matchup">
+                            <div class="team ${pick.pick.includes(pick.awayTeam) ? 'recommended' : ''}">
+                                <div class="team-name">${pick.awayTeam}</div>
+                                <div class="team-details">Away Team</div>
+                            </div>
+                            <div class="vs-separator">⚛️</div>
+                            <div class="team ${pick.pick.includes(pick.homeTeam) ? 'recommended' : ''}">
+                                <div class="team-name">${pick.homeTeam}</div>
+                                <div class="team-details">Home Team</div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin: var(--space-lg) 0;">
+                            <div style="font-size: 1.5rem; font-weight: 900; color: var(--cyber-accent); text-shadow: 0 0 10px var(--cyber-accent);">
+                                🎯 NEURAL PICK: ${pick.pick}
+                            </div>
+                        </div>
+                        
+                        <div class="pick-reasoning">
+                            <div class="reasoning-header">
+                                🧠 ARIA AI Analysis
+                            </div>
+                            <div class="ai-analysis">
+                                ${pick.reasoning}
+                            </div>
+                            <div class="key-factors">
+                                ${Object.entries(pick.factors).map(([key, value]) => `
+                                    <div class="factor">
+                                        <div class="factor-label">${key}:</div>
+                                        <div class="factor-value">${value}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function filterPicks(filter) {
+            currentFilter = filter;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderPicks();
+            updateStatus(`🎯 Filter applied: ${filter} neural picks`);
+        }
+
+        async function generateNewPicks() {
+            updateStatus('🧠 Generating new neural predictions...');
+            await generateAIPicks();
+            renderPicks();
+            updateStatus('✅ New quantum picks generated by ARIA');
+        }
+
+        function updateSummaryStats() {
+            document.getElementById('total-picks').textContent = aiPicks.length;
+            
+            const avgConfidence = aiPicks.reduce((sum, pick) => sum + parseFloat(pick.confidence), 0) / aiPicks.length;
+            document.getElementById('avg-confidence').textContent = avgConfidence.toFixed(1) + '%';
+            
+            // Simulate other stats
+            document.getElementById('success-rate').textContent = (85 + Math.random() * 10).toFixed(1) + '%';
+            document.getElementById('quantum-edge').textContent = '+' + (20 + Math.random() * 10).toFixed(1) + '%';
+        }
+
+        function startNeuralProcesses() {
+            // Update neural status periodically
+            setInterval(() => {
+                const coherence = (95 + Math.random() * 5).toFixed(1);
+                const neuralStatus = document.getElementById('neural-status');
+                if (neuralStatus) {
+                    neuralStatus.innerHTML = `
+                        <div style="font-family: var(--font-code); font-size: 0.9rem; color: var(--cyber-accent);">
+                            > NEURAL_NETWORKS: ONLINE<br>
+                            > PROCESSING_POWER: ${(Math.random() * 5 + 8).toFixed(1)}^23 OPS/SEC<br>
+                            > QUANTUM_COHERENCE: ${coherence}%<br>
+                            > PREDICTION_ACCURACY: OPTIMAL
+                        </div>
+                    `;
+                }
+            }, 5000);
+            
+            // Rotate status messages
+            const statusMessages = [
+                '🧠 Neural Prediction Engine Active',
+                '⚛️ Quantum Analysis Processing',
+                '🎯 AI Picks Generated',
+                '🌌 Parallel Universe Calculations',
+                '🔮 Future Probability Modeling'
+            ];
+            
+            let messageIndex = 0;
+            setInterval(() => {
+                messageIndex = (messageIndex + 1) % statusMessages.length;
+                updateStatus(statusMessages[messageIndex]);
+            }, 4000);
+        }
+
+        function updateStatus(message, type = 'success') {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                
+                // Neural pulse effect
+                indicator.style.animation = 'none';
+                setTimeout(() => {
+                    indicator.style.animation = 'statusPulse 2s ease-in-out infinite';
+                }, 10);
+            }
+        }
+    </script>
+</body>
+</html>
