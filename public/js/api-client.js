@@ -19,12 +19,12 @@ class SundayEdgeAPIClient {
         
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return 'http://localhost:3001';
-        } else if (hostname.includes('sundayedgepro.com')) {
-            // Your Railway API URL
+        } else if (hostname.includes('sundayedgepro.com') || hostname.includes('vercel.app') || hostname.includes('netlify.app')) {
+            // Production deployment - use Railway API
             return 'https://sunday-edge-pro-api-production.up.railway.app';
         } else {
-            // Fallback for development/testing
-            return 'http://localhost:3001';
+            // Any other production domain - use Railway API
+            return 'https://sunday-edge-pro-api-production.up.railway.app';
         }
     }
 
