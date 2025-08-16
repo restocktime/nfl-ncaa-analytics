@@ -413,6 +413,7 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Sunday Edge Pro API Service running on port ${PORT}`);
     console.log(`📡 API Keys configured: ${Object.keys(API_KEYS).filter(k => API_KEYS[k]).join(', ')}`);
+    console.log(`🌐 CORS origins: sundayedgepro.com, nfl-ncaa-analytics-mj7g.vercel.app`);
 });
 
 module.exports = app;
