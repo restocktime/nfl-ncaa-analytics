@@ -654,85 +654,7 @@
         let currentWeek = 'current';
         let allWeekGames = new Map(); // Store games by week
 
-        // Sample AI picks data
-        const samplePicks = [
-            {
-                id: 'pick_1',
-                type: 'spread',
-                homeTeam: 'KC',
-                awayTeam: 'BUF',
-                gameTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
-                gameDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                gameTimeFormatted: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                pick: 'KC -2.5',
-                confidence: 92.4,
-                reasoning: 'Neural networks detect superior red zone efficiency and weather advantage for KC at Arrowhead Stadium',
-                factors: {
-                    'Home Advantage': '+3.2 pts',
-                    'Weather Impact': 'Favorable', 
-                    'Injury Report': 'Clean',
-                    'Motivation Index': '94.7%'
-                },
-                timestamp: new Date().toISOString()
-            },
-            {
-                id: 'pick_2',
-                type: 'moneyline',
-                homeTeam: 'SF',
-                awayTeam: 'DAL',
-                gameTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-                gameDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                gameTimeFormatted: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                pick: 'SF ML (-280)',
-                confidence: 89.7,
-                reasoning: 'AI analysis indicates 94.2% probability of 49ers victory based on advanced defensive metrics',
-                factors: {
-                    'Defensive DVOA': '-18.3%',
-                    'Turnover Diff': '+1.8',
-                    'Coaching Edge': 'Significant',
-                    'Neural Rating': '97.1%'
-                },
-                timestamp: new Date().toISOString()
-            },
-            {
-                id: 'pick_3',
-                type: 'totals',
-                homeTeam: 'BAL',
-                awayTeam: 'PIT',
-                gameTime: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days from now
-                gameDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                gameTimeFormatted: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                pick: 'UNDER 43.5',
-                confidence: 87.3,
-                reasoning: 'AI weather modeling and defensive patterns suggest low-scoring AFC North battle',
-                factors: {
-                    'Weather Conditions': 'Rain/Wind',
-                    'Defensive Strength': 'Elite',
-                    'Pace of Play': 'Slow',
-                    'Historical H2H': 'Under 6-2'
-                },
-                timestamp: new Date().toISOString()
-            },
-            {
-                id: 'pick_4',
-                type: 'props',
-                homeTeam: 'MIA',
-                awayTeam: 'NYJ',
-                gameTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
-                gameDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                gameTimeFormatted: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                pick: 'Tyreek Hill Over 85.5 Rec Yds',
-                confidence: 94.1,
-                reasoning: 'Neural speed analysis indicates high probability of Hill exploiting Jets secondary vulnerabilities',
-                factors: {
-                    'Target Share': '28.4%',
-                    'Matchup Grade': 'A+',
-                    'Speed Advantage': '+0.4s',
-                    'Weather': 'Dome'
-                },
-                timestamp: new Date().toISOString()
-            }
-        ];
+        // REMOVED: No more sample data - 100% LIVE API ONLY
 
         // Debug function to check current state
         function debugCurrentState() {
@@ -923,13 +845,14 @@
                     return;
                 }
                 
-                console.log('⚠️ No games found for today, using sample data');
-                updateStatus('⚠️ No games scheduled for today');
+                console.log('❌ No games found for today - API should provide data');
+                updateStatus('❌ No live NFL games available from API');
                 
-                // Fallback to sample data if no real games
-                const todaysGames = [
-                {
-                    id: 'live_1',
+                // NO FALLBACK - Only live data allowed
+                aiPicks = [];
+                renderPicks();
+                return;
+            } catch (error) {
                     type: 'spread',
                     homeTeam: 'DET',
                     awayTeam: 'MIA',
@@ -1029,11 +952,6 @@
             allWeekGames.set(1, []); // Empty for now
             allWeekGames.set(2, []);
             
-            console.log(`✅ FORCED ${aiPicks.length} TODAY'S GAMES TO DISPLAY`);
-            updateStatus(`🏈 LIVE: ${aiPicks.length} NFL games happening TODAY!`);
-            updateSummaryStats();
-            
-            } catch (error) {
                 console.error('❌ Error loading today\'s games:', error);
                 updateStatus('❌ Failed to load games - using fallback data');
             }
@@ -1150,8 +1068,9 @@
                     console.error('Direct API also failed:', directError);
                 }
                 
-                updateStatus('❌ ALL API ATTEMPTS FAILED - Using samples');
-                loadSamplePicks();
+                updateStatus('❌ ALL API ATTEMPTS FAILED - NO DATA AVAILABLE');
+                aiPicks = [];
+                renderPicks();
             }
         }
 
@@ -1336,55 +1255,7 @@
             return `${espnBaseUrl}${logoFile}`;
         }
 
-        function loadSamplePicks() {
-            console.log('\n🔄 loadSamplePicks called, but forcing today\'s games instead...');
-            loadTodaysGames();
-            
-            // Create enhanced sample picks with better distribution
-            const enhancedSamplePicks = [
-                ...samplePicks,
-                {
-                    id: 'SAMPLE_5',
-                    type: 'spread',
-                    homeTeam: 'GB',
-                    awayTeam: 'MIN',
-                    gameTime: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString(),
-                    gameDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                    gameTimeFormatted: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    pick: 'GB -3.5',
-                    confidence: 88.6,
-                    reasoning: 'SAMPLE: Neural analysis indicates strong home field advantage and favorable weather conditions for Green Bay',
-                    factors: {
-                        'SAMPLE Data': 'Demo Only',
-                        'Weather Edge': 'Favorable',
-                        'Home Advantage': '+3.2 pts',
-                        'Divisional History': '8-2 L10'
-                    },
-                    timestamp: new Date().toISOString()
-                }
-            ];
-            
-            // Organize sample picks by week with better distribution
-            const currentWeekValue = getCurrentWeek();
-            
-            allWeekGames.set('current', enhancedSamplePicks.slice(0, 3));
-            allWeekGames.set(currentWeekValue, enhancedSamplePicks.slice(0, 4));
-            allWeekGames.set(1, enhancedSamplePicks.slice(0, 3));
-            allWeekGames.set(2, enhancedSamplePicks.slice(1, 4));
-            allWeekGames.set(3, enhancedSamplePicks.slice(2, 5));
-            allWeekGames.set('preseason', enhancedSamplePicks.slice(3, 5));
-            
-            // Get picks for current week
-            aiPicks = getGamesForWeek(currentWeek);
-            
-            const weekDisplay = currentWeek === 'current' ? `current week (${currentWeekValue})` : typeof currentWeek === 'number' ? `Week ${currentWeek}` : currentWeek;
-            updateStatus(`❌ SAMPLE DATA - API SHOULD BE WORKING! Check console for errors`);
-            updateSummaryStats();
-            
-            console.error(`❌ Loaded ${aiPicks.length} SAMPLE picks instead of live data`);
-            console.error(`❌ Expected: Live ${getCurrentWeek()} games for ${new Date().toDateString()}`);
-            console.error('❌ This means the API integration has a bug!');
-        }
+        // loadSamplePicks function REMOVED - NO MOCK DATA ALLOWED
 
         function renderPicks() {
             console.log(`🔄 Rendering picks: ${aiPicks.length} total, filter: ${currentFilter}, week: ${currentWeek}`);
@@ -1599,10 +1470,10 @@
                     renderPicks();
                     updateStatus('✅ New quantum picks generated by ARIA');
                 } else {
-                    console.log('⚠️ No picks integration available, refreshing sample data');
-                    loadSamplePicks();
+                    console.log('⚠️ No picks integration available, no data to load');
+                    aiPicks = [];
                     renderPicks();
-                    updateStatus('📊 Sample data refreshed - Configure API key for live data');
+                    updateStatus('❌ No data integration available - Check API connection');
                 }
             } catch (error) {
                 console.error('❌ Failed to generate new picks:', error);
