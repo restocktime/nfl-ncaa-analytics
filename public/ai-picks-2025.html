@@ -695,9 +695,9 @@
             // Setup filter button event listeners
             setupFilterEventListeners();
             
-            // IMMEDIATELY load today's games - no waiting
-            console.log('🔥 FORCING IMMEDIATE LOAD OF TODAY\'S GAMES');
-            await loadTodaysGames();
+            // IMMEDIATELY initialize API and load today's games - no waiting
+            console.log('🔥 FORCING IMMEDIATE INITIALIZATION AND LOAD');
+            await initializeAIPicks();
             
             console.log(`✅ LOADED ${aiPicks.length} GAMES - NOW RENDERING`);
             renderPicks();
@@ -749,6 +749,10 @@
             
             try {
                 // Initialize secure API client
+                if (!window.sundayEdgeAPI) {
+                    console.error('❌ API Client not loaded - check js/api-client.js');
+                    throw new Error('sundayEdgeAPI not available');
+                }
                 picksIntegration = window.sundayEdgeAPI;
                 
                 const isOnline = await picksIntegration.isOnline();
@@ -765,17 +769,50 @@
                 
             } catch (error) {
                 console.error('❌ Secure API initialization failed:', error);
-                updateStatus('❌ Loading backup games...');
-                loadTodaysGames(); // Force it anyway
+                updateStatus('❌ API Client error - creating fallback...');
+                
+                // Create fallback API client if external script failed
+                if (!picksIntegration) {
+                    console.log('🔄 Creating fallback API client...');
+                    picksIntegration = {
+                        getTodaysGames: async () => {
+                            try {
+                                const response = await fetch('https://sunday-edge-pro-api-production.up.railway.app/api/nfl/today');
+                                return await response.json();
+                            } catch (err) {
+                                console.error('Fallback API failed:', err);
+                                return { success: false, games: [] };
+                            }
+                        },
+                        isOnline: async () => {
+                            try {
+                                const response = await fetch('https://sunday-edge-pro-api-production.up.railway.app/api/status');
+                                return response.ok;
+                            } catch {
+                                return false;
+                            }
+                        }
+                    };
+                }
+                
+                await loadTodaysGames(); // Force it with fallback
             }
         }
         
         async function loadTodaysGames() {
             console.log('🔥 LOADING TODAY\'S ACTUAL NFL GAMES FROM SECURE API');
             
+            if (!picksIntegration) {
+                console.error('❌ picksIntegration is null - API client not initialized');
+                updateStatus('❌ API client not ready');
+                return;
+            }
+            
             try {
+                console.log('📡 Calling picksIntegration.getTodaysGames()...');
                 // Get today's games from Railway API (includes preseason)
                 const todaysData = await picksIntegration.getTodaysGames();
+                console.log('📊 API Response:', todaysData);
                 
                 if (todaysData.success && todaysData.games.length > 0) {
                     console.log(`✅ Found ${todaysData.games.length} games for today`);
