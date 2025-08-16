@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Hub - Professional Fantasy Management</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Premium Theme -->
+    <link rel="stylesheet" href="premium-theme.css">
+    
+    <!-- CSP for API Access -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+</head>
+
+<body>
+    <!-- Professional Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Fantasy Management Hub</h1>
+                <p>Professional fantasy football analytics and roster optimization</p>
+                
+                <div class="btn-group">
+                    <a href="index-premium.html" class="btn btn-secondary">
+                        <span>←</span> Back to Dashboard
+                    </a>
+                    <a href="connect-accounts.html" class="btn btn-primary">
+                        <span>🔗</span> Connect Accounts
+                    </a>
+                    <a href="betting-odds-dashboard.html" class="btn btn-success">
+                        <span>💰</span> Betting Dashboard
+                    </a>
+                    <a href="roster-builder.html" class="btn btn-secondary">
+                        <span>👥</span> Build Roster
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Navigation Cards -->
+        <section class="section">
+            <div class="nav-grid">
+                <div class="card" onclick="showSection('dashboard')">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div>
+                            <h3>Dashboard Overview</h3>
+                        </div>
+                    </div>
+                    <p>View your team performance, weekly projections, and key insights</p>
+                </div>
+
+                <div class="card" onclick="showSection('lineup')">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <div>
+                            <h3>Lineup Optimizer</h3>
+                        </div>
+                    </div>
+                    <p>AI-powered optimal lineup recommendations and analysis</p>
+                </div>
+
+                <div class="card" onclick="showSection('waivers')">
+                    <div class="card-header">
+                        <div class="card-icon">🔍</div>
+                        <div>
+                            <h3>Waiver Intelligence</h3>
+                        </div>
+                    </div>
+                    <p>Smart waiver wire analysis and pickup recommendations</p>
+                </div>
+
+                <div class="card" onclick="showSection('trades')">
+                    <div class="card-header">
+                        <div class="card-icon">🔄</div>
+                        <div>
+                            <h3>Trade Analyzer</h3>
+                        </div>
+                    </div>
+                    <p>Advanced trade evaluation and market value analysis</p>
+                </div>
+
+                <div class="card" onclick="showSection('projections')">
+                    <div class="card-header">
+                        <div class="card-icon">📈</div>
+                        <div>
+                            <h3>Player Projections</h3>
+                        </div>
+                    </div>
+                    <p>Machine learning powered performance projections</p>
+                </div>
+
+                <div class="card" onclick="showSection('roster')">
+                    <div class="card-header">
+                        <div class="card-icon">👥</div>
+                        <div>
+                            <h3>Roster Management</h3>
+                        </div>
+                    </div>
+                    <p>Complete roster overview and player management tools</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Sections -->
+        <div id="dashboard" class="section fade-in" style="display: none;">
+            <div class="section-header">
+                <h2>Fantasy Dashboard</h2>
+                <p class="section-subtitle">Your team performance and weekly insights</p>
+            </div>
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏆</div>
+                        <div>
+                            <h3 id="team-status-title">Team Status</h3>
+                        </div>
+                    </div>
+                    <div id="team-status-content">
+                        <p>Loading your team information...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📅</div>
+                        <div>
+                            <h3>This Week's Matchups</h3>
+                        </div>
+                    </div>
+                    <div id="matchups-content">
+                        <p>Loading matchup data...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🚨</div>
+                        <div>
+                            <h3>Injury Watch</h3>
+                        </div>
+                    </div>
+                    <div id="injury-content">
+                        <p>Monitoring player health status...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📰</div>
+                        <div>
+                            <h3>Breaking News</h3>
+                        </div>
+                    </div>
+                    <div id="news-content">
+                        <p>Loading latest fantasy news...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lineup" class="section fade-in" style="display: none;">
+            <div class="section-header">
+                <h2>Lineup Optimizer</h2>
+                <p class="section-subtitle">AI-powered lineup recommendations</p>
+            </div>
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <div>
+                            <h3>Optimal Lineup</h3>
+                        </div>
+                    </div>
+                    <div id="optimal-lineup-content">
+                        <p>Calculating optimal lineup...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <div>
+                            <h3>Recommendations</h3>
+                        </div>
+                    </div>
+                    <div id="recommendations-content">
+                        <p>Analyzing potential changes...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⚠️</div>
+                        <div>
+                            <h3>Risk Analysis</h3>
+                        </div>
+                    </div>
+                    <div id="risk-analysis-content">
+                        <p>Evaluating lineup risk factors...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div>
+                            <h3>Matchup Grades</h3>
+                        </div>
+                    </div>
+                    <div id="matchup-grades-content">
+                        <p>Loading player matchup analysis...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="waivers" class="section fade-in" style="display: none;">
+            <div class="section-header">
+                <h2>Waiver Wire Intelligence</h2>
+                <p class="section-subtitle">Smart pickup recommendations and analysis</p>
+            </div>
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔍</div>
+                        <div>
+                            <h3>Top Targets</h3>
+                        </div>
+                    </div>
+                    <div id="waiver-targets-content">
+                        <p>Scanning waiver wire opportunities...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📈</div>
+                        <div>
+                            <h3>Trending Up</h3>
+                        </div>
+                    </div>
+                    <div id="trending-content">
+                        <p>Identifying breakout candidates...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🚑</div>
+                        <div>
+                            <h3>Injury Replacements</h3>
+                        </div>
+                    </div>
+                    <div id="injury-replacements-content">
+                        <p>Finding replacement options...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💡</div>
+                        <div>
+                            <h3>Deep Sleepers</h3>
+                        </div>
+                    </div>
+                    <div id="sleepers-content">
+                        <p>Discovering hidden gems...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="trades" class="section fade-in" style="display: none;">
+            <div class="section-header">
+                <h2>Trade Analyzer</h2>
+                <p class="section-subtitle">Professional trade evaluation tools</p>
+            </div>
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <div>
+                            <h3>Trade Opportunities</h3>
+                        </div>
+                    </div>
+                    <div id="trade-opportunities-content">
+                        <p>Identifying potential trade partners...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <div>
+                            <h3>Player Values</h3>
+                        </div>
+                    </div>
+                    <div id="player-values-content">
+                        <p>Calculating market values...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🧮</div>
+                        <div>
+                            <h3>Trade Calculator</h3>
+                        </div>
+                    </div>
+                    <div id="trade-calculator-content">
+                        <p>Evaluating trade scenarios...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💡</div>
+                        <div>
+                            <h3>Trade Insights</h3>
+                        </div>
+                    </div>
+                    <div id="trade-insights-content">
+                        <p>Loading strategic insights...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="projections" class="section fade-in" style="display: none;">
+            <div class="section-header">
+                <h2>Player Projections</h2>
+                <p class="section-subtitle">ML-powered performance forecasting</p>
+            </div>
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏈</div>
+                        <div>
+                            <h3>Quarterback Projections</h3>
+                        </div>
+                    </div>
+                    <div id="qb-projections-content">
+                        <p>Loading QB projections...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏃</div>
+                        <div>
+                            <h3>Running Back Projections</h3>
+                        </div>
+                    </div>
+                    <div id="rb-projections-content">
+                        <p>Loading RB projections...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🙌</div>
+                        <div>
+                            <h3>Wide Receiver Projections</h3>
+                        </div>
+                    </div>
+                    <div id="wr-projections-content">
+                        <p>Loading WR projections...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🤲</div>
+                        <div>
+                            <h3>Tight End Projections</h3>
+                        </div>
+                    </div>
+                    <div id="te-projections-content">
+                        <p>Loading TE projections...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="roster" class="section fade-in" style="display: none;">
+            <div class="section-header">
+                <h2>Roster Management</h2>
+                <p class="section-subtitle">Complete team overview and management</p>
+            </div>
+            <div class="feature-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <div>
+                            <h3>Starting Lineup</h3>
+                        </div>
+                    </div>
+                    <div id="starting-lineup-content">
+                        <p>Loading your starting lineup...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🪑</div>
+                        <div>
+                            <h3>Bench Players</h3>
+                        </div>
+                    </div>
+                    <div id="bench-content">
+                        <p>Loading bench analysis...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div>
+                            <h3>Team Statistics</h3>
+                        </div>
+                    </div>
+                    <div id="team-stats-content">
+                        <p>Calculating team performance metrics...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">✅</div>
+                        <div>
+                            <h3>Start/Sit Decisions</h3>
+                        </div>
+                    </div>
+                    <div id="start-sit-content">
+                        <p>Analyzing lineup decisions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        ✅ Fantasy Hub Ready
+    </div>
+
+    <!-- Load Fantasy Services -->
+    <script src="fantasy-api-integration.js"></script>
+    <script src="fantasy-data-service.js"></script>
+    <script src="fantasy-news-service.js"></script>
+    <script src="fantasy-roster-manager.js"></script>
+
+    <script>
+        // Global variables
+        let currentSection = 'dashboard';
+        let fantasyServices = {};
+        
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section[id]').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                currentSection = sectionId;
+                updateStatus(`📊 ${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)} Section Active`);
+                
+                // Load section-specific data
+                loadSectionData(sectionId);
+            }
+        }
+
+        // Load section data
+        async function loadSectionData(sectionId) {
+            try {
+                switch (sectionId) {
+                    case 'dashboard':
+                        await loadDashboardData();
+                        break;
+                    case 'lineup':
+                        await loadLineupData();
+                        break;
+                    case 'waivers':
+                        await loadWaiverData();
+                        break;
+                    case 'trades':
+                        await loadTradeData();
+                        break;
+                    case 'projections':
+                        await loadProjectionsData();
+                        break;
+                    case 'roster':
+                        await loadRosterData();
+                        break;
+                }
+            } catch (error) {
+                console.error(`Error loading ${sectionId} data:`, error);
+                updateStatus(`⚠️ Error loading ${sectionId} data`, 'warning');
+            }
+        }
+
+        // Data loading functions
+        async function loadDashboardData() {
+            updateContent('team-status-content', generateTeamStatus());
+            updateContent('matchups-content', generateMatchupsData());
+            updateContent('injury-content', generateInjuryData());
+            updateContent('news-content', generateNewsData());
+        }
+
+        async function loadLineupData() {
+            updateContent('optimal-lineup-content', generateOptimalLineup());
+            updateContent('recommendations-content', generateRecommendations());
+            updateContent('risk-analysis-content', generateRiskAnalysis());
+            updateContent('matchup-grades-content', generateMatchupGrades());
+        }
+
+        async function loadWaiverData() {
+            updateContent('waiver-targets-content', generateWaiverTargets());
+            updateContent('trending-content', generateTrendingPlayers());
+            updateContent('injury-replacements-content', generateInjuryReplacements());
+            updateContent('sleepers-content', generateSleepers());
+        }
+
+        async function loadTradeData() {
+            updateContent('trade-opportunities-content', generateTradeOpportunities());
+            updateContent('player-values-content', generatePlayerValues());
+            updateContent('trade-calculator-content', generateTradeCalculator());
+            updateContent('trade-insights-content', generateTradeInsights());
+        }
+
+        async function loadProjectionsData() {
+            updateContent('qb-projections-content', generateQBProjections());
+            updateContent('rb-projections-content', generateRBProjections());
+            updateContent('wr-projections-content', generateWRProjections());
+            updateContent('te-projections-content', generateTEProjections());
+        }
+
+        async function loadRosterData() {
+            updateContent('starting-lineup-content', generateStartingLineup());
+            updateContent('bench-content', generateBenchAnalysis());
+            updateContent('team-stats-content', generateTeamStats());
+            updateContent('start-sit-content', generateStartSitDecisions());
+        }
+
+        // Content generators (these would connect to your existing services)
+        function generateTeamStatus() {
+            const roster = localStorage.getItem('userFantasyRoster');
+            if (roster) {
+                const data = JSON.parse(roster);
+                return `
+                    <div class="space-y-2">
+                        <p><strong>Team:</strong> ${data.teamName || 'My Team'}</p>
+                        <p><strong>Record:</strong> ${data.record?.wins || 0}-${data.record?.losses || 0}</p>
+                        <p><strong>Points:</strong> ${data.pointsFor || 0} PF</p>
+                        <p class="text-success"><strong>Status:</strong> Active</p>
+                    </div>
+                `;
+            }
+            return `
+                <div class="space-y-2">
+                    <p class="text-warning">⚠️ No team data found</p>
+                    <p>Connect your fantasy account to see team status</p>
+                    <a href="connect-accounts.html" class="btn btn-primary btn-sm mt-2">Connect Account</a>
+                </div>
+            `;
+        }
+
+        function generateMatchupsData() {
+            return `
+                <div class="space-y-2">
+                    <p><strong>Week 12 Games:</strong></p>
+                    <p>• Patriots @ Giants (1:00 PM ET)</p>
+                    <p>• Cowboys @ Commanders (4:25 PM ET)</p>
+                    <p>• Chiefs @ Raiders (8:20 PM ET)</p>
+                    <p class="text-muted">View full schedule →</p>
+                </div>
+            `;
+        }
+
+        function generateInjuryData() {
+            return `
+                <div class="space-y-2">
+                    <p class="text-success">✅ No major injuries for your players</p>
+                    <p>• Monitor practice reports Wednesday</p>
+                    <p>• Check status before lineup lock</p>
+                </div>
+            `;
+        }
+
+        function generateNewsData() {
+            return `
+                <div class="space-y-2">
+                    <p><strong>Latest Updates:</strong></p>
+                    <p>📰 NFL Week 12 injury reports released</p>
+                    <p>🏈 Weather alerts for outdoor games</p>
+                    <p>📊 Updated player projections available</p>
+                </div>
+            `;
+        }
+
+        // Placeholder generators for other sections
+        function generateOptimalLineup() { return '<p>Calculating optimal lineup based on your roster...</p>'; }
+        function generateRecommendations() { return '<p>Analyzing potential lineup improvements...</p>'; }
+        function generateRiskAnalysis() { return '<p>Evaluating injury and performance risks...</p>'; }
+        function generateMatchupGrades() { return '<p>Grading this week\'s player matchups...</p>'; }
+        function generateWaiverTargets() { return '<p>Scanning available players for pickup opportunities...</p>'; }
+        function generateTrendingPlayers() { return '<p>Identifying players with increasing value...</p>'; }
+        function generateInjuryReplacements() { return '<p>Finding replacement options for injured players...</p>'; }
+        function generateSleepers() { return '<p>Discovering under-the-radar pickup candidates...</p>'; }
+        function generateTradeOpportunities() { return '<p>Analyzing potential trade scenarios...</p>'; }
+        function generatePlayerValues() { return '<p>Calculating current market values...</p>'; }
+        function generateTradeCalculator() { return '<p>Professional trade evaluation tools...</p>'; }
+        function generateTradeInsights() { return '<p>Strategic trading insights and tips...</p>'; }
+        function generateQBProjections() { return '<p>Loading quarterback performance projections...</p>'; }
+        function generateRBProjections() { return '<p>Loading running back performance projections...</p>'; }
+        function generateWRProjections() { return '<p>Loading wide receiver performance projections...</p>'; }
+        function generateTEProjections() { return '<p>Loading tight end performance projections...</p>'; }
+        function generateStartingLineup() { return '<p>Loading your optimal starting lineup...</p>'; }
+        function generateBenchAnalysis() { return '<p>Analyzing bench player potential...</p>'; }
+        function generateTeamStats() { return '<p>Calculating comprehensive team statistics...</p>'; }
+        function generateStartSitDecisions() { return '<p>Analyzing start/sit recommendations...</p>'; }
+
+        // Utility functions
+        function updateContent(elementId, content) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = content;
+            }
+        }
+
+        function updateStatus(message, type = 'success') {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                indicator.className = `status-indicator ${type}`;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Fantasy Hub Premium - Initialized');
+            
+            // Show dashboard by default
+            setTimeout(() => {
+                showSection('dashboard');
+            }, 500);
+
+            // Initialize services
+            initializeFantasyServices();
+        });
+
+        async function initializeFantasyServices() {
+            try {
+                // Wait for services to load
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Check for available services
+                fantasyServices = {
+                    api: window.fantasyAPIIntegration || null,
+                    data: window.fantasyDataService || null,
+                    news: window.fantasyNewsService || null,
+                    roster: window.fantasyRosterManager || null
+                };
+
+                const serviceCount = Object.values(fantasyServices).filter(s => s !== null).length;
+                updateStatus(`✅ ${serviceCount}/4 Services Connected`, 'success');
+                
+                console.log('Fantasy Services Status:', fantasyServices);
+            } catch (error) {
+                console.error('Error initializing services:', error);
+                updateStatus('⚠️ Service connection issues', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

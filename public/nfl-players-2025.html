@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday Edge Pro - NFL Players</title>
+    
+    <!-- Futuristic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 2025 Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-2025-theme.css">
+    
+    <style>
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+        }
+        
+        .player-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-cyber);
+        }
+        
+        .player-card.selected {
+            border-color: var(--cyber-accent);
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
+        }
+        
+        .player-card.comparing {
+            border-color: var(--cyber-secondary);
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.3);
+        }
+        
+        .player-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border-glass);
+            margin: 0 auto var(--space-md) auto;
+            display: block;
+            transition: all var(--transition-smooth);
+        }
+        
+        .player-card:hover .player-image {
+            border-color: var(--cyber-primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+        
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .player-position {
+            font-size: var(--text-sm);
+            color: var(--cyber-primary);
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .player-team {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-sm);
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: var(--space-sm);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+        
+        .stat-value {
+            font-family: var(--font-code);
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--cyber-accent);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            margin-top: var(--space-xs);
+        }
+        
+        .filters-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            justify-content: center;
+            margin-bottom: var(--space-xl);
+            padding: var(--space-lg);
+            background: var(--bg-glass);
+            border-radius: var(--radius-xl);
+            backdrop-filter: blur(20px);
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .filter-label {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .filter-select {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .comparison-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-glass);
+            padding: var(--space-xl);
+            transform: translateY(100%);
+            transition: transform var(--transition-smooth);
+            z-index: 1000;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .comparison-panel.active {
+            transform: translateY(0);
+        }
+        
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .comparison-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cyber-primary);
+        }
+        
+        .close-comparison {
+            background: var(--cyber-secondary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-lg);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .comparison-player {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+        
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+        
+        .search-bar {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto var(--space-xl) auto;
+            padding: var(--space-lg);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--cyber-primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+            background-size: 200% 100%;
+            animation: loading 2s infinite;
+            border-radius: var(--radius-md);
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: var(--space-3xl);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .players-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: var(--space-md);
+            }
+            
+            .filters-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Sunday Edge Pro Players</h1>
+                <p>Complete NFL player database with real-time stats and comparison tools</p>
+                
+                <div class="btn-group">
+                    <a href="index.html" class="btn btn-secondary">
+                        <span>←</span> Sunday Edge Pro
+                    </a>
+                    <button class="btn btn-primary" onclick="refreshPlayerData()">
+                        <span>🔄</span> Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Search -->
+        <section>
+            <input type="text" 
+                   class="search-bar" 
+                   id="playerSearch" 
+                   placeholder="🔍 Search NFL players by name, team, or position..."
+                   onkeyup="filterPlayers()">
+        </section>
+
+        <!-- Filters -->
+        <section class="filters-section">
+            <div class="filter-group">
+                <div class="filter-label">Position</div>
+                <select class="filter-select" id="positionFilter" onchange="filterPlayers()">
+                    <option value="">All Positions</option>
+                    <option value="QB">Quarterback</option>
+                    <option value="RB">Running Back</option>
+                    <option value="WR">Wide Receiver</option>
+                    <option value="TE">Tight End</option>
+                    <option value="K">Kicker</option>
+                    <option value="DEF">Defense</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">Team</div>
+                <select class="filter-select" id="teamFilter" onchange="filterPlayers()">
+                    <option value="">All Teams</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">Sort By</div>
+                <select class="filter-select" id="sortFilter" onchange="filterPlayers()">
+                    <option value="name">Name</option>
+                    <option value="position">Position</option>
+                    <option value="team">Team</option>
+                    <option value="rating">Rating</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <button class="btn btn-success" onclick="clearComparison()">
+                    <span>🔄</span> Clear Selection
+                </button>
+            </div>
+        </section>
+
+        <!-- Players Grid -->
+        <section class="section">
+            <div class="section-header">
+                <h2>🏈 NFL Player Database</h2>
+                <p class="section-subtitle">Click players to compare stats and performance</p>
+            </div>
+            
+            <div class="players-grid" id="playersGrid">
+                <!-- Loading skeletons -->
+                <div class="player-card">
+                    <div class="loading-skeleton" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto var(--space-md) auto;"></div>
+                    <div class="loading-skeleton" style="height: 20px; margin-bottom: var(--space-sm);"></div>
+                    <div class="loading-skeleton" style="height: 16px; margin-bottom: var(--space-sm);"></div>
+                    <div class="loading-skeleton" style="height: 16px; margin-bottom: var(--space-md);"></div>
+                    <div class="player-stats">
+                        <div class="loading-skeleton" style="height: 40px;"></div>
+                        <div class="loading-skeleton" style="height: 40px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Comparison Panel -->
+    <div class="comparison-panel" id="comparisonPanel">
+        <div class="comparison-header">
+            <div class="comparison-title">Player Comparison</div>
+            <button class="close-comparison" onclick="closeComparison()">Close</button>
+        </div>
+        <div class="comparison-grid" id="comparisonGrid"></div>
+    </div>
+
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        🏈 Loading NFL Players...
+    </div>
+
+    <!-- API Integration -->
+    <script src="api-sports-odds-integration.js"></script>
+    <script src="fantasy-data-service.js"></script>
+
+    <script>
+        // NFL Players System
+        let allPlayers = [];
+        let selectedPlayers = [];
+        let filteredPlayers = [];
+
+        // Initialize players system
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Sunday Edge Pro Players - Loading NFL Database');
+            updateStatus('🏈 Loading complete NFL player database...', 'loading');
+            
+            await loadNFLPlayers();
+            populateFilters();
+            filterPlayers();
+        });
+
+        async function loadNFLPlayers() {
+            try {
+                // Try to load from real API first
+                if (typeof FantasyDataService !== 'undefined') {
+                    const fantasyService = new FantasyDataService();
+                    
+                    updateStatus('📡 Fetching live NFL player data...', 'loading');
+                    
+                    // Get current season player data
+                    const playerData = await fantasyService.getAllPlayers();
+                    
+                    if (playerData && playerData.length > 0) {
+                        allPlayers = playerData.map(player => ({
+                            id: player.id || player.playerId,
+                            name: player.name || `${player.firstName} ${player.lastName}`,
+                            position: player.position,
+                            team: player.team,
+                            image: player.photoUrl || generatePlayerImageURL(player.name, player.team),
+                            stats: {
+                                rating: player.fantasyRating || getEstimatedRating(player.position, player.team),
+                                yards: player.totalYards || 0,
+                                touchdowns: player.touchdowns || 0,
+                                receptions: player.receptions || 0
+                            },
+                            injury: player.injuryStatus || 'Healthy'
+                        }));
+                        
+                        updateStatus(`✅ Loaded ${allPlayers.length} NFL players from live API`, 'success');
+                        return;
+                    }
+                }
+                
+                // Fallback - show message about API configuration
+                updateStatus('🔑 Configure API keys to load real NFL player data', 'warning');
+                showAPIConfigMessage();
+                
+            } catch (error) {
+                console.error('❌ Failed to load NFL players:', error);
+                updateStatus('⚠️ Unable to load player data - API configuration required', 'error');
+                showAPIConfigMessage();
+            }
+        }
+
+        function getEstimatedRating(position, team) {
+            // Provide estimated ratings based on position tiers
+            const positionRatings = {
+                'QB': { min: 70, max: 95 },
+                'RB': { min: 65, max: 90 },
+                'WR': { min: 60, max: 95 },
+                'TE': { min: 55, max: 85 },
+                'K': { min: 50, max: 80 },
+                'DEF': { min: 60, max: 90 }
+            };
+            
+            const range = positionRatings[position] || { min: 60, max: 80 };
+            
+            // Elite teams get slight boost
+            const eliteTeams = ['KC', 'BUF', 'SF', 'DAL', 'MIA', 'CIN', 'BAL', 'PHI'];
+            const teamBoost = eliteTeams.includes(team) ? 5 : 0;
+            
+            return Math.min(range.max, range.min + teamBoost + Math.floor((range.max - range.min) * 0.6));
+        }
+
+        function generatePlayerImageURL(name, team) {
+            // Generate player image URL using ESPN or NFL API
+            const cleanName = name.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+            const cleanTeam = (team || 'nfl').toLowerCase();
+            
+            // Try multiple image sources
+            const sources = [
+                `https://a.espncdn.com/i/headshots/nfl/players/full/${cleanName}.png`,
+                `https://static.www.nfl.com/image/private/t_headshot_desktop/league/person/${cleanName}`,
+                `https://www.pro-football-reference.com/req/202208180/images/headshots/${cleanName}_2022.jpg`,
+                // Fallback to team logo or generic
+                `https://a.espncdn.com/i/teamlogos/nfl/500/${cleanTeam}.png`
+            ];
+            
+            return sources[0]; // Primary source
+        }
+
+        function showAPIConfigMessage() {
+            const grid = document.getElementById('playersGrid');
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-3xl);">
+                    <h3 style="color: var(--cyber-primary); margin-bottom: var(--space-lg);">🔑 API Configuration Required</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--space-xl); font-size: 1.1rem;">
+                        To display the complete NFL player database with live stats and images, 
+                        configure your API keys through the settings panel.
+                    </p>
+                    <button class="btn btn-primary" onclick="configureAPIs()">
+                        Configure API Keys
+                    </button>
+                    <div style="margin-top: var(--space-lg); padding: var(--space-lg); background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                        <h4 style="color: var(--cyber-accent); margin-bottom: var(--space-md);">Required APIs:</h4>
+                        <ul style="text-align: left; color: var(--text-secondary);">
+                            <li>• NFL API for player stats and images</li>
+                            <li>• Fantasy Sports API for real-time data</li>
+                            <li>• ESPN API for player headshots</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function configureAPIs() {
+            // This would open API configuration modal
+            alert('API Configuration:\n\n' +
+                  'Sunday Edge Pro requires NFL data APIs to display:\n' +
+                  '• Complete player database with photos\n' +
+                  '• Real-time stats and performance data\n' +
+                  '• Injury status and team information\n\n' +
+                  'Contact your administrator to configure API access.');
+        }
+
+        function populateFilters() {
+            // Populate team filter
+            const teams = [...new Set(allPlayers.map(p => p.team))].sort();
+            const teamFilter = document.getElementById('teamFilter');
+            
+            teams.forEach(team => {
+                if (team) {
+                    const option = document.createElement('option');
+                    option.value = team;
+                    option.textContent = team;
+                    teamFilter.appendChild(option);
+                }
+            });
+        }
+
+        function filterPlayers() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            const positionFilter = document.getElementById('positionFilter').value;
+            const teamFilter = document.getElementById('teamFilter').value;
+            const sortBy = document.getElementById('sortFilter').value;
+
+            // Filter players
+            filteredPlayers = allPlayers.filter(player => {
+                const matchesSearch = player.name.toLowerCase().includes(searchTerm) ||
+                                    player.team.toLowerCase().includes(searchTerm) ||
+                                    player.position.toLowerCase().includes(searchTerm);
+                const matchesPosition = !positionFilter || player.position === positionFilter;
+                const matchesTeam = !teamFilter || player.team === teamFilter;
+                
+                return matchesSearch && matchesPosition && matchesTeam;
+            });
+
+            // Sort players
+            filteredPlayers.sort((a, b) => {
+                switch (sortBy) {
+                    case 'name': return a.name.localeCompare(b.name);
+                    case 'position': return a.position.localeCompare(b.position);
+                    case 'team': return a.team.localeCompare(b.team);
+                    case 'rating': return b.stats.rating - a.stats.rating;
+                    default: return 0;
+                }
+            });
+
+            renderPlayers();
+        }
+
+        function renderPlayers() {
+            const grid = document.getElementById('playersGrid');
+            
+            if (filteredPlayers.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results" style="grid-column: 1 / -1;">
+                        <h3>No players found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredPlayers.forEach(player => {
+                const isSelected = selectedPlayers.some(p => p.id === player.id);
+                const cardClass = isSelected ? 'player-card selected' : 'player-card';
+                
+                html += `
+                    <div class="${cardClass}" onclick="togglePlayerSelection('${player.id}')">
+                        <img src="${player.image}" 
+                             alt="${player.name}" 
+                             class="player-image"
+                             onerror="this.src='https://via.placeholder.com/80x80/1a1a24/39ff14?text=${player.position}'">
+                        
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-position">${player.position}</div>
+                        <div class="player-team">${player.team}</div>
+                        
+                        <div class="player-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">${player.stats.rating}</span>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${player.stats.yards}</span>
+                                <div class="stat-label">Yards</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function togglePlayerSelection(playerId) {
+            const player = allPlayers.find(p => p.id === playerId);
+            const existingIndex = selectedPlayers.findIndex(p => p.id === playerId);
+            
+            if (existingIndex > -1) {
+                selectedPlayers.splice(existingIndex, 1);
+            } else {
+                selectedPlayers.push(player);
+            }
+            
+            renderPlayers();
+            
+            if (selectedPlayers.length > 1) {
+                showComparison();
+            } else if (selectedPlayers.length === 0) {
+                closeComparison();
+            }
+        }
+
+        function showComparison() {
+            const panel = document.getElementById('comparisonPanel');
+            const grid = document.getElementById('comparisonGrid');
+            
+            let html = '';
+            selectedPlayers.forEach(player => {
+                html += `
+                    <div class="comparison-player">
+                        <img src="${player.image}" 
+                             alt="${player.name}" 
+                             class="player-image"
+                             style="margin-bottom: var(--space-md);">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-position">${player.position} - ${player.team}</div>
+                        
+                        <div class="comparison-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">${player.stats.rating}</span>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${player.stats.yards}</span>
+                                <div class="stat-label">Yards</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${player.stats.touchdowns}</span>
+                                <div class="stat-label">TDs</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+            panel.classList.add('active');
+        }
+
+        function closeComparison() {
+            document.getElementById('comparisonPanel').classList.remove('active');
+        }
+
+        function clearComparison() {
+            selectedPlayers = [];
+            renderPlayers();
+            closeComparison();
+        }
+
+        async function refreshPlayerData() {
+            updateStatus('🔄 Refreshing player database...', 'loading');
+            selectedPlayers = [];
+            closeComparison();
+            await loadNFLPlayers();
+            populateFilters();
+            filterPlayers();
+        }
+
+        function updateStatus(message, type = 'success') {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                indicator.className = `status-indicator ${type}`;
+            }
+        }
+    </script>
+</body>
+</html>

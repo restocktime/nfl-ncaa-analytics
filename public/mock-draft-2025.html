@@ -355,13 +355,13 @@
                         <div class="pool-header">
                             <h3>Available Players</h3>
                             <div class="position-filters">
-                                <button class="filter-btn active" onclick="filterPosition('ALL')">ALL</button>
-                                <button class="filter-btn" onclick="filterPosition('QB')">QB</button>
-                                <button class="filter-btn" onclick="filterPosition('RB')">RB</button>
-                                <button class="filter-btn" onclick="filterPosition('WR')">WR</button>
-                                <button class="filter-btn" onclick="filterPosition('TE')">TE</button>
-                                <button class="filter-btn" onclick="filterPosition('DEF')">DEF</button>
-                                <button class="filter-btn" onclick="filterPosition('K')">K</button>
+                                <button class="filter-btn active" onclick="filterPosition('ALL', this)">ALL</button>
+                                <button class="filter-btn" onclick="filterPosition('QB', this)">QB</button>
+                                <button class="filter-btn" onclick="filterPosition('RB', this)">RB</button>
+                                <button class="filter-btn" onclick="filterPosition('WR', this)">WR</button>
+                                <button class="filter-btn" onclick="filterPosition('TE', this)">TE</button>
+                                <button class="filter-btn" onclick="filterPosition('DEF', this)">DEF</button>
+                                <button class="filter-btn" onclick="filterPosition('K', this)">K</button>
                             </div>
                         </div>
                         <div class="player-list" id="player-list">
@@ -869,10 +869,14 @@
             }
         }
 
-        function filterPosition(position) {
+        function filterPosition(position, element) {
             // Update filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             renderPlayerList(position);
         }

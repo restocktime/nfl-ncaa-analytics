@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend API Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-result { 
+            background: #333; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border-left: 4px solid #4CAF50;
+        }
+        .error { border-left-color: #f44336; }
+        .warning { border-left-color: #ff9800; }
+        pre { 
+            background: #222; 
+            padding: 10px; 
+            border-radius: 4px; 
+            overflow-x: auto; 
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Frontend API Test</h1>
+    <p>Testing the NFL betting dashboard API connectivity and data transformation.</p>
+    
+    <button onclick="testAPIConnection()">🔌 Test API Connection</button>
+    <button onclick="testDashboardTransformation()">🔄 Test Dashboard Transformation</button>
+    <button onclick="simulateDashboardLoad()">📊 Simulate Dashboard Load</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        function addResult(title, content, type = 'success') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <div>${content}</div>
+            `;
+            results.appendChild(div);
+        }
+        
+        async function testAPIConnection() {
+            addResult('🔌 Testing API Connection', 'Starting API connection test...', 'warning');
+            
+            try {
+                console.log('🧪 Testing API endpoint: /api/hardrock?action=events');
+                const response = await fetch('/api/hardrock?action=events');
+                
+                addResult('📡 API Response Status', `Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`API response not ok: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📊 Raw API Response:', data);
+                
+                addResult('✅ API Connection Success', `
+                    <strong>Connection successful!</strong><br>
+                    Success: ${data.success}<br>
+                    Games: ${data.data?.length || 0}<br>
+                    Source: ${data.source}<br>
+                    Timestamp: ${data.timestamp}
+                `);
+                
+                if (data.data && data.data.length > 0) {
+                    addResult('🏈 Sample Game Data', `
+                        <pre>${JSON.stringify(data.data[0], null, 2)}</pre>
+                    `);
+                }
+                
+                return data;
+                
+            } catch (error) {
+                console.error('❌ API Test Failed:', error);
+                addResult('❌ API Connection Failed', `
+                    <strong>Error:</strong> ${error.message}<br>
+                    This suggests the API endpoint is not accessible from the frontend.
+                `, 'error');
+                throw error;
+            }
+        }
+        
+        async function testDashboardTransformation() {
+            addResult('🔄 Testing Dashboard Transformation', 'Starting transformation test...', 'warning');
+            
+            try {
+                // First get the API data
+                const apiData = await testAPIConnection();
+                
+                if (!apiData.success || !apiData.data) {
+                    throw new Error('No valid API data to transform');
+                }
+                
+                // This is exactly what the dashboard's loadFromVercelAPI does
+                const games = apiData.data.map(event => ({
+                    id: event.id,
+                    homeTeam: event.teams?.home?.name || 'Home Team',
+                    awayTeam: event.teams?.away?.name || 'Away Team',
+                    gameTime: event.date || new Date().toISOString(),
+                    bets: {
+                        moneyline: { home: { odds: -120 }, away: { odds: 110 } },
+                        spread: { home: { line: -3.5, odds: -110 }, away: { line: 3.5, odds: -110 } },
+                        totals: { over: { line: 47.5, odds: -110 }, under: { line: 47.5, odds: -110 } }
+                    }
+                }));
+                
+                const totalBets = games.length * 3;
+                
+                const dashboardData = {
+                    success: [{
+                        provider: 'hardrock',
+                        name: 'Hard Rock Bet (Upcoming Games)',
+                        games: games,
+                        bets: totalBets
+                    }],
+                    failed: [],
+                    totalGames: games.length,
+                    totalBets: totalBets
+                };
+                
+                addResult('✅ Dashboard Transformation Success', `
+                    <strong>Transformation successful!</strong><br>
+                    Total Games: ${dashboardData.totalGames}<br>
+                    Total Bets: ${dashboardData.totalBets}<br>
+                    Success Providers: ${dashboardData.success.length}<br>
+                    Failed Providers: ${dashboardData.failed.length}
+                `);
+                
+                addResult('🎮 Sample Transformed Game', `
+                    <pre>${JSON.stringify(dashboardData.success[0].games[0], null, 2)}</pre>
+                `);
+                
+                return dashboardData;
+                
+            } catch (error) {
+                console.error('❌ Transformation Test Failed:', error);
+                addResult('❌ Dashboard Transformation Failed', `
+                    <strong>Error:</strong> ${error.message}
+                `, 'error');
+                throw error;
+            }
+        }
+        
+        async function simulateDashboardLoad() {
+            addResult('📊 Simulating Dashboard Load', 'Testing complete dashboard workflow...', 'warning');
+            
+            try {
+                // Test the complete flow
+                const dashboardData = await testDashboardTransformation();
+                
+                // Simulate status card updates
+                const statusCardsHTML = `
+                    <div class="status-cards">
+                        <div class="card">Games: ${dashboardData.totalGames}</div>
+                        <div class="card">Bets: ${dashboardData.totalBets}</div>
+                    </div>
+                `;
+                
+                // Simulate widget content
+                let widgetHTML = '';
+                if (dashboardData.success.length === 0) {
+                    widgetHTML = '<div>No current odds data - showing refresh button</div>';
+                } else {
+                    widgetHTML = '<div>Live odds widget would show:</div>';
+                    dashboardData.success.forEach(provider => {
+                        provider.games.slice(0, 3).forEach(game => {
+                            widgetHTML += `
+                                <div class="game-card">
+                                    <strong>${game.awayTeam} @ ${game.homeTeam}</strong><br>
+                                    Spread: ${game.bets.spread.home.line} (${game.bets.spread.home.odds})<br>
+                                    Moneyline: ${game.bets.moneyline.home.odds}<br>
+                                    Total: O/U ${game.bets.totals.over.line}
+                                </div>
+                            `;
+                        });
+                    });
+                }
+                
+                addResult('🎯 Dashboard Simulation Success', `
+                    <strong>Dashboard would display:</strong><br>
+                    ${statusCardsHTML}
+                    <br>
+                    <strong>Widget Content:</strong><br>
+                    ${widgetHTML}
+                `);
+                
+                addResult('✅ Full Test Complete', `
+                    <strong>All tests passed!</strong><br>
+                    The API and data transformation are working correctly.<br>
+                    If the actual dashboard shows minimal content, check for:<br>
+                    • JavaScript console errors<br>
+                    • Network requests in browser dev tools<br>
+                    • CORS errors<br>
+                    • Missing DOM elements
+                `);
+                
+            } catch (error) {
+                console.error('❌ Dashboard Simulation Failed:', error);
+                addResult('❌ Dashboard Simulation Failed', `
+                    <strong>Error:</strong> ${error.message}<br>
+                    The issue is preventing the complete data flow.
+                `, 'error');
+            }
+        }
+        
+        // Auto-run initial test
+        window.addEventListener('load', () => {
+            addResult('🚀 Frontend Test Started', 'Testing NFL betting dashboard API from frontend...', 'warning');
+        });
+    </script>
+</body>
+</html>

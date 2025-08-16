@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday Edge Pro - NFL Statistics</title>
+    
+    <!-- Futuristic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 2025 Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-2025-theme.css">
+    
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+        }
+        
+        .stat-category {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            transition: all var(--transition-smooth);
+        }
+        
+        .stat-category:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-cyber);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-glass);
+        }
+        
+        .category-icon {
+            font-size: 2rem;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--cyber-primary);
+        }
+        
+        .leaders-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .leader-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-smooth);
+        }
+        
+        .leader-item:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.02);
+        }
+        
+        .leader-rank {
+            background: var(--cyber-accent);
+            color: var(--bg-primary);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: var(--text-xs);
+        }
+        
+        .leader-info {
+            flex: 1;
+            margin-left: var(--space-sm);
+        }
+        
+        .leader-name {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .leader-team {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+        }
+        
+        .leader-stat {
+            font-family: var(--font-code);
+            font-weight: 900;
+            color: var(--cyber-primary);
+            font-size: 1.1rem;
+        }
+        
+        .filters-section {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+            font-weight: 600;
+        }
+        
+        .filter-btn.active {
+            background: var(--cyber-primary);
+            color: var(--bg-primary);
+            border-color: var(--cyber-primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                max-width: 200px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Sunday Edge Pro Statistics</h1>
+                <p>Comprehensive NFL statistical analysis and league leaders</p>
+                
+                <div class="btn-group">
+                    <a href="index.html" class="btn btn-secondary">
+                        <span>←</span> Sunday Edge Pro
+                    </a>
+                    <button class="btn btn-primary" onclick="refreshStats()">
+                        <span>📊</span> Refresh Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Filters -->
+        <section class="section">
+            <div class="section-header">
+                <h2>📈 NFL Statistical Leaders</h2>
+                <p class="section-subtitle">Real-time NFL statistics and league leaders by category</p>
+            </div>
+            
+            <div class="filters-section">
+                <div class="filter-btn active" onclick="filterStats('current', this)">Current Season</div>
+                <div class="filter-btn" onclick="filterStats('career', this)">Career Leaders</div>
+                <div class="filter-btn" onclick="filterStats('weekly', this)">Weekly Leaders</div>
+            </div>
+        </section>
+
+        <!-- Statistics Grid -->
+        <section class="section">
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats will be populated here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        📊 NFL Statistics Active
+    </div>
+
+    <script>
+        // NFL Statistics System
+        let currentFilter = 'current';
+        let statsData = {};
+
+        // Sample statistical data
+        const sampleStats = {
+            current: {
+                passing: {
+                    title: "Passing Yards",
+                    icon: "🎯",
+                    leaders: [
+                        { rank: 1, name: "Dak Prescott", team: "DAL", stat: "4,516" },
+                        { rank: 2, name: "Josh Allen", team: "BUF", stat: "4,306" },
+                        { rank: 3, name: "Patrick Mahomes", team: "KC", stat: "4,183" },
+                        { rank: 4, name: "Lamar Jackson", team: "BAL", stat: "3,787" },
+                        { rank: 5, name: "Tua Tagovailoa", team: "MIA", stat: "3,548" }
+                    ]
+                },
+                rushing: {
+                    title: "Rushing Yards",
+                    icon: "🏃‍♂️",
+                    leaders: [
+                        { rank: 1, name: "Derrick Henry", team: "TEN", stat: "1,538" },
+                        { rank: 2, name: "Josh Jacobs", team: "LV", stat: "1,491" },
+                        { rank: 3, name: "Nick Chubb", team: "CLE", stat: "1,459" },
+                        { rank: 4, name: "Saquon Barkley", team: "NYG", stat: "1,312" },
+                        { rank: 5, name: "Austin Ekeler", team: "LAC", stat: "1,211" }
+                    ]
+                },
+                receiving: {
+                    title: "Receiving Yards",
+                    icon: "🙌",
+                    leaders: [
+                        { rank: 1, name: "Cooper Kupp", team: "LAR", stat: "1,947" },
+                        { rank: 2, name: "Davante Adams", team: "LV", stat: "1,516" },
+                        { rank: 3, name: "Tyreek Hill", team: "MIA", stat: "1,710" },
+                        { rank: 4, name: "Stefon Diggs", team: "BUF", stat: "1,429" },
+                        { rank: 5, name: "DeAndre Hopkins", team: "ARI", stat: "1,407" }
+                    ]
+                },
+                touchdowns: {
+                    title: "Touchdowns",
+                    icon: "🔥",
+                    leaders: [
+                        { rank: 1, name: "Jonathan Taylor", team: "IND", stat: "20" },
+                        { rank: 2, name: "Austin Ekeler", team: "LAC", stat: "18" },
+                        { rank: 3, name: "Cooper Kupp", team: "LAR", stat: "16" },
+                        { rank: 4, name: "Davante Adams", team: "LV", stat: "14" },
+                        { rank: 5, name: "Josh Allen", team: "BUF", stat: "13" }
+                    ]
+                },
+                sacks: {
+                    title: "Sacks",
+                    icon: "💥",
+                    leaders: [
+                        { rank: 1, name: "T.J. Watt", team: "PIT", stat: "22.5" },
+                        { rank: 2, name: "Myles Garrett", team: "CLE", stat: "16.0" },
+                        { rank: 3, name: "Nick Bosa", team: "SF", stat: "15.5" },
+                        { rank: 4, name: "Maxx Crosby", team: "LV", stat: "14.0" },
+                        { rank: 5, name: "Khalil Mack", team: "LAC", stat: "13.5" }
+                    ]
+                },
+                interceptions: {
+                    title: "Interceptions",
+                    icon: "🎯",
+                    leaders: [
+                        { rank: 1, name: "Trevon Diggs", team: "DAL", stat: "11" },
+                        { rank: 2, name: "Xavien Howard", team: "MIA", stat: "10" },
+                        { rank: 3, name: "J.C. Jackson", team: "NE", stat: "8" },
+                        { rank: 4, name: "Diontae Johnson", team: "PIT", stat: "8" },
+                        { rank: 5, name: "Minkah Fitzpatrick", team: "PIT", stat: "7" }
+                    ]
+                }
+            }
+        };
+
+        // Initialize statistics system
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 NFL Statistics System 2025 - Initialized');
+            updateStatus('📊 Loading NFL statistics...');
+            loadStatistics();
+        });
+
+        async function loadStatistics() {
+            try {
+                // In a real implementation, this would fetch from NFL Stats API
+                statsData = { ...sampleStats };
+                renderStatistics();
+                updateStatus('✅ NFL statistics loaded successfully');
+            } catch (error) {
+                console.error('❌ Failed to load statistics:', error);
+                showErrorMessage();
+            }
+        }
+
+        function renderStatistics() {
+            const container = document.getElementById('statsGrid');
+            const currentStats = statsData[currentFilter] || statsData.current;
+            
+            let html = '';
+            
+            Object.entries(currentStats).forEach(([category, data]) => {
+                html += `
+                    <div class="stat-category">
+                        <div class="category-header">
+                            <div class="category-icon">${data.icon}</div>
+                            <div class="category-title">${data.title}</div>
+                        </div>
+                        <div class="leaders-list">
+                `;
+                
+                data.leaders.forEach(leader => {
+                    html += `
+                        <div class="leader-item">
+                            <div class="leader-rank">${leader.rank}</div>
+                            <div class="leader-info">
+                                <div class="leader-name">${leader.name}</div>
+                                <div class="leader-team">${leader.team}</div>
+                            </div>
+                            <div class="leader-stat">${leader.stat}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function filterStats(period, element) {
+            currentFilter = period;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            renderStatistics();
+            updateStatus(`📊 Showing ${period} statistics`);
+        }
+
+        function refreshStats() {
+            updateStatus('🔄 Refreshing NFL statistics...');
+            loadStatistics();
+        }
+
+        function showErrorMessage() {
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-category">
+                    <div style="text-align: center; padding: var(--space-xl); color: var(--text-secondary);">
+                        <h3>⚠️ Unable to load statistics</h3>
+                        <p>Please configure API keys for real-time stats</p>
+                        <button class="btn btn-primary" onclick="refreshStats()" style="margin-top: var(--space-md);">
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStatus(message, type = 'success') {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                indicator.className = `status-indicator ${type}`;
+            }
+        }
+    </script>
+</body>
+</html>

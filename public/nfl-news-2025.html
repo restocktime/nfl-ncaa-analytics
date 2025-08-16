@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday Edge Pro - NFL News & RSS Feed</title>
+    
+    <!-- Futuristic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 2025 Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-2025-theme.css">
+    
+    <style>
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+        }
+        
+        .news-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-cyber);
+        }
+        
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .news-source {
+            color: var(--cyber-primary);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+            line-height: 1.4;
+        }
+        
+        .news-excerpt {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border-glass);
+        }
+        
+        .news-date {
+            color: var(--text-secondary);
+            font-size: var(--text-xs);
+            font-family: var(--font-code);
+        }
+        
+        .read-more {
+            background: var(--cyber-accent);
+            color: var(--bg-primary);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: var(--text-sm);
+            transition: all var(--transition-smooth);
+        }
+        
+        .read-more:hover {
+            background: var(--cyber-secondary);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+        }
+        
+        .feed-controls {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .feed-btn {
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+        }
+        
+        .feed-btn.active {
+            background: var(--cyber-primary);
+            color: var(--bg-primary);
+            border-color: var(--cyber-primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .feed-btn:hover:not(.active) {
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+        }
+        
+        .breaking-news {
+            background: linear-gradient(135deg, 
+                rgba(255, 0, 0, 0.1) 0%, 
+                rgba(139, 92, 246, 0.1) 100%);
+            border-color: var(--cyber-secondary);
+        }
+        
+        .breaking-news::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyber-secondary), var(--cyber-purple));
+        }
+        
+        @media (max-width: 768px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feed-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feed-btn {
+                width: 100%;
+                max-width: 200px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Sunday Edge Pro News</h1>
+                <p>Real-time NFL news and analysis from premium sources</p>
+                
+                <div class="btn-group">
+                    <a href="index.html" class="btn btn-secondary">
+                        <span>←</span> Sunday Edge Pro
+                    </a>
+                    <button class="btn btn-primary" onclick="refreshNews()">
+                        <span>🔄</span> Refresh News
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Feed Controls -->
+        <section class="section">
+            <div class="section-header">
+                <h2>📰 NFL News Feed</h2>
+                <p class="section-subtitle">Curated NFL news from top sports journalism sources</p>
+            </div>
+            
+            <div class="feed-controls">
+                <div class="feed-btn active" onclick="filterNews('all', this)">All News</div>
+                <div class="feed-btn" onclick="filterNews('breaking', this)">🚨 Breaking</div>
+                <div class="feed-btn" onclick="filterNews('trades', this)">🔄 Trades</div>
+                <div class="feed-btn" onclick="filterNews('injuries', this)">🏥 Injuries</div>
+                <div class="feed-btn" onclick="filterNews('fantasy', this)">🏆 Fantasy</div>
+                <div class="feed-btn" onclick="filterNews('analysis', this)">📊 Analysis</div>
+            </div>
+        </section>
+
+        <!-- News Grid -->
+        <section class="section">
+            <div class="news-grid" id="newsGrid">
+                <!-- News will be populated here -->
+                <div class="news-card">
+                    <div style="text-align: center; padding: var(--space-xl);">
+                        <div class="loading-spinner" style="display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border-glass); border-radius: 50%; border-top-color: var(--cyber-accent); animation: spin 1s ease-in-out infinite;"></div>
+                        <p style="margin-top: var(--space-md); color: var(--text-secondary);">Loading NFL news...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        📰 NFL News Feed Active
+    </div>
+
+    <script>
+        // NFL News System
+        let currentFilter = 'all';
+        let newsArticles = [];
+
+        // Sample NFL news data (would be replaced with real RSS feeds)
+        const sampleNews = [
+            {
+                id: 1,
+                title: "Chiefs Trade Rumors Heat Up as Deadline Approaches",
+                excerpt: "Kansas City Chiefs are reportedly exploring trade options to bolster their defense ahead of the playoff push...",
+                source: "ESPN",
+                category: "trades",
+                date: new Date().toISOString(),
+                image: "https://via.placeholder.com/350x200/1a1a24/39ff14?text=NFL+News",
+                breaking: false
+            },
+            {
+                id: 2,
+                title: "Josh Allen Injury Update: Bills Quarterback Expected to Play",
+                excerpt: "Buffalo Bills quarterback Josh Allen is expected to play this weekend despite suffering a minor shoulder injury...",
+                source: "NFL Network",
+                category: "injuries",
+                date: new Date(Date.now() - 3600000).toISOString(),
+                image: "https://via.placeholder.com/350x200/1a1a24/00d4ff?text=Injury+Report",
+                breaking: true
+            },
+            {
+                id: 3,
+                title: "Fantasy Football Week 12: Start/Sit Recommendations",
+                excerpt: "Our fantasy experts break down the top start and sit candidates for Week 12 of the NFL season...",
+                source: "FantasyPros",
+                category: "fantasy",
+                date: new Date(Date.now() - 7200000).toISOString(),
+                image: "https://via.placeholder.com/350x200/1a1a24/8b5cf6?text=Fantasy+Focus",
+                breaking: false
+            },
+            {
+                id: 4,
+                title: "Advanced Analytics: Why the Ravens Defense is Elite",
+                excerpt: "A deep dive into the numbers behind Baltimore's dominant defensive performance this season...",
+                source: "Pro Football Focus",
+                category: "analysis",
+                date: new Date(Date.now() - 10800000).toISOString(),
+                image: "https://via.placeholder.com/350x200/1a1a24/ff0080?text=Analytics",
+                breaking: false
+            }
+        ];
+
+        // Initialize news system
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 NFL News System 2025 - Initialized');
+            updateStatus('📰 Loading NFL news feed...');
+            loadNews();
+        });
+
+        async function loadNews() {
+            try {
+                // In a real implementation, this would fetch from RSS feeds or news APIs
+                newsArticles = [...sampleNews];
+                renderNews();
+                updateStatus('✅ NFL news loaded successfully');
+            } catch (error) {
+                console.error('❌ Failed to load news:', error);
+                showErrorMessage();
+            }
+        }
+
+        function renderNews() {
+            const container = document.getElementById('newsGrid');
+            let filteredNews = newsArticles;
+            
+            // Apply filter
+            if (currentFilter !== 'all') {
+                filteredNews = newsArticles.filter(article => {
+                    if (currentFilter === 'breaking') return article.breaking;
+                    return article.category === currentFilter;
+                });
+            }
+            
+            if (filteredNews.length === 0) {
+                container.innerHTML = `
+                    <div class="news-card">
+                        <div style="text-align: center; padding: var(--space-xl); color: var(--text-secondary);">
+                            <h3>No ${currentFilter} news available</h3>
+                            <p>Check back later for more updates</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filteredNews.forEach(article => {
+                const cardClass = article.breaking ? 'news-card breaking-news' : 'news-card';
+                const timeAgo = getTimeAgo(new Date(article.date));
+                
+                html += `
+                    <div class="${cardClass}">
+                        <img src="${article.image}" alt="${article.title}" class="news-image">
+                        <div class="news-source">${article.source}</div>
+                        <h3 class="news-title">${article.title}</h3>
+                        <p class="news-excerpt">${article.excerpt}</p>
+                        <div class="news-meta">
+                            <div class="news-date">${timeAgo}</div>
+                            <a href="#" class="read-more" onclick="readFullArticle('${article.id}')">Read More</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function filterNews(category, element) {
+            currentFilter = category;
+            
+            // Update filter buttons
+            document.querySelectorAll('.feed-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            renderNews();
+            updateStatus(`📰 Showing ${category} news`);
+        }
+
+        function readFullArticle(articleId) {
+            // In a real implementation, this would open the full article
+            alert('Full article functionality would redirect to the complete story.');
+        }
+
+        function refreshNews() {
+            updateStatus('🔄 Refreshing news feed...');
+            loadNews();
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            
+            if (diffMins < 60) {
+                return `${diffMins}m ago`;
+            } else if (diffHours < 24) {
+                return `${diffHours}h ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        function showErrorMessage() {
+            document.getElementById('newsGrid').innerHTML = `
+                <div class="news-card">
+                    <div style="text-align: center; padding: var(--space-xl); color: var(--text-secondary);">
+                        <h3>⚠️ Unable to load news</h3>
+                        <p>Please check your internet connection and try again</p>
+                        <button class="btn btn-primary" onclick="refreshNews()" style="margin-top: var(--space-md);">
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStatus(message, type = 'success') {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                indicator.className = `status-indicator ${type}`;
+            }
+        }
+    </script>
+</body>
+</html>

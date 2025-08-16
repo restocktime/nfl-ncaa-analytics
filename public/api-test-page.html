@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday Edge Pro - API Connection Test</title>
+    
+    <!-- Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-2025-theme.css">
+    
+    <style>
+        .test-results {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin: var(--space-lg) 0;
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md);
+            margin: var(--space-sm) 0;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+        
+        .status-success {
+            color: var(--cyber-accent);
+        }
+        
+        .status-error {
+            color: var(--cyber-secondary);
+        }
+        
+        .api-response {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            font-family: var(--font-code);
+            font-size: var(--text-sm);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>🔑 API Connection Test</h1>
+                <p>Testing Sunday Edge Pro API connections with your configured keys</p>
+                
+                <div class="btn-group">
+                    <a href="index.html" class="btn btn-secondary">
+                        <span>←</span> Back to Dashboard
+                    </a>
+                    <button class="btn btn-primary" onclick="runAllTests()">
+                        <span>🔄</span> Run Tests
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <div class="section-header">
+                <h2>🧪 API Integration Tests</h2>
+                <p class="section-subtitle">Verifying all API connections and data retrieval</p>
+            </div>
+            
+            <div class="test-results" id="testResults">
+                <p>Click "Run Tests" to verify your API connections...</p>
+            </div>
+            
+            <div class="api-response" id="apiResponse" style="display: none;">
+                <h3>🔍 API Response Sample:</h3>
+                <pre id="responseData"></pre>
+            </div>
+        </section>
+    </main>
+
+    <!-- Load API Integration -->
+    <script src="api-sports-odds-integration.js"></script>
+    <script src="betting-odds-integration.js"></script>
+    <script src="api-config.js"></script>
+
+    <script>
+        let testResults = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 API Test Page Loaded');
+            displayAPIStatus();
+        });
+
+        function displayAPIStatus() {
+            const container = document.getElementById('testResults');
+            const apiKey = window.apiConfig ? window.apiConfig.getKey('oddsapi') : null;
+            
+            let html = '<h3>📊 Current API Configuration:</h3>';
+            
+            html += `
+                <div class="test-item">
+                    <span>The Odds API Key:</span>
+                    <span class="${apiKey ? 'status-success' : 'status-error'}">
+                        ${apiKey ? '✅ Configured' : '❌ Not Set'}
+                    </span>
+                </div>
+            `;
+            
+            if (apiKey) {
+                html += `
+                    <div class="test-item">
+                        <span>API Key (masked):</span>
+                        <span class="status-success">${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}</span>
+                    </div>
+                `;
+            }
+            
+            html += '<p style="margin-top: var(--space-lg); color: var(--text-secondary);">Ready to test API connections...</p>';
+            container.innerHTML = html;
+        }
+
+        async function runAllTests() {
+            const container = document.getElementById('testResults');
+            const responseContainer = document.getElementById('apiResponse');
+            const responseData = document.getElementById('responseData');
+            
+            container.innerHTML = '<h3>🧪 Running API Tests...</h3><p>Testing connections...</p>';
+            testResults = {};
+
+            try {
+                // Test 1: API Key Configuration
+                await testAPIKeyConfiguration();
+                
+                // Test 2: ESPN API
+                await testESPNAPI();
+                
+                // Test 3: The Odds API
+                await testOddsAPI();
+                
+                // Display final results
+                displayTestResults();
+                
+            } catch (error) {
+                console.error('Test suite failed:', error);
+                container.innerHTML = `<p class="status-error">❌ Test suite failed: ${error.message}</p>`;
+            }
+        }
+
+        async function testAPIKeyConfiguration() {
+            testResults.config = { name: 'API Configuration', status: 'testing' };
+            
+            try {
+                const apiKey = window.apiConfig ? window.apiConfig.getKey('oddsapi') : null;
+                
+                if (apiKey && apiKey === '22e59e4eccd8562ad4b697aeeaccb0fb') {
+                    testResults.config.status = 'success';
+                    testResults.config.message = 'API key properly configured';
+                } else if (apiKey) {
+                    testResults.config.status = 'success';
+                    testResults.config.message = 'Custom API key configured';
+                } else {
+                    testResults.config.status = 'error';
+                    testResults.config.message = 'No API key configured';
+                }
+            } catch (error) {
+                testResults.config.status = 'error';
+                testResults.config.message = error.message;
+            }
+        }
+
+        async function testESPNAPI() {
+            testResults.espn = { name: 'ESPN Scores API', status: 'testing' };
+            
+            try {
+                const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    testResults.espn.status = 'success';
+                    testResults.espn.message = `Retrieved ${data.events ? data.events.length : 0} games`;
+                    testResults.espn.data = data;
+                } else {
+                    testResults.espn.status = 'error';
+                    testResults.espn.message = `HTTP ${response.status}`;
+                }
+            } catch (error) {
+                testResults.espn.status = 'error';
+                testResults.espn.message = error.message;
+            }
+        }
+
+        async function testOddsAPI() {
+            testResults.odds = { name: 'The Odds API', status: 'testing' };
+            
+            try {
+                if (!window.apiConfig || !window.apiConfig.getKey('oddsapi')) {
+                    throw new Error('No API key available');
+                }
+
+                // Initialize the API integration
+                const oddsAPI = new RealOddsAPIIntegration();
+                
+                // Test the API connection
+                const result = await oddsAPI.fetchAllRealOdds('nfl');
+                
+                if (result && result.success && result.success.length > 0) {
+                    testResults.odds.status = 'success';
+                    testResults.odds.message = `Retrieved data from ${result.success.length} providers, ${result.totalGames} games, ${result.totalBets} bets`;
+                    testResults.odds.data = result;
+                    
+                    // Show sample response
+                    document.getElementById('apiResponse').style.display = 'block';
+                    document.getElementById('responseData').textContent = JSON.stringify(result, null, 2);
+                } else {
+                    testResults.odds.status = 'error';
+                    testResults.odds.message = 'No data returned from API';
+                }
+                
+            } catch (error) {
+                testResults.odds.status = 'error';
+                testResults.odds.message = error.message;
+            }
+        }
+
+        function displayTestResults() {
+            const container = document.getElementById('testResults');
+            
+            let html = '<h3>🔬 Test Results:</h3>';
+            
+            Object.values(testResults).forEach(test => {
+                const statusClass = test.status === 'success' ? 'status-success' : 'status-error';
+                const statusIcon = test.status === 'success' ? '✅' : '❌';
+                
+                html += `
+                    <div class="test-item">
+                        <span>${test.name}:</span>
+                        <span class="${statusClass}">${statusIcon} ${test.message}</span>
+                    </div>
+                `;
+            });
+            
+            const successCount = Object.values(testResults).filter(t => t.status === 'success').length;
+            const totalCount = Object.values(testResults).length;
+            
+            html += `
+                <div style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--bg-card); border-radius: var(--radius-md); text-align: center;">
+                    <strong>Overall Status: ${successCount}/${totalCount} tests passed</strong>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

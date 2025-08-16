@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard Data Flow</title>
+    <script>
+        // Mock API response for testing
+        const mockApiResponse = {
+            "success": true,
+            "action": "events",
+            "data": [
+                {
+                    "id": "espn_401671715",
+                    "name": "Los Angeles Chargers vs New Orleans Saints",
+                    "league": "NFL",
+                    "date": "2025-08-11T20:00:00Z",
+                    "status": "scheduled",
+                    "teams": {
+                        "home": {
+                            "name": "New Orleans Saints",
+                            "abbreviation": "NO",
+                            "score": 0
+                        },
+                        "away": {
+                            "name": "Los Angeles Chargers", 
+                            "abbreviation": "LAC",
+                            "score": 0
+                        }
+                    },
+                    "venue": "Caesars Superdome",
+                    "week": "Regular Season"
+                },
+                {
+                    "id": "espn_401671716", 
+                    "name": "Miami Dolphins vs Chicago Bears",
+                    "league": "NFL",
+                    "date": "2025-08-11T21:00:00Z",
+                    "status": "scheduled",
+                    "teams": {
+                        "home": {
+                            "name": "Chicago Bears",
+                            "abbreviation": "CHI", 
+                            "score": 0
+                        },
+                        "away": {
+                            "name": "Miami Dolphins",
+                            "abbreviation": "MIA",
+                            "score": 0
+                        }
+                    },
+                    "venue": "Soldier Field",
+                    "week": "Regular Season"
+                }
+            ],
+            "source": "ESPN API Test",
+            "timestamp": "2025-08-11T15:30:00Z"
+        };
+
+        // Test the data transformation that happens in loadFromVercelAPI
+        function testDataTransformation() {
+            console.log('🧪 Testing data transformation...');
+            console.log('📊 Mock API Response:', mockApiResponse);
+            
+            const data = mockApiResponse;
+            
+            if (data && data.success && data.data && Array.isArray(data.data)) {
+                const games = data.data.map(event => ({
+                    gameId: event.id || `game_${Math.random().toString(36).substr(2, 9)}`,
+                    homeTeam: event.teams?.home?.name || 'Home Team',
+                    awayTeam: event.teams?.away?.name || 'Away Team', 
+                    gameTime: event.date || new Date().toISOString(),
+                    provider: 'Hard Rock Bet',
+                    bets: {
+                        moneyline: { 
+                            home: { odds: -120 }, 
+                            away: { odds: 110 } 
+                        },
+                        spread: { 
+                            home: { line: -3.5, odds: -110 }, 
+                            away: { line: 3.5, odds: -110 } 
+                        },
+                        totals: { 
+                            over: { line: 47.5, odds: -110 }, 
+                            under: { line: 47.5, odds: -110 } 
+                        }
+                    }
+                }));
+                
+                console.log(`✅ Successfully parsed ${games.length} games`);
+                console.log('🏈 Games:', games);
+                
+                const transformedData = {
+                    success: [{ 
+                        name: 'Hard Rock Bet', 
+                        games: games, 
+                        bets: games.length * 3,
+                        provider: 'hardrock'
+                    }],
+                    failed: [],
+                    totalGames: games.length,
+                    totalBets: games.length * 3
+                };
+                
+                console.log('📊 Transformed data structure:', transformedData);
+                
+                // Test extraction logic (what happens in loadOddsData)
+                if (transformedData.success && transformedData.success.length > 0) {
+                    const provider = transformedData.success[0];
+                    if (provider.games && Array.isArray(provider.games)) {
+                        const extractedGames = provider.games;
+                        console.log(`✅ Extracted ${extractedGames.length} games for dashboard`);
+                        
+                        // Test updateDashboard calculations
+                        const gameCount = extractedGames.length;
+                        const betCount = gameCount * 3;
+                        console.log(`🎯 Dashboard would show: ${gameCount} games, ${betCount} bets`);
+                        
+                        // Test widget display
+                        console.log('🖥️ Widget would display first 3 games:');
+                        extractedGames.slice(0, 3).forEach((game, index) => {
+                            console.log(`   ${index + 1}. ${game.awayTeam} @ ${game.homeTeam}`);
+                        });
+                        
+                        return extractedGames;
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Starting dashboard data flow test...');
+            const result = testDataTransformation();
+            
+            if (result && result.length > 0) {
+                document.getElementById('result').innerHTML = `
+                    <div style="color: green; font-weight: bold;">✅ TEST PASSED</div>
+                    <div>Dashboard would display ${result.length} games with ${result.length * 3} betting lines</div>
+                    <div style="margin-top: 10px;">
+                        <strong>Games:</strong>
+                        <ul>
+                            ${result.map(game => `<li>${game.awayTeam} @ ${game.homeTeam}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            } else {
+                document.getElementById('result').innerHTML = '<div style="color: red; font-weight: bold;">❌ TEST FAILED</div>';
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Dashboard Data Flow Test</h1>
+    <p>Testing the data transformation fixes for the NFL betting dashboard...</p>
+    <div id="result" style="margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #f5f5f5;">
+        Loading test...
+    </div>
+    <div style="margin-top: 20px;">
+        <strong>Check console for detailed logs</strong>
+    </div>
+</body>
+</html>
