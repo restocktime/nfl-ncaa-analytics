@@ -12,7 +12,7 @@ RUN npm ci --only=production
 
 # Copy application files
 COPY public/ ./public/
-COPY nfl-server.js ./
+COPY server/api-service.js ./
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
@@ -30,4 +30,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000/health || exit 1
 
 # Start command
-CMD ["node", "nfl-server.js"]
+CMD ["node", "api-service.js"]
