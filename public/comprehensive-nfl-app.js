@@ -5455,7 +5455,7 @@ class ChartManager {
      * @param {Object} options - Additional options for chart creation
      * @returns {Object|null} - Chart instance or null if creation failed
      */
-    createChart(canvasId, config, options = {}) {
+    async createChart(canvasId, config, options = {}) {
         console.log(`📊 Creating chart for canvas: ${canvasId}`);
         
         const startTime = performance.now();

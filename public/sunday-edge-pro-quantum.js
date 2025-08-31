@@ -3,7 +3,11 @@
  * Real-time data, AI predictions, and betting intelligence
  */
 
-console.log('🚀 Loading Sunday Edge Pro Betting Quantum...');
+// Prevent duplicate loading
+if (typeof window.SundayEdgeProQuantum !== 'undefined') {
+    console.log('🔄 SundayEdgeProQuantum already loaded, skipping...');
+} else {
+    console.log('🚀 Loading Sunday Edge Pro Betting Quantum...');
 
 class SundayEdgeProQuantum {
     constructor() {
@@ -1005,3 +1009,5 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { SundayEdgeProQuantum, EnhancedViewManager };
 }
+
+} // End of duplicate loading prevention
