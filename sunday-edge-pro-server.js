@@ -32,7 +32,7 @@ app.use(helmet({
 app.use(compression());
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-        ? ['https://sunday-edge-pro.vercel.app', 'https://sundayedgepro.com']
+        ? ['https://sunday-edge-pro.vercel.app']
         : ['http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true
 }));

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sunday Edge Pro Betting Quantum - Elite NFL Analytics Platform</title>
+    <title>Sunday Edge Pro - Elite Football Analytics</title>
     
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,1756 +13,312 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Chart.js for Data Visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Production Styles -->
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Comprehensive NFL App -->
-    <script src="comprehensive-nfl-app.js"></script>
-    
     <style>
-        .game-card {
-            background: var(--bg-glass);
+        :root {
+            --quantum-primary: #00ff88;
+            --quantum-secondary: #0066ff;
+            --quantum-accent: #ff0066;
+            --quantum-gold: #ffd700;
+            --quantum-dark: #0a0a0a;
+            --quantum-darker: #050505;
+            --quantum-light: #ffffff;
+            --quantum-border: rgba(0, 255, 136, 0.3);
+            --quantum-glow: 0 0 20px rgba(0, 255, 136, 0.5);
+            --quantum-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--quantum-darker) 0%, var(--quantum-dark) 100%);
+            color: var(--quantum-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Quantum Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 0, 102, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .selection-container {
+            text-align: center;
+            max-width: 800px;
+            padding: 3rem;
+        }
+
+        .brand-header {
+            margin-bottom: 4rem;
+        }
+
+        .brand-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary), var(--quantum-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .brand-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .quantum-badge {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            color: var(--quantum-dark);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+            margin-top: 1rem;
+            animation: quantum-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes quantum-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); }
+        }
+
+        .sport-selection {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .sport-card {
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            margin-bottom: var(--space-md);
-            transition: all var(--transition-smooth);
+            border: 2px solid var(--quantum-border);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            min-width: 280px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-        
-        .game-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-glow);
-            box-shadow: var(--shadow-cyber);
+
+        .sport-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: transform 0.5s ease;
+            opacity: 0;
         }
-        
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
+
+        .sport-card:hover::before {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
         }
-        
-        .team-matchup {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-primary);
+
+        .sport-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--quantum-primary);
+            box-shadow: var(--quantum-glow);
         }
-        
-        .game-status {
-            background: var(--cyber-accent);
-            color: var(--bg-primary);
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 700;
+
+        .sport-card.nfl:hover {
+            border-color: var(--quantum-primary);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
         }
-        
-        .game-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: var(--space-sm);
-            margin-top: var(--space-md);
+
+        .sport-card.ncaa:hover {
+            border-color: var(--quantum-secondary);
+            box-shadow: 0 0 30px rgba(0, 102, 255, 0.6);
         }
-        
-        .detail-item {
-            text-align: center;
+
+        .sport-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
-        
-        .detail-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xs);
+
+        .sport-card.nfl .sport-icon {
+            color: var(--quantum-primary);
         }
-        
-        .detail-value {
-            font-weight: 700;
-            color: var(--cyber-primary);
-            font-family: var(--font-code);
+
+        .sport-card.ncaa .sport-icon {
+            color: var(--quantum-secondary);
         }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border-glass);
-            border-radius: 50%;
-            border-top-color: var(--cyber-accent);
-            animation: spin 1s ease-in-out infinite;
+
+        .sport-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        .sport-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
-        
-        .error-message {
-            background: rgba(255, 68, 68, 0.2);
-            border: 1px solid #ff4444;
-            color: #ff4444;
-            padding: var(--space-lg);
-            border-radius: var(--radius-lg);
-            text-align: center;
+
+        .sport-features {
+            list-style: none;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
-        
-        .success-message {
-            background: rgba(57, 255, 20, 0.2);
-            border: 1px solid var(--cyber-accent);
-            color: var(--cyber-accent);
-            padding: var(--space-lg);
-            border-radius: var(--radius-lg);
-            text-align: center;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-lg);
-            margin-bottom: var(--space-2xl);
-        }
-        
-        .stat-card {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            text-align: center;
-            transition: all var(--transition-smooth);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-glow);
-            box-shadow: var(--shadow-cyber);
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 900;
-            font-family: var(--font-code);
-            color: var(--cyber-accent);
-            text-shadow: 0 0 15px var(--cyber-accent);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .stat-label {
+
+        .sport-features li {
+            padding: 0.5rem 0;
             font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
         }
-        
-        .refresh-btn {
-            background: var(--cyber-primary);
-            color: var(--bg-primary);
-            border: none;
-            border-radius: var(--radius-md);
-            padding: var(--space-sm) var(--space-lg);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-smooth);
-            margin-bottom: var(--space-lg);
+
+        .sport-features li::before {
+            content: '⚡';
+            margin-right: 0.5rem;
         }
-        
-        .refresh-btn:hover {
-            background: var(--cyber-secondary);
-            box-shadow: var(--shadow-cyber);
+
+        @media (max-width: 768px) {
+            .sport-selection {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .brand-title {
+                font-size: 2.5rem;
+            }
+            
+            .sport-card {
+                min-width: auto;
+                padding: 2rem 1.5rem;
+            }
+            
+            .selection-container {
+                padding: 2rem 1rem;
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
+    <div class="selection-container">
+        <div class="brand-header">
+            <h1 class="brand-title">
                 <i class="fas fa-bolt"></i>
-                <span>Sunday Edge Pro</span>
-                <span class="premium-badge">QUANTUM</span>
-            </div>
-            
-            <div class="nav-menu">
-                <a href="#dashboard" class="nav-link active" data-view="dashboard">
-                    <i class="fas fa-chart-line"></i> Dashboard
-                </a>
-                <a href="#live" class="nav-link" data-view="live">
-                    <i class="fas fa-broadcast-tower"></i> Live Games
-                </a>
-                <a href="#predictions" class="nav-link" data-view="predictions">
-                    <i class="fas fa-brain"></i> AI Predictions
-                </a>
-                <a href="#fantasy" class="nav-link" data-view="fantasy">
-                    <i class="fas fa-trophy"></i> Fantasy Hub
-                </a>
-                <a href="#betting" class="nav-link" data-view="betting">
-                    <i class="fas fa-coins"></i> Betting Edge
-                </a>
-                <a href="#news" class="nav-link" data-view="news">
-                    <i class="fas fa-newspaper"></i> News
-                </a>
-            </div>
-            
-            <div class="nav-actions">
-                <button class="btn-refresh" onclick="refreshAllData()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-                <div class="status-indicator" id="connectionStatus">
-                    <i class="fas fa-circle"></i>
-                </div>
-            </div>
+                Sunday Edge Pro
+            </h1>
+            <p class="brand-subtitle">Elite Football Analytics & Betting Intelligence</p>
+            <div class="quantum-badge">QUANTUM POWERED</div>
         </div>
-    </nav>
 
-    <!-- Main App Container -->
-    <div class="app-container">
-        <!-- Dashboard View -->
-        <div id="dashboard" class="view active">
-            <div class="view-header">
-                <h1><i class="fas fa-bolt"></i> Sunday Edge Pro Quantum</h1>
-                <p>Elite NFL Analytics & Betting Intelligence Platform</p>
-            </div>
-            
-            <!-- Season Navigation -->
-            <div class="season-navigation">
-                <div class="season-header">
-                    <h2><i class="fas fa-calendar-alt"></i> 2025 NFL Season</h2>
-                    <div class="season-status">
-                        <span class="season-badge regular">REGULAR SEASON</span>
-                        <span class="current-week">Week 1</span>
-                    </div>
+        <div class="sport-selection">
+            <div class="sport-card nfl" onclick="selectSport('nfl')">
+                <div class="sport-icon">
+                    <i class="fas fa-football-ball"></i>
                 </div>
-                
-                <div class="season-tabs">
-                    <button class="season-tab active" data-season="regular" onclick="switchSeason('regular')">
-                        <i class="fas fa-trophy"></i> Regular Season
-                    </button>
-                    <button class="season-tab" data-season="preseason" onclick="switchSeason('preseason')">
-                        <i class="fas fa-chart-bar"></i> Preseason Analysis
-                    </button>
-                    <button class="season-tab" data-season="playoffs" onclick="switchSeason('playoffs')">
-                        <i class="fas fa-crown"></i> Playoffs
-                    </button>
-                </div>
-                
-                <div class="week-navigator">
-                    <button class="week-nav-btn" onclick="changeWeek(-1)">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="week-selector">
-                        <select id="weekSelector" onchange="selectWeek(this.value)">
-                            <option value="1" selected>Week 1</option>
-                            <option value="2">Week 2</option>
-                            <option value="3">Week 3</option>
-                            <option value="4">Week 4</option>
-                            <option value="5">Week 5</option>
-                            <option value="6">Week 6</option>
-                            <option value="7">Week 7</option>
-                            <option value="8">Week 8</option>
-                            <option value="9">Week 9</option>
-                            <option value="10">Week 10</option>
-                            <option value="11">Week 11</option>
-                            <option value="12">Week 12</option>
-                            <option value="13">Week 13</option>
-                            <option value="14">Week 14</option>
-                            <option value="15">Week 15</option>
-                            <option value="16">Week 16</option>
-                            <option value="17">Week 17</option>
-                            <option value="18">Week 18</option>
-                        </select>
-                    </div>
-                    <button class="week-nav-btn" onclick="changeWeek(1)">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+                <h2 class="sport-title">NFL</h2>
+                <p class="sport-description">
+                    Professional football analytics with live scores, betting lines, and fantasy insights.
+                </p>
+                <ul class="sport-features">
+                    <li>Live NFL Games & Scores</li>
+                    <li>Real-time Betting Lines</li>
+                    <li>Fantasy Football Analytics</li>
+                    <li>AI-Powered Predictions</li>
+                    <li>Advanced Team Stats</li>
+                </ul>
             </div>
 
-            <!-- Key Metrics -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-icon"><i class="fas fa-football-ball"></i></div>
-                    <div class="metric-content">
-                        <div class="metric-value" id="total-games">--</div>
-                        <div class="metric-label">Total Games</div>
-                    </div>
+            <div class="sport-card ncaa" onclick="selectSport('ncaa')">
+                <div class="sport-icon">
+                    <i class="fas fa-university"></i>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-icon live"><i class="fas fa-broadcast-tower"></i></div>
-                    <div class="metric-content">
-                        <div class="metric-value" id="live-games">--</div>
-                        <div class="metric-label">Live Games</div>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon"><i class="fas fa-brain"></i></div>
-                    <div class="metric-content">
-                        <div class="metric-value" id="prediction-accuracy">89.7%</div>
-                        <div class="metric-label">AI Accuracy</div>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon"><i class="fas fa-robot"></i></div>
-                    <div class="metric-content">
-                        <div class="metric-value" id="ml-models">3</div>
-                        <div class="metric-label">ML Models</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Preseason Insights Section (shown when preseason tab is active) -->
-            <div id="preseason-insights" class="section-card" style="display: none;">
-                <div class="section-header">
-                    <h2><i class="fas fa-microscope"></i> Preseason Analysis & Insights</h2>
-                    <div class="insights-badge">
-                        <i class="fas fa-lightbulb"></i> Key Takeaways
-                    </div>
-                </div>
-                
-                <div class="preseason-grid">
-                    <div class="insight-card breakout">
-                        <div class="insight-header">
-                            <h3><i class="fas fa-rocket"></i> Breakout Candidates</h3>
-                            <span class="insight-count">12 Players</span>
-                        </div>
-                        <div class="insight-content">
-                            <div class="player-insight">
-                                <span class="player-name">Jayden Reed (GB)</span>
-                                <span class="insight-stat">+47% target share</span>
-                            </div>
-                            <div class="player-insight">
-                                <span class="player-name">Tank Dell (HOU)</span>
-                                <span class="insight-stat">8.2 YPT average</span>
-                            </div>
-                            <div class="player-insight">
-                                <span class="player-name">Roschon Johnson (CHI)</span>
-                                <span class="insight-stat">67% snap share</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="insight-card concern">
-                        <div class="insight-header">
-                            <h3><i class="fas fa-exclamation-triangle"></i> Red Flags</h3>
-                            <span class="insight-count">8 Players</span>
-                        </div>
-                        <div class="insight-content">
-                            <div class="player-insight">
-                                <span class="player-name">Travis Kelce (KC)</span>
-                                <span class="insight-stat">-23% target share</span>
-                            </div>
-                            <div class="player-insight">
-                                <span class="player-name">Aaron Jones (MIN)</span>
-                                <span class="insight-stat">Limited snaps</span>
-                            </div>
-                            <div class="player-insight">
-                                <span class="player-name">DJ Moore (CHI)</span>
-                                <span class="insight-stat">New QB chemistry</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="insight-card team-trends">
-                        <div class="insight-header">
-                            <h3><i class="fas fa-chart-line"></i> Team Trends</h3>
-                            <span class="insight-count">32 Teams</span>
-                        </div>
-                        <div class="insight-content">
-                            <div class="team-insight">
-                                <span class="team-name">Detroit Lions</span>
-                                <span class="trend-stat">+12% pass rate</span>
-                            </div>
-                            <div class="team-insight">
-                                <span class="team-name">Houston Texans</span>
-                                <span class="trend-stat">Improved O-line</span>
-                            </div>
-                            <div class="team-insight">
-                                <span class="team-name">Washington Commanders</span>
-                                <span class="trend-stat">Rookie QB ready</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="insight-card sleepers">
-                        <div class="insight-header">
-                            <h3><i class="fas fa-eye"></i> Sleeper Picks</h3>
-                            <span class="insight-count">15 Players</span>
-                        </div>
-                        <div class="insight-content">
-                            <div class="player-insight">
-                                <span class="player-name">Rome Odunze (CHI)</span>
-                                <span class="insight-stat">WR2 upside</span>
-                            </div>
-                            <div class="player-insight">
-                                <span class="player-name">Jaylen Wright (MIA)</span>
-                                <span class="insight-stat">Handcuff value</span>
-                            </div>
-                            <div class="player-insight">
-                                <span class="player-name">Brock Bowers (LV)</span>
-                                <span class="insight-stat">TE1 potential</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="preseason-summary">
-                    <h3><i class="fas fa-clipboard-list"></i> Key Preseason Takeaways for Regular Season</h3>
-                    <div class="takeaways-grid">
-                        <div class="takeaway-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Rookie QBs showed strong preseason performance - expect immediate impact</span>
-                        </div>
-                        <div class="takeaway-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Several veteran WRs struggled with new systems - fade early in season</span>
-                        </div>
-                        <div class="takeaway-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Running back committees more prevalent - handcuffs have increased value</span>
-                        </div>
-                        <div class="takeaway-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Defensive coordinators showing more aggressive schemes - impacts over/unders</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Live Games Section (Only shows when games are actually live) -->
-            <div id="live-games-section" class="section-card" style="display: none;">
-                <div class="section-header">
-                    <h2><i class="fas fa-broadcast-tower live-indicator"></i> Live Games</h2>
-                    <div class="live-badge">
-                        <i class="fas fa-circle"></i> LIVE
-                    </div>
-                </div>
-                <div id="live-games-container" class="games-grid">
-                    <div class="loading-card">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Loading live games...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Upcoming Games Section (Connected to week tabs) -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-calendar-alt"></i> Upcoming Games</h2>
-                    <div class="upcoming-info">
-                        <span id="upcoming-week-display">Week 1</span>
-                        <button class="btn-secondary" onclick="refreshUpcomingGames()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                    </div>
-                </div>
-                <div id="upcoming-games-container" class="games-grid">
-                    <div class="loading-card">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Loading upcoming games...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Prediction Accuracy Chart -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-chart-area"></i> Prediction Accuracy</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="accuracyChart"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Live Games View -->
-        <div id="live" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-broadcast-tower"></i> Live NFL Games</h1>
-                <p>Real-time scores, stats, and live betting odds</p>
-            </div>
-            
-            <div id="all-games-container" class="games-grid">
-                <div class="loading-card">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading all games...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- AI Predictions View -->
-        <div id="predictions" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-brain"></i> AI Predictions</h1>
-                <p>Advanced machine learning predictions and analysis</p>
-            </div>
-            
-            <!-- ML Models Status -->
-            <div class="models-grid">
-                <div class="model-card">
-                    <div class="model-header">
-                        <h3>Neural Network v3.0</h3>
-                        <span class="status-badge active">ACTIVE</span>
-                    </div>
-                    <div class="model-stats">
-                        <div class="stat">
-                            <span class="stat-label">Accuracy</span>
-                            <span class="stat-value">89.7%</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Predictions</span>
-                            <span class="stat-value">2,847</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="model-card">
-                    <div class="model-header">
-                        <h3>Monte Carlo Engine</h3>
-                        <span class="status-badge active">ACTIVE</span>
-                    </div>
-                    <div class="model-stats">
-                        <div class="stat">
-                            <span class="stat-label">Accuracy</span>
-                            <span class="stat-value">84.1%</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Simulations</span>
-                            <span class="stat-value">47.2K</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="model-card">
-                    <div class="model-header">
-                        <h3>Player Performance AI</h3>
-                        <span class="status-badge active">ACTIVE</span>
-                    </div>
-                    <div class="model-stats">
-                        <div class="stat">
-                            <span class="stat-label">Accuracy</span>
-                            <span class="stat-value">86.4%</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Players</span>
-                            <span class="stat-value">1,696</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="predictions-container" class="predictions-grid">
-                <div class="loading-card">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading AI predictions...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Fantasy Hub View -->
-        <div id="fantasy" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-trophy"></i> Fantasy Football Hub</h1>
-                <p>Advanced fantasy analytics, lineup optimization, and player insights</p>
-            </div>
-            
-            <!-- Fantasy Hub Navigation -->
-            <div class="fantasy-hub-nav">
-                <a href="fantasy-hub.html" class="fantasy-hub-card primary">
-                    <div class="hub-icon">🏆</div>
-                    <div class="hub-content">
-                        <h3>Complete Fantasy Hub</h3>
-                        <p>Full-featured fantasy management</p>
-                    </div>
-                </a>
-                <a href="revolutionary-fantasy-hub.html" class="fantasy-hub-card secondary">
-                    <div class="hub-icon">🚀</div>
-                    <div class="hub-content">
-                        <h3>Revolutionary Hub</h3>
-                        <p>AI-powered advanced analytics</p>
-                    </div>
-                </a>
-                <a href="roster-builder.html" class="fantasy-hub-card tertiary">
-                    <div class="hub-icon">👥</div>
-                    <div class="hub-content">
-                        <h3>Roster Builder</h3>
-                        <p>Manual team construction</p>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="fantasy-nav">
-                <button class="fantasy-tab active" data-tab="dashboard" onclick="showFantasyTab('dashboard')">
-                    <i class="fas fa-chart-pie"></i> Dashboard
-                </button>
-                <button class="fantasy-tab" data-tab="lineup" onclick="showFantasyTab('lineup')">
-                    <i class="fas fa-users"></i> Lineup Optimizer
-                </button>
-                <button class="fantasy-tab" data-tab="waivers" onclick="showFantasyTab('waivers')">
-                    <i class="fas fa-search"></i> Waiver Wire
-                </button>
-                <button class="fantasy-tab" data-tab="trades" onclick="showFantasyTab('trades')">
-                    <i class="fas fa-exchange-alt"></i> Trade Analyzer
-                </button>
-                <button class="fantasy-tab" data-tab="projections" onclick="showFantasyTab('projections')">
-                    <i class="fas fa-chart-line"></i> Projections
-                </button>
-                <button class="fantasy-tab" data-tab="connect" onclick="showFantasyTab('connect')">
-                    <i class="fas fa-link"></i> Connect Accounts
-                </button>
-            </div>
-            
-            <div id="fantasy-content">
-                <div class="loading-card">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading fantasy data...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Betting Odds View -->
-        <div id="betting" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-coins"></i> Live Betting Odds</h1>
-                <p>Real-time odds, spreads, and betting insights</p>
-            </div>
-            
-            <!-- Live Hard Rock Betting Widget -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-dice"></i> Hard Rock Bet - Live Odds</h2>
-                    <div class="live-indicator">
-                        <i class="fas fa-circle"></i> LIVE
-                    </div>
-                </div>
-                <div class="betting-widget-container">
-                    <div id="widget-loading" class="widget-loading">
-                        <div class="loading-content">
-                            <div class="spinner-container">
-                                <div class="loading-spinner"></div>
-                                <div class="football-icon">🏈</div>
-                            </div>
-                            <h3>Loading Premium Odds...</h3>
-                            <p>Fetching real-time NFL betting lines</p>
-                            <div class="loading-features">
-                                <div class="feature-item">
-                                    <div class="feature-dot green"></div>
-                                    <span>Spreads</span>
-                                </div>
-                                <div class="feature-item">
-                                    <div class="feature-dot yellow"></div>
-                                    <span>Moneylines</span>
-                                </div>
-                                <div class="feature-item">
-                                    <div class="feature-dot purple"></div>
-                                    <span>Totals</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <iframe
-                        id="hardrock-odds-widget"
-                        title="Hard Rock Bet - NFL Odds"
-                        src="https://app.hardrock.bet/sport-leagues/american_football/691198679103111169"
-                        frameborder="0"
-                        scrolling="yes"
-                        style="width: 100%; height: 600px; border: none; border-radius: 12px;"
-                        onload="document.getElementById('widget-loading').style.display = 'none';"
-                        onerror="handleWidgetError()"
-                    ></iframe>
-                </div>
-                
-                <div class="widget-info">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-icon green">📈</div>
-                            <div class="info-content">
-                                <h4>Live Spreads</h4>
-                                <p>Real-time point spreads with instant updates</p>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-icon blue">💰</div>
-                            <div class="info-content">
-                                <h4>Moneylines</h4>
-                                <p>Straight-up win/loss odds from top sportsbooks</p>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-icon purple">🎯</div>
-                            <div class="info-content">
-                                <h4>Over/Under</h4>
-                                <p>Total points betting with live line movements</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Quick Bet Access -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-rocket"></i> Quick Bet Access</h2>
-                </div>
-                <div class="quick-bet-grid">
-                    <a href="https://app.hardrock.bet/sport-leagues/american_football/691198679103111169" 
-                       target="_blank" rel="noopener noreferrer"
-                       class="quick-bet-card primary">
-                        <div class="bet-icon">🏈</div>
-                        <div class="bet-content">
-                            <h3>Place NFL Bets</h3>
-                            <p>Hard Rock Bet</p>
-                        </div>
-                    </a>
-                    <a href="https://app.hardrock.bet/sport-leagues/american_football/691198679103111169" 
-                       target="_blank" rel="noopener noreferrer"
-                       class="quick-bet-card secondary">
-                        <div class="bet-icon">🎲</div>
-                        <div class="bet-content">
-                            <h3>Live Betting</h3>
-                            <p>In-Game Odds</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            
-            <div id="betting-container" class="betting-grid">
-                <div class="loading-card">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading additional betting data...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- News View -->
-        <div id="news" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-newspaper"></i> NFL News & Analysis</h1>
-                <p>Latest news, injury reports, and expert analysis</p>
-            </div>
-            
-            <div id="news-container" class="news-grid">
-                <div class="loading-card">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading latest news...</p>
-                </div>
+                <h2 class="sport-title">NCAA</h2>
+                <p class="sport-description">
+                    College football analytics with live games, rankings, and betting opportunities.
+                </p>
+                <ul class="sport-features">
+                    <li>Live College Games</li>
+                    <li>AP Top 25 Rankings</li>
+                    <li>NCAA Betting Lines</li>
+                    <li>Conference Analytics</li>
+                    <li>Week 1 Live Data</li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer-credit">
-        <p>Made by IBY | NFL Analytics Pro © 2025</p>
-    </footer>
-
-    <!-- Status Indicator -->
-    <div class="status-indicator" id="statusIndicator">
-        🏈 NFL Analytics Pro Active
-    </div>
-
-    <!-- Load Real NFL Data -->
-    <script src="live-nfl-games-today.js"></script>
-    <script src="nfl-2024-data.js"></script>
-    
     <script>
-        // Production NFL Analytics App
-        class NFLAnalyticsPro {
-            constructor() {
-                this.currentView = 'dashboard';
-                this.data = {
-                    games: [],
-                    teams: [],
-                    players: [],
-                    predictions: [],
-                    news: []
-                };
-                this.mlModels = [
-                    { id: 'neural_network', name: 'Neural Network v3.0', accuracy: 89.7, status: 'active' },
-                    { id: 'monte_carlo', name: 'Monte Carlo Engine', accuracy: 84.1, status: 'active' },
-                    { id: 'player_ai', name: 'Player Performance AI', accuracy: 86.4, status: 'active' }
-                ];
-                this.init();
-            }
+        function selectSport(sport) {
+            console.log(`🏈 Navigating to ${sport.toUpperCase()} analytics...`);
             
-            async init() {
-                console.log('🏈 NFL Analytics Pro - Initializing Production System...');
-                this.updateConnectionStatus('connecting');
-                
-                // Setup navigation
-                this.setupNavigation();
-                
-                // Load all data sources
-                await this.loadAllData();
-                
-                // Initialize views
-                this.initializeViews();
-                
-                // Setup auto-refresh
-                this.setupAutoRefresh();
-                
-                this.updateConnectionStatus('connected');
-                console.log('✅ NFL Analytics Pro - Ready for Production');
-            }
+            // Add selection animation
+            const card = document.querySelector(`.sport-card.${sport}`);
+            card.style.transform = 'scale(0.95)';
             
-            setupNavigation() {
-                const navLinks = document.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        
-                        // Remove active class from all links
-                        navLinks.forEach(l => l.classList.remove('active'));
-                        link.classList.add('active');
-                        
-                        // Switch views
-                        const view = link.dataset.view;
-                        this.switchView(view);
-                    });
-                });
-            }
-            
-            switchView(viewName) {
-                // Hide all views
-                document.querySelectorAll('.view').forEach(view => {
-                    view.classList.remove('active');
-                });
-                
-                // Show selected view
-                const targetView = document.getElementById(viewName);
-                if (targetView) {
-                    targetView.classList.add('active');
-                    this.currentView = viewName;
-                    
-                    // Load view-specific data
-                    this.loadViewData(viewName);
+            setTimeout(() => {
+                if (sport === 'nfl') {
+                    window.location.href = 'nfl-analytics.html';
+                } else if (sport === 'ncaa') {
+                    window.location.href = 'ncaa-analytics.html';
                 }
-            }
-            
-            async loadAllData() {
-                try {
-                    // Load from global data sources
-                    this.data.games = window.LIVE_NFL_GAMES_TODAY || [];
-                    this.data.teams = window.NFL_TEAMS_2024 || [];
-                    this.data.players = window.NFL_PLAYERS_2024 || [];
-                    
-                    // Try to fetch real-time data from APIs
-                    await this.fetchRealTimeData();
-                    
-                    console.log(`✅ Loaded: ${this.data.games.length} games, ${this.data.teams.length} teams, ${this.data.players.length} players`);
-                } catch (error) {
-                    console.error('❌ Error loading data:', error);
-                }
-            }
-            
-            async fetchRealTimeData() {
-                try {
-                    // Fetch from Hard Rock API
-                    const response = await fetch('/api/hardrock?action=events');
-                    const data = await response.json();
-                    
-                    if (data.success && data.data.length > 0) {
-                        // Merge real-time data with static data
-                        this.data.realTimeGames = data.data;
-                        console.log(`✅ Fetched ${data.data.length} real-time games`);
-                    }
-                } catch (error) {
-                    console.log('⚠️ Real-time API unavailable, using static data');
-                }
-            }
-            
-            initializeViews() {
-                this.loadDashboard();
-                this.updateMetrics();
-            }
-            
-            loadViewData(viewName) {
-                switch (viewName) {
-                    case 'dashboard':
-                        this.loadDashboard();
-                        break;
-                    case 'live':
-                        this.loadLiveGames();
-                        break;
-                    case 'predictions':
-                        this.loadPredictions();
-                        break;
-                    case 'fantasy':
-                        this.loadFantasyHub();
-                        break;
-                    case 'betting':
-                        this.loadBettingOdds();
-                        break;
-                    case 'news':
-                        this.loadNews();
-                        break;
-                }
-            }
-            
-            updateMetrics() {
-                const totalGames = this.data.games.length + (this.data.realTimeGames?.length || 0);
-                const liveGames = this.data.games.filter(g => g.status === 'LIVE').length;
-                
-                document.getElementById('total-games').textContent = totalGames;
-                document.getElementById('live-games').textContent = liveGames;
-            }
-            
-            loadDashboard() {
-                this.loadLiveGamesSection();
-                this.createAccuracyChart();
-            }
-            
-            loadLiveGamesSection() {
-                const container = document.getElementById('live-games-container');
-                const games = this.data.games.slice(0, 6); // Show top 6 games
-                
-                if (games.length === 0) {
-                    container.innerHTML = '<div class="no-data">No live games available</div>';
-                    return;
-                }
-                
-                const gamesHTML = games.map(game => `
-                    <div class="game-card ${game.status === 'LIVE' ? 'live' : ''}">
-                        <div class="game-status">${game.status}</div>
-                        <div class="game-teams">
-                            <div class="team away">
-                                <span class="team-name">${game.awayTeam}</span>
-                                <span class="team-score">${game.awayScore || 0}</span>
-                            </div>
-                            <div class="vs">VS</div>
-                            <div class="team home">
-                                <span class="team-name">${game.homeTeam}</span>
-                                <span class="team-score">${game.homeScore || 0}</span>
-                            </div>
-                        </div>
-                        <div class="game-details">
-                            <div class="detail">
-                                <span class="label">Time:</span>
-                                <span class="value">${game.time || 'TBD'}</span>
-                            </div>
-                            <div class="detail">
-                                <span class="label">Stadium:</span>
-                                <span class="value">${game.stadium || 'TBD'}</span>
-                            </div>
-                        </div>
-                        <div class="game-prediction">
-                            <div class="prediction-bar">
-                                <div class="away-prob" style="width: ${game.prediction?.awayWinProbability || 50}%">
-                                    ${game.prediction?.awayWinProbability || 50}%
-                                </div>
-                                <div class="home-prob" style="width: ${game.prediction?.homeWinProbability || 50}%">
-                                    ${game.prediction?.homeWinProbability || 50}%
-                                </div>
-                            </div>
-                        </div>
-                        <div class="game-actions">
-                            <button class="btn-action" onclick="nflApp.viewGameDetails('${game.id}')">
-                                <i class="fas fa-chart-line"></i> Details
-                            </button>
-                            <button class="btn-action primary" onclick="nflApp.simulateGame('${game.id}')">
-                                <i class="fas fa-dice"></i> Simulate
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-                
-                container.innerHTML = gamesHTML;
-            }
-            
-            loadLiveGames() {
-                const container = document.getElementById('all-games-container');
-                const allGames = [...this.data.games, ...(this.data.realTimeGames || [])];
-                
-                if (allGames.length === 0) {
-                    container.innerHTML = '<div class="no-data">No games available</div>';
-                    return;
-                }
-                
-                const gamesHTML = allGames.map(game => `
-                    <div class="game-card-full ${game.status?.toLowerCase() === 'live' ? 'live' : ''}">
-                        <div class="game-header">
-                            <div class="game-info">
-                                <span class="week">${game.week || 'Week 1'}</span>
-                                <span class="date">${new Date(game.date).toLocaleDateString()}</span>
-                            </div>
-                            <div class="game-status ${game.status?.toLowerCase()}">${game.status || 'SCHEDULED'}</div>
-                        </div>
-                        <div class="game-matchup">
-                            <div class="team away">
-                                <div class="team-info">
-                                    <span class="team-name">${game.teams?.away?.name || game.awayTeam}</span>
-                                    <span class="team-abbr">${game.teams?.away?.abbreviation || game.awayTeam}</span>
-                                </div>
-                                <div class="team-score">${game.teams?.away?.score || game.awayScore || 0}</div>
-                            </div>
-                            <div class="vs-section">
-                                <span class="vs">@</span>
-                                <div class="game-time">${game.time || 'TBD'}</div>
-                            </div>
-                            <div class="team home">
-                                <div class="team-score">${game.teams?.home?.score || game.homeScore || 0}</div>
-                                <div class="team-info">
-                                    <span class="team-name">${game.teams?.home?.name || game.homeTeam}</span>
-                                    <span class="team-abbr">${game.teams?.home?.abbreviation || game.homeTeam}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="game-extras">
-                            <div class="venue">${game.venue || game.stadium || 'TBD'}</div>
-                            <div class="betting-info">
-                                <span class="spread">Spread: ${game.spread || 'N/A'}</span>
-                                <span class="total">O/U: ${game.overUnder || 'N/A'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-                
-                container.innerHTML = gamesHTML;
-            }
-            
-            loadPredictions() {
-                const container = document.getElementById('predictions-container');
-                const games = this.data.games.filter(g => g.prediction);
-                
-                if (games.length === 0) {
-                    container.innerHTML = '<div class="no-data">No predictions available</div>';
-                    return;
-                }
-                
-                const predictionsHTML = games.map(game => `
-                    <div class="prediction-card">
-                        <div class="prediction-header">
-                            <h3>${game.awayTeam} @ ${game.homeTeam}</h3>
-                            <span class="confidence ${game.prediction.confidence.toLowerCase()}">${game.prediction.confidence}</span>
-                        </div>
-                        <div class="prediction-probabilities">
-                            <div class="prob-bar">
-                                <div class="away-prob" style="width: ${game.prediction.awayWinProbability}%">
-                                    ${game.awayTeam}: ${game.prediction.awayWinProbability}%
-                                </div>
-                                <div class="home-prob" style="width: ${game.prediction.homeWinProbability}%">
-                                    ${game.homeTeam}: ${game.prediction.homeWinProbability}%
-                                </div>
-                            </div>
-                        </div>
-                        <div class="prediction-factors">
-                            <h4>Key Factors:</h4>
-                            <ul>
-                                ${game.prediction.keyFactors.map(factor => `<li>${factor}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="predicted-score">
-                            <span>Predicted Score: ${game.prediction.predictedScore.away} - ${game.prediction.predictedScore.home}</span>
-                        </div>
-                    </div>
-                `).join('');
-                
-                container.innerHTML = predictionsHTML;
-            }
-            
-            loadFantasyHub() {
-                // Initialize fantasy dashboard by default
-                this.showFantasyTab('dashboard');
-            }
-            
-            showFantasyTab(tabName) {
-                // Update tab buttons
-                document.querySelectorAll('.fantasy-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-                
-                // Load tab content
-                const container = document.getElementById('fantasy-content');
-                
-                switch (tabName) {
-                    case 'dashboard':
-                        container.innerHTML = this.getFantasyDashboard();
-                        break;
-                    case 'lineup':
-                        container.innerHTML = this.getLineupOptimizer();
-                        break;
-                    case 'waivers':
-                        container.innerHTML = this.getWaiverWire();
-                        break;
-                    case 'trades':
-                        container.innerHTML = this.getTradeAnalyzer();
-                        break;
-                    case 'projections':
-                        container.innerHTML = this.getProjections();
-                        break;
-                    case 'connect':
-                        container.innerHTML = this.getConnectAccounts();
-                        break;
-                }
-            }
-            
-            getFantasyDashboard() {
-                const topPlayers = this.data.players.slice(0, 12);
-                
-                return `
-                    <div class="fantasy-dashboard">
-                        <div class="fantasy-stats">
-                            <div class="stat-card">
-                                <h3>Top QB</h3>
-                                <p>${topPlayers.find(p => p.position === 'QB')?.name || 'Loading...'}</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>Top RB</h3>
-                                <p>${topPlayers.find(p => p.position === 'RB')?.name || 'Loading...'}</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>Top WR</h3>
-                                <p>${topPlayers.find(p => p.position === 'WR')?.name || 'Loading...'}</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>Top TE</h3>
-                                <p>${topPlayers.find(p => p.position === 'TE')?.name || 'Loading...'}</p>
-                            </div>
-                        </div>
-                        <div class="top-players">
-                            <h3>Top Fantasy Players</h3>
-                            <div class="players-grid">
-                                ${topPlayers.map(player => `
-                                    <div class="player-card">
-                                        <div class="player-info">
-                                            <span class="player-name">${player.name}</span>
-                                            <span class="player-team">${player.team} - ${player.position}</span>
-                                        </div>
-                                        <div class="player-stats">
-                                            <span class="projected-points">${(Math.random() * 10 + 15).toFixed(1)} pts</span>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            getLineupOptimizer() {
-                return `
-                    <div class="lineup-optimizer">
-                        <div class="optimizer-controls">
-                            <h3>Lineup Optimizer</h3>
-                            <button class="btn-primary" onclick="nflApp.optimizeLineup()">
-                                <i class="fas fa-magic"></i> Optimize Lineup
-                            </button>
-                        </div>
-                        <div class="lineup-slots">
-                            <div class="position-slot">
-                                <label>QB</label>
-                                <div class="player-slot">Select QB</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>RB1</label>
-                                <div class="player-slot">Select RB</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>RB2</label>
-                                <div class="player-slot">Select RB</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>WR1</label>
-                                <div class="player-slot">Select WR</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>WR2</label>
-                                <div class="player-slot">Select WR</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>TE</label>
-                                <div class="player-slot">Select TE</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>FLEX</label>
-                                <div class="player-slot">Select FLEX</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>K</label>
-                                <div class="player-slot">Select K</div>
-                            </div>
-                            <div class="position-slot">
-                                <label>DEF</label>
-                                <div class="player-slot">Select DEF</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            getWaiverWire() {
-                const waiverTargets = this.data.players.slice(20, 35);
-                
-                return `
-                    <div class="waiver-wire">
-                        <h3>Waiver Wire Targets</h3>
-                        <div class="waiver-players">
-                            ${waiverTargets.map(player => `
-                                <div class="waiver-player">
-                                    <div class="player-info">
-                                        <span class="player-name">${player.name}</span>
-                                        <span class="player-details">${player.team} - ${player.position}</span>
-                                    </div>
-                                    <div class="waiver-stats">
-                                        <span class="ownership">${Math.floor(Math.random() * 30 + 5)}% owned</span>
-                                        <span class="trend">📈 Trending Up</span>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            getTradeAnalyzer() {
-                return `
-                    <div class="trade-analyzer">
-                        <h3>Trade Analyzer</h3>
-                        <div class="trade-form">
-                            <div class="trade-side">
-                                <h4>You Give</h4>
-                                <div class="trade-players">
-                                    <input type="text" placeholder="Search player to trade away...">
-                                </div>
-                            </div>
-                            <div class="trade-arrow">⇄</div>
-                            <div class="trade-side">
-                                <h4>You Get</h4>
-                                <div class="trade-players">
-                                    <input type="text" placeholder="Search player to receive...">
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn-primary" onclick="nflApp.analyzeTrade()">
-                            <i class="fas fa-calculator"></i> Analyze Trade
-                        </button>
-                        <div id="trade-results" class="trade-results"></div>
-                    </div>
-                `;
-            }
-            
-            getProjections() {
-                const projectionPlayers = this.data.players.slice(0, 20);
-                
-                return `
-                    <div class="projections">
-                        <h3>Player Projections</h3>
-                        <div class="projections-grid">
-                            ${projectionPlayers.map(player => `
-                                <div class="projection-card">
-                                    <div class="player-header">
-                                        <span class="player-name">${player.name}</span>
-                                        <span class="player-position">${player.position}</span>
-                                    </div>
-                                    <div class="projection-stats">
-                                        <div class="stat">
-                                            <span class="stat-label">Projected Points</span>
-                                            <span class="stat-value">${(Math.random() * 8 + 12).toFixed(1)}</span>
-                                        </div>
-                                        <div class="stat">
-                                            <span class="stat-label">Floor</span>
-                                            <span class="stat-value">${(Math.random() * 5 + 8).toFixed(1)}</span>
-                                        </div>
-                                        <div class="stat">
-                                            <span class="stat-label">Ceiling</span>
-                                            <span class="stat-value">${(Math.random() * 10 + 18).toFixed(1)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            getConnectAccounts() {
-                return `
-                    <div class="connect-accounts">
-                        <h3>Connect Your Fantasy Accounts</h3>
-                        <div class="connect-grid">
-                            <div class="connect-card">
-                                <div class="connect-header">
-                                    <div class="connect-icon espn">ESPN</div>
-                                    <h4>ESPN Fantasy</h4>
-                                </div>
-                                <p>Import your ESPN fantasy teams and get personalized recommendations</p>
-                                <button class="btn-connect espn" onclick="connectESPN()">
-                                    <i class="fas fa-link"></i> Connect ESPN
-                                </button>
-                            </div>
-                            
-                            <div class="connect-card">
-                                <div class="connect-header">
-                                    <div class="connect-icon yahoo">Yahoo</div>
-                                    <h4>Yahoo Fantasy</h4>
-                                </div>
-                                <p>Sync your Yahoo fantasy leagues for complete roster analysis</p>
-                                <button class="btn-connect yahoo" onclick="connectYahoo()">
-                                    <i class="fas fa-link"></i> Connect Yahoo
-                                </button>
-                            </div>
-                            
-                            <div class="connect-card">
-                                <div class="connect-header">
-                                    <div class="connect-icon sleeper">Sleeper</div>
-                                    <h4>Sleeper Fantasy</h4>
-                                </div>
-                                <p>Link your Sleeper leagues for advanced analytics and insights</p>
-                                <button class="btn-connect sleeper" onclick="connectSleeper()">
-                                    <i class="fas fa-link"></i> Connect Sleeper
-                                </button>
-                            </div>
-                            
-                            <div class="connect-card">
-                                <div class="connect-header">
-                                    <div class="connect-icon manual">Manual</div>
-                                    <h4>Manual Entry</h4>
-                                </div>
-                                <p>Manually enter your roster for custom analysis and recommendations</p>
-                                <a href="roster-builder.html" class="btn-connect manual">
-                                    <i class="fas fa-edit"></i> Build Roster
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <div class="connect-benefits">
-                            <h4>Benefits of Connecting Your Accounts:</h4>
-                            <div class="benefits-grid">
-                                <div class="benefit-item">
-                                    <i class="fas fa-sync"></i>
-                                    <span>Automatic roster sync</span>
-                                </div>
-                                <div class="benefit-item">
-                                    <i class="fas fa-chart-line"></i>
-                                    <span>Personalized projections</span>
-                                </div>
-                                <div class="benefit-item">
-                                    <i class="fas fa-bell"></i>
-                                    <span>Custom alerts & notifications</span>
-                                </div>
-                                <div class="benefit-item">
-                                    <i class="fas fa-trophy"></i>
-                                    <span>Optimized lineup recommendations</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            loadBettingOdds() {
-                const container = document.getElementById('betting-container');
-                const games = this.data.games.slice(0, 10);
-                
-                const bettingHTML = games.map(game => `
-                    <div class="betting-card">
-                        <div class="betting-header">
-                            <h3>${game.awayTeam} @ ${game.homeTeam}</h3>
-                            <span class="game-time">${game.time || 'TBD'}</span>
-                        </div>
-                        <div class="betting-lines">
-                            <div class="betting-line">
-                                <span class="line-type">Spread</span>
-                                <span class="line-value">${game.spread || 'N/A'}</span>
-                            </div>
-                            <div class="betting-line">
-                                <span class="line-type">Total</span>
-                                <span class="line-value">${game.overUnder || 'N/A'}</span>
-                            </div>
-                            <div class="betting-line">
-                                <span class="line-type">Moneyline</span>
-                                <span class="line-value">${game.awayTeam} +${Math.floor(Math.random() * 200 + 100)} / ${game.homeTeam} -${Math.floor(Math.random() * 200 + 100)}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-                
-                container.innerHTML = bettingHTML;
-            }
-            
-            loadNews() {
-                const container = document.getElementById('news-container');
-                
-                // Mock news data
-                const newsItems = [
-                    { title: 'NFL Preseason Week 1 Recap', summary: 'Key takeaways from the first week of preseason action', time: '2 hours ago' },
-                    { title: 'Injury Report Updates', summary: 'Latest injury news affecting fantasy lineups', time: '4 hours ago' },
-                    { title: 'Trade Deadline Approaching', summary: 'Teams making final moves before the deadline', time: '6 hours ago' },
-                    { title: 'Rookie Performance Analysis', summary: 'How first-year players are adapting to the NFL', time: '8 hours ago' },
-                    { title: 'Playoff Picture Update', summary: 'Current standings and playoff implications', time: '12 hours ago' }
-                ];
-                
-                const newsHTML = newsItems.map(item => `
-                    <div class="news-card">
-                        <div class="news-header">
-                            <h3>${item.title}</h3>
-                            <span class="news-time">${item.time}</span>
-                        </div>
-                        <p class="news-summary">${item.summary}</p>
-                        <button class="btn-secondary">Read More</button>
-                    </div>
-                `).join('');
-                
-                container.innerHTML = newsHTML;
-            }
-            
-            createAccuracyChart() {
-                const ctx = document.getElementById('accuracyChart');
-                if (!ctx || !window.Chart) return;
-                
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
-                        datasets: [{
-                            label: 'Overall Accuracy',
-                            data: [85.2, 86.1, 87.3, 88.1, 87.9, 88.7, 89.7],
-                            borderColor: '#00d4ff',
-                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                labels: { color: '#ffffff' }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                min: 80,
-                                max: 95,
-                                ticks: { color: '#a1a1aa' },
-                                grid: { color: '#27272a' }
-                            },
-                            x: {
-                                ticks: { color: '#a1a1aa' },
-                                grid: { color: '#27272a' }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            setupAutoRefresh() {
-                // Refresh data every 30 seconds
-                setInterval(() => {
-                    this.fetchRealTimeData();
-                    this.updateMetrics();
-                }, 30000);
-            }
-            
-            updateConnectionStatus(status) {
-                const indicator = document.getElementById('connectionStatus');
-                if (!indicator) return;
-                
-                indicator.className = 'status-indicator';
-                
-                switch (status) {
-                    case 'connected':
-                        indicator.classList.add('connected');
-                        indicator.innerHTML = '<i class="fas fa-circle"></i>';
-                        break;
-                    case 'connecting':
-                        indicator.classList.add('connecting');
-                        indicator.innerHTML = '<i class="fas fa-circle"></i>';
-                        break;
-                    case 'disconnected':
-                        indicator.classList.add('disconnected');
-                        indicator.innerHTML = '<i class="fas fa-circle"></i>';
-                        break;
-                }
-            }
-            
-            // Load week-specific data
-            loadWeekData(season, week) {
-                console.log(`Loading ${season} week ${week} data...`);
-                
-                // Filter games by season and week
-                let weekGames = [];
-                
-                if (season === 'preseason') {
-                    // Load preseason games for the specified week
-                    weekGames = this.getPreseasonGames(week);
-                } else if (season === 'regular') {
-                    // Load regular season games for the specified week
-                    weekGames = this.getRegularSeasonGames(week);
-                } else if (season === 'playoffs') {
-                    // Load playoff games
-                    weekGames = this.getPlayoffGames(week);
-                }
-                
-                // Update the games display
-                this.displayWeekGames(weekGames, season, week);
-            }
-            
-            getPreseasonGames(week) {
-                // Mock preseason games data
-                const preseasonGames = [
-                    { id: 'pre1', week: 1, awayTeam: 'Browns', homeTeam: 'Panthers', awayScore: 30, homeScore: 10, status: 'FINAL', analysis: 'Browns dominated with strong offensive showing' },
-                    { id: 'pre2', week: 1, awayTeam: 'Lions', homeTeam: 'Falcons', awayScore: 17, homeScore: 10, status: 'FINAL', analysis: 'Lions depth players impressed' },
-                    { id: 'pre3', week: 2, awayTeam: 'Chiefs', homeTeam: 'Jaguars', awayScore: 26, homeScore: 13, status: 'FINAL', analysis: 'Mahomes looked sharp in limited action' },
-                    { id: 'pre4', week: 3, awayTeam: 'Bills', homeTeam: 'Steelers', awayScore: 9, homeScore: 16, status: 'FINAL', analysis: 'Steelers defense dominated' }
-                ];
-                
-                return preseasonGames.filter(game => game.week === week);
-            }
-            
-            getRegularSeasonGames(week) {
-                // Mock regular season games - in production this would fetch real data
-                const regularGames = [
-                    { id: 'reg1', week: 1, awayTeam: 'Chiefs', homeTeam: 'Ravens', awayScore: 0, homeScore: 0, status: 'UPCOMING', time: 'Thu 8:20 PM', prediction: { homeWinProbability: 52, awayWinProbability: 48 } },
-                    { id: 'reg2', week: 1, awayTeam: 'Packers', homeTeam: 'Eagles', awayScore: 0, homeScore: 0, status: 'UPCOMING', time: 'Fri 8:15 PM', prediction: { homeWinProbability: 55, awayWinProbability: 45 } }
-                ];
-                
-                return regularGames.filter(game => game.week === week);
-            }
-            
-            getPlayoffGames(round) {
-                // Mock playoff games
-                const playoffGames = [
-                    { id: 'wc1', round: 1, awayTeam: 'Steelers', homeTeam: 'Bills', status: 'UPCOMING', time: 'TBD' },
-                    { id: 'wc2', round: 1, awayTeam: 'Packers', homeTeam: 'Eagles', status: 'UPCOMING', time: 'TBD' }
-                ];
-                
-                return playoffGames.filter(game => game.round === round);
-            }
-            
-            displayWeekGames(games, season, week) {
-                const container = document.getElementById('live-games-container');
-                
-                if (games.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-data">
-                            <h3>No games available for ${season} week ${week}</h3>
-                            <p>Check back later or select a different week</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                const gamesHTML = games.map(game => `
-                    <div class="game-card ${game.status === 'LIVE' ? 'live' : ''}">
-                        <div class="game-status">${game.status}</div>
-                        <div class="game-teams">
-                            <div class="team away">
-                                <span class="team-name">${game.awayTeam}</span>
-                                <span class="team-score">${game.awayScore || 0}</span>
-                            </div>
-                            <div class="vs">VS</div>
-                            <div class="team home">
-                                <span class="team-name">${game.homeTeam}</span>
-                                <span class="team-score">${game.homeScore || 0}</span>
-                            </div>
-                        </div>
-                        <div class="game-details">
-                            <div class="detail">
-                                <span class="label">Time:</span>
-                                <span class="value">${game.time || 'TBD'}</span>
-                            </div>
-                            ${season === 'preseason' && game.analysis ? `
-                                <div class="detail">
-                                    <span class="label">Analysis:</span>
-                                    <span class="value">${game.analysis}</span>
-                                </div>
-                            ` : ''}
-                        </div>
-                        ${game.prediction ? `
-                            <div class="game-prediction">
-                                <div class="prediction-bar">
-                                    <div class="away-prob" style="width: ${game.prediction.awayWinProbability}%">
-                                        ${game.prediction.awayWinProbability}%
-                                    </div>
-                                    <div class="home-prob" style="width: ${game.prediction.homeWinProbability}%">
-                                        ${game.prediction.homeWinProbability}%
-                                    </div>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `).join('');
-                
-                container.innerHTML = gamesHTML;
-            }
-            
-            // Utility methods for UI interactions
-            viewGameDetails(gameId) {
-                console.log('Viewing game details for:', gameId);
-                // Implementation for game details modal
-            }
-            
-            simulateGame(gameId) {
-                console.log('Simulating game:', gameId);
-                // Implementation for Monte Carlo simulation
-            }
-            
-            optimizeLineup() {
-                console.log('Optimizing fantasy lineup...');
-                // Implementation for lineup optimization
-            }
-            
-            analyzeTrade() {
-                console.log('Analyzing trade...');
-                // Implementation for trade analysis
-            }
+            }, 200);
         }
-        
-        // Global functions for UI interactions
-        function refreshAllData() {
-            if (window.nflApp) {
-                window.nflApp.loadAllData();
-                window.nflApp.updateMetrics();
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '1') {
+                selectSport('nfl');
+            } else if (e.key === '2') {
+                selectSport('ncaa');
             }
-        }
-        
-        function loadLiveGames() {
-            if (window.nflApp) {
-                window.nflApp.loadLiveGamesSection();
-            }
-        }
-        
-        function showFantasyTab(tabName) {
-            if (window.nflApp) {
-                window.nflApp.showFantasyTab(tabName);
-            }
-        }
-        
-        // Betting widget error handler
-        function handleWidgetError() {
-            const loadingDiv = document.getElementById('widget-loading');
-            if (loadingDiv) {
-                loadingDiv.innerHTML = `
-                    <div class="widget-error">
-                        <div class="error-icon">⚠️</div>
-                        <h3>Premium Widget Temporarily Unavailable</h3>
-                        <p>Live odds available through direct Hard Rock Bet access</p>
-                        <button onclick="location.reload()" class="btn-retry">
-                            🔄 Retry Loading
-                        </button>
-                    </div>
-                `;
-            }
-        }
-        
-        // Fantasy account connection functions
-        function connectESPN() {
-            alert('ESPN Fantasy connection coming soon! This will allow automatic roster sync and personalized recommendations.');
-        }
-        
-        function connectYahoo() {
-            alert('Yahoo Fantasy connection coming soon! This will enable complete league integration and analysis.');
-        }
-        
-        function connectSleeper() {
-            alert('Sleeper Fantasy connection coming soon! This will provide advanced analytics for your Sleeper leagues.');
-        }
-        
-        // Season navigation functions
-        window.currentWeek = 1;
-        window.currentSeason = 'regular';
-        
-        function switchSeason(season) {
-            window.currentSeason = season;
-            
-            // Update tab states
-            document.querySelectorAll('.season-tab').forEach(tab => {
-                tab.classList.remove('active');
+        });
+
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.sport-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200 + 500);
             });
-            document.querySelector(`[data-season="${season}"]`).classList.add('active');
-            
-            // Update season badge
-            const badge = document.querySelector('.season-badge');
-            badge.className = `season-badge ${season}`;
-            badge.textContent = season.toUpperCase().replace('SEASON', ' SEASON');
-            
-            // Show/hide preseason insights
-            const preseasonInsights = document.getElementById('preseason-insights');
-            if (season === 'preseason') {
-                preseasonInsights.style.display = 'block';
-                updateWeekSelector('preseason');
-            } else {
-                preseasonInsights.style.display = 'none';
-                updateWeekSelector('regular');
-            }
-            
-            // Update games display
-            if (window.nflApp) {
-                window.nflApp.loadViewData('dashboard');
-            }
-        }
-        
-        function updateWeekSelector(season) {
-            const selector = document.getElementById('weekSelector');
-            selector.innerHTML = '';
-            
-            if (season === 'preseason') {
-                for (let i = 1; i <= 4; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `Preseason Week ${i}`;
-                    if (i === 1) option.selected = true;
-                    selector.appendChild(option);
-                }
-            } else if (season === 'playoffs') {
-                const playoffWeeks = ['Wild Card', 'Divisional', 'Conference', 'Super Bowl'];
-                playoffWeeks.forEach((week, index) => {
-                    const option = document.createElement('option');
-                    option.value = index + 1;
-                    option.textContent = week;
-                    if (index === 0) option.selected = true;
-                    selector.appendChild(option);
-                });
-            } else {
-                for (let i = 1; i <= 18; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `Week ${i}`;
-                    if (i === 1) option.selected = true;
-                    selector.appendChild(option);
-                }
-            }
-        }
-        
-        function changeWeek(direction) {
-            const selector = document.getElementById('weekSelector');
-            const currentIndex = selector.selectedIndex;
-            const newIndex = currentIndex + direction;
-            
-            if (newIndex >= 0 && newIndex < selector.options.length) {
-                selector.selectedIndex = newIndex;
-                selectWeek(selector.value);
-            }
-        }
-        
-        function selectWeek(week) {
-            window.currentWeek = parseInt(week);
-            
-            // Update current week display
-            const weekDisplay = document.querySelector('.current-week');
-            const selector = document.getElementById('weekSelector');
-            weekDisplay.textContent = selector.options[selector.selectedIndex].textContent;
-            
-            // Update games display for selected week
-            if (window.nflApp) {
-                window.nflApp.loadWeekData(window.currentSeason, window.currentWeek);
-            }
-            
-            console.log(`Switched to ${window.currentSeason} week ${window.currentWeek}`);
-        }
-        
-        // Initialize app when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            window.nflApp = new NFLAnalyticsPro();
         });
     </script>
-    
-    <!-- Main App Script -->
-    <script src="app.js"></script>
 </body>
 </html>

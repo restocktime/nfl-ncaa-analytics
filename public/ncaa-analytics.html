@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Analytics - Sunday Edge Pro</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Sunday Edge Pro Styles -->
+    <link rel="stylesheet" href="sunday-edge-pro-styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-university"></i>
+                <span>NCAA Analytics</span>
+                <span class="quantum-badge ncaa">WEEK 1 LIVE</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#live" class="nav-link active" data-view="live">
+                    <i class="fas fa-broadcast-tower"></i> Live Games
+                </a>
+                <a href="#upcoming" class="nav-link" data-view="upcoming">
+                    <i class="fas fa-calendar-alt"></i> Upcoming
+                </a>
+                <a href="#rankings" class="nav-link" data-view="rankings">
+                    <i class="fas fa-trophy"></i> Top 25
+                </a>
+                <a href="#betting" class="nav-link" data-view="betting">
+                    <i class="fas fa-coins"></i> Betting Lines
+                </a>
+                <a href="#analytics" class="nav-link" data-view="analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="btn-refresh" onclick="refreshNCAAData()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <a href="index.html" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Live Games View -->
+        <div id="live" class="view active">
+            <div class="view-header">
+                <h1><i class="fas fa-university"></i> NCAA Live Games</h1>
+                <p>Real-time college football scores and live betting</p>
+            </div>
+            
+            <!-- Week 1 Status -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-fire"></i> Week 1 is LIVE!</h2>
+                    <div class="live-status-display">
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>COLLEGE FOOTBALL IS BACK!</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="week-one-preview">
+                    <h3>🏈 College Football Season 2024 Has Begun!</h3>
+                    <p>Week 1 games started Friday and continue through Saturday! Live games, real-time data, and betting opportunities.</p>
+                    <div class="season-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="week-1-games">130+</div>
+                            <div class="stat-label">Week 1 Games</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="live-cfb-games">--</div>
+                            <div class="stat-label">Live Now</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="cfb-betting-lines">500+</div>
+                            <div class="stat-label">Betting Lines</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ncaa-live-games" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading NCAA Live Games</h3>
+                    <p>Fetching real-time college football data...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Games View -->
+        <div id="upcoming" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-calendar-alt"></i> Upcoming NCAA Games</h1>
+                <p>Schedule and predictions for college football</p>
+            </div>
+            
+            <div id="ncaa-upcoming-games" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading Upcoming Games</h3>
+                    <p>Analyzing college football schedules...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rankings View -->
+        <div id="rankings" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-trophy"></i> AP Top 25 Rankings</h1>
+                <p>Current college football rankings and analysis</p>
+            </div>
+            
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-trophy"></i> AP Top 25</h2>
+                    <button class="btn-refresh" onclick="refreshRankings()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="top-25-rankings" class="rankings-grid">
+                    <div class="loading-card">
+                        <div class="loading-spinner"></div>
+                        <h3>Loading AP Top 25</h3>
+                        <p>Fetching latest college football rankings...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Betting Lines View -->
+        <div id="betting" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-coins"></i> NCAA Betting Lines</h1>
+                <p>Live college football odds and opportunities</p>
+            </div>
+            
+            <div id="ncaa-betting-lines" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading NCAA Betting Lines</h3>
+                    <p>Analyzing college football betting markets...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics View -->
+        <div id="analytics" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-chart-line"></i> College Football Analytics</h1>
+                <p>Advanced statistical analysis and performance metrics</p>
+            </div>
+            
+            <div id="ncaa-analytics-data" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading Analytics</h3>
+                    <p>Computing advanced college football metrics...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NCAA Data Service -->
+    <script src="ncaa-data-service.js"></script>
+    
+    <script>
+        // NCAA-specific initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏈 NCAA Analytics Platform Loaded');
+            
+            // Initialize navigation
+            initializeNavigation();
+            
+            // Initialize NCAA data
+            initializeNCAAData();
+            
+            // Set up auto-refresh for live data
+            setInterval(() => {
+                refreshNCAALiveData();
+            }, 30000); // Refresh every 30 seconds
+        });
+        
+        // Navigation functionality
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('.view');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    const targetView = link.getAttribute('data-view');
+                    
+                    // Update active nav link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show target view
+                    views.forEach(view => {
+                        view.classList.remove('active');
+                    });
+                    
+                    const targetElement = document.getElementById(targetView);
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        // Initialize NCAA Data Integration
+        async function initializeNCAAData() {
+            console.log('🏈 Initializing NCAA data integration...');
+            
+            if (!window.ncaaDataService) {
+                console.warn('⚠️ NCAA Data Service not loaded');
+                return;
+            }
+            
+            try {
+                // Load NCAA data
+                await loadNCAAData();
+                
+                console.log('✅ NCAA data integration initialized');
+            } catch (error) {
+                console.error('❌ Error initializing NCAA data:', error);
+            }
+        }
+        
+        // Load NCAA Data
+        async function loadNCAAData() {
+            try {
+                const [allGames, liveGames, rankings, bettingLines] = await Promise.all([
+                    window.ncaaDataService.getTodaysGames(),
+                    window.ncaaDataService.getLiveGames(),
+                    window.ncaaDataService.getTop25Rankings(),
+                    window.ncaaDataService.getBettingOpportunities()
+                ]);
+                
+                // Update live games counter
+                const liveGamesElement = document.getElementById('live-cfb-games');
+                if (liveGamesElement) {
+                    liveGamesElement.textContent = liveGames.length;
+                }
+                
+                // Load live games
+                const liveContainer = document.getElementById('ncaa-live-games');
+                if (liveContainer) {
+                    liveContainer.innerHTML = renderNCAAGames(liveGames, 'live');
+                }
+                
+                // Load upcoming games
+                const upcomingGames = allGames.filter(game => !game.isLive);
+                const upcomingContainer = document.getElementById('ncaa-upcoming-games');
+                if (upcomingContainer) {
+                    upcomingContainer.innerHTML = renderNCAAGames(upcomingGames, 'upcoming');
+                }
+                
+                // Load rankings
+                const rankingsContainer = document.getElementById('top-25-rankings');
+                if (rankingsContainer && rankings.length > 0) {
+                    rankingsContainer.innerHTML = renderRankings(rankings);
+                }
+                
+                // Load betting lines
+                const bettingContainer = document.getElementById('ncaa-betting-lines');
+                if (bettingContainer) {
+                    bettingContainer.innerHTML = renderBettingLines(bettingLines);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading NCAA data:', error);
+            }
+        }
+        
+        // Render NCAA Games
+        function renderNCAAGames(games, type = 'live') {
+            if (!games || games.length === 0) {
+                return `
+                    <div class="loading-card">
+                        <h3>No ${type === 'live' ? 'Live' : 'Upcoming'} Games</h3>
+                        <p>Check back later for more NCAA football action!</p>
+                    </div>
+                `;
+            }
+            
+            return games.map(game => `
+                <div class="game-card detailed ${game.isLive ? 'live' : ''}">
+                    <div class="game-header">
+                        <div class="team-matchup">
+                            <span class="sport-badge ncaa">NCAA</span>
+                            ${game.shortName || game.name}
+                        </div>
+                        <div class="game-status ${game.isLive ? 'live' : ''}">${getGameStatus(game)}</div>
+                    </div>
+                    
+                    <div class="score-display">
+                        <div class="team-score">
+                            <div class="team-name">${game.teams.away.name}</div>
+                            <div class="score">${game.teams.away.score || 0}</div>
+                            <div class="team-record">${game.teams.away.record}</div>
+                        </div>
+                        <div class="vs">@</div>
+                        <div class="team-score">
+                            <div class="team-name">${game.teams.home.name}</div>
+                            <div class="score">${game.teams.home.score || 0}</div>
+                            <div class="team-record">${game.teams.home.record}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-info">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${game.venue}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Week ${game.week}</span>
+                        </div>
+                        ${game.isLive ? `
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${game.status.displayClock}</span>
+                            </div>
+                        ` : `
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${formatGameTime(game.date)}</span>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Render Rankings
+        function renderRankings(rankings) {
+            return rankings.slice(0, 25).map(team => `
+                <div class="ranking-item">
+                    <div class="ranking-number">${team.rank}</div>
+                    <div class="team-info">
+                        <div class="team-name">${team.team}</div>
+                        <div class="team-record">${team.record}</div>
+                    </div>
+                    <div class="points">${team.points}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Render Betting Lines
+        function renderBettingLines(lines) {
+            if (!lines || lines.length === 0) {
+                return `
+                    <div class="loading-card">
+                        <h3>No Betting Lines Available</h3>
+                        <p>Check back later for betting opportunities!</p>
+                    </div>
+                `;
+            }
+            
+            return lines.slice(0, 20).map(line => `
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="team-matchup">
+                            <span class="sport-badge ncaa">NCAA</span>
+                            ${line.teams}
+                        </div>
+                        <div class="confidence-score">${Math.round(line.confidence)}%</div>
+                    </div>
+                    
+                    <div class="odds-grid">
+                        <div class="odds-item">
+                            <div class="odds-label">Spread</div>
+                            <div class="odds-value">${line.spread}</div>
+                        </div>
+                        <div class="odds-item">
+                            <div class="odds-label">O/U</div>
+                            <div class="odds-value">${line.overUnder}</div>
+                        </div>
+                        <div class="odds-item">
+                            <div class="odds-label">ML</div>
+                            <div class="odds-value">${line.homeMoneyline}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="betting-recommendation">
+                        <strong>${line.opportunity.type}:</strong> ${line.opportunity.recommendation}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Get Game Status
+        function getGameStatus(game) {
+            if (game.isLive) {
+                return `LIVE - ${game.status.displayClock}`;
+            } else if (game.status.completed) {
+                return 'FINAL';
+            } else {
+                return formatGameTime(game.date);
+            }
+        }
+        
+        // Format Game Time
+        function formatGameTime(date) {
+            return new Date(date).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+        
+        // Refresh NCAA Data
+        function refreshNCAAData() {
+            console.log('🔄 Refreshing NCAA data...');
+            
+            if (window.ncaaDataService) {
+                window.ncaaDataService.clearCache();
+                loadNCAAData();
+            }
+        }
+        
+        // Refresh NCAA Live Data
+        async function refreshNCAALiveData() {
+            try {
+                if (window.ncaaDataService) {
+                    window.ncaaDataService.clearCache();
+                    const liveGames = await window.ncaaDataService.getLiveGames();
+                    
+                    // Update live games counter
+                    const liveGamesElement = document.getElementById('live-cfb-games');
+                    if (liveGamesElement) {
+                        liveGamesElement.textContent = liveGames.length;
+                    }
+                    
+                    console.log(`🔄 Refreshed NCAA live data - ${liveGames.length} live games`);
+                }
+            } catch (error) {
+                console.error('❌ Error refreshing NCAA live data:', error);
+            }
+        }
+        
+        // Refresh Rankings
+        function refreshRankings() {
+            console.log('🔄 Refreshing AP Top 25 rankings');
+            
+            if (window.ncaaDataService) {
+                window.ncaaDataService.clearCache();
+                loadNCAAData();
+            }
+        }
+    </script>
+    
+    <style>
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--quantum-border);
+            color: var(--quantum-light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-back:hover {
+            background: var(--quantum-secondary);
+            color: var(--quantum-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .quantum-badge.ncaa {
+            background: linear-gradient(45deg, var(--quantum-secondary), var(--quantum-accent));
+        }
+        
+        /* NCAA-specific styles already included from sunday-edge-pro-styles.css */
+    </style>
+</body>
+</html>

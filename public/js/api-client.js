@@ -19,7 +19,7 @@ class SundayEdgeAPIClient {
         
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return 'http://localhost:3000';
-        } else if (hostname.includes('sundayedgepro.com') || hostname.includes('vercel.app') || hostname.includes('netlify.app')) {
+        } else if (hostname.includes('vercel.app') || hostname.includes('netlify.app')) {
             // Railway is having deployment issues - use ESPN fallback primarily
             return 'https://sunday-edge-pro-api-production.up.railway.app';
         } else {

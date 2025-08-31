@@ -50,19 +50,13 @@
     "fantasy-football"
   ],
   "author": {
-    "name": "Sunday Edge Pro Team",
-    "email": "dev@sundayedgepro.com",
-    "url": "https://sundayedgepro.com"
+    "name": "Sunday Edge Pro Team"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sunday-edge-pro/betting-quantum.git"
+    "url": "https://github.com/restocktime/nfl-ncaa-analytics.git"
   },
-  "bugs": {
-    "url": "https://github.com/sunday-edge-pro/betting-quantum/issues"
-  },
-  "homepage": "https://sundayedgepro.com",
   "dependencies": {
     "compression": "^1.7.4",
     "cors": "^2.8.5",
