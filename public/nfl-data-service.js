@@ -6,7 +6,9 @@
 class NFLDataService {
     constructor() {
         this.baseUrls = {
-            espn: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl',
+            // ESPN NFL APIs
+            espnScoreboard: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard',
+            espnOdds: 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events',
             oddsApi: 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl'
         };
         
@@ -34,45 +36,131 @@ class NFLDataService {
     }
     
     /**
-     * Try to fetch real NFL data
+     * Try to fetch real NFL data using multiple ESPN endpoints
      */
     async tryRealNFLData() {
-        try {
-            const today = new Date();
-            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
-            
-            // Try ESPN NFL API
-            const url = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${dateStr}`;
-            
-            console.log('📡 Fetching real NFL data...');
-            
-            let response = await fetch(url);
-            
-            if (!response.ok) {
-                // Try with CORS proxy
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                response = await fetch(proxyUrl);
-            }
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data && data.events) {
-                    console.log(`✅ Successfully loaded ${data.events.length} real NFL games`);
-                    const games = this.parseESPNGames(data);
-                    this.setCache('todays_games', games);
-                    
-                    // Filter live games
-                    const liveGames = games.filter(game => game.isLive);
-                    this.setCache('live_games', liveGames);
-                    
-                    console.log(`🔴 Found ${liveGames.length} live NFL games`);
-                    return true;
+        const today = new Date();
+        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+        const year = today.getFullYear();
+        const currentWeek = this.getCurrentWeek(today);
+        
+        // Try multiple ESPN NFL endpoints
+        const attempts = [
+            // ESPN NFL Scoreboard (current date)
+            `${this.baseUrls.espnScoreboard}?dates=${dateStr}`,
+            // ESPN NFL Odds (current date)
+            `${this.baseUrls.espnOdds}?dates=${dateStr}`,
+            // ESPN NFL Scoreboard (yesterday)
+            `${this.baseUrls.espnScoreboard}?dates=${this.getYesterdayDate()}`,
+            // ESPN NFL Scoreboard (week-based)
+            `${this.baseUrls.espnScoreboard}?week=${currentWeek}&year=${year}&seasontype=2`
+        ];
+        
+        for (const url of attempts) {
+            try {
+                console.log(`📡 Trying NFL API: ${url}`);
+                
+                let response = await fetch(url);
+                
+                if (!response.ok) {
+                    // Try with CORS proxy
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                    console.log(`📡 Trying NFL API with CORS proxy...`);
+                    response = await fetch(proxyUrl);
                 }
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Handle different API response formats
+                    if (data && data.events && data.events.length > 0) {
+                        console.log(`✅ Successfully loaded ${data.events.length} real NFL games`);
+                        const games = this.parseESPNGames(data);
+                        this.setCache('todays_games', games);
+                        
+                        // Filter live games
+                        const liveGames = games.filter(game => game.isLive);
+                        this.setCache('live_games', liveGames);
+                        
+                        console.log(`🔴 Found ${liveGames.length} live NFL games`);
+                        return true;
+                    } else if (data && data.items) {
+                        // Handle ESPN Odds API format
+                        console.log(`✅ Successfully loaded ${data.items.length} NFL events from Odds API`);
+                        const games = this.parseESPNOddsData(data);
+                        this.setCache('todays_games', games);
+                        
+                        const liveGames = games.filter(game => game.isLive);
+                        this.setCache('live_games', liveGames);
+                        
+                        console.log(`🔴 Found ${liveGames.length} live NFL games from Odds API`);
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log(`⚠️ NFL API attempt failed: ${error.message}`);
+                continue;
             }
-        } catch (error) {
-            console.error('❌ NFL API failed:', error);
-            throw error;
         }
+        
+        throw new Error('All NFL API attempts failed');
+    }
+    
+    /**
+     * Get yesterday's date in YYYYMMDD format
+     */
+    getYesterdayDate() {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return yesterday.toISOString().slice(0, 10).replace(/-/g, '');
+    }
+    
+    /**
+     * Parse ESPN Odds API data for NFL
+     */
+    parseESPNOddsData(data) {
+        if (!data.items) return [];
+        
+        return data.items.map(item => {
+            const competition = item.competitions?.[0];
+            const homeTeam = competition?.competitors?.find(c => c.homeAway === 'home');
+            const awayTeam = competition?.competitors?.find(c => c.homeAway === 'away');
+            
+            return {
+                id: item.id,
+                name: `${awayTeam?.team?.displayName} @ ${homeTeam?.team?.displayName}`,
+                shortName: `${awayTeam?.team?.abbreviation} @ ${homeTeam?.team?.abbreviation}`,
+                date: new Date(item.date),
+                status: {
+                    type: competition?.status?.type?.name || 'STATUS_SCHEDULED',
+                    displayClock: competition?.status?.displayClock || '',
+                    period: competition?.status?.period || 0,
+                    completed: competition?.status?.type?.completed || false
+                },
+                teams: {
+                    home: {
+                        id: homeTeam?.id,
+                        name: homeTeam?.team?.displayName,
+                        abbreviation: homeTeam?.team?.abbreviation,
+                        logo: homeTeam?.team?.logo,
+                        score: homeTeam?.score || 0,
+                        record: homeTeam?.records?.[0]?.summary || '0-0'
+                    },
+                    away: {
+                        id: awayTeam?.id,
+                        name: awayTeam?.team?.displayName,
+                        abbreviation: awayTeam?.team?.abbreviation,
+                        logo: awayTeam?.team?.logo,
+                        score: awayTeam?.score || 0,
+                        record: awayTeam?.records?.[0]?.summary || '0-0'
+                    }
+                },
+                venue: competition?.venue?.fullName || 'TBD',
+                isLive: competition?.status?.type?.name === 'STATUS_IN_PROGRESS',
+                week: item.week?.number || this.getCurrentWeek(new Date()),
+                season: item.season?.year || new Date().getFullYear()
+            };
+        });
     }
     
     /**

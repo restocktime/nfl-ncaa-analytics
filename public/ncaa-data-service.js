@@ -6,20 +6,66 @@
 class NCAADataService {
     constructor() {
         this.baseUrls = {
-            espn: 'https://site.api.espn.com/apis/site/v2/sports/football/college-football',
-            ncaaApi: 'https://ncaa-api.henrygd.me',
+            // ESPN Hidden APIs
+            espnScoreboard: 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard',
+            espnOdds: 'https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/events',
+            // NCAA API with week logic
+            ncaaScoreboard: 'https://ncaa-api.henrygd.me/scoreboard/football/fbs',
+            ncaaRankings: 'https://ncaa-api.henrygd.me/rankings/football/fbs/associated-press',
+            // College Football Data API
             collegeFB: 'https://api.collegefootballdata.com',
             oddsApi: 'https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf'
         };
         
         this.cache = new Map();
         this.cacheTimeout = 30000; // 30 seconds for live data
-        this.fallbackMode = false;
+        this.currentWeek = this.getCurrentCollegeWeek();
         
         console.log('🏈 NCAA Data Service initialized for Sunday Edge Pro');
+        console.log(`📅 Current College Football Week: ${this.currentWeek}`);
         
-        // Try to get real data first, then fallback
+        // Initialize with real API data
         this.initializeRealData();
+    }
+    
+    /**
+     * Get current college football week (01, 02, 03, etc.)
+     */
+    getCurrentCollegeWeek() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1; // 1-12
+        const day = now.getDate();
+        
+        // College football season typically starts late August
+        // Week 1 = late August, Week 2 = early September, etc.
+        if (month === 8 && day >= 24) {
+            return '01'; // Week 1
+        } else if (month === 9) {
+            if (day <= 7) return '01';
+            else if (day <= 14) return '02';
+            else if (day <= 21) return '03';
+            else if (day <= 28) return '04';
+            else return '05';
+        } else if (month === 10) {
+            if (day <= 7) return '05';
+            else if (day <= 14) return '06';
+            else if (day <= 21) return '07';
+            else if (day <= 28) return '08';
+            else return '09';
+        } else if (month === 11) {
+            if (day <= 7) return '09';
+            else if (day <= 14) return '10';
+            else if (day <= 21) return '11';
+            else if (day <= 28) return '12';
+            else return '13';
+        } else if (month === 12) {
+            return '14'; // Bowl season
+        } else if (month === 1) {
+            return '15'; // Championship games
+        }
+        
+        return '01'; // Default to week 1
     }
     
     /**
@@ -117,46 +163,80 @@ class NCAADataService {
     }
     
     /**
-     * Fetch real NCAA games from multiple sources
+     * Fetch real NCAA games from multiple sources using hidden ESPN APIs
      */
     async fetchRealNCAAGames() {
         const today = new Date();
         const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+        const year = today.getFullYear();
         
-        // Try ESPN API with different approaches
+        // Try multiple ESPN endpoints and NCAA API
         const attempts = [
-            // Current date
-            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${dateStr}`,
-            // Yesterday (games might still be showing)
-            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${this.getYesterdayDate()}`,
-            // This week
-            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?week=1&year=2024&seasontype=2`
+            // ESPN Hidden Scoreboard API (current date)
+            `${this.baseUrls.espnScoreboard}?dates=${dateStr}`,
+            // ESPN Hidden Odds API (current date)
+            `${this.baseUrls.espnOdds}?dates=${dateStr}`,
+            // ESPN Scoreboard (yesterday - games might still be showing)
+            `${this.baseUrls.espnScoreboard}?dates=${this.getYesterdayDate()}`,
+            // ESPN Scoreboard (week-based)
+            `${this.baseUrls.espnScoreboard}?week=${parseInt(this.currentWeek)}&year=${year}&seasontype=2`,
+            // NCAA API with current week
+            `${this.baseUrls.ncaaScoreboard}/${year}/${this.currentWeek}/all-conf`
         ];
         
         for (const url of attempts) {
             try {
-                console.log(`📡 Trying ESPN API: ${url}`);
+                console.log(`📡 Trying API: ${url}`);
                 
                 // Try direct fetch first
                 let response = await fetch(url);
                 
                 if (!response.ok) {
-                    // Try with CORS proxy
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                    response = await fetch(proxyUrl);
+                    // Try with CORS proxy for ESPN APIs
+                    if (url.includes('espn.com')) {
+                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                        console.log(`📡 Trying CORS proxy: ${proxyUrl}`);
+                        response = await fetch(proxyUrl);
+                    }
                 }
                 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && data.events && data.events.length > 0) {
-                        console.log(`✅ Found ${data.events.length} games from ESPN`);
-                        return this.parseESPNGames(data);
+                    
+                    // Handle different API response formats
+                    if (url.includes('espn.com')) {
+                        if (data && data.events && data.events.length > 0) {
+                            console.log(`✅ Found ${data.events.length} games from ESPN API`);
+                            return this.parseESPNGames(data);
+                        }
+                    } else if (url.includes('ncaa-api.henrygd.me')) {
+                        if (data && data.games && data.games.length > 0) {
+                            console.log(`✅ Found ${data.games.length} games from NCAA API`);
+                            return this.parseNCAAApiGames(data);
+                        }
                     }
                 }
             } catch (error) {
-                console.log(`⚠️ ESPN attempt failed: ${error.message}`);
+                console.log(`⚠️ API attempt failed: ${error.message}`);
                 continue;
             }
+        }
+        
+        // Try NCAA API for live games specifically
+        try {
+            console.log('📡 Trying NCAA API for live games...');
+            const liveUrl = `${this.baseUrls.ncaaScoreboard}`;
+            const response = await fetch(liveUrl);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.games) {
+                    console.log(`✅ Found ${data.games.length} games from NCAA live API`);
+                    return this.parseNCAAApiGames(data);
+                }
+            }
+        } catch (error) {
+            console.log(`⚠️ NCAA live API failed: ${error.message}`);
         }
         
         return null;
@@ -194,57 +274,185 @@ class NCAADataService {
     }
 
     /**
-     * Get live NCAA games - using fallback data due to CORS issues
+     * Get live NCAA games - try real APIs first
      */
     async getLiveGames() {
         const cacheKey = 'live_games';
         const cached = this.getFromCache(cacheKey);
         if (cached) return cached;
 
-        console.log('📡 Loading live NCAA games (using enhanced fallback data)...');
-        
-        // Use enhanced fallback data with realistic live games
-        const liveGames = this.getFallbackLiveGames();
-        this.setCache(cacheKey, liveGames, 15000); // 15 second cache for live data
-        
-        console.log(`🔴 Found ${liveGames.length} live NCAA games`);
-        return liveGames;
+        try {
+            console.log('📡 Fetching live NCAA games from real APIs...');
+            
+            // Try NCAA API for live games
+            const liveUrl = `${this.baseUrls.ncaaScoreboard}`;
+            let response = await fetch(liveUrl);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.games) {
+                    const allGames = this.parseNCAAApiGames(data);
+                    const liveGames = allGames.filter(game => game.isLive);
+                    
+                    this.setCache(cacheKey, liveGames, 15000); // 15 second cache for live data
+                    console.log(`🔴 Found ${liveGames.length} live NCAA games from API`);
+                    return liveGames;
+                }
+            }
+            
+            // Fallback: try ESPN API for live games
+            const today = new Date();
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            const espnUrl = `${this.baseUrls.espnScoreboard}?dates=${dateStr}`;
+            
+            try {
+                response = await fetch(espnUrl);
+                if (!response.ok) {
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(espnUrl)}`;
+                    response = await fetch(proxyUrl);
+                }
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.events) {
+                        const allGames = this.parseESPNGames(data);
+                        const liveGames = allGames.filter(game => game.isLive);
+                        
+                        this.setCache(cacheKey, liveGames, 15000);
+                        console.log(`🔴 Found ${liveGames.length} live NCAA games from ESPN`);
+                        return liveGames;
+                    }
+                }
+            } catch (espnError) {
+                console.log(`⚠️ ESPN live games failed: ${espnError.message}`);
+            }
+            
+            // Final fallback to realistic data
+            const fallbackLiveGames = this.getFallbackLiveGames();
+            this.setCache(cacheKey, fallbackLiveGames, 15000);
+            console.log(`🔴 Using fallback: ${fallbackLiveGames.length} live NCAA games`);
+            return fallbackLiveGames;
+            
+        } catch (error) {
+            console.error('❌ Error fetching live NCAA games:', error);
+            const fallbackLiveGames = this.getFallbackLiveGames();
+            this.setCache(cacheKey, fallbackLiveGames, 15000);
+            return fallbackLiveGames;
+        }
     }
 
     /**
-     * Get AP Top 25 Rankings - using fallback data due to CORS issues
+     * Get AP Top 25 Rankings - try real NCAA API first
      */
     async getTop25Rankings() {
         const cacheKey = 'top25_rankings';
         const cached = this.getFromCache(cacheKey);
         if (cached) return cached;
 
-        console.log('📡 Loading AP Top 25 rankings (using enhanced fallback data)...');
-        
-        // Use enhanced fallback data with realistic rankings
-        const rankings = this.getFallbackRankings();
-        this.setCache(cacheKey, rankings, 300000); // 5 minute cache for rankings
-        
-        console.log(`🏆 Loaded Top 25 rankings with ${rankings.length} teams`);
-        return rankings;
+        try {
+            console.log('📡 Fetching AP Top 25 rankings from NCAA API...');
+            
+            const rankingsUrl = this.baseUrls.ncaaRankings;
+            const response = await fetch(rankingsUrl);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.rankings) {
+                    const rankings = this.parseRankings(data);
+                    this.setCache(cacheKey, rankings, 300000); // 5 minute cache for rankings
+                    
+                    console.log(`🏆 Loaded ${rankings.length} teams from real AP Top 25 API`);
+                    return rankings;
+                }
+            }
+            
+            // Fallback to realistic rankings
+            console.log('⚠️ NCAA Rankings API failed, using realistic fallback data');
+            const fallbackRankings = this.getFallbackRankings();
+            this.setCache(cacheKey, fallbackRankings, 300000);
+            
+            console.log(`🏆 Loaded ${fallbackRankings.length} teams from fallback rankings`);
+            return fallbackRankings;
+            
+        } catch (error) {
+            console.error('❌ Error fetching rankings:', error);
+            const fallbackRankings = this.getFallbackRankings();
+            this.setCache(cacheKey, fallbackRankings, 300000);
+            return fallbackRankings;
+        }
     }
 
     /**
-     * Get NCAA betting lines and odds - using fallback data due to API restrictions
+     * Get NCAA betting lines and odds - try ESPN Odds API first
      */
     async getBettingLines() {
         const cacheKey = 'betting_lines';
         const cached = this.getFromCache(cacheKey);
         if (cached) return cached;
 
-        console.log('📡 Loading NCAA betting lines (using enhanced fallback data)...');
-        
-        // Use enhanced fallback data with realistic betting lines
-        const lines = this.getFallbackBettingLines();
-        this.setCache(cacheKey, lines, 60000); // 1 minute cache for betting data
-        
-        console.log(`💰 Loaded ${lines.length} NCAA betting lines`);
-        return lines;
+        try {
+            console.log('📡 Fetching NCAA betting lines from ESPN Odds API...');
+            
+            const today = new Date();
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            
+            // Try ESPN Hidden Odds API
+            const oddsUrl = `${this.baseUrls.espnOdds}?dates=${dateStr}`;
+            
+            let response = await fetch(oddsUrl);
+            
+            if (!response.ok) {
+                // Try with CORS proxy
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(oddsUrl)}`;
+                console.log('📡 Trying ESPN Odds API with CORS proxy...');
+                response = await fetch(proxyUrl);
+            }
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.items) {
+                    const lines = this.parseESPNOddsData(data);
+                    this.setCache(cacheKey, lines, 60000); // 1 minute cache for betting data
+                    
+                    console.log(`💰 Loaded ${lines.length} NCAA betting lines from ESPN Odds API`);
+                    return lines;
+                }
+            }
+            
+            // Fallback: try College Football Data API
+            try {
+                console.log('📡 Trying College Football Data API for betting lines...');
+                const cfbUrl = `${this.baseUrls.collegeFB}/lines?year=2024&seasonType=regular&week=${parseInt(this.currentWeek)}`;
+                const cfbResponse = await fetch(cfbUrl);
+                
+                if (cfbResponse.ok) {
+                    const cfbData = await cfbResponse.json();
+                    if (cfbData && Array.isArray(cfbData)) {
+                        const lines = this.parseBettingLines(cfbData);
+                        this.setCache(cacheKey, lines, 60000);
+                        
+                        console.log(`💰 Loaded ${lines.length} NCAA betting lines from CFB Data API`);
+                        return lines;
+                    }
+                }
+            } catch (cfbError) {
+                console.log(`⚠️ CFB Data API failed: ${cfbError.message}`);
+            }
+            
+            // Final fallback to realistic data
+            console.log('⚠️ All betting APIs failed, using realistic fallback data');
+            const fallbackLines = this.getFallbackBettingLines();
+            this.setCache(cacheKey, fallbackLines, 60000);
+            
+            console.log(`💰 Loaded ${fallbackLines.length} NCAA betting lines from fallback`);
+            return fallbackLines;
+            
+        } catch (error) {
+            console.error('❌ Error fetching betting lines:', error);
+            const fallbackLines = this.getFallbackBettingLines();
+            this.setCache(cacheKey, fallbackLines, 60000);
+            return fallbackLines;
+        }
     }
 
     /**
@@ -307,37 +515,100 @@ class NCAADataService {
             games = games.filter(game => 
                 game.status === 'in_progress' || 
                 game.status === 'live' ||
-                (game.clock && game.clock !== 'Final')
+                game.status === 'in-progress' ||
+                (game.clock && game.clock !== 'Final' && game.clock !== 'final')
             );
         }
 
         return games.map(game => ({
-            id: game.id,
-            name: `${game.away_team} @ ${game.home_team}`,
-            date: new Date(game.start_date),
+            id: game.id || `ncaa-${Math.random().toString(36).substr(2, 9)}`,
+            name: `${game.away_team || game.awayTeam} @ ${game.home_team || game.homeTeam}`,
+            shortName: `${this.getTeamAbbreviation(game.away_team || game.awayTeam)} @ ${this.getTeamAbbreviation(game.home_team || game.homeTeam)}`,
+            date: new Date(game.start_date || game.startDate || game.date),
             status: {
-                type: game.status,
-                displayClock: game.clock || '',
-                period: game.period || 0,
-                completed: game.status === 'final'
+                type: this.mapNCAAStatus(game.status),
+                displayClock: game.clock || game.time || '',
+                period: game.period || game.quarter || 0,
+                completed: game.status === 'final' || game.status === 'completed'
             },
             teams: {
                 home: {
-                    name: game.home_team,
-                    score: game.home_score || 0,
-                    record: game.home_record || '0-0'
+                    name: game.home_team || game.homeTeam,
+                    abbreviation: this.getTeamAbbreviation(game.home_team || game.homeTeam),
+                    score: game.home_score || game.homeScore || 0,
+                    record: game.home_record || game.homeRecord || '0-0'
                 },
                 away: {
-                    name: game.away_team,
-                    score: game.away_score || 0,
-                    record: game.away_record || '0-0'
+                    name: game.away_team || game.awayTeam,
+                    abbreviation: this.getTeamAbbreviation(game.away_team || game.awayTeam),
+                    score: game.away_score || game.awayScore || 0,
+                    record: game.away_record || game.awayRecord || '0-0'
                 }
             },
-            venue: game.venue || 'TBD',
-            isLive: game.status === 'in_progress' || game.status === 'live',
-            week: 1,
+            venue: game.venue || game.location || 'TBD',
+            isLive: game.status === 'in_progress' || game.status === 'live' || game.status === 'in-progress',
+            week: parseInt(this.currentWeek),
             season: 2024
         }));
+    }
+    
+    /**
+     * Map NCAA API status to ESPN-like status
+     */
+    mapNCAAStatus(status) {
+        switch (status?.toLowerCase()) {
+            case 'in_progress':
+            case 'in-progress':
+            case 'live':
+                return 'STATUS_IN_PROGRESS';
+            case 'final':
+            case 'completed':
+                return 'STATUS_FINAL';
+            case 'scheduled':
+            case 'upcoming':
+                return 'STATUS_SCHEDULED';
+            default:
+                return 'STATUS_SCHEDULED';
+        }
+    }
+    
+    /**
+     * Get team abbreviation from full name
+     */
+    getTeamAbbreviation(teamName) {
+        if (!teamName) return 'TBD';
+        
+        const abbreviations = {
+            'Alabama': 'ALA', 'Georgia': 'UGA', 'Clemson': 'CLEM', 'Ohio State': 'OSU',
+            'Michigan': 'MICH', 'Texas': 'TEX', 'USC': 'USC', 'LSU': 'LSU',
+            'Notre Dame': 'ND', 'Penn State': 'PSU', 'Florida State': 'FSU',
+            'Georgia Tech': 'GT', 'Texas A&M': 'TAMU', 'Colorado': 'COL',
+            'North Dakota State': 'NDSU', 'UCLA': 'UCLA', 'Hawaii': 'HAW'
+        };
+        
+        return abbreviations[teamName] || teamName.substring(0, 4).toUpperCase();
+    }
+    
+    /**
+     * Parse ESPN Odds API data
+     */
+    parseESPNOddsData(data) {
+        if (!data.items) return [];
+        
+        return data.items.map(item => {
+            const competition = item.competitions?.[0];
+            const odds = competition?.odds?.[0];
+            
+            return {
+                gameId: item.id,
+                teams: `${competition?.competitors?.[1]?.team?.displayName} @ ${competition?.competitors?.[0]?.team?.displayName}`,
+                spread: odds?.details || 'N/A',
+                overUnder: odds?.overUnder || 'N/A',
+                homeMoneyline: odds?.homeTeamOdds?.moneyLine || 'N/A',
+                awayMoneyline: odds?.awayTeamOdds?.moneyLine || 'N/A',
+                provider: odds?.provider?.name || 'ESPN'
+            };
+        });
     }
 
     /**
