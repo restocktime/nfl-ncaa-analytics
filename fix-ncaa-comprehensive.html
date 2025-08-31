@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Comprehensive Fix Test</title>
+    
+    <!-- Same styles as NCAA page -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/sunday-edge-pro-styles.css">
+    
+    <style>
+        .test-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(0,0,0,0.9); 
+            color: white; 
+            padding: 20px; 
+            z-index: 10000; 
+            max-height: 300px; 
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .test-result { margin: 3px 0; padding: 5px; border-radius: 3px; }
+        .success { background-color: rgba(40, 167, 69, 0.3); }
+        .error { background-color: rgba(220, 53, 69, 0.3); }
+        .warning { background-color: rgba(255, 193, 7, 0.3); }
+        .info { background-color: rgba(23, 162, 184, 0.3); }
+        .test-controls { position: fixed; bottom: 20px; right: 20px; z-index: 10001; }
+        .test-btn { padding: 8px 12px; margin: 3px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .game-display { margin-top: 320px; padding: 20px; }
+        .game-card { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; background: white; }
+        .nfl-team { color: #dc3545; font-weight: bold; }
+        .college-team { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <!-- Test Overlay -->
+    <div id="testOverlay" class="test-overlay">
+        <h3>🏈 NCAA Comprehensive Fix Test</h3>
+        <div id="testResults"></div>
+    </div>
+    
+    <!-- Test Controls -->
+    <div class="test-controls">
+        <button class="test-btn" onclick="runDataTest()">Test Data</button>
+        <button class="test-btn" onclick="runMenuTest()">Test Menu</button>
+        <button class="test-btn" onclick="runFullTest()">Full Test</button>
+        <button class="test-btn" onclick="toggleTestOverlay()">Toggle</button>
+    </div>
+
+    <!-- NCAA Navigation (same as real page) -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-university"></i>
+                <span>NCAA Analytics</span>
+                <span class="quantum-badge ncaa">TEST MODE</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#live" class="nav-link active" data-view="live">
+                    <i class="fas fa-broadcast-tower"></i> Live Games
+                </a>
+                <a href="#upcoming" class="nav-link" data-view="upcoming">
+                    <i class="fas fa-calendar-alt"></i> Upcoming
+                </a>
+                <a href="#predictions" class="nav-link" data-view="predictions">
+                    <i class="fas fa-brain"></i> AI Predictions
+                </a>
+                <a href="#rankings" class="nav-link" data-view="rankings">
+                    <i class="fas fa-trophy"></i> Top 25
+                </a>
+                <a href="#betting" class="nav-link" data-view="betting">
+                    <i class="fas fa-coins"></i> Betting Lines
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="btn-refresh" onclick="testRefresh()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+    
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-header">
+            <div class="mobile-nav-brand">
+                <i class="fas fa-university"></i>
+                <span>NCAA Analytics</span>
+            </div>
+            <button class="mobile-nav-close" onclick="closeMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-links">
+            <a href="#live" class="mobile-nav-link active" data-view="live" onclick="showViewMobile('live')">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live Games</span>
+            </a>
+            <a href="#upcoming" class="mobile-nav-link" data-view="upcoming" onclick="showViewMobile('upcoming')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Upcoming</span>
+            </a>
+            <a href="#betting" class="mobile-nav-link" data-view="betting" onclick="showViewMobile('betting')">
+                <i class="fas fa-coins"></i>
+                <span>Betting Lines</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Game Display Area -->
+    <div class="game-display">
+        <div id="live" class="view active">
+            <h2>🔴 Live NCAA Games</h2>
+            <div id="ncaa-live-games"></div>
+        </div>
+        
+        <div id="upcoming" class="view">
+            <h2>📅 Upcoming NCAA Games</h2>
+            <div id="ncaa-upcoming-games"></div>
+        </div>
+        
+        <div id="betting" class="view">
+            <h2>💰 NCAA Betting Lines</h2>
+            <div id="ncaa-betting-lines"></div>
+        </div>
+    </div>
+
+    <!-- Load scripts in correct order -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+
+    <script>
+        let testResults = [];
+        
+        // Test logging
+        function logTest(message, type = 'info') {
+            testResults.push({ message, type, time: new Date().toLocaleTimeString() });
+            updateTestDisplay();
+        }
+        
+        function updateTestDisplay() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = testResults.slice(-15).map(result => 
+                `<div class="test-result ${result.type}">[${result.time}] ${result.message}</div>`
+            ).join('');
+        }
+        
+        // Create isolated NCAA Data Service for testing
+        class TestNCAADataService {
+            constructor() {
+                this.cache = new Map();
+                console.log('🏈 Test NCAA Data Service initialized');
+            }
+            
+            async getTodaysGames() {
+                logTest('📊 Getting NCAA games...', 'info');
+                
+                // Return proper college football games
+                const games = [
+                    {
+                        id: 'ncaa-test-1',
+                        name: 'Georgia Bulldogs vs Clemson Tigers',
+                        shortName: 'UGA vs CLEM',
+                        date: new Date(),
+                        status: { type: 'STATUS_SCHEDULED', displayClock: 'Sat 8:00 PM ET', period: 0, completed: false },
+                        teams: {
+                            home: { name: 'Clemson Tigers', abbreviation: 'CLEM', score: 0, record: '0-0' },
+                            away: { name: 'Georgia Bulldogs', abbreviation: 'UGA', score: 0, record: '0-0' }
+                        },
+                        venue: 'Mercedes-Benz Stadium (Atlanta)',
+                        isLive: false,
+                        week: 1,
+                        season: 2024
+                    },
+                    {
+                        id: 'ncaa-test-2',
+                        name: 'Alabama Crimson Tide vs Texas Longhorns',
+                        shortName: 'ALA @ TEX',
+                        date: new Date(),
+                        status: { type: 'STATUS_IN_PROGRESS', displayClock: '7:23 2Q', period: 2, completed: false },
+                        teams: {
+                            home: { name: 'Texas Longhorns', abbreviation: 'TEX', score: 14, record: '0-0' },
+                            away: { name: 'Alabama Crimson Tide', abbreviation: 'ALA', score: 21, record: '0-0' }
+                        },
+                        venue: 'Darrell K Royal Stadium (Austin)',
+                        isLive: true,
+                        week: 1,
+                        season: 2024
+                    }
+                ];
+                
+                logTest(`✅ Retrieved ${games.length} NCAA games`, 'success');
+                return games;
+            }
+            
+            async getLiveGames() {
+                const allGames = await this.getTodaysGames();
+                const liveGames = allGames.filter(game => game.isLive);
+                logTest(`🔴 Found ${liveGames.length} live NCAA games`, 'success');
+                return liveGames;
+            }
+            
+            async getBettingOpportunities() {
+                logTest('💰 Getting NCAA betting lines...', 'info');
+                
+                const bettingLines = [
+                    {
+                        gameId: 'ncaa-test-1',
+                        teams: 'Georgia vs Clemson',
+                        spread: 'UGA -3.5',
+                        overUnder: 'O/U 52.5',
+                        homeMoneyline: '+140',
+                        confidence: 78,
+                        opportunity: {
+                            type: 'SPREAD',
+                            recommendation: 'Take Georgia -3.5'
+                        }
+                    },
+                    {
+                        gameId: 'ncaa-test-2',
+                        teams: 'Alabama @ Texas',
+                        spread: 'ALA -7',
+                        overUnder: 'O/U 58.5',
+                        homeMoneyline: '+280',
+                        confidence: 85,
+                        opportunity: {
+                            type: 'MONEYLINE',
+                            recommendation: 'Consider Alabama ML'
+                        }
+                    }
+                ];
+                
+                logTest(`💰 Generated ${bettingLines.length} NCAA betting opportunities`, 'success');
+                return bettingLines;
+            }
+            
+            clearCache() {
+                this.cache.clear();
+                logTest('🔄 NCAA cache cleared', 'info');
+            }
+        }
+        
+        // Mobile Navigation Functions
+        window.toggleMobileMenu = function() {
+            logTest('📱 toggleMobileMenu called', 'info');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                const isActive = menu.classList.contains('active');
+                
+                if (isActive) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            } else {
+                logTest('❌ Mobile menu elements not found', 'error');
+            }
+        };
+        
+        function openMobileMenu() {
+            logTest('📱 Opening mobile menu', 'success');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                overlay.classList.add('active');
+                menu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        window.closeMobileMenu = function() {
+            logTest('📱 Closing mobile menu', 'success');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                overlay.classList.remove('active');
+                menu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        };
+        
+        window.showViewMobile = function(viewName) {
+            logTest(`📱 showViewMobile('${viewName}') called`, 'info');
+            closeMobileMenu();
+            showView(viewName);
+        };
+        
+        // Desktop Navigation
+        window.showView = function(viewName) {
+            logTest(`🖥️ showView('${viewName}') called`, 'info');
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('.view');
+            
+            // Update active nav link
+            navLinks.forEach(l => l.classList.remove('active'));
+            const activeLink = document.querySelector(`[data-view="${viewName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Show target view
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const targetElement = document.getElementById(viewName);
+            if (targetElement) {
+                targetElement.classList.add('active');
+                logTest(`✅ Switched to ${viewName} view`, 'success');
+                
+                // Load data for the view
+                if (viewName === 'live') {
+                    loadLiveGames();
+                } else if (viewName === 'upcoming') {
+                    loadUpcomingGames();
+                } else if (viewName === 'betting') {
+                    loadBettingLines();
+                }
+                
+                return true;
+            }
+            
+            logTest(`❌ View '${viewName}' not found`, 'error');
+            return false;
+        };
+        
+        // Initialize navigation
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetView = link.getAttribute('data-view');
+                    showView(targetView);
+                });
+            });
+            
+            logTest(`✅ Initialized ${navLinks.length} navigation links`, 'success');
+        }
+        
+        // Data loading functions
+        async function loadLiveGames() {
+            try {
+                const games = await window.testNCAAService.getLiveGames();
+                const container = document.getElementById('ncaa-live-games');
+                if (container) {
+                    container.innerHTML = renderGames(games, 'live');
+                }
+            } catch (error) {
+                logTest(`❌ Error loading live games: ${error.message}`, 'error');
+            }
+        }
+        
+        async function loadUpcomingGames() {
+            try {
+                const allGames = await window.testNCAAService.getTodaysGames();
+                const upcomingGames = allGames.filter(game => !game.isLive);
+                const container = document.getElementById('ncaa-upcoming-games');
+                if (container) {
+                    container.innerHTML = renderGames(upcomingGames, 'upcoming');
+                }
+            } catch (error) {
+                logTest(`❌ Error loading upcoming games: ${error.message}`, 'error');
+            }
+        }
+        
+        async function loadBettingLines() {
+            try {
+                const bettingLines = await window.testNCAAService.getBettingOpportunities();
+                const container = document.getElementById('ncaa-betting-lines');
+                if (container) {
+                    container.innerHTML = renderBettingLines(bettingLines);
+                }
+            } catch (error) {
+                logTest(`❌ Error loading betting lines: ${error.message}`, 'error');
+            }
+        }
+        
+        // Rendering functions
+        function renderGames(games, type) {
+            if (!games || games.length === 0) {
+                return `<div class="game-card">No ${type} NCAA games found</div>`;
+            }
+            
+            return games.map(game => {
+                const homeTeamClass = isCollegeTeam(game.teams.home.name) ? 'college-team' : 
+                                     isNFLTeam(game.teams.home.name) ? 'nfl-team' : '';
+                const awayTeamClass = isCollegeTeam(game.teams.away.name) ? 'college-team' : 
+                                     isNFLTeam(game.teams.away.name) ? 'nfl-team' : '';
+                
+                return `
+                    <div class="game-card">
+                        <div style="font-weight: bold; margin-bottom: 10px;">
+                            <span class="${awayTeamClass}">${game.teams.away.name}</span> @ 
+                            <span class="${homeTeamClass}">${game.teams.home.name}</span>
+                            ${game.isLive ? ' 🔴 LIVE' : ''}
+                        </div>
+                        <div>Score: ${game.teams.away.score} - ${game.teams.home.score}</div>
+                        <div>Status: ${game.status.displayClock}</div>
+                        <div>Venue: ${game.venue}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderBettingLines(lines) {
+            if (!lines || lines.length === 0) {
+                return `<div class="game-card">No NCAA betting lines found</div>`;
+            }
+            
+            return lines.map(line => `
+                <div class="game-card">
+                    <div style="font-weight: bold; margin-bottom: 10px;">${line.teams}</div>
+                    <div>Spread: ${line.spread}</div>
+                    <div>O/U: ${line.overUnder}</div>
+                    <div>ML: ${line.homeMoneyline}</div>
+                    <div>Confidence: ${line.confidence}%</div>
+                    <div style="color: #007bff; font-weight: bold;">${line.opportunity.recommendation}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Team identification functions
+        function isNFLTeam(teamName) {
+            const nflTeams = [
+                'Chiefs', 'Patriots', 'Cowboys', 'Packers', 'Steelers', 'Giants', 
+                'Eagles', 'Ravens', 'Saints', 'Seahawks', 'Broncos', 'Bills'
+            ];
+            return nflTeams.some(nflTeam => teamName.includes(nflTeam));
+        }
+        
+        function isCollegeTeam(teamName) {
+            const collegeTeams = [
+                'Bulldogs', 'Tigers', 'Buckeyes', 'Wolverines', 'Crimson Tide',
+                'Longhorns', 'Trojans', 'Fighting Irish', 'Seminoles'
+            ];
+            return collegeTeams.some(collegeTeam => teamName.includes(collegeTeam)) ||
+                   teamName.includes('University') || teamName.includes('State');
+        }
+        
+        // Test functions
+        async function runDataTest() {
+            logTest('🚀 Starting NCAA data test...', 'info');
+            
+            try {
+                // Test data service
+                const games = await window.testNCAAService.getTodaysGames();
+                const liveGames = await window.testNCAAService.getLiveGames();
+                const bettingLines = await window.testNCAAService.getBettingOpportunities();
+                
+                // Validate data
+                const allTeamNames = [];
+                games.forEach(game => {
+                    allTeamNames.push(game.teams.home.name);
+                    allTeamNames.push(game.teams.away.name);
+                });
+                
+                const nflTeams = allTeamNames.filter(team => isNFLTeam(team));
+                const collegeTeams = allTeamNames.filter(team => isCollegeTeam(team));
+                
+                if (nflTeams.length > 0) {
+                    logTest(`❌ Found NFL teams in NCAA data: ${nflTeams.join(', ')}`, 'error');
+                } else {
+                    logTest('✅ No NFL teams found in NCAA data', 'success');
+                }
+                
+                if (collegeTeams.length > 0) {
+                    logTest(`✅ Found ${collegeTeams.length} college teams`, 'success');
+                } else {
+                    logTest('❌ No college teams found', 'error');
+                }
+                
+                logTest(`📊 Data Summary: ${games.length} games, ${liveGames.length} live, ${bettingLines.length} betting lines`, 'info');
+                
+            } catch (error) {
+                logTest(`❌ Data test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function runMenuTest() {
+            logTest('🚀 Starting menu test...', 'info');
+            
+            // Test function existence
+            const functions = ['toggleMobileMenu', 'closeMobileMenu', 'showViewMobile', 'showView'];
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    logTest(`✅ ${funcName} exists`, 'success');
+                } else {
+                    logTest(`❌ ${funcName} missing`, 'error');
+                }
+            });
+            
+            // Test DOM elements
+            const elements = [
+                { id: 'mobileNavOverlay', name: 'Mobile Overlay' },
+                { id: 'mobileNavMenu', name: 'Mobile Menu' }
+            ];
+            
+            elements.forEach(element => {
+                const found = document.getElementById(element.id);
+                if (found) {
+                    logTest(`✅ ${element.name} found`, 'success');
+                } else {
+                    logTest(`❌ ${element.name} missing`, 'error');
+                }
+            });
+            
+            // Test navigation
+            const views = ['live', 'upcoming', 'betting'];
+            views.forEach(view => {
+                try {
+                    showView(view);
+                    logTest(`✅ Navigation to ${view} works`, 'success');
+                } catch (error) {
+                    logTest(`❌ Navigation to ${view} failed: ${error.message}`, 'error');
+                }
+            });
+        }
+        
+        async function runFullTest() {
+            logTest('🚀 Starting full comprehensive test...', 'info');
+            await runDataTest();
+            runMenuTest();
+            
+            // Test mobile menu
+            setTimeout(() => {
+                toggleMobileMenu();
+                setTimeout(() => {
+                    closeMobileMenu();
+                    logTest('✅ Mobile menu test complete', 'success');
+                }, 1000);
+            }, 500);
+        }
+        
+        function testRefresh() {
+            logTest('🔄 Refresh button clicked', 'info');
+        }
+        
+        function toggleTestOverlay() {
+            const overlay = document.getElementById('testOverlay');
+            overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            logTest('🏈 NCAA Comprehensive Fix Test Initialized', 'info');
+            
+            // Create test NCAA service
+            window.testNCAAService = new TestNCAADataService();
+            
+            // Initialize navigation
+            initializeNavigation();
+            
+            // Load initial data
+            loadLiveGames();
+            
+            // Auto-run tests after a short delay
+            setTimeout(runFullTest, 1000);
+        });
+    </script>
+</body>
+</html>

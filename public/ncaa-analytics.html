@@ -55,6 +55,9 @@
                 <button class="btn-refresh" onclick="refreshNCAAData()">
                     <i class="fas fa-sync-alt"></i>
                 </button>
+                <button class="btn-refresh" onclick="debugNCAAData()" title="Debug NCAA Data">
+                    <i class="fas fa-bug"></i>
+                </button>
                 <a href="index.html" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
@@ -268,11 +271,28 @@
     <script src="data-validator.js"></script>
     <script src="loading-state-manager.js"></script>
     
-    <!-- NCAA Data Service -->
+    <!-- NCAA Data Service (Load First) -->
     <script src="ncaa-data-service.js"></script>
+    
+    <!-- Ensure NCAA Data Service is Protected -->
+    <script>
+        // Protect NCAA Data Service from being overridden
+        if (window.ncaaDataService) {
+            window.protectedNCAAService = window.ncaaDataService;
+            console.log('🛡️ NCAA Data Service protected');
+        }
+    </script>
     
     <!-- Robust Integration -->
     <script src="robust-integration.js"></script>
+    
+    <!-- Restore NCAA Data Service if overridden -->
+    <script>
+        if (window.protectedNCAAService && (!window.ncaaDataService || window.ncaaDataService.constructor.name === 'EmergencyService')) {
+            window.ncaaDataService = window.protectedNCAAService;
+            console.log('🔄 NCAA Data Service restored');
+        }
+    </script>
     
     <!-- Mobile Navigation Functions -->
     <script src="app.js"></script>
@@ -383,6 +403,10 @@
         
         // Load NCAA Data
         async function loadNCAAData() {
+            console.log('📊 Loading NCAA data...');
+            console.log('NCAA Data Service:', window.ncaaDataService);
+            console.log('NCAA Data Service Type:', window.ncaaDataService?.constructor?.name);
+            
             try {
                 const [allGames, liveGames, rankings, bettingLines] = await Promise.all([
                     window.ncaaDataService.getTodaysGames(),
@@ -390,6 +414,46 @@
                     window.ncaaDataService.getTop25Rankings(),
                     window.ncaaDataService.getBettingOpportunities()
                 ]);
+                
+                console.log('📊 NCAA Data loaded:');
+                console.log('- All Games:', allGames?.length || 0);
+                console.log('- Live Games:', liveGames?.length || 0);
+                console.log('- Rankings:', rankings?.length || 0);
+                console.log('- Betting Lines:', bettingLines?.length || 0);
+                
+                // Check if we're getting college teams
+                if (allGames && allGames.length > 0) {
+                    const firstGame = allGames[0];
+                    console.log('📊 First game teams:');
+                    console.log('- Home:', firstGame.teams?.home?.name);
+                    console.log('- Away:', firstGame.teams?.away?.name);
+                    
+                    const allTeamNames = [];
+                    allGames.forEach(game => {
+                        if (game.teams?.home?.name) allTeamNames.push(game.teams.home.name);
+                        if (game.teams?.away?.name) allTeamNames.push(game.teams.away.name);
+                    });
+                    
+                    const nflTeams = allTeamNames.filter(team => 
+                        ['Chiefs', 'Patriots', 'Cowboys', 'Packers', 'Steelers', 'Bills', 'Eagles'].some(nfl => team.includes(nfl))
+                    );
+                    const collegeTeams = allTeamNames.filter(team => 
+                        ['Bulldogs', 'Tigers', 'Buckeyes', 'Wolverines', 'Crimson Tide', 'Longhorns'].some(college => team.includes(college)) ||
+                        team.includes('University') || team.includes('State')
+                    );
+                    
+                    if (nflTeams.length > 0) {
+                        console.error('❌ NCAA page showing NFL teams:', nflTeams);
+                    } else {
+                        console.log('✅ No NFL teams found in NCAA data');
+                    }
+                    
+                    if (collegeTeams.length > 0) {
+                        console.log('✅ College teams found:', collegeTeams.slice(0, 3));
+                    } else {
+                        console.warn('⚠️ No college teams found in NCAA data');
+                    }
+                }
                 
                 // Update live games counter
                 const liveGamesElement = document.getElementById('live-cfb-games');
@@ -571,6 +635,37 @@
             if (window.ncaaDataService) {
                 window.ncaaDataService.clearCache();
                 loadNCAAData();
+            }
+        }
+        
+        // Debug NCAA Data
+        function debugNCAAData() {
+            console.log('🐛 NCAA Debug Information:');
+            console.log('- NCAA Data Service:', window.ncaaDataService);
+            console.log('- Service Type:', window.ncaaDataService?.constructor?.name);
+            console.log('- Protected Service:', window.protectedNCAAService);
+            console.log('- All Window Services:', {
+                ncaaDataService: !!window.ncaaDataService,
+                nflDataService: !!window.nflDataService,
+                realSportsDataService: !!window.realSportsDataService
+            });
+            
+            // Test mobile menu elements
+            console.log('🐛 Mobile Menu Debug:');
+            console.log('- Overlay:', document.getElementById('mobileNavOverlay'));
+            console.log('- Menu:', document.getElementById('mobileNavMenu'));
+            console.log('- Toggle Function:', typeof window.toggleMobileMenu);
+            console.log('- Close Function:', typeof window.closeMobileMenu);
+            console.log('- ShowView Function:', typeof window.showView);
+            
+            // Test data loading
+            if (window.ncaaDataService) {
+                console.log('🐛 Testing NCAA data service...');
+                window.ncaaDataService.getTodaysGames().then(games => {
+                    console.log('🐛 NCAA Games Result:', games);
+                }).catch(error => {
+                    console.error('🐛 NCAA Games Error:', error);
+                });
             }
         }
         
@@ -844,6 +939,7 @@
             
             if (overlay && menu) {
                 const isActive = menu.classList.contains('active');
+                console.log(`📱 NCAA: Menu is currently ${isActive ? 'active' : 'inactive'}`);
                 
                 if (isActive) {
                     closeMobileMenu();
@@ -852,6 +948,8 @@
                 }
             } else {
                 console.warn('⚠️ NCAA: Mobile menu elements not found');
+                console.warn('Overlay:', overlay);
+                console.warn('Menu:', menu);
             }
         };
         
