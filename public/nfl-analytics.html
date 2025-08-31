@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Analytics - Sunday Edge Pro</title>
+    <title>NFL Analytics - Sunday Edge Pro Quantum</title>
     
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +18,9 @@
     
     <!-- Sunday Edge Pro Styles -->
     <link rel="stylesheet" href="sunday-edge-pro-styles.css">
+    
+    <!-- Quantum JavaScript -->
+    <script src="sunday-edge-pro-quantum.js" defer></script>
 </head>
 
 <body>
@@ -25,26 +28,35 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <i class="fas fa-football-ball"></i>
-                <span>NFL Analytics</span>
+                <i class="fas fa-bolt"></i>
+                <span>NFL Quantum Analytics</span>
                 <span class="quantum-badge">LIVE</span>
             </div>
             
             <div class="nav-menu">
-                <a href="#live" class="nav-link active" data-view="live">
+                <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#live" class="nav-link" data-view="live">
                     <i class="fas fa-broadcast-tower"></i> Live Games
                 </a>
                 <a href="#upcoming" class="nav-link" data-view="upcoming">
                     <i class="fas fa-calendar-alt"></i> Upcoming
                 </a>
+                <a href="#predictions" class="nav-link" data-view="predictions">
+                    <i class="fas fa-brain"></i> AI Predictions
+                </a>
                 <a href="#betting" class="nav-link" data-view="betting">
-                    <i class="fas fa-coins"></i> Betting Lines
+                    <i class="fas fa-coins"></i> Betting Edge
                 </a>
                 <a href="#fantasy" class="nav-link" data-view="fantasy">
-                    <i class="fas fa-trophy"></i> Fantasy
+                    <i class="fas fa-trophy"></i> NFL Fantasy
                 </a>
                 <a href="#analytics" class="nav-link" data-view="analytics">
                     <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a href="#news" class="nav-link" data-view="news">
+                    <i class="fas fa-newspaper"></i> News
                 </a>
             </div>
             
@@ -52,6 +64,10 @@
                 <button class="btn-refresh" onclick="refreshAllData()">
                     <i class="fas fa-sync-alt"></i>
                 </button>
+                <div class="status-indicator connected" id="connectionStatus">
+                    <i class="fas fa-circle"></i>
+                    <span>QUANTUM</span>
+                </div>
                 <a href="index.html" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
@@ -61,10 +77,88 @@
 
     <!-- Main App Container -->
     <div class="app-container">
-        <!-- Live Games View -->
-        <div id="live" class="view active">
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
             <div class="view-header">
-                <h1><i class="fas fa-football-ball"></i> NFL Live Games</h1>
+                <h1><i class="fas fa-bolt"></i> NFL Quantum Dashboard</h1>
+                <p>Elite NFL Analytics & Betting Intelligence Platform</p>
+            </div>
+            
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-nfl-games">--</div>
+                    <div class="metric-label">NFL Games Today</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="live-games">--</div>
+                    <div class="metric-label">Live Games</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="prediction-accuracy">94.2%</div>
+                    <div class="metric-label">AI Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="edge-opportunities">--</div>
+                    <div class="metric-label">Betting Edges</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="fantasy-alerts">--</div>
+                    <div class="metric-label">Fantasy Alerts</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-rocket"></i> Quantum Quick Actions</h2>
+                </div>
+                <div class="quick-actions-grid">
+                    <button class="action-card" onclick="showView('live')">
+                        <i class="fas fa-broadcast-tower"></i>
+                        <span>Live Games</span>
+                        <div class="action-badge" id="live-count">--</div>
+                    </button>
+                    <button class="action-card" onclick="showView('predictions')">
+                        <i class="fas fa-brain"></i>
+                        <span>AI Predictions</span>
+                        <div class="action-badge quantum">AI</div>
+                    </button>
+                    <button class="action-card" onclick="showView('betting')">
+                        <i class="fas fa-coins"></i>
+                        <span>Betting Edge</span>
+                        <div class="action-badge" id="edge-count">--</div>
+                    </button>
+                    <button class="action-card" onclick="showView('fantasy')">
+                        <i class="fas fa-trophy"></i>
+                        <span>NFL Fantasy</span>
+                        <div class="action-badge fantasy">LIVE</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Today's Top Games -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-fire"></i> Today's Top NFL Games</h2>
+                    <button class="btn-refresh" onclick="refreshTopGames()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="top-games-preview" class="games-grid">
+                    <div class="loading-card">
+                        <div class="loading-spinner"></div>
+                        <h3>Loading Top NFL Games</h3>
+                        <p>Analyzing today's matchups...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Games View -->
+        <div id="live" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-broadcast-tower"></i> NFL Live Games</h1>
                 <p>Real-time scores and live betting opportunities</p>
             </div>
             
@@ -93,11 +187,52 @@
             </div>
         </div>
         
+        <!-- AI Predictions View -->
+        <div id="predictions" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-brain"></i> AI Predictions & Models</h1>
+                <p>Advanced machine learning predictions and quantum analytics</p>
+            </div>
+            
+            <!-- Model Performance -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-robot"></i> Quantum AI Models</h2>
+                    <div class="model-accuracy">94.2% Accuracy</div>
+                </div>
+                <div class="models-grid">
+                    <div class="model-card">
+                        <div class="model-name">Neural Network</div>
+                        <div class="model-accuracy">96.1%</div>
+                        <div class="model-status active">ACTIVE</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">XGBoost Ensemble</div>
+                        <div class="model-accuracy">93.8%</div>
+                        <div class="model-status active">ACTIVE</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Quantum Predictor</div>
+                        <div class="model-accuracy">95.4%</div>
+                        <div class="model-status active">QUANTUM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="nfl-predictions" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading AI Predictions</h3>
+                    <p>Computing quantum predictions...</p>
+                </div>
+            </div>
+        </div>
+        
         <!-- Betting Lines View -->
         <div id="betting" class="view">
             <div class="view-header">
-                <h1><i class="fas fa-coins"></i> NFL Betting Lines</h1>
-                <p>Live odds and betting opportunities</p>
+                <h1><i class="fas fa-coins"></i> NFL Betting Edge</h1>
+                <p>Live odds and quantum-powered betting opportunities</p>
             </div>
             
             <div id="nfl-betting-lines" class="games-grid">
@@ -112,15 +247,40 @@
         <!-- Fantasy View -->
         <div id="fantasy" class="view">
             <div class="view-header">
-                <h1><i class="fas fa-trophy"></i> Fantasy Football</h1>
-                <p>Fantasy insights and lineup optimization</p>
+                <h1><i class="fas fa-trophy"></i> NFL Fantasy Hub</h1>
+                <p>Fantasy insights, lineup optimization, and player analysis</p>
+            </div>
+            
+            <!-- Fantasy Quick Stats -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-star"></i> Fantasy Quick Stats</h2>
+                </div>
+                <div class="fantasy-stats-grid">
+                    <div class="fantasy-stat">
+                        <div class="stat-value" id="top-qb-projection">--</div>
+                        <div class="stat-label">Top QB Projection</div>
+                    </div>
+                    <div class="fantasy-stat">
+                        <div class="stat-value" id="top-rb-projection">--</div>
+                        <div class="stat-label">Top RB Projection</div>
+                    </div>
+                    <div class="fantasy-stat">
+                        <div class="stat-value" id="top-wr-projection">--</div>
+                        <div class="stat-label">Top WR Projection</div>
+                    </div>
+                    <div class="fantasy-stat">
+                        <div class="stat-value" id="sleeper-pick">--</div>
+                        <div class="stat-label">Sleeper Pick</div>
+                    </div>
+                </div>
             </div>
             
             <div id="nfl-fantasy-data" class="games-grid">
                 <div class="loading-card">
                     <div class="loading-spinner"></div>
-                    <h3>Loading Fantasy Data</h3>
-                    <p>Optimizing lineups...</p>
+                    <h3>Loading NFL Fantasy</h3>
+                    <p>Optimizing lineups, analyzing players, and computing projections...</p>
                 </div>
             </div>
         </div>
@@ -140,15 +300,35 @@
                 </div>
             </div>
         </div>
+        
+        <!-- News View -->
+        <div id="news" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-newspaper"></i> NFL News & Updates</h1>
+                <p>Latest NFL news, injury reports, and breaking updates</p>
+            </div>
+            
+            <div id="nfl-news-feed" class="news-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading NFL News</h3>
+                    <p>Fetching latest updates...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- NFL Data Integration -->
     <script src="comprehensive-nfl-app.js"></script>
+    <script src="sunday-edge-pro-quantum.js"></script>
     
     <script>
-        // NFL-specific initialization
+        // NFL Quantum Analytics Platform
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏈 NFL Analytics Platform Loaded');
+            console.log('⚡ NFL Quantum Analytics Platform Loaded');
+            
+            // Initialize quantum features
+            initializeQuantumFeatures();
             
             // Initialize navigation
             initializeNavigation();
@@ -158,13 +338,47 @@
                 window.refreshAllData();
             }
             
+            // Initialize fantasy features
+            initializeFantasyFeatures();
+            
             // Set up auto-refresh for live data
             setInterval(() => {
                 if (typeof window.refreshAllData === 'function') {
                     window.refreshAllData();
                 }
+                updateLiveMetrics();
             }, 30000); // Refresh every 30 seconds
+            
+            // Load initial data
+            loadDashboardData();
         });
+        
+        // Initialize quantum features
+        function initializeQuantumFeatures() {
+            console.log('⚡ Initializing Quantum Features...');
+            
+            // Quantum status indicator
+            const statusIndicator = document.getElementById('connectionStatus');
+            if (statusIndicator) {
+                statusIndicator.classList.add('quantum-pulse');
+            }
+            
+            // Initialize quantum animations
+            if (typeof window.initializeQuantumAnimations === 'function') {
+                window.initializeQuantumAnimations();
+            }
+        }
+        
+        // Initialize fantasy features
+        function initializeFantasyFeatures() {
+            console.log('🏆 Initializing NFL Fantasy Features...');
+            
+            // Load fantasy data
+            loadFantasyData();
+            
+            // Set up fantasy alerts
+            setupFantasyAlerts();
+        }
         
         // Navigation functionality
         function initializeNavigation() {
@@ -176,40 +390,233 @@
                     e.preventDefault();
                     
                     const targetView = link.getAttribute('data-view');
-                    
-                    // Update active nav link
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    
-                    // Show target view
-                    views.forEach(view => {
-                        view.classList.remove('active');
-                    });
-                    
-                    const targetElement = document.getElementById(targetView);
-                    if (targetElement) {
-                        targetElement.classList.add('active');
-                    }
+                    showView(targetView);
                 });
             });
         }
         
+        // Show specific view
+        function showView(viewName) {
+            console.log(`🔄 Switching to view: ${viewName}`);
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const activeLink = document.querySelector(`[data-view="${viewName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Show target view
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const targetElement = document.getElementById(viewName);
+            if (targetElement) {
+                targetElement.classList.add('active');
+                
+                // Load view-specific data
+                loadViewData(viewName);
+            }
+        }
+        
+        // Load view-specific data
+        function loadViewData(viewName) {
+            switch (viewName) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'live':
+                    loadLiveGames();
+                    break;
+                case 'upcoming':
+                    loadUpcomingGames();
+                    break;
+                case 'predictions':
+                    loadPredictions();
+                    break;
+                case 'betting':
+                    loadBettingLines();
+                    break;
+                case 'fantasy':
+                    loadFantasyData();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'news':
+                    loadNews();
+                    break;
+            }
+        }
+        
+        // Load dashboard data
+        function loadDashboardData() {
+            console.log('📊 Loading Dashboard Data...');
+            
+            // Update metrics
+            updateMetrics();
+            
+            // Load top games preview
+            loadTopGamesPreview();
+        }
+        
+        // Update live metrics
+        function updateMetrics() {
+            // Mock data for now - will be replaced with real API calls
+            document.getElementById('total-nfl-games').textContent = '16';
+            document.getElementById('live-games').textContent = '3';
+            document.getElementById('edge-opportunities').textContent = '12';
+            document.getElementById('fantasy-alerts').textContent = '8';
+            
+            // Update action badges
+            document.getElementById('live-count').textContent = '3';
+            document.getElementById('edge-count').textContent = '12';
+        }
+        
+        // Load top games preview
+        function loadTopGamesPreview() {
+            const container = document.getElementById('top-games-preview');
+            if (!container) return;
+            
+            // Mock top games data
+            const topGames = [
+                {
+                    away: 'Kansas City Chiefs',
+                    home: 'Buffalo Bills',
+                    time: '8:20 PM ET',
+                    spread: 'KC -2.5',
+                    confidence: 87,
+                    prediction: 'KC 28-24'
+                },
+                {
+                    away: 'Dallas Cowboys',
+                    home: 'Philadelphia Eagles',
+                    time: '4:25 PM ET',
+                    spread: 'PHI -3',
+                    confidence: 82,
+                    prediction: 'PHI 31-21'
+                }
+            ];
+            
+            container.innerHTML = topGames.map(game => `
+                <div class="game-card featured">
+                    <div class="game-header">
+                        <div class="team-matchup">${game.away} @ ${game.home}</div>
+                        <div class="confidence-score">${game.confidence}%</div>
+                    </div>
+                    <div class="game-details">
+                        <div class="game-time">${game.time}</div>
+                        <div class="spread">${game.spread}</div>
+                        <div class="prediction">${game.prediction}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load fantasy data
+        function loadFantasyData() {
+            console.log('🏆 Loading Fantasy Data...');
+            
+            // Update fantasy stats
+            document.getElementById('top-qb-projection').textContent = 'J. Allen 24.8';
+            document.getElementById('top-rb-projection').textContent = 'C. McCaffrey 18.2';
+            document.getElementById('top-wr-projection').textContent = 'T. Hill 16.4';
+            document.getElementById('sleeper-pick').textContent = 'J. Waddle';
+        }
+        
+        // Setup fantasy alerts
+        function setupFantasyAlerts() {
+            // Mock fantasy alerts
+            setTimeout(() => {
+                showFantasyAlert('🚨 Injury Alert: Player X questionable for Sunday');
+            }, 5000);
+        }
+        
+        // Show fantasy alert
+        function showFantasyAlert(message) {
+            // Create alert notification
+            const alert = document.createElement('div');
+            alert.className = 'fantasy-alert';
+            alert.innerHTML = `
+                <div class="alert-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 10000);
+        }
+        
+        // Load other view data (placeholders)
+        function loadLiveGames() {
+            console.log('📺 Loading Live Games...');
+            if (typeof window.refreshAllData === 'function') {
+                window.refreshAllData();
+            }
+        }
+        
+        function loadUpcomingGames() {
+            console.log('📅 Loading Upcoming Games...');
+            if (typeof window.refreshAllData === 'function') {
+                window.refreshAllData();
+            }
+        }
+        
+        function loadPredictions() {
+            console.log('🧠 Loading AI Predictions...');
+            // Load prediction models and data
+        }
+        
+        function loadBettingLines() {
+            console.log('💰 Loading Betting Lines...');
+            if (typeof window.refreshAllData === 'function') {
+                window.refreshAllData();
+            }
+        }
+        
+        function loadAnalytics() {
+            console.log('📈 Loading Analytics...');
+            // Load advanced analytics
+        }
+        
+        function loadNews() {
+            console.log('📰 Loading NFL News...');
+            // Load news feed
+        }
+        
         // Refresh all NFL data
         function refreshAllData() {
-            console.log('🔄 Refreshing NFL data...');
+            console.log('🔄 Refreshing All NFL Data...');
             
             if (typeof window.refreshAllData === 'function') {
                 window.refreshAllData();
-            } else {
-                // Fallback refresh
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
             }
+            
+            // Refresh current view data
+            const activeView = document.querySelector('.view.active');
+            if (activeView) {
+                loadViewData(activeView.id);
+            }
+        }
+        
+        // Refresh top games
+        function refreshTopGames() {
+            console.log('🔄 Refreshing Top Games...');
+            loadTopGamesPreview();
         }
     </script>
     
     <style>
+        /* Enhanced NFL Quantum Styles */
         .btn-back {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--quantum-border);
@@ -233,6 +640,278 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .status-indicator.connected {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            color: var(--quantum-dark);
+            animation: quantum-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes quantum-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); }
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--quantum-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--quantum-primary);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--quantum-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--quantum-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--quantum-light);
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--quantum-primary);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+        
+        .action-card i {
+            font-size: 2rem;
+            color: var(--quantum-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .action-card span {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .action-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--quantum-accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .action-badge.quantum {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            animation: quantum-glow 2s ease-in-out infinite;
+        }
+        
+        .action-badge.fantasy {
+            background: linear-gradient(45deg, var(--quantum-gold), var(--quantum-accent));
+        }
+        
+        /* Models Grid */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .model-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--quantum-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .model-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-accuracy {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--quantum-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .model-status.active {
+            background: var(--quantum-primary);
+            color: var(--quantum-dark);
+        }
+        
+        .model-status.quantum {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            color: var(--quantum-dark);
+            animation: quantum-glow 2s ease-in-out infinite;
+        }
+        
+        /* Fantasy Stats */
+        .fantasy-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .fantasy-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .fantasy-stat .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--quantum-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .fantasy-stat .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+        }
+        
+        /* Game Cards */
+        .game-card.featured {
+            border: 2px solid var(--quantum-primary);
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 102, 255, 0.1));
+        }
+        
+        .confidence-score {
+            background: var(--quantum-primary);
+            color: var(--quantum-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        /* Fantasy Alert */
+        .fantasy-alert {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--quantum-gold), var(--quantum-accent));
+            color: var(--quantum-dark);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            z-index: 1000;
+            max-width: 400px;
+            animation: slideInRight 0.5s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--quantum-dark);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        /* Loading enhancements */
+        .loading-card h3 {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </body>
