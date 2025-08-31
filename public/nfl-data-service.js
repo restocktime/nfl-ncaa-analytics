@@ -82,9 +82,9 @@ class NFLDataService {
                 let response = await fetch(url);
                 
                 if (!response.ok) {
-                    // Try with CORS proxy
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                    console.log(`📡 Trying NFL API with CORS proxy...`);
+                    // Try with Vercel proxy
+                    const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+                    console.log(`📡 Trying NFL API with Vercel proxy...`);
                     response = await fetch(proxyUrl);
                 }
                 

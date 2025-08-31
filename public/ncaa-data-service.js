@@ -88,13 +88,13 @@ class NCAADataService {
      */
     async tryRealESPNData() {
         try {
-            // Use a CORS proxy to access ESPN API
-            const proxyUrl = 'https://api.allorigins.win/raw?url=';
-            const espnUrl = encodeURIComponent('https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard');
+            // Use our Vercel proxy to access ESPN API
+            const espnUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard';
+            const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
             
-            console.log('📡 Fetching real NCAA data via proxy...');
+            console.log('📡 Fetching real NCAA data via Vercel proxy...');
             
-            const response = await fetch(`${proxyUrl}${espnUrl}`);
+            const response = await fetch(proxyUrl);
             const data = await response.json();
             
             if (data && data.events) {
@@ -981,10 +981,10 @@ class NCAADataService {
                 let response = await fetch(url);
                 
                 if (!response.ok) {
-                    // Try with CORS proxy for ESPN APIs
+                    // Try with Vercel proxy for ESPN APIs
                     if (url.includes('espn.com')) {
-                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                        console.log(`📡 Trying CORS proxy: ${proxyUrl}`);
+                        const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+                        console.log(`📡 Trying Vercel proxy: ${proxyUrl}`);
                         response = await fetch(proxyUrl);
                     }
                 }
@@ -1274,7 +1274,7 @@ class NCAADataService {
             try {
                 response = await fetch(espnUrl);
                 if (!response.ok) {
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(espnUrl)}`;
+                    const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
                     response = await fetch(proxyUrl);
                 }
                 
@@ -1368,9 +1368,9 @@ class NCAADataService {
             let response = await fetch(oddsUrl);
             
             if (!response.ok) {
-                // Try with CORS proxy
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(oddsUrl)}`;
-                console.log('📡 Trying ESPN Odds API with CORS proxy...');
+                // Try with Vercel proxy
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(oddsUrl)}`;
+                console.log('📡 Trying ESPN Odds API with Vercel proxy...');
                 response = await fetch(proxyUrl);
             }
             
