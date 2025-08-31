@@ -334,19 +334,27 @@
             initializeNavigation();
             
             // Load NFL data
-            if (typeof window.refreshAllData === 'function') {
-                window.refreshAllData();
-            }
+            setTimeout(() => {
+                if (typeof window.loadNFLData === 'function') {
+                    window.loadNFLData();
+                } else {
+                    loadDashboardData();
+                }
+            }, 1000);
             
             // Initialize fantasy features
             initializeFantasyFeatures();
             
             // Set up auto-refresh for live data
             setInterval(() => {
-                if (typeof window.refreshAllData === 'function') {
-                    window.refreshAllData();
+                if (!window.isRefreshing) {
+                    updateLiveMetrics();
+                    
+                    // Only refresh if we have a proper refresh function
+                    if (typeof window.loadNFLData === 'function') {
+                        window.loadNFLData();
+                    }
                 }
-                updateLiveMetrics();
             }, 30000); // Refresh every 30 seconds
             
             // Load initial data
@@ -559,52 +567,185 @@
         // Load other view data (placeholders)
         function loadLiveGames() {
             console.log('📺 Loading Live Games...');
-            if (typeof window.refreshAllData === 'function') {
-                window.refreshAllData();
+            const container = document.getElementById('nfl-live-games');
+            if (container) {
+                container.innerHTML = `
+                    <div class="game-card live">
+                        <div class="game-header">
+                            <div class="team-matchup">Kansas City Chiefs @ Buffalo Bills</div>
+                            <div class="live-indicator">LIVE</div>
+                        </div>
+                        <div class="score-display">
+                            <div class="team-score">
+                                <div class="team-name">KC</div>
+                                <div class="score">21</div>
+                            </div>
+                            <div class="vs">@</div>
+                            <div class="team-score">
+                                <div class="team-name">BUF</div>
+                                <div class="score">17</div>
+                            </div>
+                        </div>
+                        <div class="game-info">
+                            <div class="info-item">2nd Quarter - 8:45</div>
+                        </div>
+                    </div>
+                `;
             }
         }
         
         function loadUpcomingGames() {
             console.log('📅 Loading Upcoming Games...');
-            if (typeof window.refreshAllData === 'function') {
-                window.refreshAllData();
+            const container = document.getElementById('nfl-upcoming-games');
+            if (container) {
+                container.innerHTML = `
+                    <div class="game-card">
+                        <div class="game-header">
+                            <div class="team-matchup">Dallas Cowboys @ Philadelphia Eagles</div>
+                            <div class="game-time">4:25 PM ET</div>
+                        </div>
+                        <div class="game-details">
+                            <div class="spread">PHI -3</div>
+                            <div class="over-under">O/U 47.5</div>
+                        </div>
+                    </div>
+                `;
             }
         }
         
         function loadPredictions() {
             console.log('🧠 Loading AI Predictions...');
-            // Load prediction models and data
+            const container = document.getElementById('nfl-predictions');
+            if (container) {
+                container.innerHTML = `
+                    <div class="prediction-card">
+                        <div class="prediction-header">
+                            <h3>Chiefs @ Bills</h3>
+                            <div class="confidence">87% Confidence</div>
+                        </div>
+                        <div class="prediction-details">
+                            <div class="predicted-score">KC 28 - BUF 24</div>
+                            <div class="key-factors">
+                                <div>• Chiefs offense vs Bills defense</div>
+                                <div>• Weather conditions favorable</div>
+                                <div>• Historical matchup trends</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         function loadBettingLines() {
             console.log('💰 Loading Betting Lines...');
-            if (typeof window.refreshAllData === 'function') {
-                window.refreshAllData();
+            const container = document.getElementById('nfl-betting-lines');
+            if (container) {
+                container.innerHTML = `
+                    <div class="betting-card">
+                        <div class="betting-header">
+                            <div class="matchup">Chiefs @ Bills</div>
+                            <div class="edge-indicator">HIGH VALUE</div>
+                        </div>
+                        <div class="betting-lines">
+                            <div class="line-item">
+                                <span>Spread:</span>
+                                <span>KC -2.5 (-110)</span>
+                            </div>
+                            <div class="line-item">
+                                <span>Total:</span>
+                                <span>O 47.5 (-105)</span>
+                            </div>
+                            <div class="line-item">
+                                <span>Moneyline:</span>
+                                <span>KC -140</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
         }
         
         function loadAnalytics() {
             console.log('📈 Loading Analytics...');
-            // Load advanced analytics
+            const container = document.getElementById('nfl-analytics-data');
+            if (container) {
+                container.innerHTML = `
+                    <div class="analytics-card">
+                        <h3>Team Performance Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-label">Offensive Efficiency</div>
+                                <div class="metric-value">Chiefs: 92.4</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Defensive Rating</div>
+                                <div class="metric-value">Bills: 88.7</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         function loadNews() {
             console.log('📰 Loading NFL News...');
-            // Load news feed
+            const container = document.getElementById('nfl-news-feed');
+            if (container) {
+                container.innerHTML = `
+                    <div class="news-item">
+                        <div class="news-header">
+                            <h3>Chiefs QB Mahomes Ready for Bills Showdown</h3>
+                            <div class="news-time">2 hours ago</div>
+                        </div>
+                        <div class="news-content">
+                            Patrick Mahomes discusses preparation for tonight's game against Buffalo...
+                        </div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-header">
+                            <h3>Bills Defense Looks to Contain Chiefs Offense</h3>
+                            <div class="news-time">3 hours ago</div>
+                        </div>
+                        <div class="news-content">
+                            Buffalo's defensive coordinator outlines strategy for stopping Kansas City...
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         // Refresh all NFL data
         function refreshAllData() {
             console.log('🔄 Refreshing All NFL Data...');
             
-            if (typeof window.refreshAllData === 'function') {
-                window.refreshAllData();
+            // Prevent infinite loop by checking if we're already refreshing
+            if (window.isRefreshing) {
+                console.log('⏳ Refresh already in progress...');
+                return;
             }
             
-            // Refresh current view data
-            const activeView = document.querySelector('.view.active');
-            if (activeView) {
-                loadViewData(activeView.id);
+            window.isRefreshing = true;
+            
+            try {
+                // Call the comprehensive NFL app refresh if available
+                if (typeof window.comprehensiveNFLRefresh === 'function') {
+                    window.comprehensiveNFLRefresh();
+                } else if (typeof window.loadNFLData === 'function') {
+                    window.loadNFLData();
+                } else {
+                    // Fallback: refresh current view data
+                    const activeView = document.querySelector('.view.active');
+                    if (activeView) {
+                        loadViewData(activeView.id);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error refreshing data:', error);
+            } finally {
+                // Reset refresh flag after a delay
+                setTimeout(() => {
+                    window.isRefreshing = false;
+                }, 2000);
             }
         }
         
