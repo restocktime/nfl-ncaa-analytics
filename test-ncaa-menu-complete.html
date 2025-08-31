@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Menu Bar Complete Test</title>
+    
+    <!-- Same styles as NCAA page -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/sunday-edge-pro-styles.css">
+    
+    <style>
+        .test-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(0,0,0,0.8); 
+            color: white; 
+            padding: 20px; 
+            z-index: 10000; 
+            max-height: 200px; 
+            overflow-y: auto;
+        }
+        .test-result { margin: 5px 0; padding: 5px; border-radius: 3px; }
+        .success { background-color: rgba(40, 167, 69, 0.3); }
+        .error { background-color: rgba(220, 53, 69, 0.3); }
+        .warning { background-color: rgba(255, 193, 7, 0.3); }
+        .info { background-color: rgba(23, 162, 184, 0.3); }
+        .test-controls { position: fixed; bottom: 20px; right: 20px; z-index: 10001; }
+        .test-btn { padding: 10px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <!-- Test Overlay -->
+    <div id="testOverlay" class="test-overlay">
+        <h3>🏈 NCAA Menu Bar Test Results</h3>
+        <div id="testResults"></div>
+    </div>
+    
+    <!-- Test Controls -->
+    <div class="test-controls">
+        <button class="test-btn" onclick="runAllTests()">Run All Tests</button>
+        <button class="test-btn" onclick="toggleTestOverlay()">Toggle Results</button>
+        <button class="test-btn" onclick="clearTests()">Clear</button>
+    </div>
+
+    <!-- Replicate NCAA Navigation Structure -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-university"></i>
+                <span>NCAA Analytics</span>
+                <span class="quantum-badge ncaa">TEST MODE</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#live" class="nav-link active" data-view="live">
+                    <i class="fas fa-broadcast-tower"></i> Live Games
+                </a>
+                <a href="#upcoming" class="nav-link" data-view="upcoming">
+                    <i class="fas fa-calendar-alt"></i> Upcoming
+                </a>
+                <a href="#predictions" class="nav-link" data-view="predictions">
+                    <i class="fas fa-brain"></i> AI Predictions
+                </a>
+                <a href="#rankings" class="nav-link" data-view="rankings">
+                    <i class="fas fa-trophy"></i> Top 25
+                </a>
+                <a href="#betting" class="nav-link" data-view="betting">
+                    <i class="fas fa-coins"></i> Betting Lines
+                </a>
+                <a href="#analytics" class="nav-link" data-view="analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="btn-refresh" onclick="testRefresh()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <a href="index.html" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+    
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-header">
+            <div class="mobile-nav-brand">
+                <i class="fas fa-university"></i>
+                <span>NCAA Analytics</span>
+            </div>
+            <button class="mobile-nav-close" onclick="closeMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-links">
+            <a href="#live" class="mobile-nav-link active" data-view="live" onclick="showViewMobile('live')">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live Games</span>
+            </a>
+            <a href="#upcoming" class="mobile-nav-link" data-view="upcoming" onclick="showViewMobile('upcoming')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Upcoming</span>
+            </a>
+            <a href="#predictions" class="mobile-nav-link" data-view="predictions" onclick="showViewMobile('predictions')">
+                <i class="fas fa-brain"></i>
+                <span>AI Predictions</span>
+            </a>
+            <a href="#rankings" class="mobile-nav-link" data-view="rankings" onclick="showViewMobile('rankings')">
+                <i class="fas fa-trophy"></i>
+                <span>Top 25</span>
+            </a>
+            <a href="#betting" class="mobile-nav-link" data-view="betting" onclick="showViewMobile('betting')">
+                <i class="fas fa-coins"></i>
+                <span>Betting Lines</span>
+            </a>
+            <a href="#analytics" class="mobile-nav-link" data-view="analytics" onclick="showViewMobile('analytics')">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Views -->
+    <div class="app-container" style="margin-top: 100px;">
+        <div id="live" class="view active">
+            <h2>🔴 Live Games View</h2>
+            <p>This is the live games view content.</p>
+        </div>
+        
+        <div id="upcoming" class="view">
+            <h2>📅 Upcoming Games View</h2>
+            <p>This is the upcoming games view content.</p>
+        </div>
+        
+        <div id="predictions" class="view">
+            <h2>🧠 AI Predictions View</h2>
+            <p>This is the AI predictions view content.</p>
+        </div>
+        
+        <div id="rankings" class="view">
+            <h2>🏆 Top 25 Rankings View</h2>
+            <p>This is the rankings view content.</p>
+        </div>
+        
+        <div id="betting" class="view">
+            <h2>💰 Betting Lines View</h2>
+            <p>This is the betting lines view content.</p>
+        </div>
+        
+        <div id="analytics" class="view">
+            <h2>📊 Analytics View</h2>
+            <p>This is the analytics view content.</p>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+        
+        // Test logging
+        function logTest(message, type = 'info') {
+            testResults.push({ message, type, time: new Date().toLocaleTimeString() });
+            updateTestDisplay();
+        }
+        
+        function updateTestDisplay() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = testResults.slice(-10).map(result => 
+                `<div class="test-result ${result.type}">[${result.time}] ${result.message}</div>`
+            ).join('');
+        }
+        
+        // Mobile Navigation Functions (same as added to NCAA page)
+        window.toggleMobileMenu = function() {
+            logTest('📱 toggleMobileMenu called', 'info');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                const isActive = menu.classList.contains('active');
+                
+                if (isActive) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            } else {
+                logTest('❌ Mobile menu elements not found', 'error');
+            }
+        };
+        
+        function openMobileMenu() {
+            logTest('📱 Opening mobile menu', 'success');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                overlay.classList.add('active');
+                menu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        window.closeMobileMenu = function() {
+            logTest('📱 Closing mobile menu', 'success');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                overlay.classList.remove('active');
+                menu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        };
+        
+        window.showViewMobile = function(viewName) {
+            logTest(`📱 showViewMobile('${viewName}') called`, 'info');
+            
+            // Close mobile menu first
+            closeMobileMenu();
+            
+            // Show the view
+            showView(viewName);
+        };
+        
+        // Desktop Navigation
+        window.showView = function(viewName) {
+            logTest(`🖥️ showView('${viewName}') called`, 'info');
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('.view');
+            
+            // Update active nav link
+            navLinks.forEach(l => l.classList.remove('active'));
+            const activeLink = document.querySelector(`[data-view="${viewName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Show target view
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const targetElement = document.getElementById(viewName);
+            if (targetElement) {
+                targetElement.classList.add('active');
+                logTest(`✅ Switched to ${viewName} view`, 'success');
+                return true;
+            }
+            
+            logTest(`❌ View '${viewName}' not found`, 'error');
+            return false;
+        };
+        
+        // Initialize desktop navigation
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetView = link.getAttribute('data-view');
+                    showView(targetView);
+                });
+            });
+            
+            logTest(`✅ Initialized ${navLinks.length} navigation links`, 'success');
+        }
+        
+        // Test functions
+        function testRefresh() {
+            logTest('🔄 Refresh button clicked', 'info');
+        }
+        
+        function runAllTests() {
+            logTest('🚀 Starting comprehensive menu tests...', 'info');
+            
+            // Test 1: Function existence
+            const functions = ['toggleMobileMenu', 'closeMobileMenu', 'showViewMobile', 'showView'];
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    logTest(`✅ ${funcName} exists`, 'success');
+                } else {
+                    logTest(`❌ ${funcName} missing`, 'error');
+                }
+            });
+            
+            // Test 2: DOM elements
+            const elements = [
+                { id: 'mobileNavOverlay', name: 'Mobile Overlay' },
+                { id: 'mobileNavMenu', name: 'Mobile Menu' }
+            ];
+            
+            elements.forEach(element => {
+                const found = document.getElementById(element.id);
+                if (found) {
+                    logTest(`✅ ${element.name} found`, 'success');
+                } else {
+                    logTest(`❌ ${element.name} missing`, 'error');
+                }
+            });
+            
+            // Test 3: Navigation links
+            const navLinks = document.querySelectorAll('.nav-link');
+            logTest(`✅ Found ${navLinks.length} nav links`, 'success');
+            
+            // Test 4: Views
+            const views = document.querySelectorAll('.view');
+            logTest(`✅ Found ${views.length} views`, 'success');
+            
+            // Test 5: Mobile menu toggle
+            setTimeout(() => {
+                toggleMobileMenu();
+                setTimeout(() => {
+                    closeMobileMenu();
+                    logTest('✅ Mobile menu toggle test complete', 'success');
+                }, 1000);
+            }, 500);
+        }
+        
+        function toggleTestOverlay() {
+            const overlay = document.getElementById('testOverlay');
+            overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function clearTests() {
+            testResults = [];
+            updateTestDisplay();
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+        
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('mobileNavMenu');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (menu && toggle && 
+                !menu.contains(e.target) && 
+                !toggle.contains(e.target) && 
+                menu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            logTest('🏈 NCAA Menu Test Initialized', 'info');
+            initializeNavigation();
+            
+            // Auto-run tests after a short delay
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -835,6 +835,90 @@
                 loadNCAAData();
             }
         }
+        
+        // Mobile Navigation Functions for NCAA Page
+        window.toggleMobileMenu = function() {
+            console.log('📱 NCAA: Toggling mobile menu');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                const isActive = menu.classList.contains('active');
+                
+                if (isActive) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            } else {
+                console.warn('⚠️ NCAA: Mobile menu elements not found');
+            }
+        };
+        
+        function openMobileMenu() {
+            console.log('📱 NCAA: Opening mobile menu');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                overlay.classList.add('active');
+                menu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        window.closeMobileMenu = function() {
+            console.log('📱 NCAA: Closing mobile menu');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menu = document.getElementById('mobileNavMenu');
+            
+            if (overlay && menu) {
+                overlay.classList.remove('active');
+                menu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        };
+        
+        window.showViewMobile = function(viewName) {
+            console.log('📱 NCAA: Showing view from mobile:', viewName);
+            
+            // Close mobile menu first
+            closeMobileMenu();
+            
+            // Show the view using existing function
+            if (typeof window.showView === 'function') {
+                window.showView(viewName);
+            } else {
+                console.warn('⚠️ NCAA: showView function not available');
+            }
+        };
+        
+        // Enhanced navigation event listeners
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('mobileNavMenu');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (menu && toggle && 
+                !menu.contains(e.target) && 
+                !toggle.contains(e.target) && 
+                menu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on window resize (desktop)
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
     </script>
     
     <style>

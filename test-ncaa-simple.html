@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Data Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; }
+        .game-card { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .team-names { font-weight: bold; color: #007bff; }
+        .nfl-team { color: #dc3545; font-weight: bold; }
+        .college-team { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🏈 NCAA Data Validation Test</h1>
+    <div id="test-results"></div>
+    <div id="games-display"></div>
+
+    <!-- Error Handling -->
+    <script>
+        window.errorHandler = {
+            safeApiCall: async (primaryFn, fallbackFn, options) => {
+                try {
+                    return await primaryFn();
+                } catch (error) {
+                    console.log('Primary failed, using fallback:', error.message);
+                    return await fallbackFn();
+                }
+            },
+            logError: (msg, error, type, context) => {
+                console.log(`[${type}] ${msg}:`, error?.message || error);
+            }
+        };
+
+        window.dataValidator = {
+            validateGame: (game) => ({ isValid: true })
+        };
+    </script>
+
+    <!-- NCAA Data Service -->
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        async function runNCAATest() {
+            const resultsDiv = document.getElementById('test-results');
+            const gamesDiv = document.getElementById('games-display');
+            
+            try {
+                resultsDiv.innerHTML = '<div class="test-result warning">🔄 Testing NCAA Data Service...</div>';
+                
+                // Initialize NCAA Data Service
+                const ncaaService = new NCAADataService();
+                
+                // Test 1: Get today's games
+                resultsDiv.innerHTML += '<div class="test-result warning">📊 Getting today\'s NCAA games...</div>';
+                
+                const games = await ncaaService.getTodaysGames();
+                
+                resultsDiv.innerHTML += `<div class="test-result success">✅ Retrieved ${games.length} games</div>`;
+                
+                // Analyze team names
+                const allTeamNames = [];
+                games.forEach(game => {
+                    allTeamNames.push(game.teams.home.name);
+                    allTeamNames.push(game.teams.away.name);
+                });
+                
+                const uniqueTeams = [...new Set(allTeamNames)];
+                
+                const nflTeams = [];
+                const collegeTeams = [];
+                
+                uniqueTeams.forEach(team => {
+                    if (isNFLTeam(team)) {
+                        nflTeams.push(team);
+                    } else if (isCollegeTeam(team)) {
+                        collegeTeams.push(team);
+                    }
+                });
+                
+                // Display results
+                if (nflTeams.length > 0) {
+                    resultsDiv.innerHTML += `<div class="test-result error">❌ ERROR: Found ${nflTeams.length} NFL teams in NCAA data!</div>`;
+                    resultsDiv.innerHTML += `<div class="test-result error">NFL Teams: ${nflTeams.join(', ')}</div>`;
+                } else {
+                    resultsDiv.innerHTML += '<div class="test-result success">✅ No NFL teams found in NCAA data</div>';
+                }
+                
+                if (collegeTeams.length > 0) {
+                    resultsDiv.innerHTML += `<div class="test-result success">✅ Found ${collegeTeams.length} college teams</div>`;
+                } else {
+                    resultsDiv.innerHTML += '<div class="test-result error">❌ No college teams found!</div>';
+                }
+                
+                // Display games
+                gamesDiv.innerHTML = '<h2>📋 Games Found:</h2>';
+                games.slice(0, 10).forEach(game => {
+                    const homeTeamClass = isNFLTeam(game.teams.home.name) ? 'nfl-team' : 
+                                         isCollegeTeam(game.teams.home.name) ? 'college-team' : '';
+                    const awayTeamClass = isNFLTeam(game.teams.away.name) ? 'nfl-team' : 
+                                         isCollegeTeam(game.teams.away.name) ? 'college-team' : '';
+                    
+                    gamesDiv.innerHTML += `
+                        <div class="game-card">
+                            <div class="team-names">
+                                <span class="${awayTeamClass}">${game.teams.away.name}</span> @ 
+                                <span class="${homeTeamClass}">${game.teams.home.name}</span>
+                            </div>
+                            <div>Venue: ${game.venue}</div>
+                            <div>Status: ${game.status.displayClock}</div>
+                            <div>Live: ${game.isLive ? 'Yes' : 'No'}</div>
+                        </div>
+                    `;
+                });
+                
+                // Final summary
+                const isValid = nflTeams.length === 0 && collegeTeams.length > 0;
+                const summaryClass = isValid ? 'success' : 'error';
+                const summaryText = isValid ? '✅ NCAA DATA IS VALID' : '❌ NCAA DATA CONTAINS NFL TEAMS';
+                
+                resultsDiv.innerHTML += `<div class="test-result ${summaryClass}"><h3>${summaryText}</h3></div>`;
+                
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="test-result error">❌ Error: ${error.message}</div>`;
+                console.error('Test error:', error);
+            }
+        }
+        
+        function isNFLTeam(teamName) {
+            const nflTeams = [
+                'Chiefs', 'Patriots', 'Cowboys', 'Packers', 'Steelers', 'Giants', 
+                'Eagles', 'Ravens', 'Saints', 'Seahawks', 'Broncos', 'Colts',
+                'Titans', 'Jaguars', 'Texans', 'Browns', 'Bengals', 'Bills',
+                'Dolphins', 'Jets', 'Raiders', 'Chargers', 'Cardinals', 'Rams',
+                'Niners', '49ers', 'Bears', 'Lions', 'Vikings', 'Falcons',
+                'Panthers', 'Buccaneers', 'Commanders', 'Washington'
+            ];
+            
+            return nflTeams.some(nflTeam => teamName.includes(nflTeam));
+        }
+        
+        function isCollegeTeam(teamName) {
+            const collegeTeams = [
+                'Bulldogs', 'Tigers', 'Buckeyes', 'Wolverines', 'Crimson Tide',
+                'Longhorns', 'Trojans', 'Fighting Irish', 'Seminoles', 'Nittany Lions',
+                'Badgers', 'Ducks', 'Huskies', 'Volunteers', 'Gators', 'Razorbacks',
+                'Aggies', 'Wildcats', 'Spartans', 'Cornhuskers', 'Sooners', 'Jayhawks'
+            ];
+            
+            return collegeTeams.some(collegeTeam => teamName.includes(collegeTeam)) ||
+                   teamName.includes('University') || teamName.includes('State');
+        }
+        
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', runNCAATest);
+    </script>
+</body>
+</html>

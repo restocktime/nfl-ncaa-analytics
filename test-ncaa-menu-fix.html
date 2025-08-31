@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Menu Bar Fix Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .test-section { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .test-button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .function-test { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        h1, h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>🏈 NCAA Menu Bar Diagnostic Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 Interactive Tests</h2>
+        <button class="test-button" onclick="testDesktopNavigation()">Test Desktop Navigation</button>
+        <button class="test-button" onclick="testMobileNavigation()">Test Mobile Navigation</button>
+        <button class="test-button" onclick="testViewSwitching()">Test View Switching</button>
+        <button class="test-button" onclick="testAllFunctions()">Test All Functions</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 Mobile Menu Test</h2>
+        <button class="test-button" onclick="testToggleMobileMenu()">Toggle Mobile Menu</button>
+        <button class="test-button" onclick="testCloseMobileMenu()">Close Mobile Menu</button>
+        <button class="test-button" onclick="testShowViewMobile('live')">Show Live View (Mobile)</button>
+    </div>
+
+    <!-- Load the same scripts as NCAA page -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+    <script src="public/robust-integration.js"></script>
+    <script src="public/app.js"></script>
+
+    <script>
+        let testResults = [];
+        
+        function addTestResult(message, type = 'info') {
+            testResults.push({ message, type, timestamp: new Date().toLocaleTimeString() });
+            updateTestDisplay();
+        }
+        
+        function updateTestDisplay() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = testResults.map(result => 
+                `<div class="test-result ${result.type}">[${result.timestamp}] ${result.message}</div>`
+            ).join('');
+        }
+        
+        // Test 1: Check if functions exist
+        function checkFunctionExistence() {
+            addTestResult('🔍 Checking function existence...', 'info');
+            
+            const functions = [
+                'toggleMobileMenu',
+                'closeMobileMenu', 
+                'showViewMobile',
+                'showView'
+            ];
+            
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    addTestResult(`✅ ${funcName} exists and is a function`, 'success');
+                } else {
+                    addTestResult(`❌ ${funcName} is missing or not a function`, 'error');
+                }
+            });
+        }
+        
+        // Test 2: Check DOM elements
+        function checkDOMElements() {
+            addTestResult('🔍 Checking DOM elements...', 'info');
+            
+            const elements = [
+                { id: 'mobileNavOverlay', name: 'Mobile Nav Overlay' },
+                { id: 'mobileNavMenu', name: 'Mobile Nav Menu' },
+                { selector: '.nav-link', name: 'Navigation Links' },
+                { selector: '.mobile-menu-toggle', name: 'Mobile Menu Toggle' }
+            ];
+            
+            elements.forEach(element => {
+                let found;
+                if (element.id) {
+                    found = document.getElementById(element.id);
+                } else {
+                    found = document.querySelector(element.selector);
+                }
+                
+                if (found) {
+                    addTestResult(`✅ ${element.name} found in DOM`, 'success');
+                } else {
+                    addTestResult(`❌ ${element.name} not found in DOM`, 'error');
+                }
+            });
+        }
+        
+        // Test 3: Test desktop navigation
+        function testDesktopNavigation() {
+            addTestResult('🖥️ Testing desktop navigation...', 'info');
+            
+            try {
+                // Simulate clicking nav links
+                const navLinks = document.querySelectorAll('.nav-link');
+                if (navLinks.length > 0) {
+                    addTestResult(`✅ Found ${navLinks.length} navigation links`, 'success');
+                    
+                    // Test first nav link
+                    const firstLink = navLinks[0];
+                    const viewName = firstLink.getAttribute('data-view');
+                    
+                    if (viewName) {
+                        addTestResult(`🔗 Testing navigation to: ${viewName}`, 'info');
+                        
+                        // Test showView function
+                        if (typeof window.showView === 'function') {
+                            window.showView(viewName);
+                            addTestResult(`✅ showView('${viewName}') executed successfully`, 'success');
+                        } else {
+                            addTestResult(`❌ showView function not available`, 'error');
+                        }
+                    } else {
+                        addTestResult(`❌ Navigation link missing data-view attribute`, 'error');
+                    }
+                } else {
+                    addTestResult(`❌ No navigation links found`, 'error');
+                }
+            } catch (error) {
+                addTestResult(`❌ Desktop navigation test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test 4: Test mobile navigation
+        function testMobileNavigation() {
+            addTestResult('📱 Testing mobile navigation...', 'info');
+            
+            try {
+                if (typeof window.toggleMobileMenu === 'function') {
+                    window.toggleMobileMenu();
+                    addTestResult(`✅ toggleMobileMenu() executed`, 'success');
+                    
+                    // Check if menu is visible
+                    const menu = document.getElementById('mobileNavMenu');
+                    if (menu && menu.classList.contains('active')) {
+                        addTestResult(`✅ Mobile menu is now active`, 'success');
+                    } else {
+                        addTestResult(`⚠️ Mobile menu may not be visible (no active class)`, 'warning');
+                    }
+                } else {
+                    addTestResult(`❌ toggleMobileMenu function not available`, 'error');
+                }
+            } catch (error) {
+                addTestResult(`❌ Mobile navigation test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test 5: Test view switching
+        function testViewSwitching() {
+            addTestResult('🔄 Testing view switching...', 'info');
+            
+            const views = ['live', 'upcoming', 'predictions', 'rankings', 'betting', 'analytics'];
+            
+            views.forEach(viewName => {
+                try {
+                    if (typeof window.showView === 'function') {
+                        window.showView(viewName);
+                        addTestResult(`✅ Switched to ${viewName} view`, 'success');
+                    } else {
+                        addTestResult(`❌ showView function not available for ${viewName}`, 'error');
+                    }
+                } catch (error) {
+                    addTestResult(`❌ Failed to switch to ${viewName}: ${error.message}`, 'error');
+                }
+            });
+        }
+        
+        // Individual mobile function tests
+        function testToggleMobileMenu() {
+            try {
+                if (typeof window.toggleMobileMenu === 'function') {
+                    window.toggleMobileMenu();
+                    addTestResult(`✅ toggleMobileMenu() called successfully`, 'success');
+                } else {
+                    addTestResult(`❌ toggleMobileMenu function not found`, 'error');
+                }
+            } catch (error) {
+                addTestResult(`❌ toggleMobileMenu failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testCloseMobileMenu() {
+            try {
+                if (typeof window.closeMobileMenu === 'function') {
+                    window.closeMobileMenu();
+                    addTestResult(`✅ closeMobileMenu() called successfully`, 'success');
+                } else {
+                    addTestResult(`❌ closeMobileMenu function not found`, 'error');
+                }
+            } catch (error) {
+                addTestResult(`❌ closeMobileMenu failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testShowViewMobile(viewName) {
+            try {
+                if (typeof window.showViewMobile === 'function') {
+                    window.showViewMobile(viewName);
+                    addTestResult(`✅ showViewMobile('${viewName}') called successfully`, 'success');
+                } else {
+                    addTestResult(`❌ showViewMobile function not found`, 'error');
+                }
+            } catch (error) {
+                addTestResult(`❌ showViewMobile failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Run all tests
+        function testAllFunctions() {
+            testResults = []; // Clear previous results
+            addTestResult('🚀 Starting comprehensive menu bar test...', 'info');
+            
+            checkFunctionExistence();
+            checkDOMElements();
+            testDesktopNavigation();
+            testMobileNavigation();
+            testViewSwitching();
+            
+            addTestResult('✅ All tests completed!', 'success');
+        }
+        
+        // Auto-run basic tests on load
+        document.addEventListener('DOMContentLoaded', function() {
+            addTestResult('📋 NCAA Menu Bar Diagnostic Started', 'info');
+            checkFunctionExistence();
+            checkDOMElements();
+        });
+    </script>
+</body>
+</html>
