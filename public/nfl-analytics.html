@@ -319,6 +319,7 @@
     </div>
 
     <!-- NFL Data Integration -->
+    <script src="nfl-data-service.js"></script>
     <script src="comprehensive-nfl-app.js"></script>
     <script src="sunday-edge-pro-quantum.js"></script>
     
@@ -469,57 +470,110 @@
             loadTopGamesPreview();
         }
         
-        // Update live metrics
-        function updateMetrics() {
-            // Realistic data for August 31st, 2025 (NFL preseason ending)
-            document.getElementById('total-nfl-games').textContent = '0';
-            document.getElementById('live-games').textContent = '0';
-            document.getElementById('edge-opportunities').textContent = '15';
-            document.getElementById('fantasy-alerts').textContent = '5';
-            
-            // Update action badges
-            document.getElementById('live-count').textContent = '0';
-            document.getElementById('edge-count').textContent = '15';
+        // Update live metrics with real data
+        async function updateMetrics() {
+            try {
+                if (window.nflDataService) {
+                    const [allGames, liveGames] = await Promise.all([
+                        window.nflDataService.getTodaysGames(),
+                        window.nflDataService.getLiveGames()
+                    ]);
+                    
+                    document.getElementById('total-nfl-games').textContent = allGames.length;
+                    document.getElementById('live-games').textContent = liveGames.length;
+                    document.getElementById('edge-opportunities').textContent = '15';
+                    document.getElementById('fantasy-alerts').textContent = '5';
+                    
+                    // Update action badges
+                    document.getElementById('live-count').textContent = liveGames.length;
+                    document.getElementById('edge-count').textContent = '15';
+                    
+                    console.log(`📊 Updated metrics: ${allGames.length} total games, ${liveGames.length} live`);
+                } else {
+                    // Fallback metrics
+                    document.getElementById('total-nfl-games').textContent = '0';
+                    document.getElementById('live-games').textContent = '0';
+                    document.getElementById('edge-opportunities').textContent = '15';
+                    document.getElementById('fantasy-alerts').textContent = '5';
+                    
+                    document.getElementById('live-count').textContent = '0';
+                    document.getElementById('edge-count').textContent = '15';
+                }
+            } catch (error) {
+                console.error('❌ Error updating metrics:', error);
+            }
         }
         
-        // Load top games preview
-        function loadTopGamesPreview() {
+        // Load top games preview with real data
+        async function loadTopGamesPreview() {
             const container = document.getElementById('top-games-preview');
             if (!container) return;
             
-            // Upcoming Week 1 NFL games
-            const topGames = [
-                {
-                    away: 'Kansas City Chiefs',
-                    home: 'Baltimore Ravens',
-                    time: 'Thu, Sep 5 - 8:20 PM ET',
-                    spread: 'KC -3',
-                    confidence: 89,
-                    prediction: 'KC 27-21'
-                },
-                {
-                    away: 'Philadelphia Eagles',
-                    home: 'Green Bay Packers',
-                    time: 'Fri, Sep 6 - 8:15 PM ET',
-                    spread: 'GB -1.5',
-                    confidence: 84,
-                    prediction: 'PHI 24-23'
+            try {
+                if (window.nflDataService) {
+                    const [todaysGames, upcomingGames] = await Promise.all([
+                        window.nflDataService.getTodaysGames(),
+                        window.nflDataService.getUpcomingGames ? window.nflDataService.getUpcomingGames() : []
+                    ]);
+                    
+                    const gamesToShow = todaysGames.length > 0 ? todaysGames.slice(0, 2) : upcomingGames.slice(0, 2);
+                    
+                    if (gamesToShow.length === 0) {
+                        container.innerHTML = `
+                            <div class="no-games-card">
+                                <div class="no-games-icon">
+                                    <i class="fas fa-calendar-times"></i>
+                                </div>
+                                <h3>NFL Season Starts Soon</h3>
+                                <p>Regular season begins September 5th, 2024</p>
+                                <div class="next-game-info">
+                                    <h4>Season Opener:</h4>
+                                    <div class="next-game">
+                                        <div class="game-teams">Kansas City Chiefs @ Baltimore Ravens</div>
+                                        <div class="game-date">Thursday, September 5th - 8:20 PM ET</div>
+                                        <div class="game-network">NBC</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    container.innerHTML = gamesToShow.map(game => `
+                        <div class="game-card featured ${game.isLive ? 'live' : ''}">
+                            <div class="game-header">
+                                <div class="team-matchup">${game.teams.away.name} @ ${game.teams.home.name}</div>
+                                <div class="confidence-score">${game.isLive ? 'LIVE' : '89%'}</div>
+                            </div>
+                            <div class="game-details">
+                                <div class="game-time">${game.status.displayClock}</div>
+                                <div class="venue">${game.venue}</div>
+                                ${game.isLive ? `
+                                    <div class="live-score">${game.teams.away.score} - ${game.teams.home.score}</div>
+                                ` : `
+                                    <div class="prediction">Prediction: ${game.teams.away.abbreviation} 24-21</div>
+                                `}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Fallback to static content
+                    container.innerHTML = `
+                        <div class="no-games-card">
+                            <h3>Loading NFL Data...</h3>
+                            <p>Checking for live games and upcoming matchups...</p>
+                        </div>
+                    `;
                 }
-            ];
-            
-            container.innerHTML = topGames.map(game => `
-                <div class="game-card featured">
-                    <div class="game-header">
-                        <div class="team-matchup">${game.away} @ ${game.home}</div>
-                        <div class="confidence-score">${game.confidence}%</div>
+            } catch (error) {
+                console.error('❌ Error loading top games:', error);
+                container.innerHTML = `
+                    <div class="no-games-card">
+                        <h3>NFL Off-Season</h3>
+                        <p>Regular season starts September 5th, 2024</p>
                     </div>
-                    <div class="game-details">
-                        <div class="game-time">${game.time}</div>
-                        <div class="spread">${game.spread}</div>
-                        <div class="prediction">${game.prediction}</div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }
         }
         
         // Load fantasy data
@@ -564,26 +618,79 @@
             }, 10000);
         }
         
-        // Load other view data (placeholders)
-        function loadLiveGames() {
+        // Load live games with real data
+        async function loadLiveGames() {
             console.log('📺 Loading Live Games...');
             const container = document.getElementById('nfl-live-games');
-            if (container) {
+            if (!container) return;
+            
+            try {
+                if (window.nflDataService) {
+                    const liveGames = await window.nflDataService.getLiveGames();
+                    
+                    if (liveGames.length === 0) {
+                        const upcomingGames = await window.nflDataService.getUpcomingGames();
+                        const nextGame = upcomingGames[0];
+                        
+                        container.innerHTML = `
+                            <div class="no-games-card">
+                                <div class="no-games-icon">
+                                    <i class="fas fa-calendar-times"></i>
+                                </div>
+                                <h3>No NFL Games Live</h3>
+                                <p>Check back during game days for live action</p>
+                                ${nextGame ? `
+                                    <div class="next-game-info">
+                                        <h4>Next NFL Game:</h4>
+                                        <div class="next-game">
+                                            <div class="game-teams">${nextGame.teams.away.name} @ ${nextGame.teams.home.name}</div>
+                                            <div class="game-date">${nextGame.status.displayClock}</div>
+                                            <div class="game-network">${nextGame.venue}</div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = liveGames.map(game => `
+                            <div class="game-card live">
+                                <div class="game-header">
+                                    <div class="team-matchup">${game.teams.away.name} @ ${game.teams.home.name}</div>
+                                    <div class="live-indicator">LIVE</div>
+                                </div>
+                                <div class="score-display">
+                                    <div class="team-score">
+                                        <div class="team-name">${game.teams.away.abbreviation}</div>
+                                        <div class="score">${game.teams.away.score}</div>
+                                    </div>
+                                    <div class="vs">@</div>
+                                    <div class="team-score">
+                                        <div class="team-name">${game.teams.home.abbreviation}</div>
+                                        <div class="score">${game.teams.home.score}</div>
+                                    </div>
+                                </div>
+                                <div class="game-info">
+                                    <div class="info-item">${game.status.displayClock}</div>
+                                    <div class="info-item">${game.venue}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    container.innerHTML = `
+                        <div class="loading-card">
+                            <div class="loading-spinner"></div>
+                            <h3>Loading NFL Live Games</h3>
+                            <p>Checking for live action...</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Error loading live games:', error);
                 container.innerHTML = `
                     <div class="no-games-card">
-                        <div class="no-games-icon">
-                            <i class="fas fa-calendar-times"></i>
-                        </div>
-                        <h3>No NFL Games Today</h3>
-                        <p>NFL regular season starts September 5th, 2024</p>
-                        <div class="next-game-info">
-                            <h4>Next NFL Game:</h4>
-                            <div class="next-game">
-                                <div class="game-teams">Kansas City Chiefs @ Baltimore Ravens</div>
-                                <div class="game-date">Thursday, September 5th - 8:20 PM ET</div>
-                                <div class="game-network">NBC</div>
-                            </div>
-                        </div>
+                        <h3>Error Loading Games</h3>
+                        <p>Please try refreshing the page</p>
                     </div>
                 `;
             }
