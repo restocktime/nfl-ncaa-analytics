@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 DEBUG LIVE SITE</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .error { color: #ff6b6b; background: #2a1a1a; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .success { color: #51cf66; background: #1a2a1a; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .info { color: #74c0fc; background: #1a1a2a; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .btn { padding: 12px 24px; margin: 8px; background: #ff4444; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        h1 { color: #ff4444; text-align: center; }
+        .log { background: #2a2a2a; padding: 10px; border-radius: 5px; margin: 5px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 DEBUG LIVE SITE ISSUES</h1>
+        
+        <button class="btn" onclick="debugEverything()">🔍 DEBUG EVERYTHING</button>
+        <button class="btn" onclick="testDirectESPN()">📡 TEST ESPN DIRECT</button>
+        <button class="btn" onclick="testProxy()">🔧 TEST PROXY</button>
+        <button class="btn" onclick="testNCAAService()">🏈 TEST NCAA SERVICE</button>
+        
+        <div id="debug-output"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('debug-output');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            output.appendChild(div);
+            console.log(message);
+        }
+
+        async function debugEverything() {
+            log('🔥 STARTING COMPLETE DEBUG...', 'info');
+            
+            // Clear previous output
+            document.getElementById('debug-output').innerHTML = '';
+            
+            // Test 1: Check if scripts are loading
+            log('1️⃣ Checking script availability...', 'info');
+            
+            const scripts = [
+                'error-handler.js',
+                'cache-manager.js', 
+                'data-validator.js',
+                'loading-state-manager.js',
+                'ncaa-data-service.js'
+            ];
+            
+            for (const script of scripts) {
+                try {
+                    const response = await fetch(`/public/${script}`);
+                    if (response.ok) {
+                        log(`✅ ${script} - Available (${response.status})`, 'success');
+                    } else {
+                        log(`❌ ${script} - Failed (${response.status})`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ ${script} - Error: ${error.message}`, 'error');
+                }
+            }
+            
+            // Test 2: Check if NCAA service exists
+            log('2️⃣ Checking NCAA Data Service...', 'info');
+            
+            if (typeof NCAADataService !== 'undefined') {
+                log('✅ NCAADataService class is available', 'success');
+                
+                try {
+                    const service = new NCAADataService();
+                    log('✅ NCAA service instantiated successfully', 'success');
+                    
+                    // Test the service
+                    log('🔍 Testing getTodaysGames method...', 'info');
+                    const games = await service.getTodaysGames();
+                    log(`📊 Got ${games ? games.length : 0} games`, games && games.length > 0 ? 'success' : 'error');
+                    
+                    if (games && games.length > 0) {
+                        const firstGame = games[0];
+                        log(`🏈 First game: ${firstGame.name}`, 'info');
+                        log(`📍 Venue: ${firstGame.venue}`, 'info');
+                        log(`🔴 Is Live: ${firstGame.isLive}`, firstGame.isLive ? 'success' : 'info');
+                        
+                        if (firstGame.liveBettingOdds) {
+                            log('💰 Has betting odds', 'success');
+                        }
+                        
+                        if (firstGame.aiPrediction) {
+                            log('🧠 Has AI prediction', 'success');
+                        }
+                    }
+                    
+                } catch (error) {
+                    log(`❌ NCAA service error: ${error.message}`, 'error');
+                    console.error('NCAA Service Error:', error);
+                }
+            } else {
+                log('❌ NCAADataService class not found', 'error');
+            }
+            
+            // Test 3: Check proxy
+            await testProxy();
+            
+            // Test 4: Check ESPN direct
+            await testDirectESPN();
+        }
+
+        async function testDirectESPN() {
+            log('📡 Testing ESPN API directly...', 'info');
+            
+            try {
+                const espnUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard';
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
+                
+                log(`🔗 Proxy URL: ${proxyUrl}`, 'info');
+                
+                const response = await fetch(proxyUrl);
+                log(`📊 Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`📊 Response type: ${typeof data}`, 'info');
+                    log(`📊 Has events: ${!!(data && data.events)}`, 'info');
+                    
+                    if (data && data.events) {
+                        log(`📊 Events count: ${data.events.length}`, 'success');
+                        
+                        if (data.events.length > 0) {
+                            const event = data.events[0];
+                            log(`🏈 First event: ${event.name}`, 'info');
+                            log(`🔴 Is live: ${event.status?.type?.name === 'STATUS_IN_PROGRESS'}`, 'info');
+                        }
+                    }
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ ESPN Error: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ ESPN Test Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProxy() {
+            log('🔧 Testing proxy functionality...', 'info');
+            
+            try {
+                const testUrl = 'https://httpbin.org/json';
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(testUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                log(`🔧 Proxy test status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Proxy is working correctly', 'success');
+                } else {
+                    log('❌ Proxy is not working', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Proxy test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testNCAAService() {
+            log('🏈 Testing NCAA Service in isolation...', 'info');
+            
+            // Try to load the NCAA service script directly
+            try {
+                if (typeof NCAADataService === 'undefined') {
+                    log('⚠️ Loading NCAA Data Service script...', 'info');
+                    
+                    // Load required scripts in order
+                    const scriptsToLoad = [
+                        '/public/error-handler.js',
+                        '/public/cache-manager.js',
+                        '/public/data-validator.js', 
+                        '/public/loading-state-manager.js',
+                        '/public/ncaa-data-service.js'
+                    ];
+                    
+                    for (const scriptUrl of scriptsToLoad) {
+                        await loadScript(scriptUrl);
+                        log(`📜 Loaded: ${scriptUrl}`, 'success');
+                    }
+                }
+                
+                if (typeof NCAADataService !== 'undefined') {
+                    log('✅ NCAA Data Service is now available', 'success');
+                    
+                    const service = new NCAADataService();
+                    const games = await service.getTodaysGames();
+                    
+                    log(`🎯 Final result: ${games ? games.length : 0} games`, 'success');
+                    
+                    if (games && games.length > 0) {
+                        games.forEach((game, index) => {
+                            log(`🏈 Game ${index + 1}: ${game.name} ${game.isLive ? '🔴 LIVE' : ''}`, 'info');
+                        });
+                    }
+                } else {
+                    log('❌ Still cannot load NCAA Data Service', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ NCAA Service test error: ${error.message}`, 'error');
+            }
+        }
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        // Auto-run debug on page load
+        window.addEventListener('load', function() {
+            setTimeout(debugEverything, 1000);
+        });
+    </script>
+</body>
+</html>
