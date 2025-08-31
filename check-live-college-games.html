@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live College Football Games Check</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .game-card { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; background: #f9f9f9; }
+        .live-game { border-left: 4px solid #ff4444; background: #fff5f5; }
+        .score { font-size: 1.2em; font-weight: bold; color: #333; }
+        .status { color: #666; font-style: italic; }
+        .live-indicator { color: #ff4444; font-weight: bold; }
+        .loading { text-align: center; padding: 20px; }
+        .error { color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .success { color: #388e3c; background: #e8f5e9; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        h1, h2 { color: #333; }
+        .btn { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 Live College Football Games Check</h1>
+        <p>Current Time: <span id="current-time"></span></p>
+        
+        <div>
+            <button class="btn" onclick="checkLiveGames()">Check Live Games</button>
+            <button class="btn" onclick="checkAllGames()">Check All Games Today</button>
+            <button class="btn" onclick="checkESPNDirect()">Test ESPN API</button>
+        </div>
+        
+        <div id="status"></div>
+        <div id="games-container"></div>
+    </div>
+
+    <!-- Load NCAA Data Service -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleString();
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Initialize NCAA Data Service
+        let ncaaService;
+        try {
+            ncaaService = new NCAADataService();
+            addStatus('✅ NCAA Data Service initialized successfully', 'success');
+        } catch (error) {
+            addStatus(`❌ Failed to initialize NCAA Data Service: ${error.message}`, 'error');
+        }
+
+        function addStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            statusDiv.appendChild(div);
+        }
+
+        async function checkLiveGames() {
+            addStatus('🔍 Checking for live college football games...', 'info');
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA Data Service not initialized');
+                }
+
+                const liveGames = await ncaaService.getLiveGames();
+                displayGames(liveGames, 'Live Games');
+                
+                if (liveGames.length === 0) {
+                    addStatus('ℹ️ No live college football games found at this time', 'info');
+                } else {
+                    addStatus(`🔴 Found ${liveGames.length} live college football games`, 'success');
+                }
+                
+            } catch (error) {
+                addStatus(`❌ Error checking live games: ${error.message}`, 'error');
+                console.error('Live games error:', error);
+            }
+        }
+
+        async function checkAllGames() {
+            addStatus('📋 Checking all college football games today...', 'info');
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA Data Service not initialized');
+                }
+
+                const allGames = await ncaaService.getTodaysGames();
+                displayGames(allGames, 'All Games Today');
+                
+                const liveCount = allGames.filter(g => g.isLive).length;
+                const scheduledCount = allGames.filter(g => !g.isLive && !g.status?.completed).length;
+                const completedCount = allGames.filter(g => g.status?.completed).length;
+                
+                addStatus(`📊 Found ${allGames.length} total games: ${liveCount} live, ${scheduledCount} scheduled, ${completedCount} completed`, 'success');
+                
+            } catch (error) {
+                addStatus(`❌ Error checking all games: ${error.message}`, 'error');
+                console.error('All games error:', error);
+            }
+        }
+
+        async function checkESPNDirect() {
+            addStatus('📡 Testing ESPN API directly...', 'info');
+            
+            try {
+                const today = new Date();
+                const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+                const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${dateStr}`;
+                
+                // Try proxy first (production-safe)
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
+                
+                addStatus(`📡 Trying ESPN via proxy: ${proxyUrl}`, 'info');
+                
+                const response = await fetch(proxyUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data && data.events) {
+                        addStatus(`✅ ESPN API returned ${data.events.length} events`, 'success');
+                        
+                        // Parse and display ESPN data
+                        const games = data.events.map(event => ({
+                            id: event.id,
+                            name: event.name || event.shortName,
+                            date: new Date(event.date),
+                            status: event.status,
+                            teams: {
+                                home: {
+                                    name: event.competitions[0]?.competitors?.find(c => c.homeAway === 'home')?.team?.displayName || 'Home Team',
+                                    score: event.competitions[0]?.competitors?.find(c => c.homeAway === 'home')?.score || 0
+                                },
+                                away: {
+                                    name: event.competitions[0]?.competitors?.find(c => c.homeAway === 'away')?.team?.displayName || 'Away Team',
+                                    score: event.competitions[0]?.competitors?.find(c => c.homeAway === 'away')?.score || 0
+                                }
+                            },
+                            isLive: event.status?.type?.name === 'STATUS_IN_PROGRESS',
+                            venue: event.competitions[0]?.venue?.fullName || 'TBD'
+                        }));
+                        
+                        displayGames(games, 'ESPN API Results');
+                        
+                    } else {
+                        addStatus('⚠️ ESPN API returned no events', 'error');
+                    }
+                } else {
+                    addStatus(`❌ ESPN API failed: ${response.status} ${response.statusText}`, 'error');
+                }
+                
+            } catch (error) {
+                addStatus(`❌ ESPN API test failed: ${error.message}`, 'error');
+                console.error('ESPN API error:', error);
+            }
+        }
+
+        function displayGames(games, title) {
+            const container = document.getElementById('games-container');
+            
+            // Clear previous results
+            container.innerHTML = '';
+            
+            const titleEl = document.createElement('h2');
+            titleEl.textContent = `${title} (${games.length} games)`;
+            container.appendChild(titleEl);
+            
+            if (games.length === 0) {
+                const noGames = document.createElement('div');
+                noGames.className = 'game-card';
+                noGames.innerHTML = '<p>No games found for the current time period.</p>';
+                container.appendChild(noGames);
+                return;
+            }
+            
+            games.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = `game-card ${game.isLive ? 'live-game' : ''}`;
+                
+                const liveIndicator = game.isLive ? '<span class="live-indicator">🔴 LIVE</span>' : '';
+                const statusText = game.status?.displayClock || game.status?.type?.description || 'Scheduled';
+                
+                gameCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${game.name}</strong> ${liveIndicator}
+                            <div class="score">
+                                ${game.teams.away.name}: ${game.teams.away.score} - 
+                                ${game.teams.home.name}: ${game.teams.home.score}
+                            </div>
+                            <div class="status">Status: ${statusText}</div>
+                            <div style="font-size: 0.9em; color: #666;">
+                                Venue: ${game.venue}<br>
+                                Date: ${new Date(game.date).toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(gameCard);
+            });
+        }
+
+        // Auto-check on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                checkLiveGames();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

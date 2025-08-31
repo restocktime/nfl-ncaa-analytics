@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 LIVE NCAA with Odds & AI Picks</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .live-game { 
+            border: 2px solid #ff4444; 
+            margin: 20px 0; 
+            padding: 20px; 
+            border-radius: 8px; 
+            background: linear-gradient(135deg, #2a1a1a, #1a2a1a);
+        }
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .live-indicator { color: #ff4444; font-weight: bold; font-size: 1.2em; animation: pulse 1.5s infinite; }
+        .score { font-size: 1.5em; font-weight: bold; margin: 10px 0; }
+        .odds-section { background: #2a2a2a; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .ai-section { background: #1a2a3a; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .btn { padding: 12px 24px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        h1 { color: #ff4444; text-align: center; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 LIVE NCAA Football with Odds & AI Picks</h1>
+        
+        <button class="btn" onclick="testLiveNCAA()">🔴 GET LIVE GAMES NOW</button>
+        <button class="btn" onclick="testESPNDirect()">📡 TEST ESPN API</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <!-- Load NCAA Data Service -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        let ncaaService;
+        
+        // Initialize NCAA Service
+        try {
+            ncaaService = new NCAADataService();
+            console.log('✅ NCAA Data Service initialized');
+        } catch (error) {
+            console.error('❌ Failed to initialize NCAA service:', error);
+        }
+
+        async function testLiveNCAA() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px;">🔍 Loading LIVE NCAA games with odds and AI picks...</div>';
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA service not initialized');
+                }
+
+                console.log('🔥 Getting live NCAA games...');
+                const games = await ncaaService.getTodaysGames();
+                
+                console.log(`📊 Found ${games.length} games`);
+                
+                if (games.length === 0) {
+                    resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff6b6b;">No games found</div>';
+                    return;
+                }
+
+                // Display games
+                let html = '';
+                games.forEach(game => {
+                    const liveClass = game.isLive ? 'live-game' : '';
+                    const liveIndicator = game.isLive ? '<div class="live-indicator">🔴 LIVE NOW</div>' : '';
+                    
+                    html += `
+                        <div class="${liveClass}" style="border: 1px solid #444; margin: 15px 0; padding: 20px; border-radius: 8px; background: #2a2a2a;">
+                            <div class="game-header">
+                                <h3>${game.name}</h3>
+                                ${liveIndicator}
+                            </div>
+                            
+                            <div class="score">
+                                ${game.teams.away.name}: ${game.teams.away.score} - ${game.teams.home.name}: ${game.teams.home.score}
+                            </div>
+                            
+                            <div style="color: #ccc; margin: 10px 0;">
+                                Status: ${game.status.displayClock || game.status.type} • ${game.venue}
+                            </div>
+                            
+                            <!-- LIVE BETTING ODDS -->
+                            ${game.liveBettingOdds ? `
+                            <div class="odds-section">
+                                <h4>💰 ${game.liveBettingOdds.liveStatus} Betting Odds</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 10px 0;">
+                                    <div>
+                                        <strong>Spread</strong><br>
+                                        ${game.teams.home.abbreviation}: ${game.liveBettingOdds.spread.home}<br>
+                                        ${game.teams.away.abbreviation}: ${game.liveBettingOdds.spread.away}
+                                    </div>
+                                    <div>
+                                        <strong>Moneyline</strong><br>
+                                        ${game.teams.home.abbreviation}: ${game.liveBettingOdds.moneyline.home}<br>
+                                        ${game.teams.away.abbreviation}: ${game.liveBettingOdds.moneyline.away}
+                                    </div>
+                                    <div>
+                                        <strong>Total</strong><br>
+                                        ${game.liveBettingOdds.total.over}<br>
+                                        ${game.liveBettingOdds.total.under}
+                                        ${game.isLive ? `<br><span style="color: #ffd43b;">Current: ${game.liveBettingOdds.total.current}</span>` : ''}
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.9em; color: #aaa; margin-top: 10px;">
+                                    📱 ${game.liveBettingOdds.sportsbooks.join(' • ')} • Updated: ${game.liveBettingOdds.lastUpdated}
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- AI PREDICTION -->
+                            ${game.aiPrediction ? `
+                            <div class="ai-section">
+                                <h4>🧠 ${game.isLive ? 'LIVE ' : ''}AI Prediction (${game.aiPrediction.confidence}% confidence)</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 10px 0;">
+                                    <div>
+                                        <strong>Win Probability</strong><br>
+                                        ${game.teams.home.name}: ${game.aiPrediction.homeWinProbability}%<br>
+                                        ${game.teams.away.name}: ${game.aiPrediction.awayWinProbability}%
+                                    </div>
+                                    <div>
+                                        <strong>Predicted</strong><br>
+                                        Spread: ${game.aiPrediction.predictedSpread}<br>
+                                        Score: ${game.aiPrediction.predictedScore.away}-${game.aiPrediction.predictedScore.home}
+                                    </div>
+                                </div>
+                                
+                                <!-- LIVE INSIGHTS -->
+                                ${game.aiPrediction.liveInsights ? `
+                                <div style="background: rgba(255, 68, 68, 0.1); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                                    <strong>⚡ Live Insights:</strong>
+                                    <ul style="margin: 5px 0; padding-left: 20px;">
+                                        ${game.aiPrediction.liveInsights.map(insight => `<li>${insight}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                
+                                <div style="background: #ff4444; color: white; padding: 10px; border-radius: 5px; margin-top: 10px; font-weight: bold;">
+                                    💡 ${game.isLive ? 'LIVE ' : ''}Recommendation: ${game.aiPrediction.recommendation}
+                                </div>
+                                
+                                <div style="margin-top: 10px; font-style: italic;">
+                                    📊 Analysis: ${game.aiPrediction.analysis}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultsDiv.innerHTML = `<div style="color: #ff6b6b; padding: 20px;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testESPNDirect() {
+            console.log('📡 Testing ESPN API directly...');
+            
+            try {
+                const espnUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard';
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                console.log('✅ ESPN API Response:', data);
+                
+                if (data && data.events) {
+                    console.log(`📊 ESPN returned ${data.events.length} events`);
+                    
+                    data.events.forEach(event => {
+                        const competition = event.competitions && event.competitions[0];
+                        if (competition) {
+                            const homeTeam = competition.competitors?.find(c => c.homeAway === 'home');
+                            const awayTeam = competition.competitors?.find(c => c.homeAway === 'away');
+                            const isLive = event.status?.type?.name === 'STATUS_IN_PROGRESS';
+                            
+                            console.log(`${isLive ? '🔴 LIVE: ' : '📅 '}${awayTeam?.team?.displayName} vs ${homeTeam?.team?.displayName}`);
+                            console.log(`   Score: ${awayTeam?.score || 0} - ${homeTeam?.score || 0}`);
+                            console.log(`   Status: ${event.status?.type?.description} ${event.status?.displayClock || ''}`);
+                        }
+                    });
+                }
+                
+            } catch (error) {
+                console.error('❌ ESPN API Error:', error);
+            }
+        }
+
+        // Auto-load on page ready
+        window.addEventListener('load', function() {
+            setTimeout(testLiveNCAA, 1000);
+        });
+    </script>
+</body>
+</html>

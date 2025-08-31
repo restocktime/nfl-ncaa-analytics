@@ -746,10 +746,65 @@
                             </div>
                         </div>
                         
-                        <!-- AI Prediction Section -->
-                        <div class="ai-prediction-section">
+                        <!-- LIVE BETTING ODDS Section -->
+                        ${game.liveBettingOdds ? `
+                        <div class="live-betting-odds-section ${game.isLive ? 'live-active' : ''}">
                             <div class="section-title">
-                                <i class="fas fa-brain"></i> AI Prediction
+                                <i class="fas fa-dollar-sign"></i> ${game.liveBettingOdds.liveStatus} Betting Odds
+                                ${game.isLive ? '<span class="live-pulse">🔴 LIVE</span>' : ''}
+                            </div>
+                            <div class="odds-container">
+                                <div class="odds-row">
+                                    <div class="odds-type">Spread</div>
+                                    <div class="odds-values">
+                                        <div class="team-odd">
+                                            <span class="team">${game.teams.home.abbreviation}</span>
+                                            <span class="line">${game.liveBettingOdds.spread.home}</span>
+                                        </div>
+                                        <div class="team-odd">
+                                            <span class="team">${game.teams.away.abbreviation}</span>
+                                            <span class="line">${game.liveBettingOdds.spread.away}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="odds-row">
+                                    <div class="odds-type">Moneyline</div>
+                                    <div class="odds-values">
+                                        <div class="team-odd">
+                                            <span class="team">${game.teams.home.abbreviation}</span>
+                                            <span class="line">${game.liveBettingOdds.moneyline.home}</span>
+                                        </div>
+                                        <div class="team-odd">
+                                            <span class="team">${game.teams.away.abbreviation}</span>
+                                            <span class="line">${game.liveBettingOdds.moneyline.away}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="odds-row">
+                                    <div class="odds-type">Total</div>
+                                    <div class="odds-values">
+                                        <div class="total-odd">
+                                            <span class="line">${game.liveBettingOdds.total.over}</span>
+                                        </div>
+                                        <div class="total-odd">
+                                            <span class="line">${game.liveBettingOdds.total.under}</span>
+                                        </div>
+                                        ${game.isLive ? `<div class="current-score">Current: ${game.liveBettingOdds.total.current}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="odds-footer">
+                                <div class="sportsbooks">📱 ${game.liveBettingOdds.sportsbooks.slice(0,2).join(' • ')}</div>
+                                <div class="last-updated">Updated: ${game.liveBettingOdds.lastUpdated}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- AI Prediction Section -->
+                        <div class="ai-prediction-section ${game.isLive ? 'live-prediction' : ''}">
+                            <div class="section-title">
+                                <i class="fas fa-brain"></i> ${game.isLive ? 'LIVE ' : ''}AI Prediction
+                                ${game.aiPrediction.isLiveAnalysis ? '<span class="live-badge">LIVE ANALYSIS</span>' : ''}
                             </div>
                             <div class="prediction-details">
                                 <div class="predicted-winner">
@@ -768,8 +823,18 @@
                                         <span>${game.aiPrediction.awayWinProbability}%</span>
                                     </div>
                                 </div>
-                                <div class="betting-rec">
-                                    <strong>Recommendation:</strong> ${game.aiPrediction.recommendation}
+                                <!-- LIVE INSIGHTS -->
+                                ${game.aiPrediction.liveInsights ? `
+                                <div class="live-insights">
+                                    <div class="insights-title">⚡ Live Game Insights</div>
+                                    <ul class="insights-list">
+                                        ${game.aiPrediction.liveInsights.map(insight => `<li>${insight}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="betting-rec ${game.isLive ? 'live-rec' : ''}">
+                                    <strong>${game.isLive ? 'LIVE ' : ''}Recommendation:</strong> ${game.aiPrediction.recommendation}
                                 </div>
                             </div>
                         </div>
@@ -1053,7 +1118,158 @@
 
         /* ML Algorithm Prediction Styles for NCAA */
         
-        /* AI Prediction Section */
+        /* LIVE BETTING ODDS STYLES */
+        .live-betting-odds-section {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, #1a2332, #2a3441);
+            border-radius: 8px;
+            border: 1px solid #3a4451;
+        }
+        
+        .ai-prediction-section.live-prediction {
+            background: linear-gradient(135deg, #2a1a32, #3a2441);
+            border: 2px solid #9c88ff;
+        }
+        
+        .live-badge {
+            background: #ff4444;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+        
+        .live-insights {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 4px solid #ff4444;
+            border-radius: 4px;
+        }
+        
+        .insights-title {
+            font-weight: bold;
+            color: #ff4444;
+            margin-bottom: 0.5rem;
+        }
+        
+        .insights-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .insights-list li {
+            padding: 0.3rem 0;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 68, 68, 0.2);
+        }
+        
+        .insights-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .betting-rec.live-rec {
+            background: linear-gradient(135deg, #ff4444, #cc3333);
+            color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .live-betting-odds-section.live-active {
+            border: 2px solid #ff4444;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+            animation: livePulse 2s infinite;
+        }
+        
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 68, 68, 0.5); }
+        }
+        
+        .live-pulse {
+            color: #ff4444;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .odds-container {
+            margin: 1rem 0;
+        }
+        
+        .odds-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #3a4451;
+        }
+        
+        .odds-row:last-child {
+            border-bottom: none;
+        }
+        
+        .odds-type {
+            font-weight: bold;
+            color: #74c0fc;
+            min-width: 80px;
+        }
+        
+        .odds-values {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .team-odd, .total-odd {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(116, 192, 252, 0.1);
+            border-radius: 4px;
+            min-width: 60px;
+        }
+        
+        .team-odd .team {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+        
+        .team-odd .line, .total-odd .line {
+            font-weight: bold;
+            color: #fff;
+            font-size: 1.1em;
+        }
+        
+        .current-score {
+            font-size: 0.9em;
+            color: #ffd43b;
+            font-weight: bold;
+        }
+        
+        .odds-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #3a4451;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        .sportsbooks {
+            color: #74c0fc;
+        }
+        
+        /* ENHANCED AI PREDICTION STYLES */
         .ai-prediction-section {
             margin: 1rem 0;
             padding: 1rem;
