@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Odds API Key</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-result {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #00ff88;
+        }
+        .error {
+            border-left-color: #ff4444;
+        }
+        .loading {
+            border-left-color: #ffaa00;
+        }
+        pre {
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00cc66;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Test Odds API Key</h1>
+    <p>Testing your API key: <code>22e59e4eccd8562ad4b697aeeaccb0fb</code></p>
+    
+    <button onclick="testOddsAPI()">Test API Key</button>
+    
+    <div id="results"></div>
+
+    <script>
+        async function testOddsAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="test-result loading">🔄 Testing API key...</div>';
+            
+            const apiKey = '22e59e4eccd8562ad4b697aeeaccb0fb';
+            const testUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals`;
+            
+            try {
+                console.log('🔍 Testing URL:', testUrl);
+                
+                const response = await fetch(testUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="test-result">
+                            ✅ <strong>API Key Working!</strong><br>
+                            Status: ${response.status}<br>
+                            Games Found: ${data.length || 0}<br>
+                            Remaining Requests: ${response.headers.get('x-requests-remaining') || 'Unknown'}
+                        </div>
+                        <div class="test-result">
+                            <strong>Sample Response:</strong>
+                            <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    const errorText = await response.text();
+                    resultsDiv.innerHTML = `
+                        <div class="test-result error">
+                            ❌ <strong>API Error</strong><br>
+                            Status: ${response.status}<br>
+                            Error: ${errorText}
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="test-result error">
+                        ❌ <strong>Network Error</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // Test CORS and basic connectivity
+        async function testCORS() {
+            try {
+                const response = await fetch('https://api.the-odds-api.com/v4/sports', {
+                    method: 'HEAD'
+                });
+                console.log('✅ CORS test passed');
+            } catch (error) {
+                console.log('❌ CORS test failed:', error.message);
+            }
+        }
+        
+        // Run CORS test on load
+        testCORS();
+    </script>
+</body>
+</html>

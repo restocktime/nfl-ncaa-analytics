@@ -264,8 +264,8 @@ class NCAADataService {
                 liveSpread = 0;
             }
         } else {
-            // Pre-game odds
-            const teamStrengthDiff = this.calculateTeamStrength(game.teams.home) - this.calculateTeamStrength(game.teams.away);
+            // Pre-game odds - use college team strength method
+            const teamStrengthDiff = this.calculateCollegeTeamStrength(game.teams.home) - this.calculateCollegeTeamStrength(game.teams.away);
             liveSpread = teamStrengthDiff / 10;
             homeMoneyline = this.spreadToMoneyline(-liveSpread);
             awayMoneyline = this.spreadToMoneyline(liveSpread);
@@ -546,7 +546,7 @@ class NCAADataService {
             // ALWAYS use HTTPS and proxy for production compatibility
             const today = new Date();
             const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
-            const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${dateStr}`;
+            const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${dateStr}&seasontype=2&year=2025`;
             
             // ALWAYS use proxy to avoid HTTPS/Mixed Content issues
             const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
@@ -2083,7 +2083,7 @@ class NCAADataService {
             // Fallback: try College Football Data API
             try {
                 console.log('📡 Trying College Football Data API for betting lines...');
-                const cfbUrl = `${this.baseUrls.collegeFB}/lines?year=2024&seasonType=regular&week=${parseInt(this.currentWeek)}`;
+                const cfbUrl = `${this.baseUrls.collegeFB}/lines?year=2025&seasonType=regular&week=${parseInt(this.currentWeek)}`;
                 const cfbResponse = await fetch(cfbUrl);
                 
                 if (cfbResponse.ok) {
@@ -2159,7 +2159,7 @@ class NCAADataService {
                 venue: competition.venue?.fullName || 'TBD',
                 isLive: competition.status.type.name === 'STATUS_IN_PROGRESS',
                 week: event.week?.number || 1,
-                season: event.season?.year || 2024
+                season: event.season?.year || 2025
             };
         });
     }
@@ -2956,9 +2956,16 @@ class NCAADataService {
      * Attempt to fetch real college football betting lines from multiple APIs
      */
     async fetchRealCollegeBettingLines(game) {
+        // Skip real API calls if no valid key available
+        const apiKey = this.getOddsApiKey();
+        if (!apiKey || apiKey === 'demo_key_placeholder') {
+            console.log('💰 Skipping real betting API (no valid key), using generated odds');
+            return null; // Will trigger fallback to generated odds
+        }
+        
         const attempts = [
             // The Odds API for college football
-            `${this.baseUrls.oddsApi}/odds?apiKey=${this.getOddsApiKey()}&regions=us&markets=h2h,spreads,totals`,
+            `${this.baseUrls.oddsApi}/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals`,
             // ESPN College Football Odds API
             `${this.baseUrls.espnOdds}/${game.id}/competitions/${game.id}/odds`
         ];
@@ -3164,7 +3171,8 @@ class NCAADataService {
      * Get API key for odds services
      */
     getOddsApiKey() {
-        return 'demo_key_placeholder';
+        // Use real API key for The Odds API
+        return '22e59e4eccd8562ad4b697aeeaccb0fb';
     }
 
     /**

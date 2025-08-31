@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Analytics - Real API Test</title>
+    <link rel="stylesheet" href="public/styles.css">
+    <style>
+        .test-status {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #00ff88;
+        }
+        .error { border-left-color: #ff4444; }
+        .loading { border-left-color: #ffaa00; }
+        .success { border-left-color: #00ff88; }
+        
+        .api-test-section {
+            background: #1a1a1a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        .test-button {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #00cc66;
+        }
+        
+        pre {
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏈 NCAA Analytics - Real API Test</h1>
+            <p>Testing NCAA system with real Odds API integration</p>
+        </header>
+
+        <div class="api-test-section">
+            <h2>🔧 API Tests</h2>
+            <button class="test-button" onclick="testOddsAPI()">Test Odds API Key</button>
+            <button class="test-button" onclick="testNCAAService()">Test NCAA Service</button>
+            <button class="test-button" onclick="testBettingLines()">Test Betting Lines</button>
+            <button class="test-button" onclick="runFullTest()">Run Full Test</button>
+            
+            <div id="test-results"></div>
+        </div>
+
+        <div class="dashboard">
+            <div class="section">
+                <h2>📊 Live Games</h2>
+                <div id="live-games">Loading...</div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 AI Predictions</h2>
+                <div id="ai-predictions">Loading...</div>
+            </div>
+
+            <div class="section">
+                <h2>💰 Betting Lines</h2>
+                <div id="betting-lines">Loading...</div>
+            </div>
+
+            <div class="section">
+                <h2>🤖 ML Algorithms</h2>
+                <div id="ml-algorithms">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="public/ncaa-data-service.js"></script>
+    <script>
+        let ncaaService;
+        
+        async function initializeService() {
+            try {
+                ncaaService = new NCAADataService();
+                console.log('✅ NCAA Service initialized');
+                return true;
+            } catch (error) {
+                console.error('❌ Failed to initialize NCAA Service:', error);
+                return false;
+            }
+        }
+        
+        async function testOddsAPI() {
+            const resultsDiv = document.getElementById('test-results');
+            addTestResult('🔄 Testing Odds API key...', 'loading');
+            
+            const apiKey = '22e59e4eccd8562ad4b697aeeaccb0fb';
+            const testUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals`;
+            
+            try {
+                const response = await fetch(testUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addTestResult(`✅ Odds API Working! Found ${data.length} games. Remaining requests: ${response.headers.get('x-requests-remaining') || 'Unknown'}`, 'success');
+                    
+                    if (data.length > 0) {
+                        addTestResult(`Sample game: ${data[0].home_team} vs ${data[0].away_team}`, 'success');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    addTestResult(`❌ Odds API Error: ${response.status} - ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                addTestResult(`❌ Odds API Network Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testNCAAService() {
+            addTestResult('🔄 Testing NCAA Service...', 'loading');
+            
+            try {
+                if (!ncaaService) {
+                    await initializeService();
+                }
+                
+                // Test basic functionality
+                const games = await ncaaService.getTodaysGames();
+                addTestResult(`✅ NCAA Service: Found ${games.length} games`, 'success');
+                
+                if (games.length > 0) {
+                    const game = games[0];
+                    addTestResult(`Sample game: ${game.name} - Status: ${game.status?.type || 'Unknown'}`, 'success');
+                    
+                    // Test AI prediction
+                    if (game.aiPrediction) {
+                        addTestResult(`✅ AI Prediction: ${game.aiPrediction.homeWinProbability}% confidence`, 'success');
+                    }
+                }
+                
+            } catch (error) {
+                addTestResult(`❌ NCAA Service Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testBettingLines() {
+            addTestResult('🔄 Testing Betting Lines...', 'loading');
+            
+            try {
+                if (!ncaaService) {
+                    await initializeService();
+                }
+                
+                const games = await ncaaService.getTodaysGames();
+                
+                if (games.length > 0) {
+                    const game = games[0];
+                    
+                    // Test betting lines generation
+                    const bettingLines = await ncaaService.getBettingLinesForGame(game);
+                    
+                    if (bettingLines) {
+                        addTestResult(`✅ Betting Lines: Spread ${bettingLines.spread?.home || 'N/A'}, ML ${bettingLines.moneyline?.home || 'N/A'}`, 'success');
+                    } else {
+                        addTestResult('⚠️ No betting lines generated', 'error');
+                    }
+                } else {
+                    addTestResult('⚠️ No games available for betting lines test', 'error');
+                }
+                
+            } catch (error) {
+                addTestResult(`❌ Betting Lines Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function runFullTest() {
+            addTestResult('🚀 Running Full System Test...', 'loading');
+            
+            await testOddsAPI();
+            await testNCAAService();
+            await testBettingLines();
+            
+            // Load the actual page data
+            await loadNCAAData();
+            
+            addTestResult('✅ Full test completed!', 'success');
+        }
+        
+        function addTestResult(message, type = 'success') {
+            const resultsDiv = document.getElementById('test-results');
+            const resultElement = document.createElement('div');
+            resultElement.className = `test-status ${type}`;
+            resultElement.innerHTML = message;
+            resultsDiv.appendChild(resultElement);
+            
+            // Auto-scroll to bottom
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        async function loadNCAAData() {
+            try {
+                if (!ncaaService) {
+                    await initializeService();
+                }
+                
+                // Load games
+                const games = await ncaaService.getTodaysGames();
+                const liveGames = await ncaaService.getLiveGames();
+                
+                // Display live games
+                const liveGamesDiv = document.getElementById('live-games');
+                if (liveGames.length > 0) {
+                    liveGamesDiv.innerHTML = liveGames.map(game => `
+                        <div class="game-card live">
+                            <h3>${game.name}</h3>
+                            <div class="score">
+                                ${game.teams.away.name}: ${game.teams.away.score || 0} - 
+                                ${game.teams.home.name}: ${game.teams.home.score || 0}
+                            </div>
+                            <div class="status">${game.status?.displayClock || 'Live'}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    liveGamesDiv.innerHTML = '<p>No live games currently</p>';
+                }
+                
+                // Display AI predictions
+                const aiPredictionsDiv = document.getElementById('ai-predictions');
+                if (games.length > 0 && games[0].aiPrediction) {
+                    const prediction = games[0].aiPrediction;
+                    aiPredictionsDiv.innerHTML = `
+                        <div class="prediction-card">
+                            <h4>${games[0].name}</h4>
+                            <div class="confidence">Confidence: ${prediction.confidence}%</div>
+                            <div class="recommendation">${prediction.recommendation}</div>
+                        </div>
+                    `;
+                } else {
+                    aiPredictionsDiv.innerHTML = '<p>No AI predictions available</p>';
+                }
+                
+                // Display betting lines
+                const bettingLinesDiv = document.getElementById('betting-lines');
+                if (games.length > 0 && games[0].liveBettingOdds) {
+                    const odds = games[0].liveBettingOdds;
+                    bettingLinesDiv.innerHTML = `
+                        <div class="betting-card">
+                            <h4>${games[0].name}</h4>
+                            <div class="spread">Spread: ${odds.spread?.home || 'N/A'} / ${odds.spread?.away || 'N/A'}</div>
+                            <div class="moneyline">ML: ${odds.moneyline?.home || 'N/A'} / ${odds.moneyline?.away || 'N/A'}</div>
+                            <div class="total">Total: ${odds.total?.over || 'N/A'} / ${odds.total?.under || 'N/A'}</div>
+                        </div>
+                    `;
+                } else {
+                    bettingLinesDiv.innerHTML = '<p>No betting lines available</p>';
+                }
+                
+                // Display ML algorithms
+                const mlAlgorithmsDiv = document.getElementById('ml-algorithms');
+                if (games.length > 0 && games[0].mlAlgorithms) {
+                    const ml = games[0].mlAlgorithms;
+                    mlAlgorithmsDiv.innerHTML = `
+                        <div class="ml-card">
+                            <h4>Algorithm Predictions</h4>
+                            <div class="algorithm">Neural Network: ${ml.neuralNetwork?.prediction || 'N/A'} (${ml.neuralNetwork?.confidence || 0}%)</div>
+                            <div class="algorithm">XGBoost: ${ml.xgboost?.prediction || 'N/A'} (${ml.xgboost?.confidence || 0}%)</div>
+                            <div class="algorithm">Ensemble: ${ml.ensemble?.prediction || 'N/A'} (${ml.ensemble?.confidence || 0}%)</div>
+                            <div class="consensus">Consensus: ${ml.consensus?.prediction || 'N/A'}</div>
+                        </div>
+                    `;
+                } else {
+                    mlAlgorithmsDiv.innerHTML = '<p>No ML algorithm data available</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error loading NCAA data:', error);
+                addTestResult(`❌ Data Loading Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', async () => {
+            await initializeService();
+            addTestResult('🏈 NCAA Analytics Test Page Loaded', 'success');
+        });
+    </script>
+</body>
+</html>
