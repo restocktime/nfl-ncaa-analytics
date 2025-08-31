@@ -471,15 +471,15 @@
         
         // Update live metrics
         function updateMetrics() {
-            // Mock data for now - will be replaced with real API calls
-            document.getElementById('total-nfl-games').textContent = '16';
-            document.getElementById('live-games').textContent = '3';
-            document.getElementById('edge-opportunities').textContent = '12';
-            document.getElementById('fantasy-alerts').textContent = '8';
+            // Realistic data for August 31st, 2025 (NFL preseason ending)
+            document.getElementById('total-nfl-games').textContent = '0';
+            document.getElementById('live-games').textContent = '0';
+            document.getElementById('edge-opportunities').textContent = '15';
+            document.getElementById('fantasy-alerts').textContent = '5';
             
             // Update action badges
-            document.getElementById('live-count').textContent = '3';
-            document.getElementById('edge-count').textContent = '12';
+            document.getElementById('live-count').textContent = '0';
+            document.getElementById('edge-count').textContent = '15';
         }
         
         // Load top games preview
@@ -487,23 +487,23 @@
             const container = document.getElementById('top-games-preview');
             if (!container) return;
             
-            // Mock top games data
+            // Upcoming Week 1 NFL games
             const topGames = [
                 {
                     away: 'Kansas City Chiefs',
-                    home: 'Buffalo Bills',
-                    time: '8:20 PM ET',
-                    spread: 'KC -2.5',
-                    confidence: 87,
-                    prediction: 'KC 28-24'
+                    home: 'Baltimore Ravens',
+                    time: 'Thu, Sep 5 - 8:20 PM ET',
+                    spread: 'KC -3',
+                    confidence: 89,
+                    prediction: 'KC 27-21'
                 },
                 {
-                    away: 'Dallas Cowboys',
-                    home: 'Philadelphia Eagles',
-                    time: '4:25 PM ET',
-                    spread: 'PHI -3',
-                    confidence: 82,
-                    prediction: 'PHI 31-21'
+                    away: 'Philadelphia Eagles',
+                    home: 'Green Bay Packers',
+                    time: 'Fri, Sep 6 - 8:15 PM ET',
+                    spread: 'GB -1.5',
+                    confidence: 84,
+                    prediction: 'PHI 24-23'
                 }
             ];
             
@@ -570,24 +570,19 @@
             const container = document.getElementById('nfl-live-games');
             if (container) {
                 container.innerHTML = `
-                    <div class="game-card live">
-                        <div class="game-header">
-                            <div class="team-matchup">Kansas City Chiefs @ Buffalo Bills</div>
-                            <div class="live-indicator">LIVE</div>
+                    <div class="no-games-card">
+                        <div class="no-games-icon">
+                            <i class="fas fa-calendar-times"></i>
                         </div>
-                        <div class="score-display">
-                            <div class="team-score">
-                                <div class="team-name">KC</div>
-                                <div class="score">21</div>
+                        <h3>No NFL Games Today</h3>
+                        <p>NFL regular season starts September 5th, 2024</p>
+                        <div class="next-game-info">
+                            <h4>Next NFL Game:</h4>
+                            <div class="next-game">
+                                <div class="game-teams">Kansas City Chiefs @ Baltimore Ravens</div>
+                                <div class="game-date">Thursday, September 5th - 8:20 PM ET</div>
+                                <div class="game-network">NBC</div>
                             </div>
-                            <div class="vs">@</div>
-                            <div class="team-score">
-                                <div class="team-name">BUF</div>
-                                <div class="score">17</div>
-                            </div>
-                        </div>
-                        <div class="game-info">
-                            <div class="info-item">2nd Quarter - 8:45</div>
                         </div>
                     </div>
                 `;
@@ -599,14 +594,37 @@
             const container = document.getElementById('nfl-upcoming-games');
             if (container) {
                 container.innerHTML = `
-                    <div class="game-card">
+                    <div class="game-card upcoming">
                         <div class="game-header">
-                            <div class="team-matchup">Dallas Cowboys @ Philadelphia Eagles</div>
-                            <div class="game-time">4:25 PM ET</div>
+                            <div class="team-matchup">Kansas City Chiefs @ Baltimore Ravens</div>
+                            <div class="game-time">Thu, Sep 5 - 8:20 PM ET</div>
                         </div>
                         <div class="game-details">
-                            <div class="spread">PHI -3</div>
+                            <div class="spread">KC -3</div>
                             <div class="over-under">O/U 47.5</div>
+                            <div class="network">NBC</div>
+                        </div>
+                    </div>
+                    <div class="game-card upcoming">
+                        <div class="game-header">
+                            <div class="team-matchup">Philadelphia Eagles @ Green Bay Packers</div>
+                            <div class="game-time">Fri, Sep 6 - 8:15 PM ET</div>
+                        </div>
+                        <div class="game-details">
+                            <div class="spread">GB -1.5</div>
+                            <div class="over-under">O/U 48.5</div>
+                            <div class="network">Amazon Prime</div>
+                        </div>
+                    </div>
+                    <div class="game-card upcoming">
+                        <div class="game-header">
+                            <div class="team-matchup">Buffalo Bills @ Los Angeles Rams</div>
+                            <div class="game-time">Sun, Sep 8 - 1:00 PM ET</div>
+                        </div>
+                        <div class="game-details">
+                            <div class="spread">BUF -2.5</div>
+                            <div class="over-under">O/U 49</div>
+                            <div class="network">CBS</div>
                         </div>
                     </div>
                 `;
@@ -1040,8 +1058,222 @@
             background-clip: text;
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* No Games Card */
+        .no-games-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--quantum-border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .no-games-icon {
+            font-size: 4rem;
+            color: var(--quantum-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .no-games-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--quantum-light);
+        }
+        
+        .no-games-card p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+        }
+        
+        .next-game-info {
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .next-game-info h4 {
+            color: var(--quantum-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .next-game {
+            text-align: left;
+        }
+        
+        .game-teams {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .game-date {
+            color: var(--quantum-gold);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .game-network {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Enhanced Game Cards */
+        .game-card.upcoming {
+            border-left: 4px solid var(--quantum-secondary);
+        }
+        
+        .network {
+            background: var(--quantum-secondary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Mobile-First Responsive Design */
+        @media (max-width: 480px) {
+            .selection-container {
+                padding: 1rem;
+            }
+            
+            .brand-title {
+                font-size: 2rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 1rem;
+            }
+            
+            .sport-selection {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .sport-card {
+                min-width: auto;
+                padding: 1.5rem 1rem;
+            }
+            
+            .sport-icon {
+                font-size: 2.5rem;
+            }
+            
+            .sport-title {
+                font-size: 1.5rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .nav-actions {
+                justify-content: center;
+            }
+            
+            .app-container {
+                padding: 1rem;
+            }
+            
+            .view-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .view-header p {
+                font-size: 0.9rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .metric-card {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .action-card {
+                padding: 1rem;
+            }
+            
+            .action-card i {
+                font-size: 1.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .game-card {
+                padding: 1rem;
+            }
+            
+            .team-matchup {
+                font-size: 0.9rem;
+            }
+            
+            .game-details {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .no-games-card {
+                padding: 2rem 1rem;
+            }
+            
+            .no-games-icon {
+                font-size: 3rem;
+            }
+            
+            .next-game-info {
+                padding: 1rem;
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .fantasy-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+            
+            .fantasy-stat {
+                padding: 0.75rem;
+            }
+            
+            .fantasy-stat .stat-value {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) and (min-width: 481px) {
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -1050,8 +1282,86 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .models-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .fantasy-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .metrics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .action-card,
+            .game-card,
+            .nav-link {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .btn-refresh,
+            .btn-back {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+        
+        /* Landscape mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .nav-container {
+                padding: 0.5rem 1rem;
+            }
+            
+            .app-container {
+                padding: 0.5rem;
+            }
+            
+            .view-header {
+                margin-bottom: 1rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.5rem;
+            }
+            
+            .metric-card {
+                padding: 0.75rem;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
             }
         }
     </style>

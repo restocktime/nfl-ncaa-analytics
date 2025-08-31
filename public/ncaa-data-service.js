@@ -237,81 +237,96 @@ class NCAADataService {
     }
 
     /**
-     * Get fallback games data when APIs fail
+     * Get fallback games data when APIs fail - Week 1 College Football 2024
      */
     getFallbackGames() {
         return [
             {
-                id: 'fallback-1',
+                id: 'week1-1',
                 name: 'Georgia vs Clemson',
-                shortName: 'UGA @ CLEM',
-                date: new Date(),
-                status: { type: 'STATUS_SCHEDULED', displayClock: '8:00 PM ET', period: 0, completed: false },
+                shortName: 'UGA vs CLEM',
+                date: new Date('2024-08-31T20:00:00'),
+                status: { type: 'STATUS_SCHEDULED', displayClock: 'Sat 8:00 PM ET', period: 0, completed: false },
                 teams: {
-                    home: { name: 'Clemson Tigers', abbreviation: 'CLEM', score: 0, record: '1-0' },
-                    away: { name: 'Georgia Bulldogs', abbreviation: 'UGA', score: 0, record: '1-0' }
+                    home: { name: 'Clemson Tigers', abbreviation: 'CLEM', score: 0, record: '0-0' },
+                    away: { name: 'Georgia Bulldogs', abbreviation: 'UGA', score: 0, record: '0-0' }
                 },
-                venue: 'Mercedes-Benz Stadium',
+                venue: 'Mercedes-Benz Stadium (Atlanta)',
                 isLive: false,
                 week: 1,
                 season: 2024
             },
             {
-                id: 'fallback-2',
-                name: 'Alabama vs Wisconsin',
-                shortName: 'ALA @ WIS',
-                date: new Date(),
-                status: { type: 'STATUS_SCHEDULED', displayClock: '12:00 PM ET', period: 0, completed: false },
+                id: 'week1-2',
+                name: 'LSU vs USC',
+                shortName: 'LSU vs USC',
+                date: new Date('2024-09-01T19:30:00'),
+                status: { type: 'STATUS_SCHEDULED', displayClock: 'Sun 7:30 PM ET', period: 0, completed: false },
                 teams: {
-                    home: { name: 'Wisconsin Badgers', abbreviation: 'WIS', score: 0, record: '0-1' },
-                    away: { name: 'Alabama Crimson Tide', abbreviation: 'ALA', score: 0, record: '1-0' }
+                    home: { name: 'USC Trojans', abbreviation: 'USC', score: 0, record: '0-0' },
+                    away: { name: 'LSU Tigers', abbreviation: 'LSU', score: 0, record: '0-0' }
                 },
-                venue: 'Camp Randall Stadium',
+                venue: 'Allegiant Stadium (Las Vegas)',
                 isLive: false,
                 week: 1,
                 season: 2024
             },
             {
-                id: 'fallback-3',
-                name: 'Texas vs Colorado State',
-                shortName: 'TEX @ CSU',
-                date: new Date(),
-                status: { type: 'STATUS_SCHEDULED', displayClock: '3:30 PM ET', period: 0, completed: false },
+                id: 'week1-3',
+                name: 'Florida State vs Georgia Tech',
+                shortName: 'FSU @ GT',
+                date: new Date('2024-08-31T12:00:00'),
+                status: { type: 'STATUS_SCHEDULED', displayClock: 'Sat 12:00 PM ET', period: 0, completed: false },
                 teams: {
-                    home: { name: 'Colorado State Rams', abbreviation: 'CSU', score: 0, record: '0-1' },
-                    away: { name: 'Texas Longhorns', abbreviation: 'TEX', score: 0, record: '1-0' }
+                    home: { name: 'Georgia Tech Yellow Jackets', abbreviation: 'GT', score: 0, record: '0-0' },
+                    away: { name: 'Florida State Seminoles', abbreviation: 'FSU', score: 0, record: '0-0' }
                 },
-                venue: 'Canvas Stadium',
+                venue: 'Mercedes-Benz Stadium (Atlanta)',
                 isLive: false,
                 week: 1,
                 season: 2024
             },
             {
-                id: 'fallback-4',
-                name: 'Ohio State vs Indiana',
-                shortName: 'OSU @ IND',
-                date: new Date(),
-                status: { type: 'STATUS_SCHEDULED', displayClock: '7:30 PM ET', period: 0, completed: false },
+                id: 'week1-4',
+                name: 'Notre Dame vs Texas A&M',
+                shortName: 'ND @ TAMU',
+                date: new Date('2024-08-31T19:30:00'),
+                status: { type: 'STATUS_SCHEDULED', displayClock: 'Sat 7:30 PM ET', period: 0, completed: false },
                 teams: {
-                    home: { name: 'Indiana Hoosiers', abbreviation: 'IND', score: 0, record: '0-1' },
-                    away: { name: 'Ohio State Buckeyes', abbreviation: 'OSU', score: 0, record: '1-0' }
+                    home: { name: 'Texas A&M Aggies', abbreviation: 'TAMU', score: 0, record: '0-0' },
+                    away: { name: 'Notre Dame Fighting Irish', abbreviation: 'ND', score: 0, record: '0-0' }
                 },
-                venue: 'Memorial Stadium',
+                venue: 'Kyle Field (College Station)',
                 isLive: false,
                 week: 1,
                 season: 2024
             },
             {
-                id: 'fallback-5',
-                name: 'Notre Dame vs Navy',
-                shortName: 'ND @ NAVY',
-                date: new Date(),
-                status: { type: 'STATUS_SCHEDULED', displayClock: '12:00 PM ET', period: 0, completed: false },
+                id: 'week1-5',
+                name: 'Penn State vs West Virginia',
+                shortName: 'PSU @ WVU',
+                date: new Date('2024-08-31T12:00:00'),
+                status: { type: 'STATUS_SCHEDULED', displayClock: 'Sat 12:00 PM ET', period: 0, completed: false },
                 teams: {
-                    home: { name: 'Navy Midshipmen', abbreviation: 'NAVY', score: 0, record: '1-0' },
-                    away: { name: 'Notre Dame Fighting Irish', abbreviation: 'ND', score: 0, record: '1-0' }
+                    home: { name: 'West Virginia Mountaineers', abbreviation: 'WVU', score: 0, record: '0-0' },
+                    away: { name: 'Penn State Nittany Lions', abbreviation: 'PSU', score: 0, record: '0-0' }
                 },
-                venue: 'Navy-Marine Corps Memorial Stadium',
+                venue: 'Mountaineer Field (Morgantown)',
+                isLive: false,
+                week: 1,
+                season: 2024
+            },
+            {
+                id: 'week1-6',
+                name: 'Colorado vs North Dakota State',
+                shortName: 'COL vs NDSU',
+                date: new Date('2024-08-29T20:00:00'),
+                status: { type: 'STATUS_SCHEDULED', displayClock: 'Thu 8:00 PM ET', period: 0, completed: false },
+                teams: {
+                    home: { name: 'Colorado Buffaloes', abbreviation: 'COL', score: 0, record: '0-0' },
+                    away: { name: 'North Dakota State Bison', abbreviation: 'NDSU', score: 0, record: '0-0' }
+                },
+                venue: 'Folsom Field (Boulder)',
                 isLive: false,
                 week: 1,
                 season: 2024
@@ -320,83 +335,102 @@ class NCAADataService {
     }
     
     /**
-     * Get fallback live games data
+     * Get fallback live games data - Week 0/1 College Football
      */
     getFallbackLiveGames() {
+        // Since it's August 31st, some Week 0 games might be live
         return [
             {
-                id: 'live-1',
-                name: 'Michigan vs Washington',
-                shortName: 'MICH @ WASH',
+                id: 'live-week0-1',
+                name: 'Hawaii vs UCLA',
+                shortName: 'HAW @ UCLA',
                 date: new Date(),
-                status: { type: 'STATUS_IN_PROGRESS', displayClock: '2nd 8:45', period: 2, completed: false },
+                status: { type: 'STATUS_IN_PROGRESS', displayClock: '3rd 5:23', period: 3, completed: false },
                 teams: {
-                    home: { name: 'Washington Huskies', abbreviation: 'WASH', score: 14, record: '0-1' },
-                    away: { name: 'Michigan Wolverines', abbreviation: 'MICH', score: 21, record: '1-0' }
+                    home: { name: 'UCLA Bruins', abbreviation: 'UCLA', score: 28, record: '0-0' },
+                    away: { name: 'Hawaii Rainbow Warriors', abbreviation: 'HAW', score: 14, record: '0-0' }
                 },
-                venue: 'Husky Stadium',
+                venue: 'Rose Bowl (Pasadena)',
                 isLive: true,
-                week: 1,
+                week: 0,
                 season: 2024
             },
             {
-                id: 'live-2',
-                name: 'USC vs LSU',
-                shortName: 'USC @ LSU',
+                id: 'live-week0-2',
+                name: 'New Mexico State vs Sam Houston',
+                shortName: 'NMSU vs SHSU',
                 date: new Date(),
-                status: { type: 'STATUS_IN_PROGRESS', displayClock: '3rd 12:30', period: 3, completed: false },
+                status: { type: 'STATUS_IN_PROGRESS', displayClock: '4th 8:45', period: 4, completed: false },
                 teams: {
-                    home: { name: 'LSU Tigers', abbreviation: 'LSU', score: 17, record: '1-0' },
-                    away: { name: 'USC Trojans', abbreviation: 'USC', score: 24, record: '1-0' }
+                    home: { name: 'Sam Houston Bearkats', abbreviation: 'SHSU', score: 21, record: '0-0' },
+                    away: { name: 'New Mexico State Aggies', abbreviation: 'NMSU', score: 17, record: '0-0' }
                 },
-                venue: 'Tiger Stadium',
+                venue: 'Bowers Stadium (Huntsville)',
                 isLive: true,
-                week: 1,
+                week: 0,
                 season: 2024
             }
         ];
     }
     
     /**
-     * Get fallback betting lines data
+     * Get fallback betting lines data - Week 1 College Football
      */
     getFallbackBettingLines() {
         return [
             {
-                gameId: 'bet-1',
-                teams: 'Georgia @ Clemson',
-                spread: 'UGA -3.5',
-                overUnder: '52.5',
-                homeMoneyline: '+145',
-                awayMoneyline: '-165',
+                gameId: 'bet-week1-1',
+                teams: 'Georgia vs Clemson',
+                spread: 'UGA -1',
+                overUnder: '47.5',
+                homeMoneyline: '+105',
+                awayMoneyline: '-125',
                 provider: 'DraftKings'
             },
             {
-                gameId: 'bet-2',
-                teams: 'Alabama @ Wisconsin',
-                spread: 'ALA -14.5',
-                overUnder: '48.5',
-                homeMoneyline: '+425',
-                awayMoneyline: '-550',
+                gameId: 'bet-week1-2',
+                teams: 'LSU @ USC',
+                spread: 'USC -4.5',
+                overUnder: '64.5',
+                homeMoneyline: '-190',
+                awayMoneyline: '+160',
                 provider: 'FanDuel'
             },
             {
-                gameId: 'bet-3',
-                teams: 'Texas @ Colorado State',
-                spread: 'TEX -21.5',
+                gameId: 'bet-week1-3',
+                teams: 'Florida State @ Georgia Tech',
+                spread: 'FSU -10.5',
                 overUnder: '56.5',
-                homeMoneyline: '+750',
-                awayMoneyline: '-1200',
+                homeMoneyline: '+320',
+                awayMoneyline: '-420',
                 provider: 'BetMGM'
             },
             {
-                gameId: 'bet-4',
-                teams: 'Ohio State @ Indiana',
-                spread: 'OSU -28.5',
-                overUnder: '51.5',
-                homeMoneyline: '+1100',
-                awayMoneyline: '-2000',
+                gameId: 'bet-week1-4',
+                teams: 'Notre Dame @ Texas A&M',
+                spread: 'ND -2.5',
+                overUnder: '46.5',
+                homeMoneyline: '+120',
+                awayMoneyline: '-140',
                 provider: 'Caesars'
+            },
+            {
+                gameId: 'bet-week1-5',
+                teams: 'Penn State @ West Virginia',
+                spread: 'PSU -8.5',
+                overUnder: '51.5',
+                homeMoneyline: '+260',
+                awayMoneyline: '-320',
+                provider: 'ESPN BET'
+            },
+            {
+                gameId: 'bet-week1-6',
+                teams: 'Colorado vs North Dakota State',
+                spread: 'COL -9.5',
+                overUnder: '58.5',
+                homeMoneyline: '-380',
+                awayMoneyline: '+300',
+                provider: 'PointsBet'
             }
         ];
     }
