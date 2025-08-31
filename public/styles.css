@@ -2859,6 +2859,7 @@ body {
         text-decoration: none;
         transition: all var(--transition-normal);
         border-left: 3px solid transparent;
+        cursor: pointer;
     }
     
     .mobile-nav-link:hover {
@@ -2895,6 +2896,7 @@ body {
         color: var(--secondary-text);
         text-decoration: none;
         transition: all var(--transition-normal);
+        cursor: pointer;
     }
     
     .mobile-nav-action:hover {

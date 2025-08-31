@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation Fix Test</title>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="public/styles.css">
+    
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        
+        .test-button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .mobile-simulator {
+            max-width: 375px;
+            margin: 20px auto;
+            border: 3px solid #333;
+            border-radius: 20px;
+            background: #000;
+            padding: 10px;
+        }
+        
+        .mobile-screen {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 600px;
+            position: relative;
+        }
+        
+        .demo-navbar {
+            background: rgba(26, 26, 26, 0.95);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .demo-content {
+            padding: 20px;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Test Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-football-ball"></i>
+                <span>Mobile Nav Fix Test</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#live" class="nav-link" data-view="live">
+                    <i class="fas fa-broadcast-tower"></i> Live
+                </a>
+                <a href="#predictions" class="nav-link" data-view="predictions">
+                    <i class="fas fa-brain"></i> AI
+                </a>
+                <a href="#betting" class="nav-link" data-view="betting">
+                    <i class="fas fa-coins"></i> Betting
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="btn-refresh">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-header">
+            <div class="mobile-nav-brand">
+                <i class="fas fa-football-ball"></i>
+                <span>Test Menu</span>
+            </div>
+            <button class="mobile-nav-close" onclick="closeMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-links">
+            <a href="#dashboard" class="mobile-nav-link active" data-view="dashboard" onclick="showViewMobile('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#live" class="mobile-nav-link" data-view="live" onclick="showViewMobile('live')">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live Games</span>
+            </a>
+            <a href="#predictions" class="mobile-nav-link" data-view="predictions" onclick="showViewMobile('predictions')">
+                <i class="fas fa-brain"></i>
+                <span>AI Predictions</span>
+            </a>
+            <a href="#betting" class="mobile-nav-link" data-view="betting" onclick="showViewMobile('betting')">
+                <i class="fas fa-coins"></i>
+                <span>Betting Edge</span>
+            </a>
+        </div>
+        
+        <div class="mobile-nav-actions">
+            <a href="#" class="mobile-nav-action" onclick="closeMobileMenu();">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh Data</span>
+            </a>
+            <a href="public/index.html" class="mobile-nav-action">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <div class="test-header">
+            <h1>📱 Mobile Navigation Fix Test</h1>
+            <p>Testing mobile menu functionality and view switching</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Mobile Navigation Tests</h2>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                <button class="test-button" onclick="testMobileMenuToggle()">Test Menu Toggle</button>
+                <button class="test-button" onclick="testViewSwitching()">Test View Switching</button>
+                <button class="test-button" onclick="testMobileNavigation()">Test Mobile Navigation</button>
+                <button class="test-button" onclick="testShowViewFunction()">Test showView Function</button>
+                <button class="test-button" onclick="runAllMobileTests()">Run All Tests</button>
+            </div>
+            
+            <div id="testResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📱 Mobile Simulator</h2>
+            <div class="mobile-simulator">
+                <div class="mobile-screen">
+                    <div class="demo-navbar">
+                        <span>NFL Analytics</span>
+                        <button onclick="toggleMobileMenu()" style="background: none; border: none; color: white; font-size: 1.2rem;">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                    <div class="demo-content">
+                        <div id="dashboard" class="view active">
+                            <h3>Dashboard View</h3>
+                            <p>This is the dashboard content. The mobile menu should work to switch between views.</p>
+                        </div>
+                        <div id="live" class="view">
+                            <h3>Live Games View</h3>
+                            <p>This is the live games content. Navigation should work smoothly.</p>
+                        </div>
+                        <div id="predictions" class="view">
+                            <h3>AI Predictions View</h3>
+                            <p>This is the AI predictions content. Mobile navigation should be responsive.</p>
+                        </div>
+                        <div id="betting" class="view">
+                            <h3>Betting Edge View</h3>
+                            <p>This is the betting content. All mobile features should function correctly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Manual Test Instructions</h2>
+            <ol>
+                <li><strong>Resize Browser:</strong> Make window width < 768px to see mobile menu</li>
+                <li><strong>Click Hamburger:</strong> Click the ☰ button to open mobile menu</li>
+                <li><strong>Test Navigation:</strong> Click different menu items to switch views</li>
+                <li><strong>Test Closing:</strong> Try closing menu with X, outside click, or ESC key</li>
+                <li><strong>Verify Views:</strong> Ensure content changes when switching views</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="public/app.js"></script>
+    
+    <script>
+        // Simple showView function for testing
+        window.showView = function(viewName) {
+            console.log('🧭 Test showView called for:', viewName);
+            
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show target view
+            const targetView = document.getElementById(viewName);
+            if (targetView) {
+                targetView.classList.add('active');
+                
+                // Update navigation active states
+                document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                document.querySelectorAll(`[data-view="${viewName}"]`).forEach(link => {
+                    link.classList.add('active');
+                });
+                
+                return true;
+            }
+            
+            console.warn('⚠️ View not found:', viewName);
+            return false;
+        };
+        
+        // Test functions
+        function testMobileMenuToggle() {
+            console.log('🧪 Testing mobile menu toggle...');
+            
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            
+            if (typeof window.toggleMobileMenu === 'function') {
+                try {
+                    window.toggleMobileMenu();
+                    
+                    setTimeout(() => {
+                        const menu = document.getElementById('mobileNavMenu');
+                        const overlay = document.getElementById('mobileNavOverlay');
+                        
+                        if (menu && overlay) {
+                            const isOpen = menu.classList.contains('active') && overlay.classList.contains('active');
+                            
+                            if (isOpen) {
+                                result.className += ' test-pass';
+                                result.textContent = '✅ Mobile menu toggle works - menu opened successfully';
+                                
+                                // Close menu for next test
+                                setTimeout(() => window.closeMobileMenu(), 500);
+                            } else {
+                                result.className += ' test-fail';
+                                result.textContent = '❌ Mobile menu toggle failed - menu did not open';
+                            }
+                        } else {
+                            result.className += ' test-fail';
+                            result.textContent = '❌ Mobile menu elements not found';
+                        }
+                        
+                        document.getElementById('testResults').appendChild(result);
+                    }, 100);
+                    
+                } catch (error) {
+                    result.className += ' test-fail';
+                    result.textContent = '❌ Mobile menu toggle error: ' + error.message;
+                    document.getElementById('testResults').appendChild(result);
+                }
+            } else {
+                result.className += ' test-fail';
+                result.textContent = '❌ toggleMobileMenu function not found';
+                document.getElementById('testResults').appendChild(result);
+            }
+        }
+        
+        function testViewSwitching() {
+            console.log('🧪 Testing view switching...');
+            
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            
+            if (typeof window.showView === 'function') {
+                try {
+                    const success = window.showView('live');
+                    
+                    setTimeout(() => {
+                        const liveView = document.getElementById('live');
+                        const dashboardView = document.getElementById('dashboard');
+                        
+                        if (liveView && dashboardView) {
+                            const liveActive = liveView.classList.contains('active');
+                            const dashboardInactive = !dashboardView.classList.contains('active');
+                            
+                            if (liveActive && dashboardInactive) {
+                                result.className += ' test-pass';
+                                result.textContent = '✅ View switching works - switched to live view';
+                                
+                                // Switch back to dashboard
+                                setTimeout(() => window.showView('dashboard'), 500);
+                            } else {
+                                result.className += ' test-fail';
+                                result.textContent = '❌ View switching failed - views not updated correctly';
+                            }
+                        } else {
+                            result.className += ' test-fail';
+                            result.textContent = '❌ View elements not found';
+                        }
+                        
+                        document.getElementById('testResults').appendChild(result);
+                    }, 100);
+                    
+                } catch (error) {
+                    result.className += ' test-fail';
+                    result.textContent = '❌ View switching error: ' + error.message;
+                    document.getElementById('testResults').appendChild(result);
+                }
+            } else {
+                result.className += ' test-fail';
+                result.textContent = '❌ showView function not found';
+                document.getElementById('testResults').appendChild(result);
+            }
+        }
+        
+        function testMobileNavigation() {
+            console.log('🧪 Testing mobile navigation...');
+            
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            
+            if (typeof window.showViewMobile === 'function') {
+                try {
+                    window.showViewMobile('predictions');
+                    
+                    setTimeout(() => {
+                        const predictionsView = document.getElementById('predictions');
+                        const menu = document.getElementById('mobileNavMenu');
+                        
+                        if (predictionsView && menu) {
+                            const viewActive = predictionsView.classList.contains('active');
+                            const menuClosed = !menu.classList.contains('active');
+                            
+                            if (viewActive && menuClosed) {
+                                result.className += ' test-pass';
+                                result.textContent = '✅ Mobile navigation works - switched view and closed menu';
+                            } else {
+                                result.className += ' test-fail';
+                                result.textContent = '❌ Mobile navigation failed - view or menu state incorrect';
+                            }
+                        } else {
+                            result.className += ' test-fail';
+                            result.textContent = '❌ Navigation elements not found';
+                        }
+                        
+                        document.getElementById('testResults').appendChild(result);
+                    }, 100);
+                    
+                } catch (error) {
+                    result.className += ' test-fail';
+                    result.textContent = '❌ Mobile navigation error: ' + error.message;
+                    document.getElementById('testResults').appendChild(result);
+                }
+            } else {
+                result.className += ' test-fail';
+                result.textContent = '❌ showViewMobile function not found';
+                document.getElementById('testResults').appendChild(result);
+            }
+        }
+        
+        function testShowViewFunction() {
+            console.log('🧪 Testing showView function availability...');
+            
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            
+            const functions = [
+                'toggleMobileMenu',
+                'openMobileMenu', 
+                'closeMobileMenu',
+                'showViewMobile',
+                'showView'
+            ];
+            
+            const available = [];
+            const missing = [];
+            
+            functions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    available.push(func);
+                } else {
+                    missing.push(func);
+                }
+            });
+            
+            if (missing.length === 0) {
+                result.className += ' test-pass';
+                result.textContent = `✅ All mobile navigation functions available: ${available.join(', ')}`;
+            } else {
+                result.className += ' test-fail';
+                result.textContent = `❌ Missing functions: ${missing.join(', ')}. Available: ${available.join(', ')}`;
+            }
+            
+            document.getElementById('testResults').appendChild(result);
+        }
+        
+        function runAllMobileTests() {
+            console.log('🧪 Running all mobile navigation tests...');
+            
+            // Clear previous results
+            document.getElementById('testResults').innerHTML = '';
+            
+            // Run tests with delays
+            testShowViewFunction();
+            setTimeout(testMobileMenuToggle, 500);
+            setTimeout(testViewSwitching, 1500);
+            setTimeout(testMobileNavigation, 2500);
+        }
+        
+        // Auto-run tests on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runAllMobileTests, 1000);
+        });
+    </script>
+</body>
+</html>

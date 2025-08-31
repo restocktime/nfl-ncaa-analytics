@@ -984,6 +984,17 @@ window.refreshUpcomingGames = function() {
     }
 };
 
+// Global view switching function for mobile navigation
+window.showView = function(viewName) {
+    console.log('🧭 Global showView called for:', viewName);
+    if (window.sundayEdgePro) {
+        return window.sundayEdgePro.switchView(viewName);
+    } else {
+        console.warn('⚠️ Sunday Edge Pro not initialized yet');
+        return false;
+    }
+};
+
 // Initialize Sunday Edge Pro Quantum when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM loaded, initializing Sunday Edge Pro Quantum...');

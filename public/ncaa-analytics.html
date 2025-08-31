@@ -274,7 +274,45 @@
     <!-- Robust Integration -->
     <script src="robust-integration.js"></script>
     
+    <!-- Mobile Navigation Functions -->
+    <script src="app.js"></script>
+    
     <script>
+        // Global showView function for mobile navigation
+        window.showView = function(viewName) {
+            console.log('🧭 NCAA showView called for:', viewName);
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('.view');
+            
+            // Update active nav link
+            navLinks.forEach(l => l.classList.remove('active'));
+            const activeLink = document.querySelector(`[data-view="${viewName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Show target view
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const targetElement = document.getElementById(viewName);
+            if (targetElement) {
+                targetElement.classList.add('active');
+                
+                // Load data for specific views
+                if (viewName === 'predictions') {
+                    loadNCAAPredictions();
+                }
+                
+                return true;
+            }
+            
+            console.warn('⚠️ NCAA view not found:', viewName);
+            return false;
+        };
+        
         // NCAA-specific initialization
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🏈 NCAA Analytics Platform Loaded');
