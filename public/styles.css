@@ -141,6 +141,24 @@ body {
     gap: var(--spacing-md);
 }
 
+/* Mobile Menu Toggle (hidden on desktop) */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--primary-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-text);
+}
+
 .btn-refresh {
     background: none;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -310,6 +328,13 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: var(--spacing-lg);
+}
+
+/* Responsive utility class */
+.responsive {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
 }
 
 .game-card {
@@ -710,7 +735,7 @@ body {
     font-weight: 600;
 }
 
-.confidence {
+.confidence-badge {
     padding: var(--spacing-xs) var(--spacing-sm);
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
@@ -718,19 +743,1011 @@ body {
     text-transform: uppercase;
 }
 
-.confidence.high, .confidence.certain {
+.confidence-badge.high, .confidence-badge.certain {
     background: rgba(57, 255, 20, 0.2);
     color: var(--neon-green);
 }
 
-.confidence.medium, .confidence.medium-high {
+.confidence-badge.medium, .confidence-badge.medium-high {
     background: rgba(245, 158, 11, 0.2);
     color: var(--warning-text);
 }
 
-.confidence.low {
+.confidence-badge.low {
     background: rgba(239, 68, 68, 0.2);
     color: var(--error-text);
+}
+
+/* AI Prediction Section - Enhanced */
+.ai-prediction-section {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.08) 0%, rgba(0, 102, 255, 0.05) 100%);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.ai-prediction-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--quantum-primary), var(--quantum-secondary));
+    animation: shimmer 2s infinite;
+}
+
+.ai-prediction-section:hover {
+    border-color: var(--quantum-primary);
+    box-shadow: 0 8px 32px rgba(0, 255, 136, 0.15);
+    transform: translateY(-2px);
+}
+
+.ai-prediction-section .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+.ai-prediction-section .section-title h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+    color: var(--primary-text);
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.ai-prediction-section .section-title i {
+    color: var(--quantum-primary);
+    font-size: 1.3rem;
+}
+
+.confidence-badge {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-xl);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.confidence-badge.high, .confidence-badge.certain {
+    background: linear-gradient(45deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+    color: var(--success-text);
+    border: 1px solid var(--success-text);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.confidence-badge.medium, .confidence-badge.medium-high {
+    background: linear-gradient(45deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+    color: var(--warning-text);
+    border: 1px solid var(--warning-text);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.confidence-badge.low {
+    background: linear-gradient(45deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+    color: var(--error-text);
+    border: 1px solid var(--error-text);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+.prediction-details {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.predicted-winner {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.predicted-winner h4 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--quantum-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.predicted-score {
+    color: var(--secondary-text);
+    font-weight: 600;
+    font-size: 1.1rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.win-probabilities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+.prob-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: var(--secondary-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.prob-item:hover {
+    border-color: var(--quantum-primary);
+    transform: translateY(-2px);
+}
+
+.prob-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--quantum-primary), var(--quantum-secondary));
+    transform: scaleX(0);
+    transition: transform var(--transition-normal);
+}
+
+.prob-item:hover::before {
+    transform: scaleX(1);
+}
+
+.prob-item .team-name {
+    color: var(--primary-text);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+}
+
+.prob-item .probability {
+    color: var(--quantum-primary);
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.betting-recommendation {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-lg);
+    text-align: center;
+}
+
+.betting-recommendation .rec-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    color: var(--quantum-gold);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+}
+
+.betting-recommendation .rec-text {
+    color: var(--primary-text);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.betting-recommendation .rec-confidence {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-sm);
+    font-style: italic;
+}
+
+/* ML Algorithms Section - Enhanced */
+.ml-algorithms-section {
+    background: linear-gradient(135deg, rgba(0, 102, 255, 0.08) 0%, rgba(138, 43, 226, 0.05) 100%);
+    border: 1px solid rgba(0, 102, 255, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.ml-algorithms-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--quantum-secondary), #8a2be2);
+    animation: shimmer 2s infinite;
+}
+
+.ml-algorithms-section:hover {
+    border-color: var(--quantum-secondary);
+    box-shadow: 0 8px 32px rgba(0, 102, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.ml-algorithms-section .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+.ml-algorithms-section .section-title h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+    color: var(--primary-text);
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.ml-algorithms-section .section-title i {
+    color: var(--quantum-secondary);
+    font-size: 1.3rem;
+}
+
+.algorithms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.algorithm-card {
+    background: var(--secondary-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.algorithm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.algorithm-card.neural-network {
+    border-left: 4px solid #ff6b6b;
+}
+
+.algorithm-card.neural-network:hover {
+    border-color: #ff6b6b;
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.2);
+}
+
+.algorithm-card.xgboost {
+    border-left: 4px solid #4ecdc4;
+}
+
+.algorithm-card.xgboost:hover {
+    border-color: #4ecdc4;
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.2);
+}
+
+.algorithm-card.ensemble {
+    border-left: 4px solid #45b7d1;
+}
+
+.algorithm-card.ensemble:hover {
+    border-color: #45b7d1;
+    box-shadow: 0 8px 25px rgba(69, 183, 209, 0.2);
+}
+
+.algorithm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.algorithm-name {
+    font-weight: 700;
+    color: var(--primary-text);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.algorithm-accuracy {
+    background: linear-gradient(45deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+    color: var(--success-text);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid var(--success-text);
+}
+
+.algorithm-prediction {
+    text-align: center;
+    padding: var(--spacing-md) 0;
+}
+
+.prediction-winner {
+    font-weight: 800;
+    color: var(--quantum-secondary);
+    margin-bottom: var(--spacing-sm);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.prediction-confidence {
+    background: var(--accent-bg);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-sm);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confidence-label {
+    color: var(--secondary-text);
+    font-size: 0.8rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.confidence-value {
+    color: var(--primary-text);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+}
+
+.prediction-spread {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Consensus Section - Enhanced */
+.consensus-section {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.05));
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.consensus-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--quantum-gold), #ff8c00, var(--quantum-gold));
+    animation: shimmer 3s infinite;
+}
+
+.consensus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.consensus-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 800;
+    color: var(--primary-text);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.consensus-title i {
+    color: var(--quantum-gold);
+    font-size: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+.edge-indicator {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-xl);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.edge-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shine 2s infinite;
+}
+
+.edge-indicator.HIGH {
+    background: linear-gradient(45deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1));
+    color: var(--success-text);
+    border: 2px solid var(--success-text);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.edge-indicator.MEDIUM {
+    background: linear-gradient(45deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.1));
+    color: var(--warning-text);
+    border: 2px solid var(--warning-text);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+.edge-indicator.LOW {
+    background: linear-gradient(45deg, rgba(156, 163, 175, 0.3), rgba(156, 163, 175, 0.1));
+    color: #9ca3af;
+    border: 2px solid #9ca3af;
+    box-shadow: 0 0 20px rgba(156, 163, 175, 0.4);
+}
+
+.consensus-details {
+    text-align: center;
+    padding: var(--spacing-lg) 0;
+}
+
+.consensus-prediction {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--quantum-gold);
+    margin-bottom: var(--spacing-lg);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.model-agreement {
+    background: var(--accent-bg);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agreement-label {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.agreement-value {
+    color: var(--primary-text);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+}
+
+.consensus-recommendation {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 102, 255, 0.05));
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    color: var(--primary-text);
+    font-weight: 600;
+    font-size: 1rem;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Betting Lines Section - Enhanced */
+.betting-lines-section {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 193, 7, 0.05) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.betting-lines-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--quantum-gold), #ff8c00);
+    animation: shimmer 2s infinite;
+}
+
+.betting-lines-section:hover {
+    border-color: var(--quantum-gold);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.betting-lines-section .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+.betting-lines-section .section-title h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+    color: var(--primary-text);
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.betting-lines-section .section-title i {
+    color: var(--quantum-gold);
+    font-size: 1.3rem;
+}
+
+.betting-lines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.line-category {
+    background: var(--secondary-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.line-category:hover {
+    border-color: var(--quantum-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+}
+
+.line-category::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--quantum-gold);
+    transform: scaleX(0);
+    transition: transform var(--transition-normal);
+}
+
+.line-category:hover::before {
+    transform: scaleX(1);
+}
+
+.line-category-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+    color: var(--quantum-gold);
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.line-items {
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.line-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--accent-bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all var(--transition-fast);
+}
+
+.line-item:hover {
+    background: rgba(255, 215, 0, 0.05);
+    border-color: rgba(255, 215, 0, 0.2);
+}
+
+.line-label {
+    color: var(--secondary-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.line-value {
+    color: var(--primary-text);
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+}
+
+.line-odds {
+    color: var(--quantum-gold);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    margin-left: var(--spacing-sm);
+}
+
+.sportsbooks-section {
+    background: var(--accent-bg);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sportsbooks-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--secondary-text);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.9rem;
+}
+
+.sportsbooks-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.sportsbook-badge {
+    background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: var(--quantum-gold);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Game Info Section */
+.game-info-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-sm);
+    background: var(--secondary-bg);
+    border-radius: var(--radius-sm);
+}
+
+.game-time, .game-venue {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+}
+
+.game-time i, .game-venue i {
+    color: var(--quantum-primary);
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: var(--neon-green);
+    color: var(--primary-bg);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    animation: pulse 2s infinite;
+}
+
+.live-indicator i {
+    animation: pulse 1s infinite;
+}
+
+/* Score Display Enhancement */
+.score-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background: var(--secondary-bg);
+    border-radius: var(--radius-md);
+}
+
+.team-score {
+    text-align: center;
+    flex: 1;
+}
+
+.team-name {
+    display: block;
+    font-weight: 600;
+    color: var(--primary-text);
+    margin-bottom: var(--spacing-xs);
+    font-size: 1.1rem;
+}
+
+.score {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--quantum-primary);
+    line-height: 1;
+}
+
+.vs {
+    color: var(--secondary-text);
+    font-weight: 600;
+    margin: 0 var(--spacing-md);
+    font-size: 1.2rem;
+}
+
+/* Loading States for AI Sections */
+.ai-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    color: var(--secondary-text);
+}
+
+.ai-loading i {
+    margin-right: var(--spacing-sm);
+    animation: spin 1s linear infinite;
+}
+
+/* Enhanced Animations */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    /* AI Prediction Section Mobile */
+    .ai-prediction-section {
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .ai-prediction-section .section-title h3 {
+        font-size: 1rem;
+    }
+    
+    .win-probabilities {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    .prob-item {
+        padding: var(--spacing-md);
+    }
+    
+    .prob-item .probability {
+        font-size: 1.5rem;
+    }
+    
+    .predicted-winner h4 {
+        font-size: 1.1rem;
+    }
+    
+    /* Betting Lines Section Mobile */
+    .betting-lines-section {
+        padding: var(--spacing-lg);
+    }
+    
+    .betting-lines-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .line-category {
+        padding: var(--spacing-md);
+    }
+    
+    .line-category-title {
+        font-size: 0.9rem;
+    }
+    
+    .line-item {
+        padding: var(--spacing-sm);
+    }
+    
+    .sportsbooks-list {
+        justify-content: center;
+    }
+    
+    /* ML Algorithms Section Mobile */
+    .ml-algorithms-section {
+        padding: var(--spacing-lg);
+    }
+    
+    .algorithms-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .algorithm-card {
+        padding: var(--spacing-md);
+    }
+    
+    .algorithm-name {
+        font-size: 0.9rem;
+    }
+    
+    .confidence-value {
+        font-size: 1rem;
+    }
+    
+    /* Consensus Section Mobile */
+    .consensus-section {
+        padding: var(--spacing-lg);
+    }
+    
+    .consensus-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: center;
+    }
+    
+    .consensus-title {
+        font-size: 1.1rem;
+    }
+    
+    .consensus-prediction {
+        font-size: 1.2rem;
+    }
+    
+    .edge-indicator {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small mobile adjustments */
+    .ai-prediction-section,
+    .betting-lines-section,
+    .ml-algorithms-section,
+    .consensus-section {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .section-title h3 {
+        font-size: 0.9rem;
+    }
+    
+    .confidence-badge {
+        font-size: 0.7rem;
+        padding: var(--spacing-xs);
+    }
+    
+    .prob-item .probability {
+        font-size: 1.3rem;
+    }
+    
+    .consensus-title {
+        font-size: 1rem;
+    }
+    
+    .consensus-prediction {
+        font-size: 1.1rem;
+    }
+}
+
+/* No Predictions State */
+.no-predictions-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--secondary-text);
+}
+
+.no-predictions-card .ai-icon {
+    font-size: 3rem;
+    color: var(--quantum-primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.no-predictions-card h3 {
+    color: var(--primary-text);
+    margin-bottom: var(--spacing-md);
+}
+
+.model-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.model-status {
+    background: var(--accent-bg);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+.model-name {
+    font-weight: 600;
+    color: var(--primary-text);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.model-accuracy {
+    font-size: 0.75rem;
+    color: var(--success-text);
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .prediction-probabilities {
@@ -1739,8 +2756,150 @@ body {
         padding: 0 var(--spacing-md);
     }
     
+    /* Mobile Navigation */
     .nav-menu {
         display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--primary-text);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: var(--spacing-sm);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-normal);
+    }
+    
+    .mobile-menu-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--accent-text);
+    }
+    
+    .mobile-nav-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-normal);
+    }
+    
+    .mobile-nav-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .mobile-nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: var(--secondary-bg);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1002;
+        transition: right var(--transition-normal);
+        overflow-y: auto;
+    }
+    
+    .mobile-nav-menu.active {
+        right: 0;
+    }
+    
+    .mobile-nav-header {
+        padding: var(--spacing-lg);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .mobile-nav-brand {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-weight: 700;
+        color: var(--primary-text);
+    }
+    
+    .mobile-nav-close {
+        background: none;
+        border: none;
+        color: var(--secondary-text);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: var(--spacing-xs);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-normal);
+    }
+    
+    .mobile-nav-close:hover {
+        color: var(--primary-text);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mobile-nav-links {
+        padding: var(--spacing-lg) 0;
+    }
+    
+    .mobile-nav-link {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md) var(--spacing-lg);
+        color: var(--secondary-text);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        border-left: 3px solid transparent;
+    }
+    
+    .mobile-nav-link:hover {
+        color: var(--primary-text);
+        background: rgba(255, 255, 255, 0.05);
+        border-left-color: var(--accent-text);
+    }
+    
+    .mobile-nav-link.active {
+        color: var(--accent-text);
+        background: rgba(0, 212, 255, 0.1);
+        border-left-color: var(--accent-text);
+    }
+    
+    .mobile-nav-link i {
+        width: 20px;
+        text-align: center;
+    }
+    
+    .mobile-nav-actions {
+        padding: var(--spacing-lg);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .mobile-nav-action {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-md);
+        color: var(--secondary-text);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+    }
+    
+    .mobile-nav-action:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--primary-text);
     }
     
     .app-container {
@@ -2644,5 +3803,374 @@ body {
         border: 1px solid #ccc;
         background: white;
         color: black;
+    }
+}/* V
+isual Indicators for Enhanced AI Sections */
+.confidence-pulse {
+    animation: confidencePulse 2s ease-in-out infinite;
+}
+
+@keyframes confidencePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.edge-glow {
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+    animation: edgeGlow 3s ease-in-out infinite;
+}
+
+@keyframes edgeGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(57, 255, 20, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(57, 255, 20, 0.5); }
+}
+
+.live-pulse {
+    animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% { 
+        background-color: var(--neon-green);
+        transform: scale(1);
+    }
+    50% { 
+        background-color: #00ff44;
+        transform: scale(1.05);
+    }
+}
+
+/* Enhanced Game Card States */
+.prediction-card.high-confidence {
+    border-left: 4px solid var(--neon-green);
+}
+
+.prediction-card.medium-confidence {
+    border-left: 4px solid var(--warning-text);
+}
+
+.prediction-card.low-confidence {
+    border-left: 4px solid var(--error-text);
+}
+
+.prediction-card.live {
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+/* Mobile Responsive Enhancements */
+@media (max-width: 768px) {
+    .game-info-section {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+    }
+    
+    .score-display {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .vs {
+        transform: rotate(90deg);
+        margin: var(--spacing-sm) 0;
+    }
+    
+    .algorithms-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .betting-lines-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .win-probabilities {
+        grid-template-columns: 1fr;
+    }
+}
+/* Ad
+ditional AI Section Enhancements */
+
+/* Gradient Text Effects */
+.gradient-text {
+    background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-text-gold {
+    background: linear-gradient(45deg, var(--quantum-gold), #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Enhanced Loading States */
+.ai-section-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    background: var(--accent-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid var(--quantum-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-md);
+}
+
+.loading-text {
+    color: var(--secondary-text);
+    font-weight: 500;
+    text-align: center;
+}
+
+.loading-subtext {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-sm);
+    opacity: 0.7;
+}
+
+/* Error States */
+.ai-section-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.error-icon {
+    color: var(--error-text);
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.error-title {
+    color: var(--primary-text);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.error-message {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+}
+
+/* Success States */
+.ai-section-success {
+    border-color: var(--success-text);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+}
+
+/* Interactive Elements */
+.clickable-section {
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.clickable-section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Tooltip Styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    text-align: center;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm);
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.8rem;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Progress Bars for Confidence */
+.confidence-progress {
+    width: 100%;
+    height: 8px;
+    background: var(--accent-bg);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin: var(--spacing-sm) 0;
+}
+
+.confidence-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--quantum-primary), var(--quantum-secondary));
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-slow);
+    position: relative;
+}
+
+.confidence-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* Status Indicators */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: var(--spacing-xs);
+}
+
+.status-dot.active {
+    background: var(--success-text);
+    box-shadow: 0 0 10px var(--success-text);
+    animation: pulse 2s infinite;
+}
+
+.status-dot.processing {
+    background: var(--warning-text);
+    animation: pulse 1s infinite;
+}
+
+.status-dot.error {
+    background: var(--error-text);
+}
+
+/* Enhanced Game Card Integration */
+.game-card .ai-sections {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-card .ai-prediction-section,
+.game-card .betting-lines-section,
+.game-card .ml-algorithms-section {
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+.game-card .consensus-section {
+    margin-bottom: 0;
+    padding: var(--spacing-md);
+}
+
+/* Compact Mode for Smaller Cards */
+.compact .ai-prediction-section,
+.compact .betting-lines-section,
+.compact .ml-algorithms-section,
+.compact .consensus-section {
+    padding: var(--spacing-sm);
+}
+
+.compact .section-title h3 {
+    font-size: 0.9rem;
+}
+
+.compact .algorithms-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-sm);
+}
+
+.compact .betting-lines-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Print Styles */
+@media print {
+    .ai-prediction-section,
+    .betting-lines-section,
+    .ml-algorithms-section,
+    .consensus-section {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+    
+    .confidence-badge,
+    .edge-indicator,
+    .sportsbook-badge {
+        background: #f0f0f0 !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .ai-prediction-section,
+    .betting-lines-section,
+    .ml-algorithms-section,
+    .consensus-section {
+        border-width: 2px;
+        border-style: solid;
+    }
+    
+    .confidence-badge,
+    .edge-indicator,
+    .sportsbook-badge {
+        border-width: 2px;
+        font-weight: 800;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .ai-prediction-section,
+    .betting-lines-section,
+    .ml-algorithms-section,
+    .consensus-section,
+    .algorithm-card,
+    .line-category {
+        transition: none;
+        animation: none;
+    }
+    
+    .loading-spinner {
+        animation: none;
+        border-top-color: var(--quantum-primary);
+    }
+    
+    .shimmer,
+    .shine,
+    .pulse {
+        animation: none;
     }
 }

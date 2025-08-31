@@ -1,0 +1,584 @@
+{
+  "summary": {
+    "totalTests": 93,
+    "passedTests": 93,
+    "failedTests": 0,
+    "successRate": 100
+  },
+  "results": {
+    "realApiData": [
+      {
+        "name": "File exists: public/app.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.410Z"
+      },
+      {
+        "name": "File exists: public/nfl-data-service.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.410Z"
+      },
+      {
+        "name": "File exists: public/ncaa-data-service.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.410Z"
+      },
+      {
+        "name": "File exists: public/styles.css",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.410Z"
+      },
+      {
+        "name": "File exists: public/index.html",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.410Z"
+      },
+      {
+        "name": "File exists: public/nfl-analytics.html",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "File exists: public/ncaa-analytics.html",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "File exists: public/error-handler.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "File exists: public/data-validator.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "File exists: public/cache-manager.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "File exists: public/loading-state-manager.js",
+        "passed": true,
+        "details": "File found",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "Required Files Present",
+        "passed": true,
+        "details": "11/11 files found (100%)",
+        "timestamp": "2025-08-31T19:42:00.411Z"
+      },
+      {
+        "name": "NFL method: getTodaysGames",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.412Z"
+      },
+      {
+        "name": "NFL method: generateAIPrediction",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.412Z"
+      },
+      {
+        "name": "NFL method: getBettingLinesForGame",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.412Z"
+      },
+      {
+        "name": "NFL method: getMLAlgorithmPredictions",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.412Z"
+      },
+      {
+        "name": "NFL method: enhanceGamesWithAI",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.412Z"
+      },
+      {
+        "name": "NFL Service Methods",
+        "passed": true,
+        "details": "5/5 methods found (100%)",
+        "timestamp": "2025-08-31T19:42:00.412Z"
+      },
+      {
+        "name": "NCAA method: getTodaysGames",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "NCAA method: generateAIPrediction",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "NCAA method: getBettingLinesForGame",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "NCAA method: getMLAlgorithmPredictions",
+        "passed": true,
+        "details": "Method implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "NCAA Service Methods",
+        "passed": true,
+        "details": "4/4 methods found (100%)",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      }
+    ],
+    "fallbackSystem": [
+      {
+        "name": "Error handling: safeApiCall",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Error handling: logError",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Error handling: try",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Error handling: catch",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Error handling: fallback",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Error handling: retry",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Error Handling Components",
+        "passed": true,
+        "details": "6/6 components found (100%)",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Data Validator Present",
+        "passed": true,
+        "details": "Data validator implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Cache Manager Present",
+        "passed": true,
+        "details": "Cache manager implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      }
+    ],
+    "aiPredictions": [
+      {
+        "name": "AI component: calculateTeamStrength",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: calculateWinProbability",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: calculateSpread",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: calculateConfidence",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: generateRecommendation",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: homeWinProbability",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: awayWinProbability",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: predictedSpread",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: confidence",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.413Z"
+      },
+      {
+        "name": "AI component: predictedScore",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "AI Prediction Components",
+        "passed": true,
+        "details": "10/10 components found (100%)",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Confidence Range Validation",
+        "passed": true,
+        "details": "Confidence range (55-95%) implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Team Strength Calculation",
+        "passed": true,
+        "details": "Team strength calculation implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      }
+    ],
+    "bettingLines": [
+      {
+        "name": "Betting component: getBettingLinesForGame",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: generateRealisticLines",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: spread",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: moneyline",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: total",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: sportsbooks",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: DraftKings",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: FanDuel",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: BetMGM",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting component: -110",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Betting Lines Components",
+        "passed": true,
+        "details": "10/10 components found (100%)",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Odds Format Implementation",
+        "passed": true,
+        "details": "Odds formatting implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "Multiple Sportsbooks",
+        "passed": true,
+        "details": "4/4 sportsbooks included",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      }
+    ],
+    "mlAlgorithms": [
+      {
+        "name": "ML component: getMLAlgorithmPredictions",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: neuralNetwork",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: xgboost",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: ensemble",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: consensus",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: simulateNeuralNetwork",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: simulateXGBoost",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: simulateEnsemble",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.414Z"
+      },
+      {
+        "name": "ML component: accuracy",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "ML component: edge",
+        "passed": true,
+        "details": "Component implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "ML Algorithm Components",
+        "passed": true,
+        "details": "10/10 components found (100%)",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Accuracy Percentages",
+        "passed": true,
+        "details": "Realistic accuracy percentages implemented",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      },
+      {
+        "name": "Edge Indicators",
+        "passed": true,
+        "details": "3/3 edge indicators found",
+        "timestamp": "2025-08-31T19:42:00.415Z"
+      }
+    ],
+    "mobileResponsiveness": [
+      {
+        "name": "Responsive CSS: @media",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS: max-width",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS: min-width",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS: grid",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS: flex",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS: responsive",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS: mobile",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Responsive CSS Components",
+        "passed": true,
+        "details": "7/7 components found (100%)",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Viewport meta: index.html",
+        "passed": true,
+        "details": "Viewport meta tag found",
+        "timestamp": "2025-08-31T19:42:00.416Z"
+      },
+      {
+        "name": "Viewport meta: nfl-analytics.html",
+        "passed": true,
+        "details": "Viewport meta tag found",
+        "timestamp": "2025-08-31T19:42:00.417Z"
+      },
+      {
+        "name": "Viewport meta: ncaa-analytics.html",
+        "passed": true,
+        "details": "Viewport meta tag found",
+        "timestamp": "2025-08-31T19:42:00.417Z"
+      },
+      {
+        "name": "Viewport Meta Tags",
+        "passed": true,
+        "details": "3/3 files have viewport meta tags",
+        "timestamp": "2025-08-31T19:42:00.417Z"
+      }
+    ],
+    "visualAppeal": [
+      {
+        "name": "Visual CSS: gradient",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: box-shadow",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: border-radius",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: transition",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: transform",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: animation",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: color",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS: background",
+        "passed": true,
+        "details": "Component found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Visual CSS Components",
+        "passed": true,
+        "details": "8/8 components found (100%)",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      },
+      {
+        "name": "Layout Consistency",
+        "passed": true,
+        "details": "4/4 layout components found",
+        "timestamp": "2025-08-31T19:42:00.418Z"
+      }
+    ]
+  },
+  "timestamp": "2025-08-31T19:42:00.418Z",
+  "version": "1.0.0"
+}

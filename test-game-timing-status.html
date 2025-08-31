@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Timing and Status Logic Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .game-card {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .game-status {
+            font-weight: bold;
+            color: #333;
+        }
+        .live {
+            color: #e74c3c;
+            animation: pulse 2s infinite;
+        }
+        .scheduled {
+            color: #3498db;
+        }
+        .final {
+            color: #27ae60;
+        }
+        .offseason {
+            color: #95a5a6;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .test-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .test-controls button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+        .test-controls button:hover {
+            background: #2980b9;
+        }
+        .timing-info {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .score {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 Game Timing and Status Logic Test</h1>
+    <p>Testing realistic game timing and status logic for NFL and NCAA games</p>
+
+    <div class="test-controls">
+        <h3>Test Scenarios</h3>
+        <button onclick="testScheduledGames()">Test Scheduled Games</button>
+        <button onclick="testLiveGames()">Test Live Games</button>
+        <button onclick="testCompletedGames()">Test Completed Games</button>
+        <button onclick="testOffSeasonNFL()">Test NFL Off-Season</button>
+        <button onclick="testOffSeasonNCAA()">Test NCAA Off-Season</button>
+        <button onclick="testCurrentTime()">Test Current Time</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <!-- Include the data services -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/nfl-data-service.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        // Initialize services
+        let nflService, ncaaService;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize error handler and other dependencies
+            window.errorHandler = new ErrorHandler();
+            window.dataValidator = new DataValidator();
+            window.cacheManager = new CacheManager();
+            
+            // Initialize data services
+            nflService = new NFLDataService();
+            ncaaService = new NCAADataService();
+            
+            console.log('✅ Game timing test initialized');
+        });
+
+        function displayResults(title, games, service) {
+            const resultsDiv = document.getElementById('results');
+            
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = `<h3>${title}</h3>`;
+            
+            games.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                
+                const statusClass = game.isLive ? 'live' : 
+                                  game.status.completed ? 'final' : 
+                                  game.status.type.includes('OFFSEASON') ? 'offseason' : 'scheduled';
+                
+                const timingInfo = getTimingInfo(game);
+                
+                gameCard.innerHTML = `
+                    <div class="game-status ${statusClass}">
+                        ${game.status.type} - ${game.status.displayClock}
+                    </div>
+                    <div><strong>${game.name}</strong></div>
+                    <div class="timing-info">${timingInfo}</div>
+                    ${game.teams.home.score !== undefined ? `
+                        <div class="score">
+                            ${game.teams.away.abbreviation} ${game.teams.away.score} - 
+                            ${game.teams.home.score} ${game.teams.home.abbreviation}
+                        </div>
+                    ` : ''}
+                    <div><em>Venue: ${game.venue}</em></div>
+                    ${game.offSeasonInfo ? `
+                        <div class="timing-info">
+                            Phase: ${game.offSeasonInfo.phase}<br>
+                            Days until season: ${game.offSeasonInfo.daysUntilSeason}<br>
+                            Current events: ${game.offSeasonInfo.currentEvents.join(', ')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                section.appendChild(gameCard);
+            });
+            
+            resultsDiv.appendChild(section);
+        }
+
+        function getTimingInfo(game) {
+            const gameTime = new Date(game.date);
+            const now = new Date();
+            const timeDiff = now - gameTime;
+            const hoursFromStart = timeDiff / (1000 * 60 * 60);
+            
+            let info = `Game time: ${gameTime.toLocaleString()}<br>`;
+            info += `Hours from start: ${hoursFromStart.toFixed(2)}<br>`;
+            info += `Period: ${game.status.period}<br>`;
+            info += `Is Live: ${game.isLive ? 'Yes' : 'No'}`;
+            
+            return info;
+        }
+
+        async function testScheduledGames() {
+            console.log('🧪 Testing scheduled games...');
+            
+            // Create mock games scheduled for future
+            const futureTime = new Date();
+            futureTime.setHours(futureTime.getHours() + 2);
+            
+            const mockGames = [
+                createMockGame('nfl-future-1', 'Kansas City Chiefs @ Buffalo Bills', futureTime, 'NFL'),
+                createMockGame('ncaa-future-1', 'Alabama @ Georgia', futureTime, 'NCAA')
+            ];
+            
+            // Test NFL timing
+            const nflEnhanced = nflService.enhanceGamesWithStatus(mockGames.filter(g => g.league === 'NFL'), new Date());
+            displayResults('📅 Scheduled Games (NFL)', nflEnhanced, 'NFL');
+            
+            // Test NCAA timing
+            const ncaaEnhanced = ncaaService.enhanceGamesWithStatus(mockGames.filter(g => g.league === 'NCAA'), new Date());
+            displayResults('📅 Scheduled Games (NCAA)', ncaaEnhanced, 'NCAA');
+        }
+
+        async function testLiveGames() {
+            console.log('🧪 Testing live games...');
+            
+            // Create mock games that started 1.5 hours ago (should be live)
+            const liveTime = new Date();
+            liveTime.setHours(liveTime.getHours() - 1.5);
+            
+            const mockGames = [
+                createMockGame('nfl-live-1', 'Dallas Cowboys @ Philadelphia Eagles', liveTime, 'NFL'),
+                createMockGame('ncaa-live-1', 'Ohio State @ Michigan', liveTime, 'NCAA')
+            ];
+            
+            // Test NFL timing
+            const nflEnhanced = nflService.enhanceGamesWithStatus(mockGames.filter(g => g.league === 'NFL'), new Date());
+            displayResults('🔴 Live Games (NFL)', nflEnhanced, 'NFL');
+            
+            // Test NCAA timing
+            const ncaaEnhanced = ncaaService.enhanceGamesWithStatus(mockGames.filter(g => g.league === 'NCAA'), new Date());
+            displayResults('🔴 Live Games (NCAA)', ncaaEnhanced, 'NCAA');
+        }
+
+        async function testCompletedGames() {
+            console.log('🧪 Testing completed games...');
+            
+            // Create mock games that started 4 hours ago (should be completed)
+            const completedTime = new Date();
+            completedTime.setHours(completedTime.getHours() - 4);
+            
+            const mockGames = [
+                createMockGame('nfl-final-1', 'Green Bay Packers @ Chicago Bears', completedTime, 'NFL'),
+                createMockGame('ncaa-final-1', 'Clemson @ Florida State', completedTime, 'NCAA')
+            ];
+            
+            // Test NFL timing
+            const nflEnhanced = nflService.enhanceGamesWithStatus(mockGames.filter(g => g.league === 'NFL'), new Date());
+            displayResults('✅ Completed Games (NFL)', nflEnhanced, 'NFL');
+            
+            // Test NCAA timing
+            const ncaaEnhanced = ncaaService.enhanceGamesWithStatus(mockGames.filter(g => g.league === 'NCAA'), new Date());
+            displayResults('✅ Completed Games (NCAA)', ncaaEnhanced, 'NCAA');
+        }
+
+        async function testOffSeasonNFL() {
+            console.log('🧪 Testing NFL off-season...');
+            
+            const offSeasonGames = nflService.generateOffseasonMessage();
+            displayResults('🏖️ NFL Off-Season', offSeasonGames, 'NFL');
+        }
+
+        async function testOffSeasonNCAA() {
+            console.log('🧪 Testing NCAA off-season...');
+            
+            const offSeasonGames = ncaaService.generateOffseasonMessage();
+            displayResults('🏖️ NCAA Off-Season', offSeasonGames, 'NCAA');
+        }
+
+        async function testCurrentTime() {
+            console.log('🧪 Testing current time games...');
+            
+            try {
+                const nflGames = await nflService.getTodaysGames();
+                displayResults('🕐 Current NFL Games', nflGames.slice(0, 3), 'NFL');
+                
+                const ncaaGames = await ncaaService.getTodaysGames();
+                displayResults('🕐 Current NCAA Games', ncaaGames.slice(0, 3), 'NCAA');
+            } catch (error) {
+                console.error('Error testing current time games:', error);
+                displayResults('❌ Error', [{ 
+                    name: 'Error loading current games', 
+                    status: { type: 'ERROR', displayClock: error.message },
+                    teams: { home: { abbreviation: 'ERR' }, away: { abbreviation: 'ERR' } },
+                    venue: 'N/A'
+                }], 'ERROR');
+            }
+        }
+
+        function createMockGame(id, name, gameTime, league) {
+            const teams = name.split(' @ ');
+            return {
+                id: id,
+                name: name,
+                shortName: name.replace(/\s+/g, ' '),
+                date: gameTime,
+                status: {
+                    type: 'STATUS_SCHEDULED',
+                    displayClock: '',
+                    period: 0,
+                    completed: false
+                },
+                teams: {
+                    home: {
+                        id: 'home-' + id,
+                        name: teams[1] || 'Home Team',
+                        abbreviation: (teams[1] || 'HOME').substring(0, 3).toUpperCase(),
+                        score: 0,
+                        record: '8-3'
+                    },
+                    away: {
+                        id: 'away-' + id,
+                        name: teams[0] || 'Away Team',
+                        abbreviation: (teams[0] || 'AWAY').substring(0, 3).toUpperCase(),
+                        score: 0,
+                        record: '7-4'
+                    }
+                },
+                venue: 'Test Stadium',
+                isLive: false,
+                week: 12,
+                season: 2025,
+                league: league
+            };
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

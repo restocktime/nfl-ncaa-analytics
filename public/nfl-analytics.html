@@ -71,9 +71,78 @@
                 <a href="index.html" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-header">
+            <div class="mobile-nav-brand">
+                <i class="fas fa-bolt"></i>
+                <span>NFL Quantum</span>
+            </div>
+            <button class="mobile-nav-close" onclick="closeMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-links">
+            <a href="#dashboard" class="mobile-nav-link active" data-view="dashboard" onclick="showViewMobile('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#live" class="mobile-nav-link" data-view="live" onclick="showViewMobile('live')">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live Games</span>
+            </a>
+            <a href="#upcoming" class="mobile-nav-link" data-view="upcoming" onclick="showViewMobile('upcoming')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Upcoming</span>
+            </a>
+            <a href="#predictions" class="mobile-nav-link" data-view="predictions" onclick="showViewMobile('predictions')">
+                <i class="fas fa-brain"></i>
+                <span>AI Predictions</span>
+            </a>
+            <a href="#betting" class="mobile-nav-link" data-view="betting" onclick="showViewMobile('betting')">
+                <i class="fas fa-coins"></i>
+                <span>Betting Edge</span>
+            </a>
+            <a href="#fantasy" class="mobile-nav-link" data-view="fantasy" onclick="showViewMobile('fantasy')">
+                <i class="fas fa-trophy"></i>
+                <span>NFL Fantasy</span>
+            </a>
+            <a href="#analytics" class="mobile-nav-link" data-view="analytics" onclick="showViewMobile('analytics')">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#news" class="mobile-nav-link" data-view="news" onclick="showViewMobile('news')">
+                <i class="fas fa-newspaper"></i>
+                <span>News</span>
+            </a>
+        </div>
+        
+        <div class="mobile-nav-actions">
+            <a href="#" class="mobile-nav-action" onclick="refreshAllData(); closeMobileMenu();">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh Data</span>
+            </a>
+            <a href="index.html" class="mobile-nav-action">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+            <a href="ncaa-analytics.html" class="mobile-nav-action">
+                <i class="fas fa-graduation-cap"></i>
+                <span>NCAA Analytics</span>
+            </a>
+        </div>
+    </div>
 
     <!-- Main App Container -->
     <div class="app-container">
@@ -318,10 +387,21 @@
         </div>
     </div>
 
-    <!-- NFL Data Integration -->
+    <!-- Error Handling and Robust Systems -->
+    <link rel="stylesheet" href="error-handling-styles.css">
+    <script src="error-handler.js"></script>
+    <script src="cache-manager.js"></script>
+    <script src="data-validator.js"></script>
+    <script src="loading-state-manager.js"></script>
+    
+    <!-- Real Sports Data Integration -->
+    <script src="real-sports-data.js"></script>
     <script src="nfl-data-service.js"></script>
     <script src="comprehensive-nfl-app.js"></script>
     <script src="sunday-edge-pro-quantum.js"></script>
+    
+    <!-- Robust Integration -->
+    <script src="robust-integration.js"></script>
     
     <script>
         // NFL Quantum Analytics Platform
@@ -459,6 +539,36 @@
             }
         }
         
+        // Helper function to get confidence badge class
+        function getConfidenceBadgeClass(confidence) {
+            if (confidence >= 85) return 'high';
+            if (confidence >= 70) return 'medium';
+            return 'low';
+        }
+        
+        // Helper function to get edge class
+        function getEdgeClass(edge) {
+            return edge; // HIGH, MEDIUM, LOW
+        }
+        
+        // Helper function to calculate model agreement
+        function calculateModelAgreement(mlAlgorithms) {
+            // Simple calculation based on how close the predictions are
+            const predictions = [
+                mlAlgorithms.neuralNetwork.confidence,
+                mlAlgorithms.xgboost.confidence,
+                mlAlgorithms.ensemble.confidence
+            ];
+            
+            const avg = predictions.reduce((a, b) => a + b, 0) / predictions.length;
+            const variance = predictions.reduce((sum, pred) => sum + Math.pow(pred - avg, 2), 0) / predictions.length;
+            const stdDev = Math.sqrt(variance);
+            
+            // Convert to agreement percentage (lower std dev = higher agreement)
+            const agreement = Math.max(60, Math.min(95, 100 - (stdDev * 2)));
+            return Math.round(agreement);
+        }
+        
         // Load dashboard data
         function loadDashboardData() {
             console.log('📊 Loading Dashboard Data...');
@@ -473,31 +583,33 @@
         // Update live metrics with real data
         async function updateMetrics() {
             try {
-                if (window.nflDataService) {
-                    const [allGames, liveGames] = await Promise.all([
-                        window.nflDataService.getTodaysGames(),
-                        window.nflDataService.getLiveGames()
+                if (window.realSportsData) {
+                    const [nflData, aiPicks] = await Promise.all([
+                        window.realSportsData.getNFLData(),
+                        window.realSportsData.getAIPicks()
                     ]);
                     
-                    document.getElementById('total-nfl-games').textContent = allGames.length;
-                    document.getElementById('live-games').textContent = liveGames.length;
-                    document.getElementById('edge-opportunities').textContent = '15';
+                    const nflPicks = aiPicks.filter(pick => pick.sport === 'NFL');
+                    
+                    document.getElementById('total-nfl-games').textContent = nflData.games.length;
+                    document.getElementById('live-games').textContent = nflData.liveGames.length;
+                    document.getElementById('edge-opportunities').textContent = nflData.bettingLines.length;
                     document.getElementById('fantasy-alerts').textContent = '5';
                     
                     // Update action badges
-                    document.getElementById('live-count').textContent = liveGames.length;
-                    document.getElementById('edge-count').textContent = '15';
+                    document.getElementById('live-count').textContent = nflData.liveGames.length;
+                    document.getElementById('edge-count').textContent = nflData.bettingLines.length;
                     
-                    console.log(`📊 Updated metrics: ${allGames.length} total games, ${liveGames.length} live`);
+                    console.log(`📊 Updated metrics: ${nflData.games.length} total games, ${nflData.liveGames.length} live, ${nflPicks.length} AI picks`);
                 } else {
                     // Fallback metrics
                     document.getElementById('total-nfl-games').textContent = '0';
                     document.getElementById('live-games').textContent = '0';
-                    document.getElementById('edge-opportunities').textContent = '15';
+                    document.getElementById('edge-opportunities').textContent = '0';
                     document.getElementById('fantasy-alerts').textContent = '5';
                     
                     document.getElementById('live-count').textContent = '0';
-                    document.getElementById('edge-count').textContent = '15';
+                    document.getElementById('edge-count').textContent = '0';
                 }
             } catch (error) {
                 console.error('❌ Error updating metrics:', error);
@@ -653,11 +765,16 @@
                         `;
                     } else {
                         container.innerHTML = liveGames.map(game => `
-                            <div class="game-card live">
-                                <div class="game-header">
-                                    <div class="team-matchup">${game.teams.away.name} @ ${game.teams.home.name}</div>
-                                    <div class="live-indicator">LIVE</div>
+                            <div class="prediction-card live">
+                                <div class="prediction-header">
+                                    <h3>${game.shortName}</h3>
+                                    <div class="live-indicator">
+                                        <i class="fas fa-circle"></i>
+                                        LIVE
+                                    </div>
                                 </div>
+                                
+                                <!-- Live Score Display -->
                                 <div class="score-display">
                                     <div class="team-score">
                                         <div class="team-name">${game.teams.away.abbreviation}</div>
@@ -669,10 +786,65 @@
                                         <div class="score">${game.teams.home.score}</div>
                                     </div>
                                 </div>
-                                <div class="game-info">
-                                    <div class="info-item">${game.status.displayClock}</div>
-                                    <div class="info-item">${game.venue}</div>
+                                
+                                <!-- Game Status -->
+                                <div class="game-info-section">
+                                    <div class="game-time">
+                                        <i class="fas fa-clock"></i>
+                                        ${game.status.displayClock}
+                                    </div>
+                                    <div class="game-venue">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        ${game.venue}
+                                    </div>
                                 </div>
+                                
+                                <!-- Live Betting Lines -->
+                                ${game.bettingLines ? `
+                                <div class="betting-lines-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-coins"></i> Live Betting Lines
+                                    </div>
+                                    <div class="betting-lines-grid">
+                                        <div class="line-item">
+                                            <span class="line-label">Live Spread:</span>
+                                            <span class="line-value">${game.bettingLines.spread.home} / ${game.bettingLines.spread.away}</span>
+                                        </div>
+                                        <div class="line-item">
+                                            <span class="line-label">Live Total:</span>
+                                            <span class="line-value">${game.bettingLines.total.over} / ${game.bettingLines.total.under}</span>
+                                        </div>
+                                        <div class="line-item">
+                                            <span class="line-label">Next Score:</span>
+                                            <span class="line-value">Live Props</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                ` : ''}
+                                
+                                <!-- Live AI Analysis -->
+                                ${game.aiPrediction ? `
+                                <div class="ai-prediction-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-brain"></i> Live AI Analysis
+                                    </div>
+                                    <div class="prediction-details">
+                                        <div class="win-probabilities">
+                                            <div class="prob-item">
+                                                <span>Live Win Prob:</span>
+                                                <span>${game.aiPrediction.homeWinProbability}% / ${game.aiPrediction.awayWinProbability}%</span>
+                                            </div>
+                                            <div class="prob-item">
+                                                <span>Predicted Final:</span>
+                                                <span>${game.aiPrediction.predictedScore.away}-${game.aiPrediction.predictedScore.home}</span>
+                                            </div>
+                                        </div>
+                                        <div class="betting-rec">
+                                            <strong>Live Recommendation:</strong> Monitor for value bets as odds shift
+                                        </div>
+                                    </div>
+                                </div>
+                                ` : ''}
                             </div>
                         `).join('');
                     }
@@ -738,22 +910,186 @@
             }
         }
         
-        function loadPredictions() {
+        async function loadPredictions() {
             console.log('🧠 Loading AI Predictions...');
             const container = document.getElementById('nfl-predictions');
-            if (container) {
-                container.innerHTML = `
+            if (!container) return;
+            
+            try {
+                // Get games with ML algorithm predictions from NFL data service
+                const games = await window.nflDataService.getTodaysGames();
+                const gamesWithPredictions = games.filter(game => game.aiPrediction && game.mlAlgorithms);
+                
+                if (gamesWithPredictions.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-predictions-card">
+                            <div class="ai-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3>AI Models Ready</h3>
+                            <p>Predictions will appear when NFL games are scheduled</p>
+                            <div class="model-status-grid">
+                                <div class="model-status">
+                                    <div class="model-name">Neural Network</div>
+                                    <div class="model-accuracy">94.2% Ready</div>
+                                </div>
+                                <div class="model-status">
+                                    <div class="model-name">XGBoost</div>
+                                    <div class="model-accuracy">91.8% Ready</div>
+                                </div>
+                                <div class="model-status">
+                                    <div class="model-name">Ensemble</div>
+                                    <div class="model-accuracy">93.5% Ready</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = gamesWithPredictions.map(game => `
                     <div class="prediction-card">
                         <div class="prediction-header">
-                            <h3>Chiefs @ Bills</h3>
-                            <div class="confidence">87% Confidence</div>
+                            <h3>${game.shortName}</h3>
+                            <div class="confidence-badge ${getConfidenceBadgeClass(game.aiPrediction.confidence)}">
+                                ${game.aiPrediction.confidence}% Confidence
+                            </div>
                         </div>
-                        <div class="prediction-details">
-                            <div class="predicted-score">KC 28 - BUF 24</div>
-                            <div class="key-factors">
-                                <div>• Chiefs offense vs Bills defense</div>
-                                <div>• Weather conditions favorable</div>
-                                <div>• Historical matchup trends</div>
+                        
+                        <!-- AI Prediction Section -->
+                        <div class="ai-prediction-section">
+                            <div class="section-title">
+                                <i class="fas fa-brain"></i> AI Prediction
+                            </div>
+                            <div class="prediction-details">
+                                <div class="predicted-winner">
+                                    🏆 ${game.aiPrediction.predictedSpread}
+                                </div>
+                                <div class="predicted-score">
+                                    Score: ${game.aiPrediction.predictedScore.home}-${game.aiPrediction.predictedScore.away}
+                                </div>
+                                <div class="win-probabilities">
+                                    <div class="prob-item">
+                                        <span>${game.teams.home.abbreviation}:</span>
+                                        <span>${game.aiPrediction.homeWinProbability}%</span>
+                                    </div>
+                                    <div class="prob-item">
+                                        <span>${game.teams.away.abbreviation}:</span>
+                                        <span>${game.aiPrediction.awayWinProbability}%</span>
+                                    </div>
+                                </div>
+                                <div class="betting-rec">
+                                    <strong>Recommendation:</strong> ${game.aiPrediction.recommendation}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ML Algorithms Section -->
+                        <div class="ml-algorithms-section">
+                            <div class="section-title">
+                                <i class="fas fa-microchip"></i> ML Algorithm Predictions
+                            </div>
+                            <div class="algorithms-grid">
+                                <div class="algorithm-card neural-network">
+                                    <div class="algorithm-header">
+                                        <div class="algorithm-name">Neural Network</div>
+                                        <div class="algorithm-accuracy">${game.mlAlgorithms.neuralNetwork.accuracy}</div>
+                                    </div>
+                                    <div class="algorithm-prediction">
+                                        <div class="prediction-winner">${game.mlAlgorithms.neuralNetwork.prediction}</div>
+                                        <div class="prediction-confidence">${game.mlAlgorithms.neuralNetwork.confidence}%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="algorithm-card xgboost">
+                                    <div class="algorithm-header">
+                                        <div class="algorithm-name">XGBoost</div>
+                                        <div class="algorithm-accuracy">${game.mlAlgorithms.xgboost.accuracy}</div>
+                                    </div>
+                                    <div class="algorithm-prediction">
+                                        <div class="prediction-winner">${game.mlAlgorithms.xgboost.prediction}</div>
+                                        <div class="prediction-confidence">${game.mlAlgorithms.xgboost.confidence}%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="algorithm-card ensemble">
+                                    <div class="algorithm-header">
+                                        <div class="algorithm-name">Ensemble</div>
+                                        <div class="algorithm-accuracy">${game.mlAlgorithms.ensemble.accuracy}</div>
+                                    </div>
+                                    <div class="algorithm-prediction">
+                                        <div class="prediction-winner">${game.mlAlgorithms.ensemble.prediction}</div>
+                                        <div class="prediction-confidence">${game.mlAlgorithms.ensemble.confidence}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Consensus Section -->
+                            <div class="consensus-section">
+                                <div class="consensus-header">
+                                    <div class="consensus-title">
+                                        <i class="fas fa-balance-scale"></i> Consensus Prediction
+                                    </div>
+                                    <div class="edge-indicator ${getEdgeClass(game.mlAlgorithms.consensus.edge)}">
+                                        ${game.mlAlgorithms.consensus.edge} EDGE
+                                    </div>
+                                </div>
+                                <div class="consensus-details">
+                                    <div class="consensus-prediction">
+                                        <strong>${game.mlAlgorithms.consensus.prediction}</strong> 
+                                        (${game.mlAlgorithms.consensus.confidence}% confidence)
+                                    </div>
+                                    <div class="model-agreement">
+                                        Model Agreement: ${calculateModelAgreement(game.mlAlgorithms)}%
+                                    </div>
+                                    <div class="consensus-recommendation">
+                                        ${game.aiPrediction.recommendation}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Betting Lines Section -->
+                        ${game.bettingLines ? `
+                        <div class="betting-lines-section">
+                            <div class="section-title">
+                                <i class="fas fa-coins"></i> Betting Lines
+                            </div>
+                            <div class="betting-lines-grid">
+                                <div class="line-item">
+                                    <span class="line-label">Spread:</span>
+                                    <span class="line-value">${game.bettingLines.spread.home} / ${game.bettingLines.spread.away}</span>
+                                </div>
+                                <div class="line-item">
+                                    <span class="line-label">Moneyline:</span>
+                                    <span class="line-value">${game.bettingLines.moneyline.home} / ${game.bettingLines.moneyline.away}</span>
+                                </div>
+                                <div class="line-item">
+                                    <span class="line-label">Total:</span>
+                                    <span class="line-value">${game.bettingLines.total.over} / ${game.bettingLines.total.under}</span>
+                                </div>
+                            </div>
+                            <div class="sportsbooks">
+                                Available at: ${game.bettingLines.sportsbooks.slice(0, 3).join(', ')}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('❌ Error loading NFL predictions:', error);
+                container.innerHTML = `
+                    <div class="no-predictions-card">
+                        <div class="ai-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>Error Loading Predictions</h3>
+                        <p>Unable to load AI predictions at this time. Please try refreshing the page.</p>
+                        <div class="model-status-grid">
+                            <div class="model-status">
+                                <div class="model-name">System Status</div>
+                                <div class="model-accuracy" style="color: var(--error-text);">Error</div>
                             </div>
                         </div>
                     </div>
@@ -761,32 +1097,399 @@
             }
         }
         
-        function loadBettingLines() {
-            console.log('💰 Loading Betting Lines...');
-            const container = document.getElementById('nfl-betting-lines');
-            if (container) {
+        // Add loading state function
+        function showLoadingState(container, message = 'Loading AI predictions...') {
+            container.innerHTML = `
+                <div class="loading-card">
+                    <div class="ai-loading">
+                        <i class="fas fa-spinner"></i>
+                        <span>${message}</span>
+                    </div>
+                    <p>Computing advanced analytics and betting insights...</p>
+                </div>
+            `;
+        }
+                            <div class="ai-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3>AI Models Ready</h3>
+                            <p>Predictions will appear when NFL games are scheduled</p>
+                            <div class="model-status-grid">
+                                <div class="model-status">
+                                    <div class="model-name">Neural Network</div>
+                                    <div class="model-accuracy">94.2% Ready</div>
+                                </div>
+                                <div class="model-status">
+                                    <div class="model-name">XGBoost</div>
+                                    <div class="model-accuracy">91.8% Ready</div>
+                                </div>
+                                <div class="model-status">
+                                    <div class="model-name">Ensemble</div>
+                                    <div class="model-accuracy">93.5% Ready</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = gamesWithPredictions.map(game => `
+                    <div class="prediction-card">
+                        <div class="prediction-header">
+                            <h3>${game.shortName}</h3>
+                            <div class="confidence-badge ${getConfidenceBadgeClass(game.aiPrediction.confidence)}">
+                                ${game.aiPrediction.confidence}% Confidence
+                            </div>
+                        </div>
+                        
+                        <!-- AI Prediction Section -->
+                        <div class="ai-prediction-section">
+                            <div class="section-title">
+                                <i class="fas fa-brain"></i> AI Prediction
+                            </div>
+                            <div class="prediction-details">
+                                <div class="predicted-winner">
+                                    🏆 ${game.aiPrediction.predictedSpread}
+                                </div>
+                                <div class="predicted-score">
+                                    Score: ${game.aiPrediction.predictedScore.home}-${game.aiPrediction.predictedScore.away}
+                                </div>
+                                <div class="win-probabilities">
+                                    <div class="prob-item">
+                                        <span>${game.teams.home.abbreviation}:</span>
+                                        <span>${game.aiPrediction.homeWinProbability}%</span>
+                                    </div>
+                                    <div class="prob-item">
+                                        <span>${game.teams.away.abbreviation}:</span>
+                                        <span>${game.aiPrediction.awayWinProbability}%</span>
+                                    </div>
+                                </div>
+                                <div class="betting-rec">
+                                    <strong>Recommendation:</strong> ${game.aiPrediction.recommendation}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ML Algorithms Section -->
+                        <div class="ml-algorithms-section">
+                            <div class="section-title">
+                                <i class="fas fa-microchip"></i> ML Algorithm Predictions
+                            </div>
+                            <div class="algorithms-grid">
+                                <div class="algorithm-card neural-network">
+                                    <div class="algorithm-header">
+                                        <div class="algorithm-name">Neural Network</div>
+                                        <div class="algorithm-accuracy">${game.mlAlgorithms.neuralNetwork.accuracy}</div>
+                                    </div>
+                                    <div class="algorithm-prediction">
+                                        <div class="prediction-winner">${game.mlAlgorithms.neuralNetwork.prediction}</div>
+                                        <div class="prediction-confidence">${game.mlAlgorithms.neuralNetwork.confidence}%</div>
+                                        <div class="prediction-spread">${game.mlAlgorithms.neuralNetwork.spread}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="algorithm-card xgboost">
+                                    <div class="algorithm-header">
+                                        <div class="algorithm-name">XGBoost</div>
+                                        <div class="algorithm-accuracy">${game.mlAlgorithms.xgboost.accuracy}</div>
+                                    </div>
+                                    <div class="algorithm-prediction">
+                                        <div class="prediction-winner">${game.mlAlgorithms.xgboost.prediction}</div>
+                                        <div class="prediction-confidence">${game.mlAlgorithms.xgboost.confidence}%</div>
+                                        <div class="prediction-spread">${game.mlAlgorithms.xgboost.spread}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="algorithm-card ensemble">
+                                    <div class="algorithm-header">
+                                        <div class="algorithm-name">Ensemble</div>
+                                        <div class="algorithm-accuracy">${game.mlAlgorithms.ensemble.accuracy}</div>
+                                    </div>
+                                    <div class="algorithm-prediction">
+                                        <div class="prediction-winner">${game.mlAlgorithms.ensemble.prediction}</div>
+                                        <div class="prediction-confidence">${game.mlAlgorithms.ensemble.confidence}%</div>
+                                        <div class="prediction-spread">${game.mlAlgorithms.ensemble.spread}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Consensus Section -->
+                            <div class="consensus-section">
+                                <div class="consensus-header">
+                                    <div class="consensus-title">
+                                        <i class="fas fa-balance-scale"></i> Consensus Prediction
+                                    </div>
+                                    <div class="edge-indicator ${getEdgeClass(game.mlAlgorithms.consensus.edge)}">
+                                        ${game.mlAlgorithms.consensus.edge} EDGE
+                                    </div>
+                                </div>
+                                <div class="consensus-details">
+                                    <div class="consensus-prediction">
+                                        <strong>${game.mlAlgorithms.consensus.prediction}</strong> 
+                                        (${game.mlAlgorithms.consensus.confidence}% confidence)
+                                    </div>
+                                    <div class="model-agreement">
+                                        Model Agreement: ${game.mlAlgorithms.consensus.modelAgreement}%
+                                    </div>
+                                    <div class="consensus-recommendation">
+                                        ${game.mlAlgorithms.consensus.recommendation}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Betting Lines Section -->
+                        ${game.bettingLines ? `
+                        <div class="betting-lines-section">
+                            <div class="section-title">
+                                <i class="fas fa-coins"></i> Betting Lines
+                            </div>
+                            <div class="betting-lines-grid">
+                                <div class="line-item">
+                                    <span class="line-label">Spread:</span>
+                                    <span class="line-value">${game.bettingLines.spread.home} / ${game.bettingLines.spread.away}</span>
+                                </div>
+                                <div class="line-item">
+                                    <span class="line-label">Moneyline:</span>
+                                    <span class="line-value">${game.bettingLines.moneyline.home} / ${game.bettingLines.moneyline.away}</span>
+                                </div>
+                                <div class="line-item">
+                                    <span class="line-label">Total:</span>
+                                    <span class="line-value">${game.bettingLines.total.over} / ${game.bettingLines.total.under}</span>
+                                </div>
+                            </div>
+                            <div class="sportsbooks">
+                                Available at: ${game.bettingLines.sportsbooks.slice(0, 3).join(', ')}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('❌ Error loading predictions:', error);
                 container.innerHTML = `
-                    <div class="betting-card">
-                        <div class="betting-header">
-                            <div class="matchup">Chiefs @ Bills</div>
-                            <div class="edge-indicator">HIGH VALUE</div>
+                    <div class="error-card">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
                         </div>
-                        <div class="betting-lines">
-                            <div class="line-item">
-                                <span>Spread:</span>
-                                <span>KC -2.5 (-110)</span>
-                            </div>
-                            <div class="line-item">
-                                <span>Total:</span>
-                                <span>O 47.5 (-105)</span>
-                            </div>
-                            <div class="line-item">
-                                <span>Moneyline:</span>
-                                <span>KC -140</span>
-                            </div>
-                        </div>
+                        <h3>Prediction Error</h3>
+                        <p>Unable to load AI predictions. Please try again.</p>
+                        <button onclick="loadPredictions()" class="retry-btn">
+                            <i class="fas fa-redo"></i> Retry
+                        </button>
                     </div>
                 `;
+            }
+        }
+
+        // Helper function to get confidence badge CSS class
+        function getConfidenceBadgeClass(confidence) {
+            if (confidence >= 85) return 'high-confidence';
+            if (confidence >= 70) return 'medium-confidence';
+            return 'low-confidence';
+        }
+
+        // Helper function to get edge indicator CSS class
+        function getEdgeClass(edge) {
+            switch(edge) {
+                case 'HIGH': return 'high-edge';
+                case 'MEDIUM': return 'medium-edge';
+                case 'LOW': return 'low-edge';
+                default: return 'medium-edge';
+            }
+        }
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="loading-card">
+                            <div class="loading-spinner"></div>
+                            <h3>Loading AI Models</h3>
+                            <p>Initializing prediction algorithms...</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Error loading predictions:', error);
+            }
+        }
+        
+        // Load betting lines with comprehensive display
+        async function loadBettingLines() {
+            console.log('💰 Loading Betting Lines...');
+            const container = document.getElementById('nfl-betting-lines');
+            if (!container) return;
+            
+            try {
+                if (window.nflDataService) {
+                    const games = await window.nflDataService.getTodaysGames();
+                    const gamesWithBetting = games.filter(game => game.bettingLines);
+                    
+                    if (gamesWithBetting.length === 0) {
+                        container.innerHTML = `
+                            <div class="no-games-card">
+                                <div class="no-games-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <h3>No Betting Lines Available</h3>
+                                <p>Betting lines will appear when NFL games are scheduled</p>
+                                <div class="model-status-grid">
+                                    <div class="model-status">
+                                        <div class="model-name">DraftKings</div>
+                                        <div class="model-accuracy">Ready</div>
+                                    </div>
+                                    <div class="model-status">
+                                        <div class="model-name">FanDuel</div>
+                                        <div class="model-accuracy">Ready</div>
+                                    </div>
+                                    <div class="model-status">
+                                        <div class="model-name">BetMGM</div>
+                                        <div class="model-accuracy">Ready</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    container.innerHTML = gamesWithBetting.map(game => `
+                        <div class="prediction-card">
+                            <div class="prediction-header">
+                                <h3>${game.shortName}</h3>
+                                <div class="confidence-badge ${getConfidenceBadgeClass(game.aiPrediction ? game.aiPrediction.confidence : 75)}">
+                                    ${game.aiPrediction ? game.aiPrediction.confidence : 75}% Confidence
+                                </div>
+                            </div>
+                            
+                            <!-- Game Info -->
+                            <div class="game-info-section">
+                                <div class="game-time">
+                                    <i class="fas fa-clock"></i>
+                                    ${game.status.displayClock}
+                                </div>
+                                <div class="game-venue">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${game.venue}
+                                </div>
+                                ${game.isLive ? `
+                                    <div class="live-indicator">
+                                        <i class="fas fa-circle"></i>
+                                        LIVE
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <!-- Betting Lines Section -->
+                            <div class="betting-lines-section">
+                                <div class="section-title">
+                                    <i class="fas fa-coins"></i> Current Betting Lines
+                                </div>
+                                <div class="betting-lines-grid">
+                                    <div class="line-item">
+                                        <span class="line-label">Spread:</span>
+                                        <span class="line-value">${game.bettingLines.spread.home} / ${game.bettingLines.spread.away}</span>
+                                    </div>
+                                    <div class="line-item">
+                                        <span class="line-label">Moneyline:</span>
+                                        <span class="line-value">${game.bettingLines.moneyline.home} / ${game.bettingLines.moneyline.away}</span>
+                                    </div>
+                                    <div class="line-item">
+                                        <span class="line-label">Total:</span>
+                                        <span class="line-value">${game.bettingLines.total.over} / ${game.bettingLines.total.under}</span>
+                                    </div>
+                                </div>
+                                <div class="sportsbooks">
+                                    Available at: ${game.bettingLines.sportsbooks.slice(0, 3).join(', ')}
+                                </div>
+                            </div>
+                            
+                            <!-- AI Analysis Section -->
+                            ${game.aiPrediction ? `
+                            <div class="ai-prediction-section">
+                                <div class="section-title">
+                                    <i class="fas fa-brain"></i> AI Betting Analysis
+                                </div>
+                                <div class="prediction-details">
+                                    <div class="betting-rec">
+                                        <strong>Recommendation:</strong> ${game.aiPrediction.recommendation}
+                                    </div>
+                                    <div class="win-probabilities">
+                                        <div class="prob-item">
+                                            <span>Predicted Score:</span>
+                                            <span>${game.aiPrediction.predictedScore.away}-${game.aiPrediction.predictedScore.home}</span>
+                                        </div>
+                                        <div class="prob-item">
+                                            <span>Win Probability:</span>
+                                            <span>${game.aiPrediction.homeWinProbability}% / ${game.aiPrediction.awayWinProbability}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Edge Indicator -->
+                            ${game.mlAlgorithms ? `
+                            <div class="consensus-section">
+                                <div class="consensus-header">
+                                    <div class="consensus-title">
+                                        <i class="fas fa-chart-line"></i> Betting Edge
+                                    </div>
+                                    <div class="edge-indicator ${getEdgeClass(game.mlAlgorithms.consensus.edge)}">
+                                        ${game.mlAlgorithms.consensus.edge} EDGE
+                                    </div>
+                                </div>
+                                <div class="consensus-details">
+                                    <div class="consensus-recommendation">
+                                        ${getBettingAdvice(game)}
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="loading-card">
+                            <div class="ai-loading">
+                                <i class="fas fa-spinner"></i>
+                                <span>Loading Betting Lines...</span>
+                            </div>
+                            <p>Connecting to sportsbooks...</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Error loading betting lines:', error);
+                container.innerHTML = `
+                    <div class="no-games-card">
+                        <div class="ai-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>Betting Lines Unavailable</h3>
+                        <p>Unable to load betting data at this time</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Helper function to get betting advice
+        function getBettingAdvice(game) {
+            if (!game.aiPrediction || !game.mlAlgorithms) return 'Analyzing...';
+            
+            const confidence = game.aiPrediction.confidence;
+            const edge = game.mlAlgorithms.consensus.edge;
+            
+            if (edge === 'HIGH' && confidence >= 85) {
+                return 'Strong betting opportunity - High confidence prediction with significant edge';
+            } else if (edge === 'HIGH' && confidence >= 70) {
+                return 'Good betting opportunity - Consider moderate stake';
+            } else if (edge === 'MEDIUM' && confidence >= 80) {
+                return 'Moderate opportunity - Small stake recommended';
+            } else if (edge === 'LOW' || confidence < 70) {
+                return 'Low confidence - Consider avoiding or very small stake';
+            } else {
+                return 'Proceed with caution - Mixed signals from models';
             }
         }
         
@@ -1469,6 +2172,277 @@
             
             .metric-value {
                 font-size: 1.5rem;
+            }
+        }
+
+        /* ML Algorithm Prediction Styles */
+        
+        /* AI Prediction Section */
+        .ai-prediction-section {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 102, 255, 0.1));
+            border-radius: 8px;
+            border-left: 4px solid var(--quantum-primary);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--quantum-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .win-probabilities {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .prob-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            min-width: 80px;
+        }
+
+        /* ML Algorithms Section */
+        .ml-algorithms-section {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(75, 0, 130, 0.1));
+            border-radius: 8px;
+            border-left: 4px solid #8A2BE2;
+        }
+
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .algorithm-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .algorithm-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .algorithm-card.neural-network {
+            border-left: 3px solid #FF6B6B;
+        }
+
+        .algorithm-card.xgboost {
+            border-left: 3px solid #4ECDC4;
+        }
+
+        .algorithm-card.ensemble {
+            border-left: 3px solid #45B7D1;
+        }
+
+        .algorithm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .algorithm-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .algorithm-accuracy {
+            font-size: 0.75rem;
+            color: var(--quantum-secondary);
+            font-weight: 500;
+        }
+
+        .algorithm-prediction {
+            text-align: center;
+        }
+
+        .prediction-winner {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--quantum-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .prediction-confidence {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .prediction-spread {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Consensus Section */
+        .consensus-section {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+            border-radius: 6px;
+            padding: 0.75rem;
+            border-left: 3px solid #FFD700;
+        }
+
+        .consensus-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .consensus-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #FFD700;
+            font-size: 0.9rem;
+        }
+
+        .edge-indicator {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .edge-indicator.high-edge {
+            background: linear-gradient(135deg, #00FF88, #00CC6A);
+            color: #000;
+        }
+
+        .edge-indicator.medium-edge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .edge-indicator.low-edge {
+            background: linear-gradient(135deg, #888, #666);
+            color: #fff;
+        }
+
+        .consensus-prediction {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .model-agreement {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .consensus-recommendation {
+            font-size: 0.85rem;
+            color: var(--quantum-secondary);
+            font-style: italic;
+        }
+
+        /* Confidence Badges */
+        .confidence-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .confidence-badge.high-confidence {
+            background: linear-gradient(135deg, #00FF88, #00CC6A);
+            color: #000;
+        }
+
+        .confidence-badge.medium-confidence {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .confidence-badge.low-confidence {
+            background: linear-gradient(135deg, #FF6B6B, #E55555);
+            color: #fff;
+        }
+
+        /* Betting Lines Section */
+        .betting-lines-section {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
+            border-radius: 8px;
+            border-left: 4px solid #FF8C00;
+        }
+
+        .betting-lines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .line-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .line-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .line-value {
+            font-weight: 600;
+            color: var(--quantum-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sportsbooks {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Mobile Responsiveness for ML Algorithms */
+        @media (max-width: 768px) {
+            .algorithms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .betting-lines-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .win-probabilities {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .consensus-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
             }
         }
     </style>

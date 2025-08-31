@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Betting Lines Implementation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .game-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9f9f9;
+        }
+        .betting-lines {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .spread, .moneyline, .total {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .sportsbooks {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 Betting Lines Implementation Test</h1>
+        <p>Testing the new betting lines generation system for NFL and NCAA games.</p>
+        
+        <div id="loading" class="loading">
+            Loading games and generating betting lines...
+        </div>
+        
+        <div id="nfl-games">
+            <h2>NFL Games with Betting Lines</h2>
+            <div id="nfl-results"></div>
+        </div>
+        
+        <div id="ncaa-games">
+            <h2>NCAA Games with Betting Lines</h2>
+            <div id="ncaa-results"></div>
+        </div>
+    </div>
+
+    <!-- Load the data services -->
+    <script src="public/nfl-data-service.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        async function testBettingLines() {
+            const loadingDiv = document.getElementById('loading');
+            const nflResults = document.getElementById('nfl-results');
+            const ncaaResults = document.getElementById('ncaa-results');
+            
+            try {
+                console.log('🧪 Starting betting lines test...');
+                
+                // Test NFL betting lines
+                console.log('🏈 Testing NFL betting lines...');
+                const nflService = new NFLDataService();
+                const nflGames = await nflService.getTodaysGames();
+                
+                console.log(`📊 Got ${nflGames.length} NFL games`);
+                
+                nflResults.innerHTML = '';
+                nflGames.slice(0, 3).forEach(game => {
+                    const gameCard = createGameCard(game, 'NFL');
+                    nflResults.appendChild(gameCard);
+                });
+                
+                // Test NCAA betting lines
+                console.log('🎓 Testing NCAA betting lines...');
+                const ncaaService = new NCAADataService();
+                const ncaaGames = await ncaaService.getTodaysGames();
+                
+                console.log(`📊 Got ${ncaaGames.length} NCAA games`);
+                
+                ncaaResults.innerHTML = '';
+                ncaaGames.slice(0, 3).forEach(game => {
+                    const gameCard = createGameCard(game, 'NCAA');
+                    ncaaResults.appendChild(gameCard);
+                });
+                
+                loadingDiv.style.display = 'none';
+                console.log('✅ Betting lines test completed successfully!');
+                
+            } catch (error) {
+                console.error('❌ Betting lines test failed:', error);
+                loadingDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        function createGameCard(game, league) {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            
+            const bettingLines = game.bettingLines;
+            const aiPrediction = game.aiPrediction;
+            
+            card.innerHTML = `
+                <h3>${game.name || game.shortName}</h3>
+                <p><strong>Venue:</strong> ${game.venue}</p>
+                <p><strong>Status:</strong> ${game.status?.type || 'Scheduled'}</p>
+                
+                ${aiPrediction ? `
+                    <div style="background: #e6f3ff; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                        <strong>🤖 AI Prediction:</strong><br>
+                        Win Probability: ${game.teams.home.abbreviation} ${aiPrediction.homeWinProbability}% - ${game.teams.away.abbreviation} ${aiPrediction.awayWinProbability}%<br>
+                        Predicted Score: ${aiPrediction.predictedScore.home} - ${aiPrediction.predictedScore.away}<br>
+                        Confidence: ${aiPrediction.confidence}%<br>
+                        Recommendation: ${aiPrediction.recommendation}
+                    </div>
+                ` : ''}
+                
+                ${bettingLines ? `
+                    <div class="betting-lines">
+                        <strong>💰 Betting Lines:</strong><br>
+                        <div class="spread">
+                            <strong>Spread:</strong> ${game.teams.home.abbreviation} ${bettingLines.spread.home} | ${game.teams.away.abbreviation} ${bettingLines.spread.away}
+                        </div>
+                        <div class="moneyline">
+                            <strong>Moneyline:</strong> ${game.teams.home.abbreviation} ${bettingLines.moneyline.home} | ${game.teams.away.abbreviation} ${bettingLines.moneyline.away}
+                        </div>
+                        <div class="total">
+                            <strong>Total:</strong> ${bettingLines.total.over} / ${bettingLines.total.under}
+                        </div>
+                        <div class="sportsbooks">
+                            <strong>Sportsbooks:</strong> ${bettingLines.sportsbooks.join(', ')}
+                        </div>
+                        <div style="font-size: 0.8em; color: #888; margin-top: 5px;">
+                            Source: ${bettingLines.source} | Updated: ${new Date(bettingLines.lastUpdated).toLocaleTimeString()}
+                        </div>
+                    </div>
+                ` : '<div class="error">No betting lines available</div>'}
+            `;
+            
+            return card;
+        }
+        
+        // Start the test when page loads
+        document.addEventListener('DOMContentLoaded', testBettingLines);
+    </script>
+</body>
+</html>

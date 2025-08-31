@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Handling System Test</title>
+    <link rel="stylesheet" href="error-handling-styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background: #f8fafc;
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+        }
+        .test-button {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        #test-container {
+            min-height: 200px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .stats {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛡️ Error Handling System Test</h1>
+    
+    <div class="test-section">
+        <h2>Loading States</h2>
+        <button class="test-button" onclick="testLoadingState()">Show Loading State</button>
+        <button class="test-button" onclick="testSkeletonLoading()">Show Skeleton Loading</button>
+        <button class="test-button" onclick="testLoadingTimeout()">Test Loading Timeout</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Error States</h2>
+        <button class="test-button" onclick="testErrorState()">Show Error State</button>
+        <button class="test-button" onclick="testAPIError()">Simulate API Error</button>
+        <button class="test-button" onclick="testValidationError()">Test Data Validation</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Cache System</h2>
+        <button class="test-button" onclick="testCacheSet()">Set Cache Data</button>
+        <button class="test-button" onclick="testCacheGet()">Get Cache Data</button>
+        <button class="test-button" onclick="testCacheClear()">Clear Cache</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Container</h2>
+        <div id="test-container"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>System Statistics</h2>
+        <button class="test-button" onclick="updateStats()">Update Stats</button>
+        <div id="stats" class="stats">Click "Update Stats" to see system statistics</div>
+    </div>
+    
+    <!-- Error Handling Scripts -->
+    <script src="error-handler.js"></script>
+    <script src="cache-manager.js"></script>
+    <script src="data-validator.js"></script>
+    <script src="loading-state-manager.js"></script>
+    
+    <script>
+        // Test functions
+        function testLoadingState() {
+            console.log('Testing loading state...');
+            window.loadingStateManager.showLoadingState('test-container', 'Testing loading state...');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                window.loadingStateManager.hideLoadingState('test-container');
+                document.getElementById('test-container').innerHTML = '<p style="padding: 2rem; text-align: center;">Loading test completed!</p>';
+            }, 3000);
+        }
+        
+        function testSkeletonLoading() {
+            console.log('Testing skeleton loading...');
+            window.loadingStateManager.showSkeletonLoading('test-container', 'games');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                document.getElementById('test-container').innerHTML = '<p style="padding: 2rem; text-align: center;">Skeleton loading test completed!</p>';
+            }, 3000);
+        }
+        
+        function testLoadingTimeout() {
+            console.log('Testing loading timeout...');
+            window.loadingStateManager.showLoadingState('test-container', 'This will timeout in 5 seconds...');
+            
+            // Simulate timeout
+            setTimeout(() => {
+                window.loadingStateManager.handleLoadingTimeout('test-container');
+            }, 5000);
+        }
+        
+        function testErrorState() {
+            console.log('Testing error state...');
+            window.loadingStateManager.showErrorState(
+                'test-container', 
+                'This is a test error message',
+                () => {
+                    console.log('Retry button clicked!');
+                    testLoadingState();
+                }
+            );
+        }
+        
+        async function testAPIError() {
+            console.log('Testing API error handling...');
+            
+            try {
+                const result = await window.errorHandler.safeApiCall(
+                    // Failing API function
+                    async () => {
+                        throw new Error('Simulated API failure');
+                    },
+                    // Fallback function
+                    async () => {
+                        return { message: 'Fallback data loaded successfully!' };
+                    },
+                    {
+                        retries: 2,
+                        delay: 500,
+                        cacheKey: 'test_api_call'
+                    }
+                );
+                
+                document.getElementById('test-container').innerHTML = `
+                    <div style="padding: 2rem; text-align: center;">
+                        <h3>API Error Test Result</h3>
+                        <p>${result.message}</p>
+                        <div class="success-state">
+                            <div class="success-icon">✅</div>
+                            <p class="success-message">Fallback system worked correctly!</p>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('API error test failed:', error);
+            }
+        }
+        
+        function testValidationError() {
+            console.log('Testing data validation...');
+            
+            // Test with invalid game data
+            const invalidGame = {
+                id: null,
+                name: '',
+                teams: {
+                    home: { name: 'Test Home' },
+                    // Missing away team
+                }
+            };
+            
+            const validation = window.dataValidator.validateGame(invalidGame);
+            
+            document.getElementById('test-container').innerHTML = `
+                <div style="padding: 2rem;">
+                    <h3>Data Validation Test</h3>
+                    <p><strong>Valid:</strong> ${validation.isValid}</p>
+                    <p><strong>Errors:</strong></p>
+                    <ul>
+                        ${validation.errors.map(error => `<li>${error}</li>`).join('')}
+                    </ul>
+                    ${validation.sanitized ? `
+                        <p><strong>Sanitized Data Available:</strong> Yes</p>
+                        <pre style="background: #f1f5f9; padding: 1rem; border-radius: 4px; overflow: auto;">
+${JSON.stringify(validation.sanitized, null, 2)}
+                        </pre>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        function testCacheSet() {
+            console.log('Testing cache set...');
+            
+            const testData = {
+                timestamp: new Date().toISOString(),
+                message: 'Test cache data',
+                randomValue: Math.random()
+            };
+            
+            window.cacheManager.set('test_cache_key', testData, {
+                ttl: 60000, // 1 minute
+                persistent: true,
+                tags: ['test']
+            });
+            
+            document.getElementById('test-container').innerHTML = `
+                <div style="padding: 2rem; text-align: center;">
+                    <h3>Cache Set Test</h3>
+                    <div class="success-state">
+                        <div class="success-icon">✅</div>
+                        <p class="success-message">Data cached successfully!</p>
+                    </div>
+                    <pre style="background: #f1f5f9; padding: 1rem; border-radius: 4px; text-align: left;">
+${JSON.stringify(testData, null, 2)}
+                    </pre>
+                </div>
+            `;
+        }
+        
+        function testCacheGet() {
+            console.log('Testing cache get...');
+            
+            const cachedData = window.cacheManager.get('test_cache_key');
+            
+            document.getElementById('test-container').innerHTML = `
+                <div style="padding: 2rem; text-align: center;">
+                    <h3>Cache Get Test</h3>
+                    ${cachedData ? `
+                        <div class="success-state">
+                            <div class="success-icon">✅</div>
+                            <p class="success-message">Cached data retrieved successfully!</p>
+                        </div>
+                        <pre style="background: #f1f5f9; padding: 1rem; border-radius: 4px; text-align: left;">
+${JSON.stringify(cachedData, null, 2)}
+                        </pre>
+                    ` : `
+                        <div class="warning-state">
+                            <div class="warning-icon">⚠️</div>
+                            <p class="warning-message">No cached data found. Try setting cache data first.</p>
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+        
+        function testCacheClear() {
+            console.log('Testing cache clear...');
+            
+            window.cacheManager.clearByTags(['test']);
+            
+            document.getElementById('test-container').innerHTML = `
+                <div style="padding: 2rem; text-align: center;">
+                    <h3>Cache Clear Test</h3>
+                    <div class="success-state">
+                        <div class="success-icon">✅</div>
+                        <p class="success-message">Test cache data cleared successfully!</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateStats() {
+            console.log('Updating system statistics...');
+            
+            const errorStats = window.errorHandler?.getErrorStats() || {};
+            const cacheStats = window.cacheManager?.getStats() || {};
+            const loadingStats = window.loadingStateManager?.getLoadingStats() || {};
+            
+            document.getElementById('stats').innerHTML = `
+                <h4>Error Handler Stats:</h4>
+                <pre>${JSON.stringify(errorStats, null, 2)}</pre>
+                
+                <h4>Cache Manager Stats:</h4>
+                <pre>${JSON.stringify(cacheStats, null, 2)}</pre>
+                
+                <h4>Loading State Stats:</h4>
+                <pre>${JSON.stringify(loadingStats, null, 2)}</pre>
+                
+                <h4>System Status:</h4>
+                <pre>
+Error Handler: ${window.errorHandler ? '✅ Active' : '❌ Not Available'}
+Cache Manager: ${window.cacheManager ? '✅ Active' : '❌ Not Available'}
+Data Validator: ${window.dataValidator ? '✅ Active' : '❌ Not Available'}
+Loading State Manager: ${window.loadingStateManager ? '✅ Active' : '❌ Not Available'}
+                </pre>
+            `;
+        }
+        
+        // Initialize test page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Error Handling Test Page Loaded');
+            
+            // Wait for systems to load
+            setTimeout(() => {
+                updateStats();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

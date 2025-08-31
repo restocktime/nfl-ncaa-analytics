@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Football Analytics Validation</title>
+    <link rel="stylesheet" href="public/styles.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .test-btn.primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .test-btn.secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .test-btn.secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-log {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-success { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-error { background: #dc3545; }
+        .status-info { background: #17a2b8; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-controls {
+                flex-direction: column;
+            }
+        }
+        
+        .demo-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .ai-section, .betting-section, .ml-section {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .ai-section { background: #e3f2fd; }
+        .betting-section { background: #f3e5f5; }
+        .ml-section { background: #e8f5e8; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🏈 Football Analytics System Validation</h1>
+            <p>Comprehensive testing suite for all functionality</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Test Controls</h2>
+            <div class="test-controls">
+                <button class="test-btn primary" onclick="runAllTests()">
+                    🚀 Run All Tests
+                </button>
+                <button class="test-btn secondary" onclick="testRealApiData()">
+                    📡 Test Real API Data
+                </button>
+                <button class="test-btn secondary" onclick="testFallbackSystem()">
+                    🔄 Test Fallback System
+                </button>
+                <button class="test-btn secondary" onclick="testAiPredictions()">
+                    🤖 Test AI Predictions
+                </button>
+                <button class="test-btn secondary" onclick="testBettingLines()">
+                    💰 Test Betting Lines
+                </button>
+                <button class="test-btn secondary" onclick="testMlAlgorithms()">
+                    🧠 Test ML Algorithms
+                </button>
+                <button class="test-btn secondary" onclick="testMobileResponsiveness()">
+                    📱 Test Mobile Responsiveness
+                </button>
+                <button class="test-btn secondary" onclick="clearResults()">
+                    🗑️ Clear Results
+                </button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            
+            <div class="test-results">
+                <h3>📊 Test Results</h3>
+                <div id="testSummary">
+                    <p><span class="status-indicator status-info"></span>Ready to run tests</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Test Log</h2>
+            <div class="test-log" id="testLog">
+Comprehensive Football Analytics Validation Suite
+=================================================
+Ready to run tests. Click "Run All Tests" to begin.
+
+Test Categories:
+• Real API Data Testing
+• Fallback System Testing  
+• AI Predictions Testing
+• Betting Lines Testing
+• ML Algorithms Testing
+• Mobile Responsiveness Testing
+• Visual Appeal Testing
+            </div>
+        </div>
+        
+        <div class="grid-2">
+            <div class="test-section">
+                <h2>🏈 NFL Demo Section</h2>
+                <div id="nflDemo">
+                    <p>NFL games will be loaded here during testing...</p>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h2>🏫 NCAA Demo Section</h2>
+                <div id="ncaaDemo">
+                    <p>NCAA games will be loaded here during testing...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎯 Live Functionality Demo</h2>
+            <p>This section demonstrates the actual functionality being tested:</p>
+            
+            <div class="game-card">
+                <h3>Sample Game with AI Enhancements</h3>
+                <div class="ai-section">
+                    <h4>🤖 AI Prediction</h4>
+                    <p id="aiDemo">AI predictions will appear here...</p>
+                </div>
+                <div class="betting-section">
+                    <h4>💰 Betting Lines</h4>
+                    <p id="bettingDemo">Betting lines will appear here...</p>
+                </div>
+                <div class="ml-section">
+                    <h4>🧠 ML Algorithms</h4>
+                    <p id="mlDemo">ML algorithm results will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load required services -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+    <script src="public/nfl-data-service.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+    <script src="test-comprehensive-validation.js"></script>
+    
+    <script>
+        let currentValidator = null;
+        let testProgress = 0;
+        
+        // Initialize test environment
+        document.addEventListener('DOMContentLoaded', () => {
+            logMessage('🚀 Test environment initialized');
+            logMessage('📡 Loading data services...');
+            
+            // Initialize services
+            setTimeout(() => {
+                logMessage('✅ Services loaded successfully');
+                logMessage('🎯 Ready to run comprehensive tests');
+            }, 1000);
+        });
+        
+        // Run all tests
+        async function runAllTests() {
+            logMessage('🧪 Starting comprehensive validation suite...');
+            updateProgress(0);
+            
+            try {
+                currentValidator = new ComprehensiveValidationSuite();
+                await currentValidator.runAllTests();
+                
+                updateProgress(100);
+                updateSummary();
+                
+                // Demo the functionality
+                await demoFunctionality();
+                
+            } catch (error) {
+                logMessage(`❌ Test suite failed: ${error.message}`);
+                updateSummary('error', 'Test suite execution failed');
+            }
+        }
+        
+        // Individual test functions
+        async function testRealApiData() {
+            logMessage('📡 Testing real API data...');
+            updateProgress(10);
+            
+            try {
+                const validator = new ComprehensiveValidationSuite();
+                await validator.testRealApiData();
+                logMessage('✅ Real API data test completed');
+                updateProgress(100);
+            } catch (error) {
+                logMessage(`❌ Real API test failed: ${error.message}`);
+            }
+        }
+        
+        async function testFallbackSystem() {
+            logMessage('🔄 Testing fallback system...');
+            updateProgress(20);
+            
+            try {
+                const validator = new ComprehensiveValidationSuite();
+                await validator.testFallbackSystem();
+                logMessage('✅ Fallback system test completed');
+                updateProgress(100);
+            } catch (error) {
+                logMessage(`❌ Fallback system test failed: ${error.message}`);
+            }
+        }
+        
+        async function testAiPredictions() {
+            logMessage('🤖 Testing AI predictions...');
+            updateProgress(40);
+            
+            try {
+                const validator = new ComprehensiveValidationSuite();
+                await validator.testAiPredictions();
+                logMessage('✅ AI predictions test completed');
+                updateProgress(100);
+                
+                // Demo AI predictions
+                await demoAiPredictions();
+            } catch (error) {
+                logMessage(`❌ AI predictions test failed: ${error.message}`);
+            }
+        }
+        
+        async function testBettingLines() {
+            logMessage('💰 Testing betting lines...');
+            updateProgress(60);
+            
+            try {
+                const validator = new ComprehensiveValidationSuite();
+                await validator.testBettingLines();
+                logMessage('✅ Betting lines test completed');
+                updateProgress(100);
+                
+                // Demo betting lines
+                await demoBettingLines();
+            } catch (error) {
+                logMessage(`❌ Betting lines test failed: ${error.message}`);
+            }
+        }
+        
+        async function testMlAlgorithms() {
+            logMessage('🧠 Testing ML algorithms...');
+            updateProgress(80);
+            
+            try {
+                const validator = new ComprehensiveValidationSuite();
+                await validator.testMlAlgorithms();
+                logMessage('✅ ML algorithms test completed');
+                updateProgress(100);
+                
+                // Demo ML algorithms
+                await demoMlAlgorithms();
+            } catch (error) {
+                logMessage(`❌ ML algorithms test failed: ${error.message}`);
+            }
+        }
+        
+        async function testMobileResponsiveness() {
+            logMessage('📱 Testing mobile responsiveness...');
+            updateProgress(90);
+            
+            try {
+                const validator = new ComprehensiveValidationSuite();
+                await validator.testMobileResponsiveness();
+                await validator.testVisualAppeal();
+                logMessage('✅ Mobile responsiveness test completed');
+                updateProgress(100);
+            } catch (error) {
+                logMessage(`❌ Mobile responsiveness test failed: ${error.message}`);
+            }
+        }
+        
+        // Demo functionality
+        async function demoFunctionality() {
+            logMessage('🎯 Demonstrating live functionality...');
+            
+            try {
+                // Load NFL games
+                const nflService = new NFLDataService();
+                const nflGames = await nflService.getTodaysGames();
+                
+                if (nflGames.length > 0) {
+                    const game = nflGames[0];
+                    displayGameDemo('nflDemo', game, 'NFL');
+                    
+                    // Demo AI, betting, and ML sections
+                    if (game.aiPrediction) {
+                        document.getElementById('aiDemo').innerHTML = 
+                            `Win Probability: ${game.aiPrediction.homeWinProbability}% vs ${game.aiPrediction.awayWinProbability}%<br>
+                             Confidence: ${game.aiPrediction.confidence}%<br>
+                             Recommendation: ${game.aiPrediction.recommendation}`;
+                    }
+                    
+                    if (game.bettingLines) {
+                        document.getElementById('bettingDemo').innerHTML = 
+                            `Spread: ${game.bettingLines.spread?.home} / ${game.bettingLines.spread?.away}<br>
+                             Moneyline: ${game.bettingLines.moneyline?.home} / ${game.bettingLines.moneyline?.away}<br>
+                             Total: ${game.bettingLines.total?.over} / ${game.bettingLines.total?.under}`;
+                    }
+                    
+                    if (game.mlAlgorithms) {
+                        document.getElementById('mlDemo').innerHTML = 
+                            `Neural Network: ${game.mlAlgorithms.neuralNetwork?.prediction} (${game.mlAlgorithms.neuralNetwork?.accuracy})<br>
+                             XGBoost: ${game.mlAlgorithms.xgboost?.prediction} (${game.mlAlgorithms.xgboost?.accuracy})<br>
+                             Consensus: ${game.mlAlgorithms.consensus?.prediction} (${game.mlAlgorithms.consensus?.edge} edge)`;
+                    }
+                }
+                
+                // Load NCAA games
+                const ncaaService = new NCAADataService();
+                const ncaaGames = await ncaaService.getTodaysGames();
+                
+                if (ncaaGames.length > 0) {
+                    const game = ncaaGames[0];
+                    displayGameDemo('ncaaDemo', game, 'NCAA');
+                }
+                
+                logMessage('✅ Live functionality demo completed');
+                
+            } catch (error) {
+                logMessage(`❌ Demo failed: ${error.message}`);
+            }
+        }
+        
+        function displayGameDemo(containerId, game, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="game-card">
+                    <h4>${game.name}</h4>
+                    <p><strong>Status:</strong> ${game.status?.displayClock || 'Scheduled'}</p>
+                    <p><strong>Venue:</strong> ${game.venue}</p>
+                    <p><strong>Teams:</strong> ${game.teams?.away?.name} @ ${game.teams?.home?.name}</p>
+                    ${game.teams?.home?.score !== undefined ? 
+                        `<p><strong>Score:</strong> ${game.teams.away.score} - ${game.teams.home.score}</p>` : ''}
+                    ${game.aiPrediction ? 
+                        `<div class="ai-section">
+                            <strong>AI Prediction:</strong> ${game.aiPrediction.confidence}% confidence
+                        </div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Helper functions
+        function logMessage(message) {
+            const log = document.getElementById('testLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.textContent += `\n[${timestamp}] ${message}`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${percent}%`;
+            testProgress = percent;
+        }
+        
+        function updateSummary(status = 'success', message = '') {
+            const summary = document.getElementById('testSummary');
+            
+            if (window.validationResults) {
+                const results = window.validationResults.summary;
+                const statusClass = results.overallPercentage >= 80 ? 'status-success' : 
+                                   results.overallPercentage >= 60 ? 'status-warning' : 'status-error';
+                
+                summary.innerHTML = `
+                    <p><span class="status-indicator ${statusClass}"></span>
+                       Tests completed: ${results.overallPercentage}% success rate</p>
+                    <p>✅ Passed: ${results.totalPassed} | ❌ Failed: ${results.totalFailed}</p>
+                    <p>⏱️ Duration: ${results.duration}ms</p>
+                `;
+            } else if (status === 'error') {
+                summary.innerHTML = `
+                    <p><span class="status-indicator status-error"></span>${message}</p>
+                `;
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('testLog').textContent = 
+                'Comprehensive Football Analytics Validation Suite\n' +
+                '=================================================\n' +
+                'Results cleared. Ready to run tests again.\n';
+            
+            document.getElementById('testSummary').innerHTML = 
+                '<p><span class="status-indicator status-info"></span>Ready to run tests</p>';
+            
+            updateProgress(0);
+            
+            // Clear demo sections
+            document.getElementById('nflDemo').innerHTML = '<p>NFL games will be loaded here during testing...</p>';
+            document.getElementById('ncaaDemo').innerHTML = '<p>NCAA games will be loaded here during testing...</p>';
+            document.getElementById('aiDemo').textContent = 'AI predictions will appear here...';
+            document.getElementById('bettingDemo').textContent = 'Betting lines will appear here...';
+            document.getElementById('mlDemo').textContent = 'ML algorithm results will appear here...';
+        }
+        
+        // Auto-run basic tests on load
+        setTimeout(() => {
+            logMessage('🔄 Running basic connectivity tests...');
+            
+            // Test if services are available
+            if (typeof NFLDataService !== 'undefined') {
+                logMessage('✅ NFL Data Service available');
+            } else {
+                logMessage('❌ NFL Data Service not available');
+            }
+            
+            if (typeof NCAADataService !== 'undefined') {
+                logMessage('✅ NCAA Data Service available');
+            } else {
+                logMessage('❌ NCAA Data Service not available');
+            }
+            
+            logMessage('🎯 Ready for comprehensive testing');
+        }, 2000);
+    </script>
+</body>
+</html>

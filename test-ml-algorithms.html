@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test ML Algorithm Predictions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .algorithm-result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        .consensus {
+            background: #4a4a00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .edge-high { color: #00ff88; }
+        .edge-medium { color: #ffd700; }
+        .edge-low { color: #888; }
+    </style>
+</head>
+<body>
+    <h1>ML Algorithm Predictions Test</h1>
+    
+    <div class="test-section">
+        <h2>NFL Data Service Test</h2>
+        <div id="nfl-test-results">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>NCAA Data Service Test</h2>
+        <div id="ncaa-test-results">Loading...</div>
+    </div>
+
+    <!-- Load the data services -->
+    <script src="nfl-data-service.js"></script>
+    <script src="ncaa-data-service.js"></script>
+    
+    <script>
+        async function testMLAlgorithms() {
+            console.log('🧪 Testing ML Algorithm Predictions...');
+            
+            // Test NFL ML Algorithms
+            try {
+                const nflGames = await window.nflDataService.getTodaysGames();
+                const nflContainer = document.getElementById('nfl-test-results');
+                
+                if (nflGames.length > 0) {
+                    const game = nflGames[0];
+                    if (game.mlAlgorithms) {
+                        nflContainer.innerHTML = `
+                            <h3>Game: ${game.shortName}</h3>
+                            <div class="algorithm-result">
+                                <strong>Neural Network:</strong> ${game.mlAlgorithms.neuralNetwork.prediction} 
+                                (${game.mlAlgorithms.neuralNetwork.confidence}% confidence, ${game.mlAlgorithms.neuralNetwork.accuracy} accuracy)
+                            </div>
+                            <div class="algorithm-result">
+                                <strong>XGBoost:</strong> ${game.mlAlgorithms.xgboost.prediction} 
+                                (${game.mlAlgorithms.xgboost.confidence}% confidence, ${game.mlAlgorithms.xgboost.accuracy} accuracy)
+                            </div>
+                            <div class="algorithm-result">
+                                <strong>Ensemble:</strong> ${game.mlAlgorithms.ensemble.prediction} 
+                                (${game.mlAlgorithms.ensemble.confidence}% confidence, ${game.mlAlgorithms.ensemble.accuracy} accuracy)
+                            </div>
+                            <div class="consensus">
+                                <strong>Consensus:</strong> ${game.mlAlgorithms.consensus.prediction} 
+                                (${game.mlAlgorithms.consensus.confidence}% confidence)<br>
+                                <strong>Edge:</strong> <span class="edge-${game.mlAlgorithms.consensus.edge.toLowerCase()}">${game.mlAlgorithms.consensus.edge}</span><br>
+                                <strong>Model Agreement:</strong> ${game.mlAlgorithms.consensus.modelAgreement}%<br>
+                                <strong>Recommendation:</strong> ${game.mlAlgorithms.consensus.recommendation}
+                            </div>
+                        `;
+                    } else {
+                        nflContainer.innerHTML = '<p>❌ No ML algorithms found in game data</p>';
+                    }
+                } else {
+                    nflContainer.innerHTML = '<p>❌ No NFL games found</p>';
+                }
+            } catch (error) {
+                document.getElementById('nfl-test-results').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+            }
+            
+            // Test NCAA ML Algorithms
+            try {
+                const ncaaGames = await window.ncaaDataService.getTodaysGames();
+                const ncaaContainer = document.getElementById('ncaa-test-results');
+                
+                if (ncaaGames.length > 0) {
+                    const game = ncaaGames[0];
+                    if (game.mlAlgorithms) {
+                        ncaaContainer.innerHTML = `
+                            <h3>Game: ${game.shortName}</h3>
+                            <div class="algorithm-result">
+                                <strong>Neural Network:</strong> ${game.mlAlgorithms.neuralNetwork.prediction} 
+                                (${game.mlAlgorithms.neuralNetwork.confidence}% confidence, ${game.mlAlgorithms.neuralNetwork.accuracy} accuracy)
+                            </div>
+                            <div class="algorithm-result">
+                                <strong>XGBoost:</strong> ${game.mlAlgorithms.xgboost.prediction} 
+                                (${game.mlAlgorithms.xgboost.confidence}% confidence, ${game.mlAlgorithms.xgboost.accuracy} accuracy)
+                            </div>
+                            <div class="algorithm-result">
+                                <strong>Ensemble:</strong> ${game.mlAlgorithms.ensemble.prediction} 
+                                (${game.mlAlgorithms.ensemble.confidence}% confidence, ${game.mlAlgorithms.ensemble.accuracy} accuracy)
+                            </div>
+                            <div class="consensus">
+                                <strong>Consensus:</strong> ${game.mlAlgorithms.consensus.prediction} 
+                                (${game.mlAlgorithms.consensus.confidence}% confidence)<br>
+                                <strong>Edge:</strong> <span class="edge-${game.mlAlgorithms.consensus.edge.toLowerCase()}">${game.mlAlgorithms.consensus.edge}</span><br>
+                                <strong>Model Agreement:</strong> ${game.mlAlgorithms.consensus.modelAgreement}%<br>
+                                <strong>Recommendation:</strong> ${game.mlAlgorithms.consensus.recommendation}
+                            </div>
+                        `;
+                    } else {
+                        ncaaContainer.innerHTML = '<p>❌ No ML algorithms found in game data</p>';
+                    }
+                } else {
+                    ncaaContainer.innerHTML = '<p>❌ No NCAA games found</p>';
+                }
+            } catch (error) {
+                document.getElementById('ncaa-test-results').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(testMLAlgorithms, 1000); // Wait for services to initialize
+        });
+    </script>
+</body>
+</html>

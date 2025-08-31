@@ -4674,3 +4674,118 @@ window.nflApp = {
 };
 
 // Fantasy functions are now defined at the top of the file
+/**
+
+ * Mobile Navigation Functions
+ * Handles mobile menu toggle and navigation
+ */
+
+// Toggle mobile menu
+window.toggleMobileMenu = function() {
+    const overlay = document.getElementById('mobileNavOverlay');
+    const menu = document.getElementById('mobileNavMenu');
+    
+    if (overlay && menu) {
+        const isActive = overlay.classList.contains('active');
+        
+        if (isActive) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    }
+};
+
+// Open mobile menu
+window.openMobileMenu = function() {
+    const overlay = document.getElementById('mobileNavOverlay');
+    const menu = document.getElementById('mobileNavMenu');
+    
+    if (overlay && menu) {
+        overlay.classList.add('active');
+        menu.classList.add('active');
+        
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = 'hidden';
+        
+        console.log('📱 Mobile menu opened');
+    }
+};
+
+// Close mobile menu
+window.closeMobileMenu = function() {
+    const overlay = document.getElementById('mobileNavOverlay');
+    const menu = document.getElementById('mobileNavMenu');
+    
+    if (overlay && menu) {
+        overlay.classList.remove('active');
+        menu.classList.remove('active');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        console.log('📱 Mobile menu closed');
+    }
+};
+
+// Show view from mobile menu and close menu
+window.showViewMobile = function(viewName) {
+    console.log('📱 Showing view from mobile:', viewName);
+    
+    // Close mobile menu first
+    closeMobileMenu();
+    
+    // Show the view using existing function
+    if (window.showView) {
+        window.showView(viewName);
+    }
+    
+    // Update mobile nav active state
+    updateMobileNavActive(viewName);
+};
+
+// Update mobile navigation active state
+function updateMobileNavActive(activeView) {
+    const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+    
+    mobileLinks.forEach(link => {
+        link.classList.remove('active');
+        
+        const viewName = link.getAttribute('data-view');
+        if (viewName === activeView) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Close mobile menu when clicking outside or on escape key
+document.addEventListener('DOMContentLoaded', function() {
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close when clicking outside menu
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('mobileNavMenu');
+        const toggle = document.querySelector('.mobile-menu-toggle');
+        
+        if (menu && toggle && 
+            !menu.contains(e.target) && 
+            !toggle.contains(e.target) && 
+            menu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Handle window resize - close menu if switching to desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            closeMobileMenu();
+        }
+    });
+});
+
+console.log('📱 Mobile navigation functions loaded');

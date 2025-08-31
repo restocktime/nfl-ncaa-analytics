@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test NFL Data Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .game-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .live-game {
+            border-color: #ff4444;
+            background: #fff5f5;
+        }
+        .status {
+            font-weight: bold;
+            color: #666;
+        }
+        .live-status {
+            color: #ff4444;
+        }
+        .teams {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .score {
+            font-weight: bold;
+            color: #333;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        .log {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>NFL Data Service Test</h1>
+    
+    <div class="test-section">
+        <h2>Current Date/Time Info</h2>
+        <div id="datetime-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="testTodaysGames()">Test Today's Games</button>
+        <button onclick="testLiveGames()">Test Live Games</button>
+        <button onclick="testDifferentDays()">Test Different Days</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="console-log" class="log"></div>
+    </div>
+
+    <script src="public/nfl-data-service.js"></script>
+    <script>
+        // Override console.log to capture output
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const logDiv = document.getElementById('console-log');
+            if (logDiv) {
+                logDiv.innerHTML += args.join(' ') + '\n';
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }
+        };
+        
+        // Display current date/time info
+        function updateDateTimeInfo() {
+            const now = new Date();
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            
+            document.getElementById('datetime-info').innerHTML = `
+                <p><strong>Current Date:</strong> ${now.toLocaleDateString()}</p>
+                <p><strong>Current Time:</strong> ${now.toLocaleTimeString()}</p>
+                <p><strong>Day of Week:</strong> ${dayNames[now.getDay()]} (${now.getDay()})</p>
+                <p><strong>Hour:</strong> ${now.getHours()}</p>
+            `;
+        }
+        
+        // Test today's games
+        async function testTodaysGames() {
+            console.log('🧪 Testing getTodaysGames()...');
+            const resultsDiv = document.getElementById('test-results');
+            
+            try {
+                const games = await window.nflDataService.getTodaysGames();
+                console.log(`✅ Retrieved ${games.length} games`);
+                
+                let html = `<h3>Today's Games (${games.length} found)</h3>`;
+                
+                if (games.length === 0) {
+                    html += '<p>No games found for today.</p>';
+                } else {
+                    games.forEach(game => {
+                        html += `
+                            <div class="game-card ${game.isLive ? 'live-game' : ''}">
+                                <div class="teams">${game.name}</div>
+                                <div class="status ${game.isLive ? 'live-status' : ''}">${game.status.displayClock}</div>
+                                <div class="score">${game.teams.away.abbreviation} ${game.teams.away.score} - ${game.teams.home.score} ${game.teams.home.abbreviation}</div>
+                                <div>Venue: ${game.venue}</div>
+                                <div>Week ${game.week}, ${game.season} Season</div>
+                                <div>Status: ${game.status.type}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                console.error('❌ Error testing today\'s games:', error);
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Test live games
+        async function testLiveGames() {
+            console.log('🧪 Testing getLiveGames()...');
+            const resultsDiv = document.getElementById('test-results');
+            
+            try {
+                const liveGames = await window.nflDataService.getLiveGames();
+                console.log(`✅ Retrieved ${liveGames.length} live games`);
+                
+                let html = `<h3>Live Games (${liveGames.length} found)</h3>`;
+                
+                if (liveGames.length === 0) {
+                    html += '<p>No live games currently.</p>';
+                } else {
+                    liveGames.forEach(game => {
+                        html += `
+                            <div class="game-card live-game">
+                                <div class="teams">${game.name}</div>
+                                <div class="live-status">${game.status.displayClock}</div>
+                                <div class="score">${game.teams.away.abbreviation} ${game.teams.away.score} - ${game.teams.home.score} ${game.teams.home.abbreviation}</div>
+                                <div>Venue: ${game.venue}</div>
+                                <div>Quarter: ${game.status.period}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                console.error('❌ Error testing live games:', error);
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Test different days of the week
+        async function testDifferentDays() {
+            console.log('🧪 Testing different days of the week...');
+            const resultsDiv = document.getElementById('test-results');
+            
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            let html = '<h3>Games by Day of Week</h3>';
+            
+            for (let day = 0; day < 7; day++) {
+                const testDate = new Date();
+                testDate.setDate(testDate.getDate() + (day - testDate.getDay()));
+                
+                const season = window.nflDataService.getCurrentNFLSeason();
+                const games = window.nflDataService.generateIntelligentFallbackGames(testDate, season);
+                
+                html += `
+                    <div class="game-card">
+                        <h4>${dayNames[day]} (${testDate.toLocaleDateString()})</h4>
+                        <p>${games.length} games scheduled</p>
+                        ${games.map(game => `<div>• ${game.shortName} at ${game.status.displayClock}</div>`).join('')}
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Clear results
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('console-log').innerHTML = '';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTimeInfo();
+            setInterval(updateDateTimeInfo, 1000); // Update every second
+            
+            console.log('🧪 NFL Data Service Test Page Loaded');
+            console.log('📊 Ready to test NFL data service functionality');
+        });
+    </script>
+</body>
+</html>

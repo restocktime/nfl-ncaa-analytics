@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation Test - Football Analytics</title>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="public/styles.css">
+    
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        
+        .test-instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .device-simulator {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .device-frame {
+            border: 3px solid #333;
+            border-radius: 20px;
+            padding: 10px;
+            background: #000;
+            position: relative;
+        }
+        
+        .device-frame.mobile {
+            width: 375px;
+            height: 667px;
+        }
+        
+        .device-frame.tablet {
+            width: 768px;
+            height: 500px;
+        }
+        
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .test-navbar {
+            background: rgba(26, 26, 26, 0.95);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-nav-brand {
+            font-weight: bold;
+        }
+        
+        .test-nav-menu {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .test-nav-link {
+            color: #ccc;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .test-nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .test-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .test-content {
+            padding: 20px;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .test-nav-menu {
+                display: none;
+            }
+            
+            .test-mobile-toggle {
+                display: block;
+            }
+            
+            .device-simulator {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .device-frame.tablet {
+                width: 100%;
+                max-width: 500px;
+                height: 300px;
+            }
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-pass { background: #28a745; }
+        .status-fail { background: #dc3545; }
+        .status-pending { background: #ffc107; }
+    </style>
+</head>
+<body>
+    <!-- Test Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-football-ball"></i>
+                <span>Mobile Nav Test</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-broadcast-tower"></i> Live
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-brain"></i> AI
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-coins"></i> Betting
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="btn-refresh">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-header">
+            <div class="mobile-nav-brand">
+                <i class="fas fa-football-ball"></i>
+                <span>Mobile Test</span>
+            </div>
+            <button class="mobile-nav-close" onclick="closeMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-links">
+            <a href="#" class="mobile-nav-link active" onclick="showViewMobile('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="mobile-nav-link" onclick="showViewMobile('live')">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live Games</span>
+            </a>
+            <a href="#" class="mobile-nav-link" onclick="showViewMobile('predictions')">
+                <i class="fas fa-brain"></i>
+                <span>AI Predictions</span>
+            </a>
+            <a href="#" class="mobile-nav-link" onclick="showViewMobile('betting')">
+                <i class="fas fa-coins"></i>
+                <span>Betting Edge</span>
+            </a>
+        </div>
+        
+        <div class="mobile-nav-actions">
+            <a href="#" class="mobile-nav-action" onclick="closeMobileMenu();">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh Data</span>
+            </a>
+            <a href="public/index.html" class="mobile-nav-action">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <div class="test-header">
+            <h1>📱 Mobile Navigation Test Suite</h1>
+            <p>Testing mobile menu functionality across different screen sizes</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Test Instructions</h2>
+            <div class="test-instructions">
+                <h4>How to Test Mobile Navigation:</h4>
+                <ol>
+                    <li><strong>Desktop Test:</strong> Resize browser window to < 768px width</li>
+                    <li><strong>Mobile Test:</strong> Open on mobile device or use browser dev tools</li>
+                    <li><strong>Hamburger Menu:</strong> Click the ☰ button to open mobile menu</li>
+                    <li><strong>Navigation:</strong> Test all menu links and actions</li>
+                    <li><strong>Close Menu:</strong> Click outside, press ESC, or use X button</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Test Results</h2>
+            <div id="testResults">
+                <p><span class="status-indicator status-pending"></span>Mobile Menu Toggle: <span id="toggleTest">Testing...</span></p>
+                <p><span class="status-indicator status-pending"></span>Menu Overlay: <span id="overlayTest">Testing...</span></p>
+                <p><span class="status-indicator status-pending"></span>Navigation Links: <span id="linksTest">Testing...</span></p>
+                <p><span class="status-indicator status-pending"></span>Close Functionality: <span id="closeTest">Testing...</span></p>
+                <p><span class="status-indicator status-pending"></span>Responsive Design: <span id="responsiveTest">Testing...</span></p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📱 Mobile Menu Features</h2>
+            <ul>
+                <li>✅ Hamburger menu button (visible only on mobile)</li>
+                <li>✅ Slide-out navigation panel</li>
+                <li>✅ Backdrop overlay with blur effect</li>
+                <li>✅ Touch-friendly navigation links</li>
+                <li>✅ Quick actions section</li>
+                <li>✅ Close button and outside-click closing</li>
+                <li>✅ Keyboard navigation (ESC key)</li>
+                <li>✅ Smooth animations and transitions</li>
+                <li>✅ Prevents body scroll when open</li>
+                <li>✅ Auto-close on window resize to desktop</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Manual Test Actions</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                <button onclick="testMobileToggle()" style="padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Test Toggle
+                </button>
+                <button onclick="testMenuOpen()" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Open Menu
+                </button>
+                <button onclick="testMenuClose()" style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Close Menu
+                </button>
+                <button onclick="runAllTests()" style="padding: 10px 15px; background: #6f42c1; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Run All Tests
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="public/app.js"></script>
+    
+    <script>
+        // Test functions
+        function testMobileToggle() {
+            console.log('🧪 Testing mobile toggle...');
+            if (typeof window.toggleMobileMenu === 'function') {
+                window.toggleMobileMenu();
+                updateTestResult('toggleTest', 'PASS', 'Toggle function works');
+            } else {
+                updateTestResult('toggleTest', 'FAIL', 'Toggle function not found');
+            }
+        }
+        
+        function testMenuOpen() {
+            console.log('🧪 Testing menu open...');
+            if (typeof window.openMobileMenu === 'function') {
+                window.openMobileMenu();
+                
+                setTimeout(() => {
+                    const menu = document.getElementById('mobileNavMenu');
+                    const overlay = document.getElementById('mobileNavOverlay');
+                    
+                    if (menu && overlay && menu.classList.contains('active') && overlay.classList.contains('active')) {
+                        updateTestResult('overlayTest', 'PASS', 'Menu opens correctly');
+                    } else {
+                        updateTestResult('overlayTest', 'FAIL', 'Menu not opening properly');
+                    }
+                }, 100);
+            } else {
+                updateTestResult('overlayTest', 'FAIL', 'Open function not found');
+            }
+        }
+        
+        function testMenuClose() {
+            console.log('🧪 Testing menu close...');
+            if (typeof window.closeMobileMenu === 'function') {
+                window.closeMobileMenu();
+                
+                setTimeout(() => {
+                    const menu = document.getElementById('mobileNavMenu');
+                    const overlay = document.getElementById('mobileNavOverlay');
+                    
+                    if (menu && overlay && !menu.classList.contains('active') && !overlay.classList.contains('active')) {
+                        updateTestResult('closeTest', 'PASS', 'Menu closes correctly');
+                    } else {
+                        updateTestResult('closeTest', 'FAIL', 'Menu not closing properly');
+                    }
+                }, 100);
+            } else {
+                updateTestResult('closeTest', 'FAIL', 'Close function not found');
+            }
+        }
+        
+        function testNavigationLinks() {
+            console.log('🧪 Testing navigation links...');
+            const links = document.querySelectorAll('.mobile-nav-link');
+            
+            if (links.length > 0) {
+                updateTestResult('linksTest', 'PASS', `Found ${links.length} navigation links`);
+            } else {
+                updateTestResult('linksTest', 'FAIL', 'No navigation links found');
+            }
+        }
+        
+        function testResponsiveDesign() {
+            console.log('🧪 Testing responsive design...');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (toggle && navMenu) {
+                const toggleVisible = window.getComputedStyle(toggle).display !== 'none';
+                const menuVisible = window.getComputedStyle(navMenu).display !== 'none';
+                
+                if (window.innerWidth <= 768) {
+                    if (toggleVisible && !menuVisible) {
+                        updateTestResult('responsiveTest', 'PASS', 'Mobile layout active');
+                    } else {
+                        updateTestResult('responsiveTest', 'FAIL', 'Mobile layout not working');
+                    }
+                } else {
+                    if (!toggleVisible && menuVisible) {
+                        updateTestResult('responsiveTest', 'PASS', 'Desktop layout active');
+                    } else {
+                        updateTestResult('responsiveTest', 'FAIL', 'Desktop layout not working');
+                    }
+                }
+            } else {
+                updateTestResult('responsiveTest', 'FAIL', 'Navigation elements not found');
+            }
+        }
+        
+        function runAllTests() {
+            console.log('🧪 Running all mobile navigation tests...');
+            
+            testNavigationLinks();
+            testResponsiveDesign();
+            
+            // Test toggle functionality
+            setTimeout(() => testMobileToggle(), 200);
+            setTimeout(() => testMenuOpen(), 400);
+            setTimeout(() => testMenuClose(), 800);
+        }
+        
+        function updateTestResult(testId, status, message) {
+            const element = document.getElementById(testId);
+            const indicator = element.parentElement.querySelector('.status-indicator');
+            
+            if (element) {
+                element.textContent = message;
+                
+                if (indicator) {
+                    indicator.className = 'status-indicator';
+                    if (status === 'PASS') {
+                        indicator.classList.add('status-pass');
+                    } else if (status === 'FAIL') {
+                        indicator.classList.add('status-fail');
+                    } else {
+                        indicator.classList.add('status-pending');
+                    }
+                }
+            }
+        }
+        
+        // Auto-run tests on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runAllTests, 1000);
+        });
+        
+        // Test on window resize
+        window.addEventListener('resize', function() {
+            setTimeout(testResponsiveDesign, 100);
+        });
+    </script>
+</body>
+</html>

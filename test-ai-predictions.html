@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Predictions Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .game-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .game-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .ai-prediction {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .confidence-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .confidence-high { background-color: #4CAF50; }
+        .confidence-medium { background-color: #FF9800; }
+        .confidence-low { background-color: #f44336; }
+        .prediction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error {
+            color: #f44336;
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 AI Predictions Test</h1>
+    <p>Testing the comprehensive AI prediction engine for NFL and NCAA games.</p>
+    
+    <div id="loading" class="loading">
+        <h3>Loading AI predictions...</h3>
+        <p>Fetching games and generating predictions...</p>
+    </div>
+    
+    <div id="nfl-section" style="display: none;">
+        <h2>🏈 NFL Games with AI Predictions</h2>
+        <div id="nfl-games"></div>
+    </div>
+    
+    <div id="ncaa-section" style="display: none;">
+        <h2>🏈 NCAA Games with AI Predictions</h2>
+        <div id="ncaa-games"></div>
+    </div>
+
+    <script src="public/nfl-data-service.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+    <script>
+        async function testAIPredictions() {
+            try {
+                console.log('🧪 Starting AI predictions test...');
+                
+                // Initialize services
+                const nflService = new NFLDataService();
+                const ncaaService = new NCAADataService();
+                
+                // Test NFL predictions
+                console.log('📡 Testing NFL AI predictions...');
+                const nflGames = await nflService.getTodaysGames();
+                displayNFLGames(nflGames);
+                
+                // Test NCAA predictions
+                console.log('📡 Testing NCAA AI predictions...');
+                const ncaaGames = await ncaaService.getTodaysGames();
+                displayNCAAGames(ncaaGames);
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('nfl-section').style.display = 'block';
+                document.getElementById('ncaa-section').style.display = 'block';
+                
+                console.log('✅ AI predictions test completed successfully');
+                
+            } catch (error) {
+                console.error('❌ AI predictions test failed:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="error">
+                        <h3>Test Failed</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayNFLGames(games) {
+            const container = document.getElementById('nfl-games');
+            
+            if (!games || games.length === 0) {
+                container.innerHTML = '<p>No NFL games available for testing.</p>';
+                return;
+            }
+            
+            container.innerHTML = games.map(game => {
+                if (!game.aiPrediction) {
+                    return `
+                        <div class="game-card">
+                            <div class="game-header">${game.name}</div>
+                            <div class="error">No AI prediction available for this game</div>
+                        </div>
+                    `;
+                }
+                
+                const prediction = game.aiPrediction;
+                const confidenceClass = prediction.confidence >= 80 ? 'confidence-high' : 
+                                      prediction.confidence >= 65 ? 'confidence-medium' : 'confidence-low';
+                
+                return `
+                    <div class="game-card">
+                        <div class="game-header">
+                            ${game.name}
+                            <span class="confidence-badge ${confidenceClass}">${prediction.confidence}% Confidence</span>
+                        </div>
+                        
+                        <div class="ai-prediction">
+                            <h4>🤖 AI Prediction</h4>
+                            <div class="prediction-details">
+                                <div>
+                                    <strong>Win Probability:</strong><br>
+                                    ${game.teams.home.abbreviation}: ${prediction.homeWinProbability}%<br>
+                                    ${game.teams.away.abbreviation}: ${prediction.awayWinProbability}%
+                                </div>
+                                <div>
+                                    <strong>Predicted Score:</strong><br>
+                                    ${game.teams.home.abbreviation}: ${prediction.predictedScore.home}<br>
+                                    ${game.teams.away.abbreviation}: ${prediction.predictedScore.away}
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>Spread:</strong> ${prediction.predictedSpread}<br>
+                                <strong>Recommendation:</strong> ${prediction.recommendation}
+                            </div>
+                            <div style="margin-top: 10px; font-style: italic;">
+                                ${prediction.analysis}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                            <strong>Venue:</strong> ${game.venue}<br>
+                            <strong>Status:</strong> ${game.status.displayClock}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function displayNCAAGames(games) {
+            const container = document.getElementById('ncaa-games');
+            
+            if (!games || games.length === 0) {
+                container.innerHTML = '<p>No NCAA games available for testing.</p>';
+                return;
+            }
+            
+            container.innerHTML = games.map(game => {
+                if (!game.aiPrediction) {
+                    return `
+                        <div class="game-card">
+                            <div class="game-header">${game.name}</div>
+                            <div class="error">No AI prediction available for this game</div>
+                        </div>
+                    `;
+                }
+                
+                const prediction = game.aiPrediction;
+                const confidenceClass = prediction.confidence >= 80 ? 'confidence-high' : 
+                                      prediction.confidence >= 65 ? 'confidence-medium' : 'confidence-low';
+                
+                return `
+                    <div class="game-card">
+                        <div class="game-header">
+                            ${game.name}
+                            <span class="confidence-badge ${confidenceClass}">${prediction.confidence}% Confidence</span>
+                        </div>
+                        
+                        <div class="ai-prediction">
+                            <h4>🤖 AI Prediction</h4>
+                            <div class="prediction-details">
+                                <div>
+                                    <strong>Win Probability:</strong><br>
+                                    ${game.teams.home.abbreviation}: ${prediction.homeWinProbability}%<br>
+                                    ${game.teams.away.abbreviation}: ${prediction.awayWinProbability}%
+                                </div>
+                                <div>
+                                    <strong>Predicted Score:</strong><br>
+                                    ${game.teams.home.abbreviation}: ${prediction.predictedScore.home}<br>
+                                    ${game.teams.away.abbreviation}: ${prediction.predictedScore.away}
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>Spread:</strong> ${prediction.predictedSpread}<br>
+                                <strong>Recommendation:</strong> ${prediction.recommendation}
+                            </div>
+                            <div style="margin-top: 10px; font-style: italic;">
+                                ${prediction.analysis}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                            <strong>Venue:</strong> ${game.venue}<br>
+                            <strong>Status:</strong> ${game.status.displayClock}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Start the test when page loads
+        document.addEventListener('DOMContentLoaded', testAIPredictions);
+    </script>
+</body>
+</html>
