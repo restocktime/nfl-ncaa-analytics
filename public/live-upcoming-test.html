@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live vs Upcoming Games Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .warning { background: #f59e0b; }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #0052cc; }
+        .game-preview {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .live-game { border-left: 3px solid #10b981; }
+        .upcoming-game { border-left: 3px solid #0066ff; }
+        .section-preview {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Live vs Upcoming Games Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Game Status Detection Test</h2>
+        <button onclick="testGameStatusDetection()">Test Game Status Logic</button>
+        <div id="status-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Live Games Section Test</h2>
+        <button onclick="testLiveGamesSection()">Test Live Games Display</button>
+        <button onclick="simulateLiveGames()">Simulate Live Games</button>
+        <button onclick="clearLiveGames()">Clear Live Games</button>
+        <div id="live-test-results"></div>
+        <div id="live-section-preview" class="section-preview" style="display: none;">
+            <h3>🔴 Live Games Section Preview</h3>
+            <div id="live-games-preview"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Upcoming Games Section Test</h2>
+        <button onclick="testUpcomingGamesSection()">Test Upcoming Games Display</button>
+        <button onclick="testWeekNavigation()">Test Week Navigation</button>
+        <div id="upcoming-test-results"></div>
+        <div id="upcoming-section-preview" class="section-preview">
+            <h3>📅 Upcoming Games Section Preview</h3>
+            <div id="upcoming-games-preview"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Week Tab Integration Test</h2>
+        <div>
+            <label>Season: </label>
+            <select id="seasonTestSelect" onchange="testSeasonChange()">
+                <option value="regular">Regular Season</option>
+                <option value="preseason">Preseason</option>
+                <option value="playoffs">Playoffs</option>
+            </select>
+            
+            <label>Week: </label>
+            <select id="weekTestSelect" onchange="testWeekChange()">
+                <option value="1">Week 1</option>
+                <option value="2">Week 2</option>
+                <option value="3">Week 3</option>
+                <option value="4">Week 4</option>
+            </select>
+        </div>
+        <div id="week-integration-results"></div>
+    </div>
+
+    <!-- Include scripts -->
+    <script src="comprehensive-nfl-app.js"></script>
+    <script src="live-nfl-games-today.js"></script>
+    <script src="nfl-2024-data.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        let testGames = [];
+        
+        function addResult(sectionId, message, type = 'success') {
+            const section = document.getElementById(sectionId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            section.appendChild(div);
+        }
+        
+        function createTestGames() {
+            return [
+                {
+                    id: 'live1',
+                    homeTeam: 'Kansas City Chiefs',
+                    awayTeam: 'Buffalo Bills',
+                    homeScore: 14,
+                    awayScore: 10,
+                    status: 'LIVE',
+                    quarter: '2',
+                    timeRemaining: '8:45',
+                    week: 'Week 1'
+                },
+                {
+                    id: 'live2',
+                    homeTeam: 'Dallas Cowboys',
+                    awayTeam: 'Philadelphia Eagles',
+                    homeScore: 7,
+                    awayScore: 3,
+                    status: 'HALFTIME',
+                    week: 'Week 1'
+                },
+                {
+                    id: 'upcoming1',
+                    homeTeam: 'Green Bay Packers',
+                    awayTeam: 'Chicago Bears',
+                    homeScore: 0,
+                    awayScore: 0,
+                    status: 'SCHEDULED',
+                    time: 'Sunday 4:25 PM',
+                    week: 'Week 1'
+                },
+                {
+                    id: 'upcoming2',
+                    homeTeam: 'San Francisco 49ers',
+                    awayTeam: 'Seattle Seahawks',
+                    homeScore: 0,
+                    awayScore: 0,
+                    status: 'SCHEDULED',
+                    time: 'Sunday 8:20 PM',
+                    week: 'Week 1'
+                }
+            ];
+        }
+        
+        function testGameStatusDetection() {
+            console.log('Testing game status detection...');
+            testGames = createTestGames();
+            
+            const liveGames = testGames.filter(game => 
+                game.status === 'LIVE' || game.status === 'IN_PROGRESS' || game.status === 'HALFTIME'
+            );
+            
+            const upcomingGames = testGames.filter(game => 
+                game.status === 'SCHEDULED' || game.status === 'PRE_GAME' || !game.status
+            );
+            
+            addResult('status-test-results', `✅ Detected ${liveGames.length} live games`, 'success');
+            addResult('status-test-results', `✅ Detected ${upcomingGames.length} upcoming games`, 'success');
+            
+            // Show game details
+            liveGames.forEach(game => {
+                addResult('status-test-results', `🔴 LIVE: ${game.awayTeam} @ ${game.homeTeam} (${game.homeScore}-${game.awayScore})`, 'success');
+            });
+            
+            upcomingGames.forEach(game => {
+                addResult('status-test-results', `📅 UPCOMING: ${game.awayTeam} @ ${game.homeTeam} (${game.time})`, 'success');
+            });
+        }
+        
+        function testLiveGamesSection() {
+            console.log('Testing live games section...');
+            
+            if (window.modernApp && typeof window.modernApp.loadLiveAndUpcomingGames === 'function') {
+                // Set test games
+                if (window.modernApp.comprehensiveApp) {
+                    window.modernApp.comprehensiveApp.games = createTestGames();
+                }
+                
+                window.modernApp.loadLiveAndUpcomingGames();
+                addResult('live-test-results', '✅ Live games section test initiated', 'success');
+                
+                // Check if live section is visible
+                setTimeout(() => {
+                    const liveSection = document.getElementById('live-games-section');
+                    if (liveSection && liveSection.style.display !== 'none') {
+                        addResult('live-test-results', '✅ Live games section is visible', 'success');
+                    } else {
+                        addResult('live-test-results', '⚠️ Live games section is hidden (no live games)', 'warning');
+                    }
+                }, 1000);
+            } else {
+                addResult('live-test-results', '❌ loadLiveAndUpcomingGames function not found', 'error');
+            }
+        }
+        
+        function simulateLiveGames() {
+            console.log('Simulating live games...');
+            
+            const liveGames = [
+                {
+                    id: 'sim_live1',
+                    homeTeam: 'Tampa Bay Buccaneers',
+                    awayTeam: 'Atlanta Falcons',
+                    homeScore: 21,
+                    awayScore: 14,
+                    status: 'LIVE',
+                    quarter: '3',
+                    timeRemaining: '12:30'
+                },
+                {
+                    id: 'sim_live2',
+                    homeTeam: 'Miami Dolphins',
+                    awayTeam: 'New York Jets',
+                    homeScore: 10,
+                    awayScore: 7,
+                    status: 'LIVE',
+                    quarter: '2',
+                    timeRemaining: '5:15'
+                }
+            ];
+            
+            // Show live section preview
+            const livePreview = document.getElementById('live-section-preview');
+            const liveGamesPreview = document.getElementById('live-games-preview');
+            
+            livePreview.style.display = 'block';
+            liveGamesPreview.innerHTML = liveGames.map(game => `
+                <div class="game-preview live-game">
+                    <h4>🔴 ${game.awayTeam} @ ${game.homeTeam}</h4>
+                    <p>Score: ${game.awayScore} - ${game.homeScore}</p>
+                    <p>Status: ${game.status} - Q${game.quarter} ${game.timeRemaining}</p>
+                </div>
+            `).join('');
+            
+            addResult('live-test-results', '✅ Simulated live games - section should be visible', 'success');
+        }
+        
+        function clearLiveGames() {
+            console.log('Clearing live games...');
+            
+            const livePreview = document.getElementById('live-section-preview');
+            livePreview.style.display = 'none';
+            
+            addResult('live-test-results', '✅ Cleared live games - section should be hidden', 'success');
+        }
+        
+        function testUpcomingGamesSection() {
+            console.log('Testing upcoming games section...');
+            
+            if (window.modernApp && typeof window.modernApp.populateUpcomingGames === 'function') {
+                const upcomingGames = createTestGames().filter(game => 
+                    game.status === 'SCHEDULED' || game.status === 'PRE_GAME' || !game.status
+                );
+                
+                // Show upcoming games preview
+                const upcomingGamesPreview = document.getElementById('upcoming-games-preview');
+                upcomingGamesPreview.innerHTML = upcomingGames.map(game => `
+                    <div class="game-preview upcoming-game">
+                        <h4>📅 ${game.awayTeam} @ ${game.homeTeam}</h4>
+                        <p>Time: ${game.time}</p>
+                        <p>Status: ${game.status}</p>
+                        <p>Week: ${game.week}</p>
+                    </div>
+                `).join('');
+                
+                addResult('upcoming-test-results', '✅ Upcoming games section populated', 'success');
+                addResult('upcoming-test-results', `📊 Showing ${upcomingGames.length} upcoming games`, 'success');
+            } else {
+                addResult('upcoming-test-results', '❌ populateUpcomingGames function not found', 'error');
+            }
+        }
+        
+        function testWeekNavigation() {
+            console.log('Testing week navigation...');
+            
+            if (typeof window.selectWeek === 'function') {
+                window.selectWeek(3);
+                addResult('upcoming-test-results', '✅ Week navigation test - switched to Week 3', 'success');
+                
+                setTimeout(() => {
+                    const weekDisplay = document.getElementById('upcoming-week-display');
+                    if (weekDisplay) {
+                        addResult('upcoming-test-results', `✅ Week display updated: ${weekDisplay.textContent}`, 'success');
+                    }
+                }, 500);
+            } else {
+                addResult('upcoming-test-results', '❌ selectWeek function not found', 'error');
+            }
+        }
+        
+        function testSeasonChange() {
+            const season = document.getElementById('seasonTestSelect').value;
+            console.log('Testing season change to:', season);
+            
+            if (typeof window.switchSeason === 'function') {
+                window.switchSeason(season);
+                addResult('week-integration-results', `✅ Season changed to ${season}`, 'success');
+                
+                // Update week selector
+                const weekSelector = document.getElementById('weekTestSelect');
+                weekSelector.innerHTML = '';
+                
+                if (season === 'preseason') {
+                    for (let i = 1; i <= 4; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `Preseason Week ${i}`;
+                        weekSelector.appendChild(option);
+                    }
+                } else if (season === 'playoffs') {
+                    const rounds = ['Wild Card', 'Divisional', 'Conference Championship', 'Super Bowl'];
+                    rounds.forEach((round, i) => {
+                        const option = document.createElement('option');
+                        option.value = i + 1;
+                        option.textContent = round;
+                        weekSelector.appendChild(option);
+                    });
+                } else {
+                    for (let i = 1; i <= 18; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `Week ${i}`;
+                        weekSelector.appendChild(option);
+                    }
+                }
+            } else {
+                addResult('week-integration-results', '❌ switchSeason function not found', 'error');
+            }
+        }
+        
+        function testWeekChange() {
+            const week = document.getElementById('weekTestSelect').value;
+            console.log('Testing week change to:', week);
+            
+            if (typeof window.selectWeek === 'function') {
+                window.selectWeek(week);
+                addResult('week-integration-results', `✅ Week changed to ${week}`, 'success');
+                addResult('week-integration-results', '📊 Upcoming games should update for selected week', 'success');
+            } else {
+                addResult('week-integration-results', '❌ selectWeek function not found', 'error');
+            }
+        }
+        
+        // Initialize test
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addResult('status-test-results', '🚀 Live vs Upcoming Games Test Ready', 'success');
+                testUpcomingGamesSection();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

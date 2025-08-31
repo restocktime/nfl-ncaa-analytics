@@ -291,6 +291,486 @@ window.testFantasy = function() {
     }
 };
 
+// Global functions for button functionality
+window.refreshAllData = function() {
+    console.log('🔄 Refreshing all data...');
+    if (window.modernApp) {
+        window.modernApp.loadDashboard();
+        window.modernApp.loadLiveGames();
+    }
+    
+    // Show refresh feedback
+    const btn = document.querySelector('.btn-refresh');
+    if (btn) {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+        }, 1500);
+    }
+};
+
+window.switchSeason = function(season) {
+    console.log('🏈 Switching to season:', season);
+    
+    // Update active tab
+    document.querySelectorAll('.season-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-season="${season}"]`).classList.add('active');
+    
+    // Show/hide preseason insights
+    const preseasonInsights = document.getElementById('preseason-insights');
+    if (preseasonInsights) {
+        preseasonInsights.style.display = season === 'preseason' ? 'block' : 'none';
+    }
+    
+    // Update week selector based on season
+    const weekSelector = document.getElementById('weekSelector');
+    if (weekSelector) {
+        weekSelector.innerHTML = '';
+        
+        switch(season) {
+            case 'preseason':
+                // Preseason has 4 weeks
+                for (let i = 1; i <= 4; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `Preseason Week ${i}`;
+                    if (i === 1) option.selected = true;
+                    weekSelector.appendChild(option);
+                }
+                break;
+            case 'playoffs':
+                // Playoff rounds
+                const playoffRounds = ['Wild Card', 'Divisional', 'Conference Championship', 'Super Bowl'];
+                playoffRounds.forEach((round, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = round;
+                    if (index === 0) option.selected = true;
+                    weekSelector.appendChild(option);
+                });
+                break;
+            default:
+                // Regular season has 18 weeks
+                for (let i = 1; i <= 18; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `Week ${i}`;
+                    if (i === 1) option.selected = true;
+                    weekSelector.appendChild(option);
+                }
+        }
+    }
+    
+    // Update season status
+    const seasonBadge = document.querySelector('.season-badge');
+    const currentWeek = document.querySelector('.current-week');
+    
+    if (seasonBadge && currentWeek) {
+        switch(season) {
+            case 'preseason':
+                seasonBadge.textContent = 'PRESEASON';
+                seasonBadge.className = 'season-badge preseason';
+                currentWeek.textContent = 'Preseason Week 1';
+                break;
+            case 'playoffs':
+                seasonBadge.textContent = 'PLAYOFFS';
+                seasonBadge.className = 'season-badge playoffs';
+                currentWeek.textContent = 'Wild Card';
+                break;
+            default:
+                seasonBadge.textContent = 'REGULAR SEASON';
+                seasonBadge.className = 'season-badge regular';
+                currentWeek.textContent = 'Week 1';
+        }
+    }
+    
+    // Update games display for the new season
+    if (window.modernApp) {
+        window.modernApp.loadDashboard();
+        window.modernApp.loadUpcomingGamesForBetting();
+    }
+    
+    // Store current season
+    window.currentSeason = season;
+};
+
+window.changeWeek = function(direction) {
+    console.log('📅 Changing week by:', direction);
+    const weekSelector = document.getElementById('weekSelector');
+    if (weekSelector) {
+        const currentWeek = parseInt(weekSelector.value);
+        const newWeek = Math.max(1, Math.min(18, currentWeek + direction));
+        weekSelector.value = newWeek;
+        selectWeek(newWeek);
+    }
+};
+
+window.selectWeek = function(week) {
+    console.log('📅 Selecting week:', week);
+    
+    // Update current week display
+    const currentWeek = document.querySelector('.current-week');
+    const weekSelector = document.getElementById('weekSelector');
+    
+    if (currentWeek && weekSelector) {
+        const selectedOption = weekSelector.options[weekSelector.selectedIndex];
+        if (selectedOption) {
+            currentWeek.textContent = selectedOption.textContent;
+        }
+    }
+    
+    // Store the selected week
+    window.currentWeek = parseInt(week);
+    
+    // Update games for selected week in comprehensive app
+    if (window.ComprehensiveNFLApp && window.app) {
+        console.log('🔄 Updating games for week:', week);
+        window.app.filterGamesByWeek(week);
+        window.app.loadDashboard();
+        window.app.loadLiveGames();
+    }
+    
+    // Update modern app - specifically the upcoming games
+    if (window.modernApp) {
+        // Filter games for the selected week
+        const weekGames = window.modernApp.filterGamesByWeek(week);
+        
+        // Update upcoming games display
+        window.modernApp.populateUpcomingGames();
+        window.modernApp.updateUpcomingWeekDisplay();
+        
+        // Update betting odds if on betting view
+        if (window.modernApp.loadUpcomingGamesForBetting) {
+            window.modernApp.loadUpcomingGamesForBetting();
+        }
+    }
+    
+    console.log(`✅ Updated to ${window.currentSeason || 'regular'} week ${week}`);
+};
+
+window.refreshUpcomingGames = function() {
+    console.log('🔄 Refreshing upcoming games...');
+    
+    if (window.modernApp) {
+        window.modernApp.populateUpcomingGames();
+        
+        // Show refresh feedback
+        const btn = document.querySelector('.btn-secondary');
+        if (btn && btn.textContent.includes('Refresh')) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 1500);
+        }
+    }
+};
+
+window.loadLiveGames = function() {
+    console.log('🔴 Loading live games...');
+    if (window.modernApp) {
+        window.modernApp.loadLiveGames();
+    }
+};
+
+window.showFantasyTab = function(tab) {
+    console.log('🏆 Showing fantasy tab:', tab);
+    
+    // Update active tab
+    document.querySelectorAll('.fantasy-tab').forEach(t => {
+        t.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+    
+    // Load tab content
+    const content = document.getElementById('fantasy-content');
+    if (content) {
+        switch(tab) {
+            case 'dashboard':
+                content.innerHTML = `
+                    <div class="fantasy-dashboard">
+                        <div class="fantasy-stats">
+                            <div class="stat-card">
+                                <h3>Your Teams</h3>
+                                <p>3 Active Leagues</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Overall Record</h3>
+                                <p>24-12-0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Points For</h3>
+                                <p>1,847.3</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Waiver Priority</h3>
+                                <p>#3</p>
+                            </div>
+                        </div>
+                        <div class="top-players">
+                            <h3>Top Available Players</h3>
+                            <div class="players-grid">
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <span class="player-name">Josh Jacobs</span>
+                                        <span class="player-team">RB, GB</span>
+                                    </div>
+                                    <div class="player-stats">
+                                        <span class="projected-points">18.7</span>
+                                    </div>
+                                </div>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <span class="player-name">Calvin Ridley</span>
+                                        <span class="player-team">WR, TEN</span>
+                                    </div>
+                                    <div class="player-stats">
+                                        <span class="projected-points">15.2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'lineup':
+                content.innerHTML = `
+                    <div class="lineup-optimizer">
+                        <div class="optimizer-controls">
+                            <h3>Lineup Optimizer</h3>
+                            <button class="btn-primary" onclick="optimizeLineup()">
+                                <i class="fas fa-magic"></i> Optimize Lineup
+                            </button>
+                        </div>
+                        <div class="lineup-slots">
+                            <div class="position-slot">
+                                <label>QB</label>
+                                <div class="player-slot">Click to select QB</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>RB</label>
+                                <div class="player-slot">Click to select RB</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>RB</label>
+                                <div class="player-slot">Click to select RB</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>WR</label>
+                                <div class="player-slot">Click to select WR</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>WR</label>
+                                <div class="player-slot">Click to select WR</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>TE</label>
+                                <div class="player-slot">Click to select TE</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>FLEX</label>
+                                <div class="player-slot">Click to select FLEX</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>K</label>
+                                <div class="player-slot">Click to select K</div>
+                            </div>
+                            <div class="position-slot">
+                                <label>DEF</label>
+                                <div class="player-slot">Click to select DEF</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'waivers':
+                content.innerHTML = `
+                    <div class="waiver-wire">
+                        <h3>Waiver Wire Targets</h3>
+                        <div class="waiver-players">
+                            <div class="waiver-player">
+                                <div class="player-info">
+                                    <span class="player-name">Jaylen Wright</span>
+                                    <span class="player-team">RB, MIA</span>
+                                </div>
+                                <div class="waiver-stats">
+                                    <span class="ownership">12% owned</span>
+                                    <span class="trend">📈 Trending up</span>
+                                </div>
+                            </div>
+                            <div class="waiver-player">
+                                <div class="player-info">
+                                    <span class="player-name">Rome Odunze</span>
+                                    <span class="player-team">WR, CHI</span>
+                                </div>
+                                <div class="waiver-stats">
+                                    <span class="ownership">8% owned</span>
+                                    <span class="trend">📈 Trending up</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'trades':
+                content.innerHTML = `
+                    <div class="trade-analyzer">
+                        <h3>Trade Analyzer</h3>
+                        <div class="trade-form">
+                            <div class="trade-side">
+                                <h4>You Give</h4>
+                                <div class="trade-players">
+                                    <input type="text" placeholder="Enter player name...">
+                                </div>
+                            </div>
+                            <div class="trade-arrow">⇄</div>
+                            <div class="trade-side">
+                                <h4>You Get</h4>
+                                <div class="trade-players">
+                                    <input type="text" placeholder="Enter player name...">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="analyzeTrade()">
+                            <i class="fas fa-calculator"></i> Analyze Trade
+                        </button>
+                        <div class="trade-results" style="display: none;">
+                            <h4>Trade Analysis Results</h4>
+                            <p>Analysis will appear here after entering players.</p>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'projections':
+                content.innerHTML = `
+                    <div class="projections">
+                        <h3>Player Projections</h3>
+                        <div class="projections-grid">
+                            <div class="projection-card">
+                                <div class="player-header">
+                                    <div class="player-info">
+                                        <span class="player-name">Josh Allen</span>
+                                        <span class="player-team">BUF</span>
+                                    </div>
+                                    <span class="player-position">QB</span>
+                                </div>
+                                <div class="projection-stats">
+                                    <div class="stat">
+                                        <span class="stat-label">Pass Yds</span>
+                                        <span class="stat-value">287</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Pass TDs</span>
+                                        <span class="stat-value">2.1</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Fantasy Pts</span>
+                                        <span class="stat-value">22.4</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'connect':
+                content.innerHTML = `
+                    <div class="connect-accounts">
+                        <h3>Connect Your Fantasy Accounts</h3>
+                        <div class="account-connections">
+                            <div class="connection-card">
+                                <div class="connection-header">
+                                    <div class="connection-logo espn">ESPN</div>
+                                    <span class="connection-status">Not Connected</span>
+                                </div>
+                                <p>Import your ESPN fantasy teams and get personalized recommendations</p>
+                                <button class="btn-connect espn" onclick="connectESPN()">
+                                    <i class="fas fa-link"></i> Connect ESPN
+                                </button>
+                            </div>
+                            <div class="connection-card">
+                                <div class="connection-header">
+                                    <div class="connection-logo yahoo">Yahoo</div>
+                                    <span class="connection-status">Not Connected</span>
+                                </div>
+                                <p>Sync your Yahoo fantasy leagues for complete roster analysis</p>
+                                <button class="btn-connect yahoo" onclick="connectYahoo()">
+                                    <i class="fas fa-link"></i> Connect Yahoo
+                                </button>
+                            </div>
+                            <div class="connection-card">
+                                <div class="connection-header">
+                                    <div class="connection-logo sleeper">Sleeper</div>
+                                    <span class="connection-status">Not Connected</span>
+                                </div>
+                                <p>Link your Sleeper leagues for advanced analytics and insights</p>
+                                <button class="btn-connect sleeper" onclick="connectSleeper()">
+                                    <i class="fas fa-link"></i> Connect Sleeper
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+        }
+    }
+};
+
+window.connectESPN = function() {
+    console.log('🔗 Connecting to ESPN...');
+    alert('ESPN connection feature coming soon! This will allow you to import your fantasy teams directly.');
+};
+
+window.connectYahoo = function() {
+    console.log('🔗 Connecting to Yahoo...');
+    alert('Yahoo connection feature coming soon! This will sync your fantasy leagues automatically.');
+};
+
+window.connectSleeper = function() {
+    console.log('🔗 Connecting to Sleeper...');
+    alert('Sleeper connection feature coming soon! This will provide advanced analytics for your leagues.');
+};
+
+window.optimizeLineup = function() {
+    console.log('🎯 Optimizing lineup...');
+    alert('Lineup optimization running! This feature will suggest the best possible lineup based on projections.');
+};
+
+window.analyzeTrade = function() {
+    console.log('📊 Analyzing trade...');
+    const results = document.querySelector('.trade-results');
+    if (results) {
+        results.style.display = 'block';
+        results.innerHTML = `
+            <h4>Trade Analysis Results</h4>
+            <div class="trade-verdict">
+                <p><strong>Recommendation:</strong> This looks like a fair trade!</p>
+                <p><strong>Value Difference:</strong> +2.3 points per week in your favor</p>
+                <p><strong>Risk Assessment:</strong> Medium risk due to injury history</p>
+            </div>
+        `;
+    }
+};
+
+window.handleWidgetError = function() {
+    console.log('⚠️ Widget loading error');
+    const widgetLoading = document.getElementById('widget-loading');
+    if (widgetLoading) {
+        widgetLoading.innerHTML = `
+            <div class="loading-content">
+                <h3>Premium Widget Temporarily Unavailable</h3>
+                <p>Live odds available through direct Hard Rock Bet access</p>
+                <button onclick="location.reload()" class="btn-retry">
+                    🔄 Retry Loading
+                </button>
+            </div>
+        `;
+    }
+};
+
 class ModernNFLApp {
     constructor() {
         this.comprehensiveApp = null;
@@ -523,6 +1003,15 @@ class ModernNFLApp {
             case 'fantasy-hub':
                 this.loadFantasyHub();
                 break;
+            case 'betting':
+                this.loadBetting();
+                break;
+            case 'live':
+                this.loadLiveGames();
+                break;
+            case 'fantasy':
+                this.loadFantasyHub();
+                break;
         }
     }
 
@@ -532,8 +1021,8 @@ class ModernNFLApp {
         // Update quick stats
         this.updateQuickStats();
         
-        // Load live games
-        this.populateLiveGames();
+        // Load live and upcoming games properly
+        this.loadLiveAndUpcomingGames();
         
         // Load accuracy chart
         this.createAccuracyChart();
@@ -724,6 +1213,160 @@ class ModernNFLApp {
         } catch (error) {
             console.error('Error creating accuracy chart:', error);
         }
+    }
+
+    loadLiveAndUpcomingGames() {
+        console.log('🏈 Loading Live and Upcoming Games...');
+        
+        // Get all games
+        const allGames = this.comprehensiveApp?.games || window.LIVE_NFL_GAMES_TODAY || [];
+        
+        // Separate live and upcoming games
+        const liveGames = allGames.filter(game => 
+            game.status === 'LIVE' || game.status === 'IN_PROGRESS' || game.status === 'HALFTIME'
+        );
+        
+        const upcomingGames = allGames.filter(game => 
+            game.status === 'SCHEDULED' || game.status === 'PRE_GAME' || !game.status
+        );
+        
+        console.log(`📊 Found ${liveGames.length} live games and ${upcomingGames.length} upcoming games`);
+        
+        // Show/hide live games section based on whether there are live games
+        const liveSection = document.getElementById('live-games-section');
+        if (liveSection) {
+            if (liveGames.length > 0) {
+                liveSection.style.display = 'block';
+                this.populateLiveGames(liveGames);
+            } else {
+                liveSection.style.display = 'none';
+            }
+        }
+        
+        // Always show upcoming games
+        this.populateUpcomingGames(upcomingGames);
+        
+        // Update the week display
+        this.updateUpcomingWeekDisplay();
+    }
+    
+    populateUpcomingGames(games = null) {
+        const container = document.getElementById('upcoming-games-container');
+        if (!container) return;
+
+        // If no games provided, get them from current week filter
+        if (!games) {
+            const allGames = this.comprehensiveApp?.games || window.LIVE_NFL_GAMES_TODAY || [];
+            games = allGames.filter(game => 
+                game.status === 'SCHEDULED' || game.status === 'PRE_GAME' || !game.status
+            );
+        }
+        
+        // If still no games, generate some for the current week
+        if (games.length === 0) {
+            const currentWeek = window.currentWeek || 1;
+            games = this.filterGamesByWeek(currentWeek).filter(game => 
+                game.status === 'SCHEDULED' || game.status === 'PRE_GAME' || !game.status
+            );
+        }
+
+        if (games.length === 0) {
+            container.innerHTML = `
+                <div class="no-games-card">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Upcoming Games</h3>
+                    <p>No games scheduled for the selected week</p>
+                    <button class="btn-secondary" onclick="modernApp.generateSampleGames()">
+                        <i class="fas fa-plus"></i> Generate Sample Games
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        const gamesHTML = games.map(game => `
+            <div class="game-card upcoming-game">
+                <div class="game-header">
+                    <div class="game-status scheduled">${game.status || 'SCHEDULED'}</div>
+                    <div class="game-week">${game.week || `Week ${window.currentWeek || 1}`}</div>
+                </div>
+                
+                <div class="game-teams">
+                    <div class="team away">
+                        <div class="team-name">${game.awayTeam}</div>
+                        <div class="team-record">${game.awayRecord || '0-0'}</div>
+                    </div>
+                    
+                    <div class="game-vs">
+                        <div class="vs-text">@</div>
+                        <div class="game-time">${game.time || 'TBD'}</div>
+                    </div>
+                    
+                    <div class="team home">
+                        <div class="team-name">${game.homeTeam}</div>
+                        <div class="team-record">${game.homeRecord || '0-0'}</div>
+                    </div>
+                </div>
+                
+                <div class="game-details">
+                    <div class="game-detail">
+                        <div class="game-detail-label">Network</div>
+                        <div class="game-detail-value">${game.network || 'TBD'}</div>
+                    </div>
+                    <div class="game-detail">
+                        <div class="game-detail-label">Spread</div>
+                        <div class="game-detail-value">${game.spread || 'N/A'}</div>
+                    </div>
+                    <div class="game-detail">
+                        <div class="game-detail-label">O/U</div>
+                        <div class="game-detail-value">${game.overUnder || 'N/A'}</div>
+                    </div>
+                    <div class="game-detail">
+                        <div class="game-detail-label">Weather</div>
+                        <div class="game-detail-value">${game.weather || 'Good'}</div>
+                    </div>
+                </div>
+                
+                <div class="game-prediction">
+                    <div class="prediction-label">AI Prediction</div>
+                    <div class="prediction-bar">
+                        <div class="away-prob" style="width: ${game.prediction?.awayWinProbability || 45}%">
+                            ${game.prediction?.awayWinProbability || 45}%
+                        </div>
+                        <div class="home-prob" style="width: ${game.prediction?.homeWinProbability || 55}%">
+                            ${game.prediction?.homeWinProbability || 55}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="modernApp.viewGameDetails('${game.id}')">
+                        <i class="fas fa-chart-line"></i> Analysis
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="modernApp.simulateGame('${game.id}')">
+                        <i class="fas fa-dice"></i> Simulate
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        container.innerHTML = gamesHTML;
+    }
+    
+    updateUpcomingWeekDisplay() {
+        const display = document.getElementById('upcoming-week-display');
+        const currentWeek = document.querySelector('.current-week');
+        
+        if (display && currentWeek) {
+            display.textContent = currentWeek.textContent;
+        }
+    }
+    
+    generateSampleGames() {
+        console.log('🎲 Generating sample games for current week...');
+        const currentWeek = window.currentWeek || 1;
+        const sampleGames = this.filterGamesByWeek(currentWeek);
+        this.populateUpcomingGames(sampleGames);
     }
 
     loadTopPredictions() {
@@ -941,8 +1584,23 @@ class ModernNFLApp {
     // Additional view loaders
     loadLiveGames() {
         console.log('🔴 Loading Live Games...');
-        const container = document.getElementById('live-games-container');
-        if (container) {
+        
+        // First filter games by current week if needed
+        if (window.currentWeek && window.currentSeason) {
+            this.filterGamesByWeek(window.currentWeek);
+        }
+        
+        // Load in comprehensive app
+        if (this.comprehensiveApp && typeof this.comprehensiveApp.loadLiveGames === 'function') {
+            this.comprehensiveApp.loadLiveGames();
+        }
+        
+        // Use the new live and upcoming games loader
+        this.loadLiveAndUpcomingGames();
+        
+        // Also update all-games-container if it exists (for Live Games view)
+        const allGamesContainer = document.getElementById('all-games-container');
+        if (allGamesContainer) {
             this.populateLiveGames();
         }
     }
@@ -3486,6 +4144,482 @@ class ModernNFLApp {
         `;
     }
 
+    loadBetting() {
+        console.log('💰 Loading Betting Odds...');
+        
+        // Load upcoming games for betting
+        this.loadUpcomingGamesForBetting();
+        
+        // Initialize ML betting analysis
+        this.initializeMLBetting();
+        
+        // Ensure Hard Rock iframe is properly loaded
+        this.ensureHardRockWidget();
+    }
+    
+    loadUpcomingGamesForBetting() {
+        const upcomingGamesContainer = document.getElementById('upcoming-betting-games');
+        if (!upcomingGamesContainer) {
+            // Create the container if it doesn't exist
+            const bettingView = document.getElementById('betting');
+            if (bettingView) {
+                const upcomingSection = document.createElement('div');
+                upcomingSection.className = 'section-card';
+                upcomingSection.innerHTML = `
+                    <div class="section-header">
+                        <h2><i class="fas fa-calendar-alt"></i> Upcoming Games - Betting Lines</h2>
+                        <button class="btn-secondary" onclick="modernApp.refreshBettingOdds()">
+                            <i class="fas fa-sync-alt"></i> Refresh Odds
+                        </button>
+                    </div>
+                    <div id="upcoming-betting-games" class="betting-games-grid">
+                        <div class="loading-card">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading upcoming games and betting lines...</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert after the Hard Rock widget
+                const hardRockSection = bettingView.querySelector('.section-card');
+                if (hardRockSection && hardRockSection.nextSibling) {
+                    bettingView.insertBefore(upcomingSection, hardRockSection.nextSibling);
+                } else {
+                    bettingView.appendChild(upcomingSection);
+                }
+            }
+        }
+        
+        // Get upcoming games from data sources
+        const games = this.comprehensiveApp?.games || window.LIVE_NFL_GAMES_TODAY || [];
+        const upcomingGames = games.filter(game => 
+            game.status !== 'FINAL' && game.status !== 'LIVE'
+        );
+        
+        // Add some sample upcoming games if none exist
+        if (upcomingGames.length === 0) {
+            upcomingGames.push(
+                {
+                    id: 'upcoming1',
+                    homeTeam: 'Kansas City Chiefs',
+                    awayTeam: 'Buffalo Bills',
+                    time: 'Sunday 4:25 PM',
+                    week: 'Week 2',
+                    spread: 'KC -3.5',
+                    overUnder: '52.5',
+                    homeML: '-165',
+                    awayML: '+145',
+                    status: 'SCHEDULED'
+                },
+                {
+                    id: 'upcoming2',
+                    homeTeam: 'Dallas Cowboys',
+                    awayTeam: 'Philadelphia Eagles',
+                    time: 'Sunday 8:20 PM',
+                    week: 'Week 2',
+                    spread: 'DAL -1.5',
+                    overUnder: '48.5',
+                    homeML: '-120',
+                    awayML: '+100',
+                    status: 'SCHEDULED'
+                },
+                {
+                    id: 'upcoming3',
+                    homeTeam: 'Green Bay Packers',
+                    awayTeam: 'Chicago Bears',
+                    time: 'Monday 8:15 PM',
+                    week: 'Week 2',
+                    spread: 'GB -6.5',
+                    overUnder: '44.5',
+                    homeML: '-280',
+                    awayML: '+230',
+                    status: 'SCHEDULED'
+                }
+            );
+        }
+        
+        const container = document.getElementById('upcoming-betting-games');
+        if (container) {
+            container.innerHTML = upcomingGames.map(game => `
+                <div class="betting-game-card">
+                    <div class="game-header">
+                        <div class="game-matchup">
+                            <span class="away-team">${game.awayTeam}</span>
+                            <span class="vs">@</span>
+                            <span class="home-team">${game.homeTeam}</span>
+                        </div>
+                        <div class="game-time">
+                            <div class="time">${game.time}</div>
+                            <div class="week">${game.week}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="betting-lines">
+                        <div class="betting-line">
+                            <div class="line-label">Spread</div>
+                            <div class="line-value">${game.spread || 'N/A'}</div>
+                        </div>
+                        <div class="betting-line">
+                            <div class="line-label">Total</div>
+                            <div class="line-value">${game.overUnder || 'N/A'}</div>
+                        </div>
+                        <div class="betting-line">
+                            <div class="line-label">Moneyline</div>
+                            <div class="line-value">
+                                <div class="ml-home">${game.homeML || 'N/A'}</div>
+                                <div class="ml-away">${game.awayML || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="betting-actions">
+                        <button class="btn-ml-analysis" onclick="modernApp.runMLAnalysis('${game.id}')">
+                            <i class="fas fa-brain"></i> ML Analysis
+                        </button>
+                        <button class="btn-place-bet" onclick="modernApp.placeBet('${game.id}')">
+                            <i class="fas fa-coins"></i> Place Bet
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    initializeMLBetting() {
+        // Add ML betting analysis section
+        const bettingView = document.getElementById('betting');
+        if (bettingView && !document.getElementById('ml-betting-analysis')) {
+            const mlSection = document.createElement('div');
+            mlSection.className = 'section-card';
+            mlSection.id = 'ml-betting-section';
+            mlSection.innerHTML = `
+                <div class="section-header">
+                    <h2><i class="fas fa-robot"></i> AI Betting Analysis</h2>
+                    <div class="ml-status">
+                        <span class="status-badge active">ACTIVE</span>
+                    </div>
+                </div>
+                <div id="ml-betting-analysis" class="ml-analysis-container">
+                    <div class="analysis-placeholder">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Select a game to run ML analysis</h3>
+                        <p>Our AI models will analyze betting lines, team performance, and provide recommendations</p>
+                    </div>
+                </div>
+            `;
+            bettingView.appendChild(mlSection);
+        }
+    }
+    
+    ensureHardRockWidget() {
+        const iframe = document.getElementById('hardrock-odds-widget');
+        const loading = document.getElementById('widget-loading');
+        
+        if (iframe && loading) {
+            // Show loading initially
+            loading.style.display = 'flex';
+            
+            // Set up proper iframe loading
+            iframe.onload = function() {
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                }, 2000); // Give it 2 seconds to fully load
+            };
+            
+            iframe.onerror = function() {
+                if (window.handleWidgetError) {
+                    window.handleWidgetError();
+                }
+            };
+            
+            // Fallback timeout
+            setTimeout(() => {
+                if (loading.style.display !== 'none') {
+                    loading.style.display = 'none';
+                }
+            }, 10000); // 10 second timeout
+        }
+    }
+    
+    runMLAnalysis(gameId) {
+        console.log('🤖 Running ML Analysis for game:', gameId);
+        
+        const analysisContainer = document.getElementById('ml-betting-analysis');
+        if (analysisContainer) {
+            analysisContainer.innerHTML = `
+                <div class="ml-analysis-loading">
+                    <div class="loading-spinner"></div>
+                    <h3>Running AI Analysis...</h3>
+                    <p>Analyzing betting lines, team stats, and historical data</p>
+                </div>
+            `;
+            
+            // Simulate ML analysis
+            setTimeout(() => {
+                const confidence = Math.floor(Math.random() * 20) + 75; // 75-95%
+                const recommendation = Math.random() > 0.5 ? 'OVER' : 'UNDER';
+                const spreadRec = Math.random() > 0.5 ? 'HOME' : 'AWAY';
+                
+                analysisContainer.innerHTML = `
+                    <div class="ml-analysis-results">
+                        <div class="analysis-header">
+                            <h3>AI Analysis Results</h3>
+                            <div class="confidence-badge">${confidence}% Confidence</div>
+                        </div>
+                        
+                        <div class="analysis-grid">
+                            <div class="analysis-card">
+                                <div class="analysis-type">Total Points</div>
+                                <div class="analysis-recommendation ${recommendation.toLowerCase()}">
+                                    ${recommendation}
+                                </div>
+                                <div class="analysis-reason">
+                                    Based on offensive efficiency and defensive matchups
+                                </div>
+                            </div>
+                            
+                            <div class="analysis-card">
+                                <div class="analysis-type">Spread</div>
+                                <div class="analysis-recommendation ${spreadRec.toLowerCase()}">
+                                    ${spreadRec} TEAM
+                                </div>
+                                <div class="analysis-reason">
+                                    Historical performance and current form analysis
+                                </div>
+                            </div>
+                            
+                            <div class="analysis-card">
+                                <div class="analysis-type">Value Bet</div>
+                                <div class="analysis-recommendation value">
+                                    MONEYLINE
+                                </div>
+                                <div class="analysis-reason">
+                                    Line movement suggests value opportunity
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-details">
+                            <h4>Key Factors</h4>
+                            <ul>
+                                <li>Team offensive efficiency: ${(Math.random() * 20 + 80).toFixed(1)}%</li>
+                                <li>Defensive matchup rating: ${(Math.random() * 10 + 85).toFixed(1)}/100</li>
+                                <li>Weather impact: ${Math.random() > 0.7 ? 'Significant' : 'Minimal'}</li>
+                                <li>Injury report impact: ${Math.random() > 0.6 ? 'Moderate' : 'Low'}</li>
+                                <li>Historical H2H: ${Math.floor(Math.random() * 5) + 3}-${Math.floor(Math.random() * 5) + 2} last 5 games</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }, 3000);
+        }
+    }
+    
+    placeBet(gameId) {
+        console.log('💰 Placing bet for game:', gameId);
+        // Open Hard Rock Bet in new tab
+        window.open('https://app.hardrock.bet/sport-leagues/american_football/691198679103111169', '_blank');
+    }
+    
+    refreshBettingOdds() {
+        console.log('🔄 Refreshing betting odds...');
+        this.loadUpcomingGamesForBetting();
+        
+        // Show refresh feedback
+        const btn = document.querySelector('.btn-secondary');
+        if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 2000);
+        }
+    }
+
+    filterGamesByWeek(week) {
+        console.log('🔍 Filtering games by week:', week);
+        
+        // Get all available games
+        const allGames = window.LIVE_NFL_GAMES_TODAY || [];
+        const nflData = window.NFL_2024_DATA || {};
+        
+        // Combine live games with NFL data games
+        let availableGames = [...allGames];
+        
+        // Add games from NFL data if available
+        if (nflData.games) {
+            availableGames = [...availableGames, ...nflData.games];
+        }
+        
+        // Filter by current season and week
+        const currentSeason = window.currentSeason || 'regular';
+        let filteredGames = [];
+        
+        if (currentSeason === 'preseason') {
+            // Filter preseason games
+            filteredGames = availableGames.filter(game => {
+                return game.week === `Preseason Week ${week}` || 
+                       game.week === `Pre ${week}` ||
+                       (game.seasonType === 'preseason' && game.weekNumber === parseInt(week));
+            });
+            
+            // If no preseason games found, create sample ones
+            if (filteredGames.length === 0) {
+                filteredGames = this.generatePreseasonGames(week);
+            }
+        } else if (currentSeason === 'playoffs') {
+            const playoffRounds = ['Wild Card', 'Divisional', 'Conference Championship', 'Super Bowl'];
+            const roundName = playoffRounds[week - 1] || 'Wild Card';
+            
+            filteredGames = availableGames.filter(game => {
+                return game.week === roundName || 
+                       (game.seasonType === 'playoffs' && game.weekNumber === parseInt(week));
+            });
+            
+            // If no playoff games found, create sample ones
+            if (filteredGames.length === 0) {
+                filteredGames = this.generatePlayoffGames(week);
+            }
+        } else {
+            // Regular season
+            filteredGames = availableGames.filter(game => {
+                return game.week === `Week ${week}` || 
+                       game.weekNumber === parseInt(week) ||
+                       (game.seasonType === 'regular' && game.weekNumber === parseInt(week));
+            });
+            
+            // If no regular season games found, create sample ones
+            if (filteredGames.length === 0) {
+                filteredGames = this.generateRegularSeasonGames(week);
+            }
+        }
+        
+        console.log(`📊 Found ${filteredGames.length} games for ${currentSeason} week ${week}`);
+        
+        // Update the comprehensive app's games
+        if (window.app) {
+            window.app.games = filteredGames;
+        }
+        
+        // Update modern app's games
+        if (this.comprehensiveApp) {
+            this.comprehensiveApp.games = filteredGames;
+        }
+        
+        return filteredGames;
+    }
+    
+    generatePreseasonGames(week) {
+        const preseasonMatchups = [
+            ['New England Patriots', 'Philadelphia Eagles'],
+            ['Green Bay Packers', 'Cincinnati Bengals'],
+            ['Pittsburgh Steelers', 'Buffalo Bills'],
+            ['Dallas Cowboys', 'Los Angeles Rams'],
+            ['Kansas City Chiefs', 'Chicago Bears'],
+            ['San Francisco 49ers', 'New Orleans Saints'],
+            ['Miami Dolphins', 'Atlanta Falcons'],
+            ['Baltimore Ravens', 'Arizona Cardinals']
+        ];
+        
+        return preseasonMatchups.map((matchup, index) => ({
+            id: `preseason_${week}_${index}`,
+            homeTeam: matchup[1],
+            awayTeam: matchup[0],
+            homeScore: 0,
+            awayScore: 0,
+            status: 'SCHEDULED',
+            week: `Preseason Week ${week}`,
+            seasonType: 'preseason',
+            weekNumber: parseInt(week),
+            time: `${Math.floor(Math.random() * 4) + 1}:${Math.random() > 0.5 ? '00' : '30'} PM`,
+            network: ['NBC', 'CBS', 'FOX', 'ESPN'][Math.floor(Math.random() * 4)],
+            spread: `${matchup[1].split(' ').pop()} -${(Math.random() * 6 + 1).toFixed(1)}`,
+            overUnder: (Math.random() * 10 + 40).toFixed(1)
+        }));
+    }
+    
+    generatePlayoffGames(round) {
+        const playoffMatchups = {
+            1: [ // Wild Card
+                ['Buffalo Bills', 'Miami Dolphins'],
+                ['Kansas City Chiefs', 'Las Vegas Raiders'],
+                ['Philadelphia Eagles', 'New York Giants'],
+                ['San Francisco 49ers', 'Seattle Seahawks']
+            ],
+            2: [ // Divisional
+                ['Buffalo Bills', 'Baltimore Ravens'],
+                ['Kansas City Chiefs', 'Houston Texans'],
+                ['Philadelphia Eagles', 'Dallas Cowboys'],
+                ['San Francisco 49ers', 'Green Bay Packers']
+            ],
+            3: [ // Conference Championship
+                ['Buffalo Bills', 'Kansas City Chiefs'],
+                ['Philadelphia Eagles', 'San Francisco 49ers']
+            ],
+            4: [ // Super Bowl
+                ['Buffalo Bills', 'Philadelphia Eagles']
+            ]
+        };
+        
+        const matchups = playoffMatchups[round] || playoffMatchups[1];
+        const roundNames = ['Wild Card', 'Divisional', 'Conference Championship', 'Super Bowl'];
+        
+        return matchups.map((matchup, index) => ({
+            id: `playoff_${round}_${index}`,
+            homeTeam: matchup[1],
+            awayTeam: matchup[0],
+            homeScore: 0,
+            awayScore: 0,
+            status: 'SCHEDULED',
+            week: roundNames[round - 1],
+            seasonType: 'playoffs',
+            weekNumber: parseInt(round),
+            time: round === 4 ? '6:30 PM' : `${Math.floor(Math.random() * 2) + 1}:${Math.random() > 0.5 ? '00' : '30'} PM`,
+            network: round === 4 ? 'CBS' : ['NBC', 'CBS', 'FOX'][Math.floor(Math.random() * 3)],
+            spread: `${matchup[1].split(' ').pop()} -${(Math.random() * 6 + 1).toFixed(1)}`,
+            overUnder: (Math.random() * 10 + 45).toFixed(1)
+        }));
+    }
+    
+    generateRegularSeasonGames(week) {
+        const teams = [
+            'Buffalo Bills', 'Miami Dolphins', 'New England Patriots', 'New York Jets',
+            'Baltimore Ravens', 'Cincinnati Bengals', 'Cleveland Browns', 'Pittsburgh Steelers',
+            'Houston Texans', 'Indianapolis Colts', 'Jacksonville Jaguars', 'Tennessee Titans',
+            'Denver Broncos', 'Kansas City Chiefs', 'Las Vegas Raiders', 'Los Angeles Chargers',
+            'Dallas Cowboys', 'New York Giants', 'Philadelphia Eagles', 'Washington Commanders',
+            'Chicago Bears', 'Detroit Lions', 'Green Bay Packers', 'Minnesota Vikings',
+            'Atlanta Falcons', 'Carolina Panthers', 'New Orleans Saints', 'Tampa Bay Buccaneers',
+            'Arizona Cardinals', 'Los Angeles Rams', 'San Francisco 49ers', 'Seattle Seahawks'
+        ];
+        
+        // Generate 8 random matchups for the week
+        const shuffled = [...teams].sort(() => 0.5 - Math.random());
+        const games = [];
+        
+        for (let i = 0; i < 16; i += 2) {
+            if (shuffled[i] && shuffled[i + 1]) {
+                games.push({
+                    id: `regular_${week}_${i/2}`,
+                    homeTeam: shuffled[i + 1],
+                    awayTeam: shuffled[i],
+                    homeScore: 0,
+                    awayScore: 0,
+                    status: 'SCHEDULED',
+                    week: `Week ${week}`,
+                    seasonType: 'regular',
+                    weekNumber: parseInt(week),
+                    time: `${Math.floor(Math.random() * 4) + 1}:${Math.random() > 0.5 ? '00' : '30'} PM`,
+                    network: ['NBC', 'CBS', 'FOX', 'ESPN', 'TNF'][Math.floor(Math.random() * 5)],
+                    spread: `${shuffled[i + 1].split(' ').pop()} -${(Math.random() * 12 + 1).toFixed(1)}`,
+                    overUnder: (Math.random() * 15 + 40).toFixed(1)
+                });
+            }
+        }
+        
+        return games;
+    }
+
     // Utility method
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -3497,5 +4631,46 @@ const modernApp = new ModernNFLApp();
 
 // Make it globally available
 window.modernApp = modernApp;
+
+// Create nflApp object for backward compatibility with HTML onclick handlers
+window.nflApp = {
+    viewGameDetails: function(gameId) {
+        console.log('🎮 Viewing game details for:', gameId);
+        alert(`Game Details for ${gameId}\n\nThis feature will show detailed game analysis, player stats, and betting information.`);
+    },
+    
+    simulateGame: function(gameId) {
+        console.log('🎲 Simulating game:', gameId);
+        alert(`Simulating Game ${gameId}\n\nRunning Monte Carlo simulation...\nResult: Home team wins 24-17 (67% confidence)`);
+    },
+    
+    optimizeLineup: function() {
+        console.log('🎯 Optimizing lineup...');
+        alert('Lineup Optimizer\n\nAnalyzing player projections and matchups...\nOptimal lineup generated based on current data!');
+    },
+    
+    analyzeTrade: function() {
+        console.log('📊 Analyzing trade...');
+        alert('Trade Analyzer\n\nEvaluating player values and projections...\nTrade analysis complete - check results below!');
+    },
+    
+    runMLAnalysis: function(gameId) {
+        if (window.modernApp && window.modernApp.runMLAnalysis) {
+            window.modernApp.runMLAnalysis(gameId);
+        }
+    },
+    
+    placeBet: function(gameId) {
+        if (window.modernApp && window.modernApp.placeBet) {
+            window.modernApp.placeBet(gameId);
+        }
+    },
+    
+    refreshBettingOdds: function() {
+        if (window.modernApp && window.modernApp.refreshBettingOdds) {
+            window.modernApp.refreshBettingOdds();
+        }
+    }
+};
 
 // Fantasy functions are now defined at the top of the file

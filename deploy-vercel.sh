@@ -1,42 +1,33 @@
 #!/bin/bash
 
-echo "🚀 Sunday Edge Pro - Vercel Deployment"
-echo "====================================="
+# Vercel Deployment Script
+# This script deploys the corrected build configuration to Vercel
 
-# Check if Vercel CLI is installed, try to install it
-if ! command -v vercel &> /dev/null; then
-    echo "📦 Installing Vercel CLI..."
-    npx vercel@latest --version > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo "✅ Vercel CLI ready"
-    else
-        echo "❌ Could not install Vercel CLI"
-        echo "Please install manually: npm install -g vercel"
-        exit 1
-    fi
+set -e
+
+echo "🚀 Starting Vercel deployment with corrected configuration..."
+
+# Run pre-deployment validation
+echo "📋 Running pre-deployment validation..."
+npm run test:build
+
+if [ $? -ne 0 ]; then
+    echo "❌ Pre-deployment validation failed. Aborting deployment."
+    exit 1
 fi
 
-echo "🔧 Setting up Vercel deployment..."
+echo "✅ Pre-deployment validation passed"
 
-# Navigate to server directory
-cd server
+# Deploy to Vercel
+echo "🌐 Deploying to Vercel..."
+./node_modules/.bin/vercel --prod --confirm
 
-# Deploy using npx (no global install needed)
-echo "🚀 Deploying to Vercel..."
-echo "You'll be asked to:"
-echo "1. Login to Vercel (if not already)"
-echo "2. Confirm project name"
-echo "3. Select deployment settings"
-echo ""
+if [ $? -eq 0 ]; then
+    echo "✅ Deployment successful!"
+    echo "🔍 Vercel will provide the deployment URL above"
+else
+    echo "❌ Deployment failed"
+    exit 1
+fi
 
-npx vercel --prod
-
-echo ""
-echo "✅ Deployment should be complete!"
-echo ""
-echo "📋 Next steps:"
-echo "1. Copy the Vercel URL from the output above"
-echo "2. Run the update script to configure your frontend"
-echo "3. Upload your updated frontend to sundayedgepro.com"
-echo ""
-echo "🔗 Your Vercel dashboard: https://vercel.com/dashboard"
+echo "🎉 Deployment process completed!"

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAA Data Test - Sunday Edge Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .section h2 {
+            color: #00ff88;
+            margin-top: 0;
+        }
+        .loading {
+            color: #ffa500;
+            font-style: italic;
+        }
+        .error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .game-card {
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .live {
+            border-left: 4px solid #ff0066;
+        }
+        .btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #00cc6a;
+        }
+        pre {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 NCAA Data Service Test - Sunday Edge Pro</h1>
+        <p>Testing real-time NCAA football data integration</p>
+        
+        <div class="section">
+            <h2>🔧 Service Status</h2>
+            <div id="service-status" class="loading">Initializing NCAA Data Service...</div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Dashboard Metrics</h2>
+            <button class="btn" onclick="testDashboardData()">Load Dashboard Data</button>
+            <div id="dashboard-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🏈 Today's Games</h2>
+            <button class="btn" onclick="testTodaysGames()">Load Today's Games</button>
+            <div id="todays-games-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🔴 Live Games</h2>
+            <button class="btn" onclick="testLiveGames()">Load Live Games</button>
+            <div id="live-games-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🏆 AP Top 25 Rankings</h2>
+            <button class="btn" onclick="testRankings()">Load Rankings</button>
+            <div id="rankings-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>💰 Betting Lines</h2>
+            <button class="btn" onclick="testBettingLines()">Load Betting Lines</button>
+            <div id="betting-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Betting Opportunities</h2>
+            <button class="btn" onclick="testBettingOpportunities()">Load Opportunities</button>
+            <div id="opportunities-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🔄 Auto-Refresh Test</h2>
+            <button class="btn" onclick="startAutoRefresh()">Start Auto-Refresh (30s)</button>
+            <button class="btn" onclick="stopAutoRefresh()">Stop Auto-Refresh</button>
+            <div id="auto-refresh-status"></div>
+        </div>
+    </div>
+
+    <!-- NCAA Data Service -->
+    <script src="ncaa-data-service.js"></script>
+    
+    <script>
+        let autoRefreshInterval = null;
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 NCAA Data Test Page Loaded');
+            checkServiceStatus();
+        });
+        
+        // Check if NCAA Data Service is loaded
+        function checkServiceStatus() {
+            const statusDiv = document.getElementById('service-status');
+            
+            if (window.ncaaDataService) {
+                statusDiv.innerHTML = '<div class="success">✅ NCAA Data Service loaded successfully!</div>';
+                console.log('✅ NCAA Data Service available');
+            } else {
+                statusDiv.innerHTML = '<div class="error">❌ NCAA Data Service not loaded</div>';
+                console.error('❌ NCAA Data Service not available');
+            }
+        }
+        
+        // Test Dashboard Data
+        async function testDashboardData() {
+            const resultsDiv = document.getElementById('dashboard-results');
+            resultsDiv.innerHTML = '<div class="loading">Loading dashboard data...</div>';
+            
+            try {
+                const data = await window.ncaaDataService.getDashboardData();
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Dashboard data loaded successfully!</div>
+                    <div style="margin-top: 10px;">
+                        <strong>Total Games:</strong> ${data.totalGames}<br>
+                        <strong>Live Games:</strong> ${data.liveGames}<br>
+                        <strong>Rankings Available:</strong> ${data.rankings.length}<br>
+                        <strong>Betting Lines:</strong> ${data.bettingLines.length}<br>
+                        <strong>Last Updated:</strong> ${data.lastUpdated}
+                    </div>
+                `;
+                
+                console.log('📊 Dashboard Data:', data);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('❌ Dashboard data error:', error);
+            }
+        }
+        
+        // Test Today's Games
+        async function testTodaysGames() {
+            const resultsDiv = document.getElementById('todays-games-results');
+            resultsDiv.innerHTML = '<div class="loading">Loading today\'s games...</div>';
+            
+            try {
+                const games = await window.ncaaDataService.getTodaysGames();
+                
+                if (games.length === 0) {
+                    resultsDiv.innerHTML = '<div class="error">No games found for today</div>';
+                    return;
+                }
+                
+                let html = `<div class="success">✅ Found ${games.length} games today!</div>`;
+                
+                games.slice(0, 5).forEach(game => {
+                    html += `
+                        <div class="game-card ${game.isLive ? 'live' : ''}">
+                            <strong>${game.name}</strong><br>
+                            <span style="color: #00ff88;">${game.teams.away.name} (${game.teams.away.record})</span> 
+                            <strong>${game.teams.away.score || 0}</strong> @ 
+                            <span style="color: #00ff88;">${game.teams.home.name} (${game.teams.home.record})</span> 
+                            <strong>${game.teams.home.score || 0}</strong><br>
+                            <small>Status: ${game.status.type} | Venue: ${game.venue} | ${game.isLive ? '🔴 LIVE' : formatTime(game.date)}</small>
+                        </div>
+                    `;
+                });
+                
+                if (games.length > 5) {
+                    html += `<div style="margin-top: 10px; color: #888;">... and ${games.length - 5} more games</div>`;
+                }
+                
+                resultsDiv.innerHTML = html;
+                console.log('🏈 Today\'s Games:', games);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('❌ Today\'s games error:', error);
+            }
+        }
+        
+        // Test Live Games
+        async function testLiveGames() {
+            const resultsDiv = document.getElementById('live-games-results');
+            resultsDiv.innerHTML = '<div class="loading">Loading live games...</div>';
+            
+            try {
+                const liveGames = await window.ncaaDataService.getLiveGames();
+                
+                if (liveGames.length === 0) {
+                    resultsDiv.innerHTML = '<div class="error">No live games currently</div>';
+                    return;
+                }
+                
+                let html = `<div class="success">🔴 Found ${liveGames.length} live games!</div>`;
+                
+                liveGames.forEach(game => {
+                    html += `
+                        <div class="game-card live">
+                            <strong>🔴 LIVE: ${game.name}</strong><br>
+                            <span style="color: #ff0066;">${game.teams.away.name}</span> 
+                            <strong>${game.teams.away.score || 0}</strong> @ 
+                            <span style="color: #ff0066;">${game.teams.home.name}</span> 
+                            <strong>${game.teams.home.score || 0}</strong><br>
+                            <small>Clock: ${game.status.displayClock} | Venue: ${game.venue}</small>
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html;
+                console.log('🔴 Live Games:', liveGames);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('❌ Live games error:', error);
+            }
+        }
+        
+        // Test Rankings
+        async function testRankings() {
+            const resultsDiv = document.getElementById('rankings-results');
+            resultsDiv.innerHTML = '<div class="loading">Loading AP Top 25 rankings...</div>';
+            
+            try {
+                const rankings = await window.ncaaDataService.getTop25Rankings();
+                
+                if (rankings.length === 0) {
+                    resultsDiv.innerHTML = '<div class="error">No rankings available</div>';
+                    return;
+                }
+                
+                let html = `<div class="success">🏆 Loaded Top ${rankings.length} rankings!</div>`;
+                
+                rankings.slice(0, 10).forEach(team => {
+                    html += `
+                        <div class="game-card">
+                            <strong>#${team.rank} ${team.team}</strong><br>
+                            <small>Record: ${team.record} | Points: ${team.points} | Previous: #${team.previousRank}</small>
+                        </div>
+                    `;
+                });
+                
+                if (rankings.length > 10) {
+                    html += `<div style="margin-top: 10px; color: #888;">... and ${rankings.length - 10} more teams</div>`;
+                }
+                
+                resultsDiv.innerHTML = html;
+                console.log('🏆 Rankings:', rankings);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('❌ Rankings error:', error);
+            }
+        }
+        
+        // Test Betting Lines
+        async function testBettingLines() {
+            const resultsDiv = document.getElementById('betting-results');
+            resultsDiv.innerHTML = '<div class="loading">Loading betting lines...</div>';
+            
+            try {
+                const lines = await window.ncaaDataService.getBettingLines();
+                
+                if (lines.length === 0) {
+                    resultsDiv.innerHTML = '<div class="error">No betting lines available</div>';
+                    return;
+                }
+                
+                let html = `<div class="success">💰 Found ${lines.length} betting lines!</div>`;
+                
+                lines.slice(0, 5).forEach(line => {
+                    html += `
+                        <div class="game-card">
+                            <strong>${line.teams}</strong><br>
+                            <small>Spread: ${line.spread} | O/U: ${line.overUnder} | ML: ${line.homeMoneyline}/${line.awayMoneyline}</small><br>
+                            <small>Provider: ${line.provider}</small>
+                        </div>
+                    `;
+                });
+                
+                if (lines.length > 5) {
+                    html += `<div style="margin-top: 10px; color: #888;">... and ${lines.length - 5} more lines</div>`;
+                }
+                
+                resultsDiv.innerHTML = html;
+                console.log('💰 Betting Lines:', lines);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('❌ Betting lines error:', error);
+            }
+        }
+        
+        // Test Betting Opportunities
+        async function testBettingOpportunities() {
+            const resultsDiv = document.getElementById('opportunities-results');
+            resultsDiv.innerHTML = '<div class="loading">Loading betting opportunities...</div>';
+            
+            try {
+                const opportunities = await window.ncaaDataService.getBettingOpportunities();
+                
+                if (opportunities.length === 0) {
+                    resultsDiv.innerHTML = '<div class="error">No betting opportunities available</div>';
+                    return;
+                }
+                
+                let html = `<div class="success">🎯 Found ${opportunities.length} betting opportunities!</div>`;
+                
+                opportunities.slice(0, 5).forEach(opp => {
+                    html += `
+                        <div class="game-card">
+                            <strong>${opp.teams}</strong> 
+                            <span style="color: #00ff88; float: right;">${Math.round(opp.confidence)}% Confidence</span><br>
+                            <small>Type: ${opp.opportunity.type} | Recommendation: ${opp.opportunity.recommendation}</small><br>
+                            <small>Spread: ${opp.spread} | O/U: ${opp.overUnder}</small>
+                        </div>
+                    `;
+                });
+                
+                if (opportunities.length > 5) {
+                    html += `<div style="margin-top: 10px; color: #888;">... and ${opportunities.length - 5} more opportunities</div>`;
+                }
+                
+                resultsDiv.innerHTML = html;
+                console.log('🎯 Betting Opportunities:', opportunities);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('❌ Betting opportunities error:', error);
+            }
+        }
+        
+        // Start Auto-Refresh
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            const statusDiv = document.getElementById('auto-refresh-status');
+            statusDiv.innerHTML = '<div class="success">🔄 Auto-refresh started (every 30 seconds)</div>';
+            
+            autoRefreshInterval = setInterval(async () => {
+                console.log('🔄 Auto-refreshing NCAA data...');
+                
+                // Clear cache and refresh live data
+                window.ncaaDataService.clearCache();
+                
+                // Update live games
+                await testLiveGames();
+                
+                const now = new Date().toLocaleTimeString();
+                statusDiv.innerHTML = `<div class="success">🔄 Auto-refresh active | Last update: ${now}</div>`;
+                
+            }, 30000);
+        }
+        
+        // Stop Auto-Refresh
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+            
+            const statusDiv = document.getElementById('auto-refresh-status');
+            statusDiv.innerHTML = '<div class="error">⏹️ Auto-refresh stopped</div>';
+        }
+        
+        // Utility function to format time
+        function formatTime(date) {
+            return new Date(date).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+    </script>
+</body>
+</html>

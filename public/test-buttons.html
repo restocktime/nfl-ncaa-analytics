@@ -3,357 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Test - Football Analytics</title>
+    <title>Button Test - NFL Analytics Pro</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             background: #0a0a0a;
             color: white;
-            font-family: Arial, sans-serif;
             padding: 20px;
-            line-height: 1.6;
         }
         .test-section {
-            margin: 30px 0;
+            margin: 20px 0;
             padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid #333;
+            border-radius: 8px;
         }
-        .test-btn {
-            background: #007bff;
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background: #0066ff;
             color: white;
             border: none;
-            padding: 12px 24px;
-            margin: 10px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
         }
-        .test-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-        .test-btn:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
+        button:hover {
+            background: #0052cc;
         }
         .result {
-            margin: 15px 0;
-            padding: 15px;
-            background: #333;
-            border-radius: 5px;
-            border-left: 4px solid #007bff;
-        }
-        .success { border-left-color: #28a745; color: #28a745; }
-        .error { border-left-color: #dc3545; color: #dc3545; }
-        .warning { border-left-color: #ffc107; color: #ffc107; }
-        .console-output {
+            margin-top: 10px;
+            padding: 10px;
             background: #1a1a1a;
-            padding: 15px;
             border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .status-online { background: #28a745; }
-        .status-offline { background: #dc3545; }
-        .status-loading { background: #ffc107; animation: pulse 1s infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
     </style>
 </head>
 <body>
-    <h1>🔧 Football Analytics - Button Functionality Test</h1>
+    <h1>🏈 NFL Analytics Pro - Button Functionality Test</h1>
     
     <div class="test-section">
-        <h2>🔍 System Status</h2>
-        <div id="system-status" class="result">
-            <div><span class="status-indicator status-loading"></span>Checking system status...</div>
-        </div>
+        <h2>Navigation Functions</h2>
+        <button onclick="refreshAllData()">Refresh All Data</button>
+        <button onclick="loadLiveGames()">Load Live Games</button>
+        <div id="nav-result" class="result">Click buttons above to test navigation functions</div>
     </div>
     
     <div class="test-section">
-        <h2>🔔 Notification System</h2>
-        <button class="test-btn" onclick="testNotificationButton()">Test Notification Toggle</button>
-        <button class="test-btn" onclick="window.footballApp && window.footballApp.toggleNotificationPanel()">Direct Notification Call</button>
-        <div id="notification-result" class="result">Click a button to test notifications...</div>
+        <h2>Season Navigation</h2>
+        <button onclick="switchSeason('regular')">Regular Season</button>
+        <button onclick="switchSeason('preseason')">Preseason</button>
+        <button onclick="switchSeason('playoffs')">Playoffs</button>
+        <button onclick="changeWeek(-1)">Previous Week</button>
+        <button onclick="changeWeek(1)">Next Week</button>
+        <button onclick="selectWeek(5)">Select Week 5</button>
+        <div id="season-result" class="result">Click buttons above to test season navigation</div>
     </div>
     
     <div class="test-section">
-        <h2>🔄 Data Refresh</h2>
-        <button class="test-btn" onclick="testRefreshButton()">Test Refresh Data</button>
-        <button class="test-btn" onclick="window.footballApp && window.footballApp.refreshData()">Direct Refresh Call</button>
-        <div id="refresh-result" class="result">Click a button to test data refresh...</div>
+        <h2>Fantasy Functions</h2>
+        <button onclick="showFantasyTab('dashboard')">Fantasy Dashboard</button>
+        <button onclick="showFantasyTab('lineup')">Lineup Optimizer</button>
+        <button onclick="showFantasyTab('waivers')">Waiver Wire</button>
+        <button onclick="showFantasyTab('trades')">Trade Analyzer</button>
+        <button onclick="showFantasyTab('projections')">Projections</button>
+        <button onclick="showFantasyTab('connect')">Connect Accounts</button>
+        <div id="fantasy-result" class="result">Click buttons above to test fantasy functions</div>
     </div>
     
     <div class="test-section">
-        <h2>🎲 Monte Carlo Simulation</h2>
-        <button class="test-btn" onclick="testMonteCarloButton()">Test Monte Carlo</button>
-        <button class="test-btn" onclick="window.footballApp && window.footballApp.runMonteCarloSimulation()">Direct Monte Carlo Call</button>
-        <div id="montecarlo-result" class="result">Click a button to test Monte Carlo simulation...</div>
+        <h2>Connection Functions</h2>
+        <button onclick="connectESPN()">Connect ESPN</button>
+        <button onclick="connectYahoo()">Connect Yahoo</button>
+        <button onclick="connectSleeper()">Connect Sleeper</button>
+        <div id="connect-result" class="result">Click buttons above to test connection functions</div>
     </div>
     
     <div class="test-section">
-        <h2>🧠 ML Model Training</h2>
-        <button class="test-btn" onclick="testRetrainButton()">Test Model Retrain</button>
-        <button class="test-btn" onclick="window.footballApp && window.footballApp.retrainModels()">Direct Retrain Call</button>
-        <div id="retrain-result" class="result">Click a button to test model retraining...</div>
+        <h2>Game Functions (nflApp)</h2>
+        <button onclick="nflApp.viewGameDetails('test123')">View Game Details</button>
+        <button onclick="nflApp.simulateGame('test123')">Simulate Game</button>
+        <button onclick="nflApp.optimizeLineup()">Optimize Lineup</button>
+        <button onclick="nflApp.analyzeTrade()">Analyze Trade</button>
+        <div id="game-result" class="result">Click buttons above to test game functions</div>
     </div>
     
     <div class="test-section">
-        <h2>🔔 Alert Creation</h2>
-        <button class="test-btn" onclick="testCreateAlertButton()">Test Create Alert</button>
-        <button class="test-btn" onclick="window.footballApp && window.footballApp.createAlert()">Direct Alert Call</button>
-        <div id="alert-result" class="result">Click a button to test alert creation...</div>
+        <h2>Utility Functions</h2>
+        <button onclick="optimizeLineup()">Optimize Lineup (Global)</button>
+        <button onclick="analyzeTrade()">Analyze Trade (Global)</button>
+        <button onclick="testFantasy()">Test Fantasy System</button>
+        <div id="utility-result" class="result">Click buttons above to test utility functions</div>
     </div>
-    
-    <div class="test-section">
-        <h2>🧭 Navigation</h2>
-        <button class="test-btn" onclick="testNavigation('teams')">Go to Teams</button>
-        <button class="test-btn" onclick="testNavigation('players')">Go to Players</button>
-        <button class="test-btn" onclick="testNavigation('dashboard')">Go to Dashboard</button>
-        <div id="navigation-result" class="result">Click a button to test navigation...</div>
-    </div>
-    
-    <div class="test-section">
-        <h2>📱 UI Controls</h2>
-        <button class="test-btn" onclick="testSidebarToggle()">Toggle Sidebar</button>
-        <button class="test-btn" onclick="testUserMenu()">Toggle User Menu</button>
-        <div id="ui-result" class="result">Click a button to test UI controls...</div>
-    </div>
-    
-    <div class="test-section">
-        <h2>📊 Console Output</h2>
-        <div id="console-output" class="console-output">Console messages will appear here...</div>
-        <button class="test-btn" onclick="clearConsole()">Clear Console</button>
-    </div>
+
+    <!-- Include the comprehensive app and main app -->
+    <script src="comprehensive-nfl-app.js"></script>
+    <script src="app.js"></script>
     
     <script>
-        // Test functions
-        function testNotificationButton() {
-            updateResult('notification-result', 'Testing notification toggle...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.toggleNotificationPanel === 'function') {
-                    window.footballApp.toggleNotificationPanel();
-                    updateResult('notification-result', '✅ Notification toggle successful!', 'success');
-                } else {
-                    updateResult('notification-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('notification-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testRefreshButton() {
-            updateResult('refresh-result', 'Testing data refresh...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.refreshData === 'function') {
-                    window.footballApp.refreshData();
-                    updateResult('refresh-result', '✅ Data refresh successful!', 'success');
-                } else {
-                    updateResult('refresh-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('refresh-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testMonteCarloButton() {
-            updateResult('montecarlo-result', 'Testing Monte Carlo simulation...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.runMonteCarloSimulation === 'function') {
-                    window.footballApp.runMonteCarloSimulation();
-                    updateResult('montecarlo-result', '✅ Monte Carlo simulation started!', 'success');
-                } else {
-                    updateResult('montecarlo-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('montecarlo-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testRetrainButton() {
-            updateResult('retrain-result', 'Testing model retraining...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.retrainModels === 'function') {
-                    window.footballApp.retrainModels();
-                    updateResult('retrain-result', '✅ Model retraining started!', 'success');
-                } else {
-                    updateResult('retrain-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('retrain-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testCreateAlertButton() {
-            updateResult('alert-result', 'Testing alert creation...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.createAlert === 'function') {
-                    window.footballApp.createAlert();
-                    updateResult('alert-result', '✅ Alert creation dialog opened!', 'success');
-                } else {
-                    updateResult('alert-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('alert-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testNavigation(view) {
-            updateResult('navigation-result', `Testing navigation to ${view}...`, 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.switchView === 'function') {
-                    window.footballApp.switchView(view);
-                    updateResult('navigation-result', `✅ Navigation to ${view} successful!`, 'success');
-                } else {
-                    updateResult('navigation-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('navigation-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testSidebarToggle() {
-            updateResult('ui-result', 'Testing sidebar toggle...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.toggleSidebar === 'function') {
-                    window.footballApp.toggleSidebar();
-                    updateResult('ui-result', '✅ Sidebar toggle successful!', 'success');
-                } else {
-                    updateResult('ui-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('ui-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function testUserMenu() {
-            updateResult('ui-result', 'Testing user menu toggle...', 'warning');
-            try {
-                if (window.footballApp && typeof window.footballApp.toggleUserMenu === 'function') {
-                    window.footballApp.toggleUserMenu();
-                    updateResult('ui-result', '✅ User menu toggle successful!', 'success');
-                } else {
-                    updateResult('ui-result', '❌ Football app or method not found', 'error');
-                }
-            } catch (error) {
-                updateResult('ui-result', `❌ Error: ${error.message}`, 'error');
-            }
-        }
-        
-        function updateResult(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.textContent = message;
-                element.className = `result ${type}`;
-            }
-        }
-        
-        function clearConsole() {
-            document.getElementById('console-output').innerHTML = 'Console cleared...';
-        }
-        
-        // System status check
-        function checkSystemStatus() {
-            const statusElement = document.getElementById('system-status');
-            const checks = [];
-            
-            // Check if app exists
-            checks.push({
-                name: 'Football App',
-                status: !!window.footballApp,
-                details: window.footballApp ? 'Loaded' : 'Not found'
-            });
-            
-            // Check methods
-            if (window.footballApp) {
-                const methods = ['refreshData', 'toggleNotificationPanel', 'runMonteCarloSimulation', 'retrainModels', 'createAlert'];
-                methods.forEach(method => {
-                    checks.push({
-                        name: method,
-                        status: typeof window.footballApp[method] === 'function',
-                        details: typeof window.footballApp[method]
-                    });
-                });
-            }
-            
-            // Check server
-            fetch('/health')
-                .then(response => response.json())
-                .then(data => {
-                    checks.push({
-                        name: 'Server',
-                        status: data.status === 'healthy',
-                        details: data.status
-                    });
-                    updateSystemStatus(checks);
-                })
-                .catch(error => {
-                    checks.push({
-                        name: 'Server',
-                        status: false,
-                        details: 'Connection failed'
-                    });
-                    updateSystemStatus(checks);
-                });
-        }
-        
-        function updateSystemStatus(checks) {
-            const statusElement = document.getElementById('system-status');
-            let html = '';
-            
-            checks.forEach(check => {
-                const indicator = check.status ? 'status-online' : 'status-offline';
-                html += `<div><span class="status-indicator ${indicator}"></span>${check.name}: ${check.details}</div>`;
-            });
-            
-            statusElement.innerHTML = html;
-        }
-        
-        // Console capture
-        const originalLog = console.log;
-        const originalError = console.error;
-        const consoleOutput = document.getElementById('console-output');
-        
+        // Add result logging for better testing
+        const originalConsoleLog = console.log;
         console.log = function(...args) {
-            originalLog.apply(console, args);
-            addConsoleMessage(args.join(' '), 'log');
+            originalConsoleLog.apply(console, args);
+            
+            // Show results in the UI
+            const message = args.join(' ');
+            if (message.includes('🔄 Refreshing') || message.includes('🔴 Loading')) {
+                document.getElementById('nav-result').innerHTML = `✅ ${message}`;
+            } else if (message.includes('🏈 Switching') || message.includes('📅')) {
+                document.getElementById('season-result').innerHTML = `✅ ${message}`;
+            } else if (message.includes('🏆 Showing') || message.includes('fantasy')) {
+                document.getElementById('fantasy-result').innerHTML = `✅ ${message}`;
+            } else if (message.includes('🔗 Connecting')) {
+                document.getElementById('connect-result').innerHTML = `✅ ${message}`;
+            } else if (message.includes('🎮') || message.includes('🎲') || message.includes('nflApp')) {
+                document.getElementById('game-result').innerHTML = `✅ ${message}`;
+            } else if (message.includes('🎯') || message.includes('📊') || message.includes('🧪')) {
+                document.getElementById('utility-result').innerHTML = `✅ ${message}`;
+            }
         };
         
-        console.error = function(...args) {
-            originalError.apply(console, args);
-            addConsoleMessage(args.join(' '), 'error');
-        };
-        
-        function addConsoleMessage(message, type) {
-            const timestamp = new Date().toLocaleTimeString();
-            const color = type === 'error' ? '#dc3545' : '#28a745';
-            consoleOutput.innerHTML += `<div style="color: ${color}; margin: 2px 0;">[${timestamp}] ${message}</div>`;
-            consoleOutput.scrollTop = consoleOutput.scrollHeight;
-        }
-        
-        // Initialize
-        setTimeout(() => {
-            checkSystemStatus();
-        }, 1000);
+        // Test that all functions exist
+        window.addEventListener('load', () => {
+            const functions = [
+                'refreshAllData', 'loadLiveGames', 'switchSeason', 'changeWeek', 'selectWeek',
+                'showFantasyTab', 'connectESPN', 'connectYahoo', 'connectSleeper',
+                'optimizeLineup', 'analyzeTrade', 'testFantasy'
+            ];
+            
+            const missing = functions.filter(fn => typeof window[fn] !== 'function');
+            const nflAppFunctions = ['viewGameDetails', 'simulateGame', 'optimizeLineup', 'analyzeTrade'];
+            const missingNflApp = nflAppFunctions.filter(fn => !window.nflApp || typeof window.nflApp[fn] !== 'function');
+            
+            if (missing.length === 0 && missingNflApp.length === 0) {
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div style="background: #10b981; padding: 15px; margin-bottom: 20px; border-radius: 8px;">' +
+                    '✅ All button functions are properly defined and ready to use!' +
+                    '</div>'
+                );
+            } else {
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div style="background: #ef4444; padding: 15px; margin-bottom: 20px; border-radius: 8px;">' +
+                    `❌ Missing functions: ${[...missing, ...missingNflApp.map(f => 'nflApp.' + f)].join(', ')}` +
+                    '</div>'
+                );
+            }
+        });
     </script>
-    
-    <!-- Load the main app -->
-    <script src="app.js"></script>
-    <script src="button-fix.js"></script>
 </body>
 </html>

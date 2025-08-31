@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-08-24T15:04:04.231Z",
+  "projectRoot": "/Users/isaac/Desktop/nfl:ncaa",
+  "summary": {
+    "totalValidations": 15,
+    "totalIssues": 0,
+    "totalWarnings": 0,
+    "projectType": "frontend-backend"
+  },
+  "structure": {
+    "hasClientDir": false,
+    "hasFrontendDir": true,
+    "hasPublicDir": true,
+    "hasSrcDir": true,
+    "hasDistDir": true,
+    "hasBuildDir": false
+  },
+  "validations": [
+    "✅ Found required file: package.json",
+    "✅ Found required file: README.md",
+    "📁 Project type detected: frontend-backend",
+    "📂 Frontend directories found: public, src, frontend, dist",
+    "✅ Found package.json at: package.json",
+    "✅ Build script found in package.json",
+    "✅ Start script found in package.json",
+    "✅ Found package.json at: frontend/package.json",
+    "✅ Build script found in frontend/package.json",
+    "✅ Build output directories found: dist, public/dist",
+    "📄 dist contains 132 files/directories",
+    "📄 public/dist contains 2 files/directories",
+    "✅ Vercel config found: vercel.json",
+    "✅ Custom build command specified: npm run build",
+    "✅ Output directory specified: dist"
+  ],
+  "issues": [],
+  "warnings": [],
+  "recommendations": []
+}

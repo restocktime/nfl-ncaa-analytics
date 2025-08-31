@@ -1,8 +1,5946 @@
-// Comprehensive NFL Analytics App - All Features Working
-console.log('🏈 Loading Comprehensive NFL Analytics App...');
+// Sunday Edge Pro Betting Quantum - Elite NFL Analytics Platform
+console.log('⚡ Loading Sunday Edge Pro Betting Quantum...');
+
+/**
+ * Error Recovery Manager
+ * Handles comprehensive error recovery with user-friendly notifications and fallback mechanisms
+ */
+class ErrorRecoveryManager {
+    constructor() {
+        this.errorLog = [];
+        this.recoveryStrategies = new Map();
+        this.userNotificationQueue = [];
+        this.isRecovering = false;
+        this.maxRetries = 3;
+        this.retryDelays = [1000, 2000, 4000]; // Exponential backoff
+        
+        this.initializeRecoveryStrategies();
+        this.initializeUserNotificationSystem();
+        
+        console.log('🛡️ ErrorRecoveryManager initialized with comprehensive recovery strategies');
+    }
+    
+    /**
+     * Initialize recovery strategies for different error types
+     */
+    initializeRecoveryStrategies() {
+        // Navigation error recovery strategies
+        this.recoveryStrategies.set('VIEW_NOT_FOUND', {
+            attempts: ['viewName', 'viewName-view', 'view-viewName', 'viewNameView'],
+            fallback: 'dashboard',
+            userMessage: 'Navigation issue detected. Redirecting to dashboard...',
+            severity: 'medium',
+            autoRecover: true,
+            retryable: false
+        });
+        
+        this.recoveryStrategies.set('CRITICAL_NAVIGATION_FAILURE', {
+            attempts: ['dashboard', 'home', 'main'],
+            fallback: 'reload',
+            userMessage: 'Critical navigation error. The page will reload to restore functionality.',
+            severity: 'high',
+            autoRecover: true,
+            retryable: false
+        });
+        
+        this.recoveryStrategies.set('NAVIGATION_CLICK_FAILED', {
+            attempts: ['viewName', 'viewName-view'],
+            fallback: 'dashboard',
+            userMessage: 'Navigation issue detected. Attempting to recover...',
+            severity: 'medium',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        this.recoveryStrategies.set('NAVIGATION_CLICK_EXCEPTION', {
+            attempts: ['dashboard', 'home'],
+            fallback: 'reload',
+            userMessage: 'Navigation error occurred. Recovering to a safe state...',
+            severity: 'high',
+            autoRecover: true,
+            retryable: false
+        });
+        
+        this.recoveryStrategies.set('VIEW_DISPLAY_FAILED', {
+            attempts: ['dashboard', 'home'],
+            fallback: 'reload',
+            userMessage: 'View display issue. Attempting to recover...',
+            severity: 'medium',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        // Chart error recovery strategies
+        this.recoveryStrategies.set('CHART_CANVAS_CONFLICT', {
+            cleanup: ['destroy', 'clear', 'recreate'],
+            fallback: 'text-display',
+            userMessage: 'Chart loading issue detected. Attempting to fix...',
+            severity: 'low',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        this.recoveryStrategies.set('CHART_JS_MISSING', {
+            fallback: 'text-display',
+            userMessage: 'Charts are temporarily unavailable. Data is still accessible.',
+            severity: 'medium',
+            autoRecover: false,
+            retryable: false
+        });
+        
+        this.recoveryStrategies.set('CHART_CREATION_FAILED', {
+            cleanup: ['destroy', 'clear'],
+            fallback: 'text-display',
+            userMessage: 'Chart display issue. Showing data in alternative format.',
+            severity: 'low',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        // API error recovery strategies
+        this.recoveryStrategies.set('ESPN_API_FAILURE', {
+            sources: ['cache', 'local', 'fallback'],
+            retry: { attempts: 3, delay: 1000 },
+            userMessage: 'ESPN data temporarily unavailable. Using cached data.',
+            severity: 'medium',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        this.recoveryStrategies.set('DATA_SYNC_FAILED', {
+            sources: ['cache', 'local', 'fallback'],
+            retry: { attempts: 2, delay: 2000 },
+            userMessage: 'Data synchronization issue. Using available data.',
+            severity: 'low',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        this.recoveryStrategies.set('NETWORK_ERROR', {
+            retry: { attempts: 3, delay: 1000 },
+            fallback: 'offline-mode',
+            userMessage: 'Network connection issue. Retrying...',
+            severity: 'medium',
+            autoRecover: true,
+            retryable: true
+        });
+        
+        // Data error recovery strategies
+        this.recoveryStrategies.set('DATA_VALIDATION_FAILED', {
+            sources: ['sanitize', 'fallback', 'default'],
+            userMessage: 'Data quality issue detected. Using validated data.',
+            severity: 'low',
+            autoRecover: true,
+            retryable: false
+        });
+        
+        this.recoveryStrategies.set('GAME_MATCH_FAILED', {
+            strategies: ['fuzzy', 'partial', 'fallback'],
+            userMessage: 'Game data matching issue. Some games may show limited information.',
+            severity: 'low',
+            autoRecover: true,
+            retryable: false
+        });
+        
+        console.log(`✅ Initialized ${this.recoveryStrategies.size} recovery strategies`);
+    }
+    
+    /**
+     * Initialize user notification system
+     */
+    initializeUserNotificationSystem() {
+        // Create notification container if it doesn't exist
+        if (!document.getElementById('error-notifications')) {
+            const container = document.createElement('div');
+            container.id = 'error-notifications';
+            container.className = 'error-notifications-container';
+            container.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                max-width: 400px;
+                pointer-events: none;
+            `;
+            document.body.appendChild(container);
+        }
+        
+        // Add notification styles
+        this.addNotificationStyles();
+        
+        console.log('✅ User notification system initialized');
+    }
+    
+    /**
+     * Add CSS styles for notifications
+     */
+    addNotificationStyles() {
+        if (document.getElementById('error-notification-styles')) return;
+        
+        const styles = document.createElement('style');
+        styles.id = 'error-notification-styles';
+        styles.textContent = `
+            .error-notification {
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 15px 20px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                pointer-events: auto;
+                transform: translateX(100%);
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                opacity: 0;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-size: 14px;
+                line-height: 1.4;
+                border-left: 4px solid #ffa500;
+            }
+            
+            .error-notification.show {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            
+            .error-notification.severity-low {
+                border-left-color: #4CAF50;
+                background: rgba(76, 175, 80, 0.1);
+                backdrop-filter: blur(10px);
+                color: #333;
+            }
+            
+            .error-notification.severity-medium {
+                border-left-color: #FF9800;
+                background: rgba(255, 152, 0, 0.1);
+                backdrop-filter: blur(10px);
+                color: #333;
+            }
+            
+            .error-notification.severity-high {
+                border-left-color: #F44336;
+                background: rgba(244, 67, 54, 0.1);
+                backdrop-filter: blur(10px);
+                color: #333;
+            }
+            
+            .error-notification-header {
+                font-weight: 600;
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .error-notification-icon {
+                font-size: 16px;
+            }
+            
+            .error-notification-message {
+                opacity: 0.9;
+            }
+            
+            .error-notification-actions {
+                margin-top: 10px;
+                display: flex;
+                gap: 10px;
+            }
+            
+            .error-notification-button {
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: inherit;
+                padding: 5px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                transition: background 0.2s ease;
+            }
+            
+            .error-notification-button:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+            
+            .error-notification-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: none;
+                border: none;
+                color: inherit;
+                cursor: pointer;
+                font-size: 18px;
+                opacity: 0.7;
+                transition: opacity 0.2s ease;
+            }
+            
+            .error-notification-close:hover {
+                opacity: 1;
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    /**
+     * Handle error with appropriate recovery strategy
+     * @param {string} errorType - Type of error
+     * @param {Error|string} error - Error object or message
+     * @param {Object} context - Additional context about the error
+     * @returns {Promise<Object>} - Recovery result
+     */
+    async handleError(errorType, error, context = {}) {
+        console.log(`🛡️ Handling error: ${errorType}`, error, context);
+        
+        const errorInfo = {
+            type: errorType,
+            error: error instanceof Error ? error.message : error,
+            context,
+            timestamp: new Date(),
+            id: this.generateErrorId()
+        };
+        
+        // Log the error
+        this.logError(errorInfo);
+        
+        // Get recovery strategy
+        const strategy = this.recoveryStrategies.get(errorType);
+        
+        if (!strategy) {
+            console.warn(`❌ No recovery strategy found for error type: ${errorType}`);
+            return this.handleUnknownError(errorInfo);
+        }
+        
+        // Show user notification
+        if (strategy.userMessage) {
+            this.showUserNotification(errorType, strategy.userMessage, strategy.severity);
+        }
+        
+        // Attempt recovery
+        const recoveryResult = await this.attemptRecovery(errorType, strategy, errorInfo);
+        
+        // Log recovery result
+        this.logRecoveryResult(errorInfo, recoveryResult);
+        
+        return recoveryResult;
+    }
+    
+    /**
+     * Attempt recovery using the specified strategy
+     * @param {string} errorType - Type of error
+     * @param {Object} strategy - Recovery strategy
+     * @param {Object} errorInfo - Error information
+     * @returns {Promise<Object>} - Recovery result
+     */
+    async attemptRecovery(errorType, strategy, errorInfo) {
+        if (this.isRecovering) {
+            console.log('🛡️ Recovery already in progress, queuing...');
+            return { success: false, reason: 'recovery_in_progress' };
+        }
+        
+        this.isRecovering = true;
+        
+        try {
+            let recoveryResult = { success: false, attempts: [] };
+            
+            // Try different recovery methods based on strategy
+            if (strategy.attempts) {
+                recoveryResult = await this.tryRecoveryAttempts(errorType, strategy.attempts, errorInfo);
+            } else if (strategy.cleanup) {
+                recoveryResult = await this.tryCleanupRecovery(errorType, strategy.cleanup, errorInfo);
+            } else if (strategy.sources) {
+                recoveryResult = await this.trySourceRecovery(errorType, strategy.sources, errorInfo);
+            } else if (strategy.retry) {
+                recoveryResult = await this.tryRetryRecovery(errorType, strategy.retry, errorInfo);
+            }
+            
+            // If primary recovery failed, try fallback
+            if (!recoveryResult.success && strategy.fallback) {
+                console.log(`🛡️ Primary recovery failed, trying fallback: ${strategy.fallback}`);
+                recoveryResult = await this.tryFallbackRecovery(errorType, strategy.fallback, errorInfo);
+            }
+            
+            return recoveryResult;
+            
+        } catch (recoveryError) {
+            console.error(`❌ Recovery attempt failed:`, recoveryError);
+            return {
+                success: false,
+                error: recoveryError.message,
+                fallbackUsed: true
+            };
+        } finally {
+            this.isRecovering = false;
+        }
+    }
+    
+    /**
+     * Try recovery using multiple attempts
+     */
+    async tryRecoveryAttempts(errorType, attempts, errorInfo) {
+        const results = [];
+        
+        for (const attempt of attempts) {
+            try {
+                console.log(`🛡️ Trying recovery attempt: ${attempt}`);
+                
+                let success = false;
+                
+                switch (errorType) {
+                    case 'VIEW_NOT_FOUND':
+                        success = await this.tryViewRecovery(attempt, errorInfo.context);
+                        break;
+                    case 'CRITICAL_NAVIGATION_FAILURE':
+                        success = await this.tryCriticalNavigationRecovery(attempt, errorInfo.context);
+                        break;
+                    default:
+                        success = await this.tryGenericRecovery(attempt, errorInfo.context);
+                }
+                
+                results.push({ attempt, success });
+                
+                if (success) {
+                    console.log(`✅ Recovery successful with attempt: ${attempt}`);
+                    return { success: true, attempts: results, method: attempt };
+                }
+                
+            } catch (attemptError) {
+                console.error(`❌ Recovery attempt failed: ${attempt}`, attemptError);
+                results.push({ attempt, success: false, error: attemptError.message });
+            }
+        }
+        
+        return { success: false, attempts: results };
+    }
+    
+    /**
+     * Try cleanup-based recovery
+     */
+    async tryCleanupRecovery(errorType, cleanupSteps, errorInfo) {
+        const results = [];
+        
+        for (const step of cleanupSteps) {
+            try {
+                console.log(`🛡️ Executing cleanup step: ${step}`);
+                
+                let success = false;
+                
+                switch (step) {
+                    case 'destroy':
+                        success = await this.destroyResources(errorInfo.context);
+                        break;
+                    case 'clear':
+                        success = await this.clearResources(errorInfo.context);
+                        break;
+                    case 'recreate':
+                        success = await this.recreateResources(errorInfo.context);
+                        break;
+                    default:
+                        success = await this.executeCustomCleanup(step, errorInfo.context);
+                }
+                
+                results.push({ step, success });
+                
+                if (success) {
+                    console.log(`✅ Cleanup successful with step: ${step}`);
+                    return { success: true, cleanup: results, method: step };
+                }
+                
+            } catch (cleanupError) {
+                console.error(`❌ Cleanup step failed: ${step}`, cleanupError);
+                results.push({ step, success: false, error: cleanupError.message });
+            }
+        }
+        
+        return { success: false, cleanup: results };
+    }
+    
+    /**
+     * Try source-based recovery (fallback data sources)
+     */
+    async trySourceRecovery(errorType, sources, errorInfo) {
+        const results = [];
+        
+        for (const source of sources) {
+            try {
+                console.log(`🛡️ Trying data source: ${source}`);
+                
+                let data = null;
+                
+                switch (source) {
+                    case 'cache':
+                        data = await this.getCachedData(errorInfo.context);
+                        break;
+                    case 'local':
+                        data = await this.getLocalData(errorInfo.context);
+                        break;
+                    case 'fallback':
+                        data = await this.getFallbackData(errorInfo.context);
+                        break;
+                    case 'sanitize':
+                        data = await this.sanitizeData(errorInfo.context);
+                        break;
+                    case 'default':
+                        data = await this.getDefaultData(errorInfo.context);
+                        break;
+                }
+                
+                const success = data !== null && data !== undefined;
+                results.push({ source, success, data });
+                
+                if (success) {
+                    console.log(`✅ Data recovery successful from source: ${source}`);
+                    return { success: true, sources: results, data, method: source };
+                }
+                
+            } catch (sourceError) {
+                console.error(`❌ Data source failed: ${source}`, sourceError);
+                results.push({ source, success: false, error: sourceError.message });
+            }
+        }
+        
+        return { success: false, sources: results };
+    }
+    
+    /**
+     * Try retry-based recovery with exponential backoff
+     */
+    async tryRetryRecovery(errorType, retryConfig, errorInfo) {
+        const results = [];
+        const maxAttempts = retryConfig.attempts || this.maxRetries;
+        const baseDelay = retryConfig.delay || 1000;
+        
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                console.log(`🛡️ Retry attempt ${attempt}/${maxAttempts}`);
+                
+                // Wait before retry (exponential backoff)
+                if (attempt > 1) {
+                    const delay = baseDelay * Math.pow(2, attempt - 2);
+                    await this.sleep(delay);
+                }
+                
+                let success = false;
+                
+                // Execute the original operation that failed
+                switch (errorType) {
+                    case 'ESPN_API_FAILURE':
+                        success = await this.retryEspnApiCall(errorInfo.context);
+                        break;
+                    case 'DATA_SYNC_FAILED':
+                        success = await this.retryDataSync(errorInfo.context);
+                        break;
+                    case 'NETWORK_ERROR':
+                        success = await this.retryNetworkOperation(errorInfo.context);
+                        break;
+                    default:
+                        success = await this.retryGenericOperation(errorInfo.context);
+                }
+                
+                results.push({ attempt, success });
+                
+                if (success) {
+                    console.log(`✅ Retry successful on attempt: ${attempt}`);
+                    return { success: true, retries: results, attempts: attempt };
+                }
+                
+            } catch (retryError) {
+                console.error(`❌ Retry attempt ${attempt} failed:`, retryError);
+                results.push({ attempt, success: false, error: retryError.message });
+            }
+        }
+        
+        return { success: false, retries: results };
+    }
+    
+    /**
+     * Try fallback recovery
+     */
+    async tryFallbackRecovery(errorType, fallback, errorInfo) {
+        try {
+            console.log(`🛡️ Executing fallback recovery: ${fallback}`);
+            
+            let success = false;
+            
+            switch (fallback) {
+                case 'dashboard':
+                    success = await this.fallbackToDashboard();
+                    break;
+                case 'reload':
+                    success = await this.fallbackToReload();
+                    break;
+                case 'text-display':
+                    success = await this.fallbackToTextDisplay(errorInfo.context);
+                    break;
+                case 'offline-mode':
+                    success = await this.fallbackToOfflineMode();
+                    break;
+                default:
+                    success = await this.executeCustomFallback(fallback, errorInfo.context);
+            }
+            
+            return { success, fallback, method: fallback };
+            
+        } catch (fallbackError) {
+            console.error(`❌ Fallback recovery failed:`, fallbackError);
+            return { success: false, fallback, error: fallbackError.message };
+        }
+    }
+    
+    /**
+     * Show user notification
+     */
+    showUserNotification(errorType, message, severity = 'medium', actions = []) {
+        const notification = {
+            id: this.generateErrorId(),
+            type: errorType,
+            message,
+            severity,
+            actions,
+            timestamp: new Date()
+        };
+        
+        this.userNotificationQueue.push(notification);
+        this.displayNotification(notification);
+        
+        // Auto-dismiss after delay based on severity
+        const dismissDelay = severity === 'high' ? 10000 : severity === 'medium' ? 7000 : 5000;
+        setTimeout(() => {
+            this.dismissNotification(notification.id);
+        }, dismissDelay);
+    }
+    
+    /**
+     * Display notification in UI
+     */
+    displayNotification(notification) {
+        const container = document.getElementById('error-notifications');
+        if (!container) return;
+        
+        const notificationEl = document.createElement('div');
+        notificationEl.id = `notification-${notification.id}`;
+        notificationEl.className = `error-notification severity-${notification.severity}`;
+        
+        const icon = this.getNotificationIcon(notification.severity);
+        
+        notificationEl.innerHTML = `
+            <button class="error-notification-close" onclick="window.errorRecoveryManager?.dismissNotification('${notification.id}')">&times;</button>
+            <div class="error-notification-header">
+                <span class="error-notification-icon">${icon}</span>
+                <span>System Recovery</span>
+            </div>
+            <div class="error-notification-message">${notification.message}</div>
+            ${notification.actions.length > 0 ? `
+                <div class="error-notification-actions">
+                    ${notification.actions.map(action => `
+                        <button class="error-notification-button" onclick="${action.callback}">
+                            ${action.label}
+                        </button>
+                    `).join('')}
+                </div>
+            ` : ''}
+        `;
+        
+        container.appendChild(notificationEl);
+        
+        // Trigger animation
+        setTimeout(() => {
+            notificationEl.classList.add('show');
+        }, 100);
+    }
+    
+    /**
+     * Get notification icon based on severity
+     */
+    getNotificationIcon(severity) {
+        switch (severity) {
+            case 'low': return '✅';
+            case 'medium': return '⚠️';
+            case 'high': return '🚨';
+            default: return 'ℹ️';
+        }
+    }
+    
+    /**
+     * Dismiss notification
+     */
+    dismissNotification(notificationId) {
+        const notificationEl = document.getElementById(`notification-${notificationId}`);
+        if (notificationEl) {
+            notificationEl.classList.remove('show');
+            setTimeout(() => {
+                notificationEl.remove();
+            }, 300);
+        }
+        
+        // Remove from queue
+        this.userNotificationQueue = this.userNotificationQueue.filter(n => n.id !== notificationId);
+    }
+    
+    /**
+     * Log error for debugging and monitoring
+     */
+    logError(errorInfo) {
+        this.errorLog.push(errorInfo);
+        
+        // Keep error log manageable (last 50 errors)
+        if (this.errorLog.length > 50) {
+            this.errorLog.shift();
+        }
+        
+        console.error(`🚨 Error logged [${errorInfo.type}]:`, errorInfo);
+    }
+    
+    /**
+     * Log recovery result
+     */
+    logRecoveryResult(errorInfo, recoveryResult) {
+        const logEntry = {
+            errorId: errorInfo.id,
+            errorType: errorInfo.type,
+            recoveryResult,
+            timestamp: new Date()
+        };
+        
+        if (recoveryResult.success) {
+            console.log(`✅ Recovery successful for error ${errorInfo.id}:`, logEntry);
+        } else {
+            console.error(`❌ Recovery failed for error ${errorInfo.id}:`, logEntry);
+        }
+    }
+    
+    /**
+     * Handle unknown error types
+     */
+    async handleUnknownError(errorInfo) {
+        console.warn(`❓ Unknown error type: ${errorInfo.type}`);
+        
+        this.showUserNotification(
+            errorInfo.type,
+            'An unexpected issue occurred. The system is attempting to recover.',
+            'medium'
+        );
+        
+        // Try generic recovery
+        return {
+            success: false,
+            reason: 'unknown_error_type',
+            fallback: 'generic_recovery_attempted'
+        };
+    }
+    
+    /**
+     * Generate unique error ID
+     */
+    generateErrorId() {
+        return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    /**
+     * Sleep utility for retry delays
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    /**
+     * Get error statistics
+     */
+    getErrorStatistics() {
+        const stats = {
+            totalErrors: this.errorLog.length,
+            errorsByType: {},
+            recentErrors: this.errorLog.slice(-10),
+            activeNotifications: this.userNotificationQueue.length
+        };
+        
+        this.errorLog.forEach(error => {
+            stats.errorsByType[error.type] = (stats.errorsByType[error.type] || 0) + 1;
+        });
+        
+        return stats;
+    }
+    
+    // Navigation recovery method implementations
+    async tryViewRecovery(attempt, context) {
+        try {
+            console.log(`🔄 Attempting view recovery with pattern: ${attempt}`);
+            
+            const viewName = context.viewName;
+            let targetId;
+            
+            // Apply the recovery attempt pattern
+            switch (attempt) {
+                case 'viewName':
+                    targetId = viewName;
+                    break;
+                case 'viewName-view':
+                    targetId = `${viewName}-view`;
+                    break;
+                case 'view-viewName':
+                    targetId = `view-${viewName}`;
+                    break;
+                case 'viewNameView':
+                    targetId = `${viewName}View`;
+                    break;
+                default:
+                    targetId = attempt; // Use attempt as literal ID
+            }
+            
+            const element = document.getElementById(targetId);
+            
+            if (element) {
+                console.log(`✅ Found view element with ID: ${targetId}`);
+                
+                // Hide all views
+                document.querySelectorAll('.view').forEach(view => {
+                    view.classList.remove('active');
+                });
+                
+                // Show the found view
+                element.classList.add('active');
+                
+                // Update menu state if possible
+                const menuItem = document.querySelector(`[data-view="${viewName}"]`);
+                if (menuItem) {
+                    document.querySelectorAll('.menu-item, .nav-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    menuItem.classList.add('active');
+                }
+                
+                return true;
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error(`❌ View recovery attempt failed:`, error);
+            return false;
+        }
+    }
+    
+    async tryCriticalNavigationRecovery(attempt, context) {
+        try {
+            console.log(`🚨 Attempting critical navigation recovery: ${attempt}`);
+            
+            let targetElement = null;
+            
+            // Try different fallback views
+            switch (attempt) {
+                case 'dashboard':
+                    targetElement = document.getElementById('dashboard') || 
+                                  document.getElementById('dashboard-view') ||
+                                  document.getElementById('main-dashboard');
+                    break;
+                case 'home':
+                    targetElement = document.getElementById('home') || 
+                                  document.getElementById('home-view') ||
+                                  document.getElementById('main-view');
+                    break;
+                case 'main':
+                    targetElement = document.getElementById('main') || 
+                                  document.getElementById('main-view') ||
+                                  document.querySelector('.view:first-child');
+                    break;
+                default:
+                    targetElement = document.getElementById(attempt);
+            }
+            
+            if (targetElement) {
+                console.log(`✅ Critical recovery found element: ${targetElement.id}`);
+                
+                // Force show this view
+                document.querySelectorAll('.view').forEach(view => {
+                    view.classList.remove('active');
+                });
+                
+                targetElement.classList.add('active');
+                
+                // Reset navigation state
+                if (window.viewManager) {
+                    window.viewManager.navigationState.currentView = attempt;
+                    window.viewManager.navigationState.previousView = null;
+                }
+                
+                return true;
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error(`❌ Critical navigation recovery failed:`, error);
+            return false;
+        }
+    }
+    
+    async tryGenericRecovery(attempt, context) {
+        // Generic recovery implementation
+        return false;
+    }
+    
+    async destroyResources(context) {
+        try {
+            console.log('🧹 Destroying chart resources');
+            
+            // Destroy chart instances if chart manager is available
+            if (window.chartManager) {
+                const destroyed = await window.chartManager.destroyAllCharts();
+                console.log(`✅ Destroyed ${destroyed} chart instances`);
+                return destroyed > 0;
+            }
+            
+            // Fallback: manually destroy Chart.js instances
+            if (typeof Chart !== 'undefined' && Chart.instances) {
+                const instanceCount = Chart.instances.length;
+                Chart.instances.forEach(chart => {
+                    try {
+                        chart.destroy();
+                    } catch (error) {
+                        console.warn('Failed to destroy chart instance:', error);
+                    }
+                });
+                Chart.instances.length = 0;
+                console.log(`✅ Manually destroyed ${instanceCount} Chart.js instances`);
+                return instanceCount > 0;
+            }
+            
+            // Clear canvas contexts
+            const canvases = document.querySelectorAll('canvas[id*="chart"]');
+            let clearedCount = 0;
+            
+            canvases.forEach(canvas => {
+                try {
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        clearedCount++;
+                    }
+                } catch (error) {
+                    console.warn(`Failed to clear canvas ${canvas.id}:`, error);
+                }
+            });
+            
+            console.log(`✅ Cleared ${clearedCount} canvas contexts`);
+            return clearedCount > 0;
+            
+        } catch (error) {
+            console.error('❌ Failed to destroy resources:', error);
+            return false;
+        }
+    }
+    
+    async clearResources(context) {
+        try {
+            console.log('🧽 Clearing chart resources');
+            
+            // Clear all canvas elements
+            const canvases = document.querySelectorAll('canvas[id*="chart"]');
+            let clearedCount = 0;
+            
+            canvases.forEach(canvas => {
+                try {
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        // Clear the canvas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Reset canvas size to trigger reinitialization
+                        const { width, height } = canvas.getBoundingClientRect();
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        clearedCount++;
+                    }
+                } catch (error) {
+                    console.warn(`Failed to clear canvas ${canvas.id}:`, error);
+                }
+            });
+            
+            // Clear any chart-related data attributes
+            canvases.forEach(canvas => {
+                try {
+                    canvas.removeAttribute('data-chart-initialized');
+                    canvas.removeAttribute('data-chart-type');
+                } catch (error) {
+                    console.warn(`Failed to clear canvas attributes:`, error);
+                }
+            });
+            
+            console.log(`✅ Cleared ${clearedCount} canvas resources`);
+            return clearedCount > 0;
+            
+        } catch (error) {
+            console.error('❌ Failed to clear resources:', error);
+            return false;
+        }
+    }
+    
+    async recreateResources(context) {
+        try {
+            console.log('🔄 Recreating chart resources');
+            
+            // Wait a moment for cleanup to complete
+            await this.sleep(100);
+            
+            // Try to recreate charts using the app's chart methods
+            if (window.app && typeof window.app.recreateAllCharts === 'function') {
+                const recreated = await window.app.recreateAllCharts();
+                console.log(`✅ Recreated charts using app method: ${recreated}`);
+                return recreated;
+            }
+            
+            // Fallback: trigger chart recreation for common chart types
+            const chartIds = ['accuracy-chart', 'conference-chart', 'performance-chart'];
+            let recreatedCount = 0;
+            
+            for (const chartId of chartIds) {
+                const canvas = document.getElementById(chartId);
+                if (canvas && canvas.offsetParent !== null) { // Check if visible
+                    try {
+                        // Trigger chart recreation if method exists
+                        if (window.app && typeof window.app.createAccuracyChart === 'function' && chartId === 'accuracy-chart') {
+                            await window.app.createAccuracyChart();
+                            recreatedCount++;
+                        } else if (window.app && typeof window.app.createConferenceChart === 'function' && chartId === 'conference-chart') {
+                            await window.app.createConferenceChart();
+                            recreatedCount++;
+                        }
+                    } catch (error) {
+                        console.warn(`Failed to recreate chart ${chartId}:`, error);
+                    }
+                }
+            }
+            
+            console.log(`✅ Recreated ${recreatedCount} charts`);
+            return recreatedCount > 0;
+            
+        } catch (error) {
+            console.error('❌ Failed to recreate resources:', error);
+            return false;
+        }
+    }
+    
+    async executeCustomCleanup(step, context) {
+        // Custom cleanup implementation
+        return false;
+    }
+    
+    async getCachedData(context) {
+        try {
+            console.log('💾 Attempting to retrieve cached data');
+            
+            // Try to get data from localStorage
+            const cacheKeys = [
+                'nfl_games_cache',
+                'espn_games_cache',
+                'team_standings_cache',
+                'player_stats_cache',
+                'schedule_cache'
+            ];
+            
+            let cachedData = null;
+            
+            for (const key of cacheKeys) {
+                try {
+                    const cached = localStorage.getItem(key);
+                    if (cached) {
+                        const parsedData = JSON.parse(cached);
+                        
+                        // Check if cache is still valid (not older than 1 hour)
+                        const cacheAge = Date.now() - (parsedData.timestamp || 0);
+                        const maxAge = 60 * 60 * 1000; // 1 hour
+                        
+                        if (cacheAge < maxAge) {
+                            console.log(`✅ Found valid cached data: ${key}`);
+                            cachedData = parsedData.data;
+                            break;
+                        } else {
+                            console.log(`⏰ Cached data expired: ${key}`);
+                        }
+                    }
+                } catch (parseError) {
+                    console.warn(`Failed to parse cached data for ${key}:`, parseError);
+                }
+            }
+            
+            // Try sessionStorage as fallback
+            if (!cachedData) {
+                for (const key of cacheKeys) {
+                    try {
+                        const cached = sessionStorage.getItem(key);
+                        if (cached) {
+                            const parsedData = JSON.parse(cached);
+                            console.log(`✅ Found session cached data: ${key}`);
+                            cachedData = parsedData.data || parsedData;
+                            break;
+                        }
+                    } catch (parseError) {
+                        console.warn(`Failed to parse session cached data for ${key}:`, parseError);
+                    }
+                }
+            }
+            
+            return cachedData;
+            
+        } catch (error) {
+            console.error('❌ Failed to retrieve cached data:', error);
+            return null;
+        }
+    }
+    
+    async getLocalData(context) {
+        try {
+            console.log('🏠 Attempting to retrieve local data');
+            
+            // Try to get data from the app's local data stores
+            let localData = null;
+            
+            // Check if app has local game data
+            if (window.app && window.app.games && window.app.games.length > 0) {
+                console.log(`✅ Found local games data: ${window.app.games.length} games`);
+                localData = window.app.games;
+            }
+            
+            // Check for local team data
+            if (!localData && window.app && window.app.teams && window.app.teams.length > 0) {
+                console.log(`✅ Found local teams data: ${window.app.teams.length} teams`);
+                localData = window.app.teams;
+            }
+            
+            // Check for local standings data
+            if (!localData && window.app && window.app.standings) {
+                console.log(`✅ Found local standings data`);
+                localData = window.app.standings;
+            }
+            
+            // Check for any data in the global scope
+            if (!localData) {
+                const globalDataKeys = ['nflGames', 'teamData', 'playerStats', 'scheduleData'];
+                
+                for (const key of globalDataKeys) {
+                    if (window[key] && Array.isArray(window[key]) && window[key].length > 0) {
+                        console.log(`✅ Found global data: ${key}`);
+                        localData = window[key];
+                        break;
+                    }
+                }
+            }
+            
+            return localData;
+            
+        } catch (error) {
+            console.error('❌ Failed to retrieve local data:', error);
+            return null;
+        }
+    }
+    
+    async getFallbackData(context) {
+        try {
+            console.log('🔄 Generating fallback data');
+            
+            // Generate basic fallback data based on context
+            const dataType = context.dataType || 'games';
+            
+            switch (dataType) {
+                case 'games':
+                    return this.generateFallbackGames();
+                case 'teams':
+                    return this.generateFallbackTeams();
+                case 'standings':
+                    return this.generateFallbackStandings();
+                case 'schedule':
+                    return this.generateFallbackSchedule();
+                default:
+                    return this.generateGenericFallbackData();
+            }
+            
+        } catch (error) {
+            console.error('❌ Failed to generate fallback data:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Generate fallback games data
+     */
+    generateFallbackGames() {
+        return [
+            {
+                id: 'fallback-1',
+                homeTeam: 'Kansas City Chiefs',
+                awayTeam: 'Buffalo Bills',
+                homeScore: 0,
+                awayScore: 0,
+                status: 'SCHEDULED',
+                date: new Date().toISOString(),
+                week: 'Current Week',
+                isFallback: true
+            },
+            {
+                id: 'fallback-2',
+                homeTeam: 'Dallas Cowboys',
+                awayTeam: 'Green Bay Packers',
+                homeScore: 0,
+                awayScore: 0,
+                status: 'SCHEDULED',
+                date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                week: 'Current Week',
+                isFallback: true
+            }
+        ];
+    }
+    
+    /**
+     * Generate fallback teams data
+     */
+    generateFallbackTeams() {
+        return [
+            { name: 'Kansas City Chiefs', conference: 'AFC', division: 'West', wins: 0, losses: 0 },
+            { name: 'Buffalo Bills', conference: 'AFC', division: 'East', wins: 0, losses: 0 },
+            { name: 'Dallas Cowboys', conference: 'NFC', division: 'East', wins: 0, losses: 0 },
+            { name: 'Green Bay Packers', conference: 'NFC', division: 'North', wins: 0, losses: 0 }
+        ];
+    }
+    
+    /**
+     * Generate fallback standings data
+     */
+    generateFallbackStandings() {
+        return {
+            AFC: {
+                East: [{ team: 'Buffalo Bills', wins: 0, losses: 0, ties: 0 }],
+                North: [{ team: 'Pittsburgh Steelers', wins: 0, losses: 0, ties: 0 }],
+                South: [{ team: 'Houston Texans', wins: 0, losses: 0, ties: 0 }],
+                West: [{ team: 'Kansas City Chiefs', wins: 0, losses: 0, ties: 0 }]
+            },
+            NFC: {
+                East: [{ team: 'Dallas Cowboys', wins: 0, losses: 0, ties: 0 }],
+                North: [{ team: 'Green Bay Packers', wins: 0, losses: 0, ties: 0 }],
+                South: [{ team: 'New Orleans Saints', wins: 0, losses: 0, ties: 0 }],
+                West: [{ team: 'San Francisco 49ers', wins: 0, losses: 0, ties: 0 }]
+            }
+        };
+    }
+    
+    /**
+     * Generate fallback schedule data
+     */
+    generateFallbackSchedule() {
+        const today = new Date();
+        return [
+            {
+                date: today.toISOString(),
+                games: this.generateFallbackGames()
+            }
+        ];
+    }
+    
+    /**
+     * Generate generic fallback data
+     */
+    generateGenericFallbackData() {
+        return {
+            message: 'Data temporarily unavailable',
+            timestamp: new Date().toISOString(),
+            isFallback: true
+        };
+    }
+    
+    async sanitizeData(context) {
+        // Data sanitization implementation
+        return null;
+    }
+    
+    async getDefaultData(context) {
+        // Default data implementation
+        return null;
+    }
+    
+    async retryEspnApiCall(context) {
+        try {
+            console.log('🔄 Retrying ESPN API call');
+            
+            // Try to call the original ESPN API method
+            if (window.app && typeof window.app.fetchESPNData === 'function') {
+                const result = await window.app.fetchESPNData(context.endpoint || 'games');
+                console.log('✅ ESPN API retry successful');
+                return result !== null && result !== undefined;
+            }
+            
+            // Try alternative ESPN API methods
+            const espnMethods = [
+                'fetchTodaysGames',
+                'loadLiveGames',
+                'fetchESPNGames',
+                'loadESPNData'
+            ];
+            
+            for (const method of espnMethods) {
+                if (window.app && typeof window.app[method] === 'function') {
+                    try {
+                        console.log(`🔄 Trying ESPN method: ${method}`);
+                        const result = await window.app[method]();
+                        if (result) {
+                            console.log(`✅ ESPN API retry successful with method: ${method}`);
+                            return true;
+                        }
+                    } catch (methodError) {
+                        console.warn(`ESPN method ${method} failed:`, methodError);
+                    }
+                }
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error('❌ ESPN API retry failed:', error);
+            return false;
+        }
+    }
+    
+    async retryDataSync(context) {
+        try {
+            console.log('🔄 Retrying data synchronization');
+            
+            // Try to call the data sync method
+            if (window.app && window.app.dataSyncManager && typeof window.app.dataSyncManager.syncGameData === 'function') {
+                const localGames = context.localGames || window.app.games || [];
+                const espnGames = context.espnGames || [];
+                
+                if (localGames.length > 0 || espnGames.length > 0) {
+                    const syncResult = window.app.dataSyncManager.syncGameData(localGames, espnGames);
+                    console.log('✅ Data sync retry successful');
+                    return syncResult && syncResult.matched && syncResult.matched.length > 0;
+                }
+            }
+            
+            // Try alternative sync methods
+            const syncMethods = [
+                'synchronizeData',
+                'updateGameData',
+                'refreshData'
+            ];
+            
+            for (const method of syncMethods) {
+                if (window.app && typeof window.app[method] === 'function') {
+                    try {
+                        console.log(`🔄 Trying sync method: ${method}`);
+                        const result = await window.app[method]();
+                        if (result) {
+                            console.log(`✅ Data sync retry successful with method: ${method}`);
+                            return true;
+                        }
+                    } catch (methodError) {
+                        console.warn(`Sync method ${method} failed:`, methodError);
+                    }
+                }
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error('❌ Data sync retry failed:', error);
+            return false;
+        }
+    }
+    
+    async retryNetworkOperation(context) {
+        try {
+            console.log('🔄 Retrying network operation');
+            
+            // Test basic network connectivity
+            const connectivityTest = await this.testNetworkConnectivity();
+            if (!connectivityTest) {
+                console.log('❌ Network connectivity test failed');
+                return false;
+            }
+            
+            // Try to retry the original operation
+            const operation = context.operation;
+            const url = context.url;
+            
+            if (operation && typeof operation === 'function') {
+                try {
+                    const result = await operation();
+                    console.log('✅ Network operation retry successful');
+                    return result !== null && result !== undefined;
+                } catch (operationError) {
+                    console.warn('Original operation retry failed:', operationError);
+                }
+            }
+            
+            // Try basic fetch if URL is provided
+            if (url) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: 10000
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Network fetch retry successful');
+                        return true;
+                    }
+                } catch (fetchError) {
+                    console.warn('Network fetch retry failed:', fetchError);
+                }
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error('❌ Network operation retry failed:', error);
+            return false;
+        }
+    }
+    
+    /**
+     * Test basic network connectivity
+     */
+    async testNetworkConnectivity() {
+        try {
+            // Test with a simple, reliable endpoint
+            const testUrls = [
+                'https://httpbin.org/status/200',
+                'https://jsonplaceholder.typicode.com/posts/1',
+                'https://api.github.com/zen'
+            ];
+            
+            for (const url of testUrls) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        timeout: 5000
+                    });
+                    
+                    // If we get any response, network is working
+                    console.log('✅ Network connectivity confirmed');
+                    return true;
+                } catch (testError) {
+                    console.warn(`Connectivity test failed for ${url}:`, testError);
+                }
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error('❌ Network connectivity test failed:', error);
+            return false;
+        }
+    }
+    
+    async retryGenericOperation(context) {
+        // Generic retry implementation
+        return false;
+    }
+    
+    async fallbackToDashboard() {
+        try {
+            console.log('🏠 Executing fallback to dashboard');
+            
+            // Try multiple dashboard ID patterns
+            const dashboardIds = ['dashboard', 'dashboard-view', 'main-dashboard', 'home', 'main'];
+            
+            for (const id of dashboardIds) {
+                const element = document.getElementById(id);
+                if (element) {
+                    console.log(`✅ Found dashboard element: ${id}`);
+                    
+                    // Hide all views
+                    document.querySelectorAll('.view').forEach(view => {
+                        view.classList.remove('active');
+                    });
+                    
+                    // Show dashboard
+                    element.classList.add('active');
+                    
+                    // Update menu state
+                    document.querySelectorAll('.menu-item, .nav-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    const dashboardMenuItem = document.querySelector('[data-view="dashboard"]') ||
+                                            document.querySelector('[data-view="home"]') ||
+                                            document.querySelector('.menu-item:first-child');
+                    
+                    if (dashboardMenuItem) {
+                        dashboardMenuItem.classList.add('active');
+                    }
+                    
+                    // Update view manager state if available
+                    if (window.viewManager) {
+                        window.viewManager.navigationState.currentView = 'dashboard';
+                        window.viewManager.navigationState.previousView = null;
+                    }
+                    
+                    return true;
+                }
+            }
+            
+            // If no dashboard found, try to show any available view
+            const anyView = document.querySelector('.view');
+            if (anyView) {
+                console.log(`⚠️ No dashboard found, showing first available view: ${anyView.id}`);
+                
+                document.querySelectorAll('.view').forEach(view => {
+                    view.classList.remove('active');
+                });
+                
+                anyView.classList.add('active');
+                return true;
+            }
+            
+            console.error('❌ No views found for dashboard fallback');
+            return false;
+            
+        } catch (error) {
+            console.error('❌ Dashboard fallback failed:', error);
+            return false;
+        }
+    }
+    
+    async fallbackToReload() {
+        // Page reload fallback
+        try {
+            window.location.reload();
+            return true;
+        } catch (error) {
+            console.error('Failed to reload page:', error);
+            return false;
+        }
+    }
+    
+    async fallbackToTextDisplay(context) {
+        try {
+            console.log('📝 Falling back to text display for charts');
+            
+            // Find all chart canvases and replace with text displays
+            const canvases = document.querySelectorAll('canvas[id*="chart"]');
+            let replacedCount = 0;
+            
+            canvases.forEach(canvas => {
+                try {
+                    const container = canvas.parentElement;
+                    if (!container) return;
+                    
+                    // Check if fallback already exists
+                    if (container.querySelector('.chart-text-fallback')) {
+                        return;
+                    }
+                    
+                    // Create text fallback based on chart type
+                    const chartId = canvas.id;
+                    const fallbackContent = this.generateTextFallback(chartId, context);
+                    
+                    if (fallbackContent) {
+                        const fallbackDiv = document.createElement('div');
+                        fallbackDiv.className = 'chart-text-fallback';
+                        fallbackDiv.style.cssText = `
+                            padding: 20px;
+                            background: rgba(255, 255, 255, 0.05);
+                            border-radius: 8px;
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            margin: 10px 0;
+                            text-align: center;
+                            color: #ccc;
+                        `;
+                        fallbackDiv.innerHTML = fallbackContent;
+                        
+                        // Hide canvas and show fallback
+                        canvas.style.display = 'none';
+                        container.appendChild(fallbackDiv);
+                        
+                        replacedCount++;
+                    }
+                    
+                } catch (error) {
+                    console.warn(`Failed to create text fallback for ${canvas.id}:`, error);
+                }
+            });
+            
+            console.log(`✅ Created ${replacedCount} text fallbacks`);
+            return replacedCount > 0;
+            
+        } catch (error) {
+            console.error('❌ Failed to create text fallbacks:', error);
+            return false;
+        }
+    }
+    
+    /**
+     * Generate text fallback content for different chart types
+     * @param {string} chartId - The chart canvas ID
+     * @param {Object} context - Error context
+     * @returns {string} - HTML content for text fallback
+     */
+    generateTextFallback(chartId, context) {
+        const baseStyle = `
+            <div style="margin-bottom: 15px;">
+                <i class="fas fa-chart-line" style="font-size: 2em; opacity: 0.5; margin-bottom: 10px;"></i>
+            </div>
+        `;
+        
+        switch (chartId) {
+            case 'accuracy-chart':
+                return `
+                    ${baseStyle}
+                    <h4>Prediction Accuracy</h4>
+                    <p>Chart temporarily unavailable</p>
+                    <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                        <p><strong>Current Season:</strong> Tracking prediction accuracy</p>
+                        <p><strong>Overall:</strong> Historical performance metrics</p>
+                        <p><strong>Trends:</strong> Weekly improvement analysis</p>
+                    </div>
+                    <button onclick="window.app?.createAccuracyChart()" style="
+                        background: #6366f1; 
+                        color: white; 
+                        border: none; 
+                        padding: 8px 16px; 
+                        border-radius: 6px; 
+                        cursor: pointer; 
+                        margin-top: 10px;
+                    ">Retry Chart</button>
+                `;
+                
+            case 'conference-chart':
+                return `
+                    ${baseStyle}
+                    <h4>Conference Performance</h4>
+                    <p>Chart temporarily unavailable</p>
+                    <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                        <p><strong>AFC:</strong> Conference standings and trends</p>
+                        <p><strong>NFC:</strong> Division performance analysis</p>
+                        <p><strong>Comparison:</strong> Inter-conference metrics</p>
+                    </div>
+                    <button onclick="window.app?.createConferenceChart()" style="
+                        background: #6366f1; 
+                        color: white; 
+                        border: none; 
+                        padding: 8px 16px; 
+                        border-radius: 6px; 
+                        cursor: pointer; 
+                        margin-top: 10px;
+                    ">Retry Chart</button>
+                `;
+                
+            case 'performance-chart':
+                return `
+                    ${baseStyle}
+                    <h4>Performance Metrics</h4>
+                    <p>Chart temporarily unavailable</p>
+                    <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                        <p><strong>Team Stats:</strong> Offensive and defensive metrics</p>
+                        <p><strong>Player Stats:</strong> Individual performance data</p>
+                        <p><strong>Trends:</strong> Season progression analysis</p>
+                    </div>
+                    <button onclick="window.app?.createPerformanceChart()" style="
+                        background: #6366f1; 
+                        color: white; 
+                        border: none; 
+                        padding: 8px 16px; 
+                        border-radius: 6px; 
+                        cursor: pointer; 
+                        margin-top: 10px;
+                    ">Retry Chart</button>
+                `;
+                
+            default:
+                return `
+                    ${baseStyle}
+                    <h4>Chart Display</h4>
+                    <p>Chart temporarily unavailable</p>
+                    <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                        <p>Data visualization is currently being processed</p>
+                        <p>Please try refreshing or check back in a moment</p>
+                    </div>
+                    <button onclick="window.location.reload()" style="
+                        background: #6366f1; 
+                        color: white; 
+                        border: none; 
+                        padding: 8px 16px; 
+                        border-radius: 6px; 
+                        cursor: pointer; 
+                        margin-top: 10px;
+                    ">Refresh Page</button>
+                `;
+        }
+    }
+    
+    async fallbackToOfflineMode() {
+        // Offline mode fallback
+        console.log('🔌 Switching to offline mode');
+        return true;
+    }
+    
+    async executeCustomFallback(fallback, context) {
+        // Custom fallback implementation
+        return false;
+    }
+}
+
+/**
+ * Enhanced View Manager with fallback ID resolution
+ * Handles navigation between views with comprehensive error handling and logging
+ */
+class ViewManager {
+    constructor(chartManager = null, errorRecoveryManager = null, performanceOptimizer = null) {
+        this.chartManager = chartManager;
+        this.errorRecoveryManager = errorRecoveryManager;
+        this.performanceOptimizer = performanceOptimizer;
+        this.navigationState = {
+            currentView: 'dashboard',
+            previousView: null,
+            viewHistory: [],
+            navigationErrors: [],
+            lastNavigationTime: null
+        };
+        
+        this.viewIdPatterns = [
+            // Primary pattern: viewName-view
+            (viewName) => `${viewName}-view`,
+            // Fallback pattern: viewName only
+            (viewName) => viewName,
+            // Alternative pattern: view-viewName
+            (viewName) => `view-${viewName}`,
+            // Camel case pattern
+            (viewName) => `${viewName}View`
+        ];
+        
+        console.log('✅ ViewManager initialized with fallback resolution');
+    }
+    
+    /**
+     * Resolves view ID using multiple fallback patterns
+     * @param {string} viewName - The base view name
+     * @returns {Object} - {element, resolvedId, patternUsed} or null if not found
+     */
+    resolveViewId(viewName) {
+        console.log(`🔍 Resolving view ID for: ${viewName}`);
+        
+        for (let i = 0; i < this.viewIdPatterns.length; i++) {
+            const pattern = this.viewIdPatterns[i];
+            const candidateId = pattern(viewName);
+            const element = document.getElementById(candidateId);
+            
+            console.log(`  Trying pattern ${i + 1}: ${candidateId}`);
+            
+            if (element) {
+                console.log(`✅ Found view with ID: ${candidateId} (pattern ${i + 1})`);
+                return {
+                    element,
+                    resolvedId: candidateId,
+                    patternUsed: i + 1
+                };
+            }
+        }
+        
+        console.warn(`❌ No view found for: ${viewName} using any pattern`);
+        this.logNavigationError('VIEW_NOT_FOUND', viewName, 'No matching view element found');
+        return null;
+    }
+    
+    /**
+     * Validates if a view exists before attempting navigation
+     * @param {string} viewName - The view name to validate
+     * @returns {boolean} - True if view exists
+     */
+    validateViewExists(viewName) {
+        const resolution = this.resolveViewId(viewName);
+        return resolution !== null;
+    }
+    
+    /**
+     * Enhanced view switching with fallback resolution and state management
+     * @param {string} viewName - The view to switch to
+     * @param {Object} options - Additional options for navigation
+     * @returns {boolean} - True if navigation was successful
+     */
+    async switchView(viewName, options = {}) {
+        console.log(`🔄 ViewManager switching to: ${viewName}`);
+        
+        const startTime = performance.now();
+        
+        try {
+            // Update navigation state
+            this.navigationState.previousView = this.navigationState.currentView;
+            this.navigationState.viewHistory.push(this.navigationState.currentView);
+            this.navigationState.lastNavigationTime = new Date();
+            
+            // Keep history manageable (last 10 views)
+            if (this.navigationState.viewHistory.length > 10) {
+                this.navigationState.viewHistory.shift();
+            }
+            
+            // Chart cleanup hook - destroy charts from previous view
+            if (this.chartManager && this.navigationState.previousView) {
+                try {
+                    console.log(`🧹 Cleaning up charts for previous view: ${this.navigationState.previousView}`);
+                    await this.chartManager.cleanupChartsForView(this.navigationState.previousView);
+                } catch (chartError) {
+                    console.warn(`⚠️ Chart cleanup failed:`, chartError);
+                    // Don't let chart cleanup failure block navigation
+                }
+            }
+            
+            // Find all views and log them for debugging
+            const allViews = document.querySelectorAll('.view');
+            console.log(`Found ${allViews.length} total views:`, Array.from(allViews).map(v => v.id));
+            
+            // Hide all views
+            this.hideAllViews();
+            
+            // Remove active class from all menu items
+            this.deactivateAllMenuItems();
+            
+            // Resolve target view with fallback patterns
+            const viewResolution = this.resolveViewId(viewName);
+            
+            if (!viewResolution) {
+                // Navigation failed - use error recovery manager
+                console.warn(`❌ Navigation failed for: ${viewName}`);
+                
+                // Record performance metrics for failed navigation
+                const failureDuration = performance.now() - startTime;
+                if (window.performanceMonitor) {
+                    window.performanceMonitor.recordCustomNavigation(viewName, failureDuration, false);
+                    window.performanceMonitor.recordError('navigation_failure', `View not found: ${viewName}`, {
+                        viewName,
+                        duration: failureDuration
+                    });
+                }
+                
+                if (this.errorRecoveryManager) {
+                    const recoveryResult = await this.errorRecoveryManager.handleError(
+                        'VIEW_NOT_FOUND',
+                        `View not found: ${viewName}`,
+                        {
+                            viewName,
+                            availableViews: Array.from(allViews).map(v => v.id),
+                            navigationState: this.navigationState,
+                            options
+                        }
+                    );
+                    
+                    if (recoveryResult.success) {
+                        console.log(`✅ Navigation recovered successfully`);
+                        return true;
+                    }
+                }
+                
+                // Fallback to dashboard if error recovery not available or failed
+                if (viewName !== 'dashboard') {
+                    console.log(`🔄 Attempting fallback to dashboard`);
+                    return await this.switchView('dashboard', { ...options, fallback: true });
+                } else {
+                    // Even dashboard failed - critical error
+                    if (this.errorRecoveryManager) {
+                        await this.errorRecoveryManager.handleError(
+                            'CRITICAL_NAVIGATION_FAILURE',
+                            'Dashboard fallback also failed',
+                            {
+                                viewName,
+                                availableViews: Array.from(allViews).map(v => v.id),
+                                navigationState: this.navigationState
+                            }
+                        );
+                    }
+                    this.logNavigationError('CRITICAL_NAVIGATION_FAILURE', viewName, 'Dashboard fallback also failed');
+                    return false;
+                }
+            }
+            
+            // Show the resolved view with performance optimization
+            const success = await this.showViewOptimized(viewResolution.element, viewName, options);
+            
+            if (success) {
+                // Update current view state
+                this.navigationState.currentView = viewName;
+                
+                // Activate corresponding menu item
+                this.activateMenuItem(viewName);
+                
+                // Chart recreation hook - recreate charts for new view if needed
+                if (this.chartManager && options.recreateCharts !== false) {
+                    try {
+                        console.log(`📊 Checking for charts to recreate in view: ${viewName}`);
+                        await this.recreateChartsForView(viewName);
+                    } catch (chartError) {
+                        console.warn(`⚠️ Chart recreation failed:`, chartError);
+                        // Handle chart errors through error recovery manager
+                        if (this.errorRecoveryManager) {
+                            await this.errorRecoveryManager.handleError(
+                                'CHART_CREATION_FAILED',
+                                chartError,
+                                {
+                                    viewName,
+                                    chartError: chartError.message
+                                }
+                            );
+                        }
+                    }
+                }
+                
+                // Log successful navigation
+                const duration = performance.now() - startTime;
+                console.log(`✅ Navigation successful: ${viewName} (${duration.toFixed(2)}ms, pattern ${viewResolution.patternUsed})`);
+                
+                // Record performance metrics
+                if (window.performanceMonitor) {
+                    window.performanceMonitor.recordCustomNavigation(viewName, duration, true);
+                }
+                
+                return true;
+            } else {
+                // View display failed
+                if (this.errorRecoveryManager) {
+                    await this.errorRecoveryManager.handleError(
+                        'VIEW_DISPLAY_FAILED',
+                        `Failed to display view: ${viewName}`,
+                        {
+                            viewName,
+                            viewResolution,
+                            navigationState: this.navigationState
+                        }
+                    );
+                }
+                this.logNavigationError('VIEW_DISPLAY_FAILED', viewName, 'Failed to display resolved view');
+                return false;
+            }
+            
+        } catch (error) {
+            console.error(`❌ Navigation error for ${viewName}:`, error);
+            
+            // Handle navigation exception through error recovery manager
+            if (this.errorRecoveryManager) {
+                const recoveryResult = await this.errorRecoveryManager.handleError(
+                    'NAVIGATION_EXCEPTION',
+                    error,
+                    {
+                        viewName,
+                        navigationState: this.navigationState,
+                        options,
+                        stackTrace: error.stack
+                    }
+                );
+                
+                if (recoveryResult.success) {
+                    return true;
+                }
+            }
+            
+            this.logNavigationError('NAVIGATION_EXCEPTION', viewName, error.message);
+            return false;
+        }
+    }
+    
+    /**
+     * Hides all views by removing active class
+     */
+    hideAllViews() {
+        const allViews = document.querySelectorAll('.view');
+        allViews.forEach(view => {
+            view.classList.remove('active');
+            console.log(`  Hidden view: ${view.id}`);
+        });
+    }
+    
+    /**
+     * Shows a specific view element
+     * @param {HTMLElement} viewElement - The view element to show
+     * @returns {boolean} - True if successful
+     */
+    /**
+     * Shows a view with performance optimization
+     * @param {Element} viewElement - The view element to show
+     * @param {string} viewName - The view name
+     * @param {Object} options - Navigation options
+     * @returns {boolean} - True if successful
+     */
+    async showViewOptimized(viewElement, viewName, options = {}) {
+        try {
+            // Use performance optimizer if available
+            if (this.performanceOptimizer) {
+                const optimizationResult = await this.performanceOptimizer.optimizeNavigation(
+                    viewName, 
+                    viewElement, 
+                    options
+                );
+                
+                if (optimizationResult.success) {
+                    viewElement.classList.add('active');
+                    console.log(`✅ Optimized view activation: ${viewElement.id} (${optimizationResult.duration.toFixed(2)}ms, cached: ${optimizationResult.cached})`);
+                    return true;
+                } else {
+                    console.warn(`⚠️ Performance optimization failed, falling back to standard view activation`);
+                }
+            }
+            
+            // Fallback to standard view activation
+            return this.showView(viewElement);
+            
+        } catch (error) {
+            console.error(`❌ Failed to show optimized view:`, error);
+            return this.showView(viewElement);
+        }
+    }
+    
+    showView(viewElement) {
+        try {
+            viewElement.classList.add('active');
+            console.log(`✅ Activated view: ${viewElement.id}`);
+            return true;
+        } catch (error) {
+            console.error(`❌ Failed to show view:`, error);
+            return false;
+        }
+    }
+    
+    /**
+     * Deactivates all menu items
+     */
+    deactivateAllMenuItems() {
+        document.querySelectorAll('.menu-item, .nav-link').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+    
+    /**
+     * Activates the menu item for the given view
+     * @param {string} viewName - The view name to activate menu for
+     */
+    activateMenuItem(viewName) {
+        const activeMenuItem = document.querySelector(`[data-view="${viewName}"]`);
+        if (activeMenuItem) {
+            activeMenuItem.classList.add('active');
+            console.log(`✅ Activated menu item for: ${viewName}`);
+        } else {
+            console.warn(`❌ Menu item not found for: ${viewName}`);
+        }
+    }
+    
+    /**
+     * Logs navigation errors for debugging and monitoring
+     * @param {string} errorType - Type of error
+     * @param {string} viewName - View that caused the error
+     * @param {string} details - Error details
+     */
+    logNavigationError(errorType, viewName, details) {
+        const error = {
+            type: errorType,
+            viewName,
+            details,
+            timestamp: new Date(),
+            availableViews: Array.from(document.querySelectorAll('.view')).map(v => v.id),
+            navigationState: { ...this.navigationState }
+        };
+        
+        this.navigationState.navigationErrors.push(error);
+        
+        // Keep error log manageable (last 20 errors)
+        if (this.navigationState.navigationErrors.length > 20) {
+            this.navigationState.navigationErrors.shift();
+        }
+        
+        console.error(`🚨 Navigation Error [${errorType}]:`, error);
+    }
+    
+    /**
+     * Gets current navigation state for debugging
+     * @returns {Object} - Current navigation state
+     */
+    getNavigationState() {
+        return { ...this.navigationState };
+    }
+    
+    /**
+     * Gets navigation error history
+     * @returns {Array} - Array of navigation errors
+     */
+    getNavigationErrors() {
+        return [...this.navigationState.navigationErrors];
+    }
+    
+    /**
+     * Recreates charts for a specific view
+     * @param {string} viewName - The view to recreate charts for
+     */
+    recreateChartsForView(viewName) {
+        if (!this.chartManager) {
+            console.log('📊 No chart manager available for chart recreation');
+            return;
+        }
+        
+        // Define which charts should be recreated for each view
+        const viewChartMap = {
+            'dashboard': ['accuracy-chart', 'conference-chart'],
+            'predictions': ['accuracy-chart'],
+            'analytics': ['conference-chart'],
+            'statistics': ['accuracy-chart', 'conference-chart']
+        };
+        
+        const chartsToRecreate = viewChartMap[viewName];
+        
+        if (!chartsToRecreate || chartsToRecreate.length === 0) {
+            console.log(`📊 No charts to recreate for view: ${viewName}`);
+            return;
+        }
+        
+        console.log(`📊 Recreating ${chartsToRecreate.length} charts for view: ${viewName}`);
+        
+        // Use setTimeout to ensure DOM is ready
+        setTimeout(() => {
+            chartsToRecreate.forEach(chartId => {
+                const canvas = document.getElementById(chartId);
+                if (canvas && canvas.offsetParent !== null) { // Check if canvas is visible
+                    console.log(`📊 Recreating chart: ${chartId}`);
+                    this.triggerChartRecreation(chartId, viewName);
+                } else {
+                    console.log(`📊 Canvas not visible, skipping: ${chartId}`);
+                }
+            });
+        }, 100);
+    }
+    
+    /**
+     * Triggers chart recreation for a specific chart
+     * @param {string} chartId - The chart canvas ID
+     * @param {string} viewName - The current view name
+     */
+    triggerChartRecreation(chartId, viewName) {
+        // This method will be called by the app to recreate specific charts
+        // The actual chart creation logic is handled by the app's chart methods
+        
+        if (window.app && typeof window.app.recreateChart === 'function') {
+            window.app.recreateChart(chartId, viewName);
+        } else {
+            console.log(`📊 Chart recreation method not available for: ${chartId}`);
+        }
+    }
+    
+    /**
+     * Adds Chart.js availability checking with graceful fallbacks
+     * @returns {boolean} - True if Chart.js is available
+     */
+    checkChartJSAvailability() {
+        const isAvailable = typeof Chart !== 'undefined';
+        
+        if (!isAvailable) {
+            console.warn('📊 Chart.js not available - charts will be disabled');
+            
+            // Add fallback message to chart containers
+            const chartContainers = document.querySelectorAll('canvas[id*="chart"]');
+            chartContainers.forEach(canvas => {
+                const container = canvas.parentElement;
+                if (container && !container.querySelector('.chart-fallback')) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'chart-fallback';
+                    fallback.style.cssText = `
+                        padding: 20px;
+                        text-align: center;
+                        color: #666;
+                        background: rgba(255,255,255,0.1);
+                        border-radius: 8px;
+                        margin: 10px 0;
+                    `;
+                    fallback.innerHTML = `
+                        <i class="fas fa-chart-line" style="font-size: 2em; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <p>Chart.js library not loaded</p>
+                        <p style="font-size: 0.9em; opacity: 0.7;">Charts will be displayed when the library is available</p>
+                    `;
+                    container.appendChild(fallback);
+                    canvas.style.display = 'none';
+                }
+            });
+        }
+        
+        return isAvailable;
+    }
+}
+
+/**
+ * Data Synchronization Manager
+ * Handles game data matching between local and ESPN data sources
+ * Implements intelligent matching algorithms and conflict resolution
+ */
+class DataSyncManager {
+    constructor() {
+        this.syncLog = [];
+        this.conflictResolutions = [];
+        this.teamNameMappings = new Map();
+        this.matchingStrategies = [
+            'exact',
+            'fuzzy',
+            'partial',
+            'abbreviation',
+            'fallback'
+        ];
+        
+        // Initialize team name mappings for common variations
+        this.initializeTeamMappings();
+        
+        console.log('🔄 DataSyncManager initialized with intelligent matching');
+    }
+    
+    /**
+     * Initialize team name mappings for common variations
+     */
+    initializeTeamMappings() {
+        const mappings = [
+            // Common team name variations with ESPN-specific formats
+            ['Kansas City Chiefs', 'KC Chiefs', 'Chiefs', 'Kansas City'],
+            ['Buffalo Bills', 'Bills', 'Buffalo'],
+            ['Dallas Cowboys', 'Cowboys', 'Dallas'],
+            ['Green Bay Packers', 'Packers', 'GB Packers', 'Green Bay'],
+            ['New England Patriots', 'Patriots', 'NE Patriots', 'New England'],
+            ['Pittsburgh Steelers', 'Steelers', 'Pittsburgh'],
+            ['San Francisco 49ers', '49ers', 'SF 49ers', 'San Francisco'],
+            ['Los Angeles Rams', 'Rams', 'LA Rams', 'Los Angeles Rams', 'L.A. Rams'],
+            ['Tampa Bay Buccaneers', 'Buccaneers', 'TB Buccaneers', 'Tampa Bay', 'Bucs'],
+            ['Seattle Seahawks', 'Seahawks', 'Seattle'],
+            ['Baltimore Ravens', 'Ravens', 'Baltimore'],
+            ['Tennessee Titans', 'Titans', 'Tennessee'],
+            ['Indianapolis Colts', 'Colts', 'Indianapolis'],
+            ['Houston Texans', 'Texans', 'Houston'],
+            ['Jacksonville Jaguars', 'Jaguars', 'Jacksonville', 'Jags'],
+            ['Cleveland Browns', 'Browns', 'Cleveland'],
+            ['Cincinnati Bengals', 'Bengals', 'Cincinnati'],
+            ['Denver Broncos', 'Broncos', 'Denver'],
+            ['Las Vegas Raiders', 'Raiders', 'LV Raiders', 'Oakland Raiders', 'Las Vegas'],
+            ['Los Angeles Chargers', 'Chargers', 'LA Chargers', 'San Diego Chargers', 'L.A. Chargers'],
+            ['Miami Dolphins', 'Dolphins', 'Miami'],
+            ['New York Jets', 'Jets', 'NY Jets', 'N.Y. Jets'],
+            ['New York Giants', 'Giants', 'NY Giants', 'N.Y. Giants'],
+            ['Philadelphia Eagles', 'Eagles', 'Philadelphia'],
+            ['Washington Commanders', 'Commanders', 'Washington', 'WAS', 'Washington Football Team', 'Washington Redskins'],
+            ['Chicago Bears', 'Bears', 'Chicago'],
+            ['Detroit Lions', 'Lions', 'Detroit'],
+            ['Minnesota Vikings', 'Vikings', 'Minnesota'],
+            ['Atlanta Falcons', 'Falcons', 'Atlanta'],
+            ['Carolina Panthers', 'Panthers', 'Carolina'],
+            ['New Orleans Saints', 'Saints', 'New Orleans'],
+            ['Arizona Cardinals', 'Cardinals', 'Arizona']
+        ];
+        
+        // Build bidirectional mapping
+        mappings.forEach(variations => {
+            const canonical = variations[0];
+            variations.forEach(variation => {
+                this.teamNameMappings.set(variation.toLowerCase(), canonical);
+            });
+        });
+        
+        // Add common abbreviations
+        const abbreviations = {
+            'kc': 'Kansas City Chiefs',
+            'buf': 'Buffalo Bills',
+            'dal': 'Dallas Cowboys',
+            'gb': 'Green Bay Packers',
+            'ne': 'New England Patriots',
+            'pit': 'Pittsburgh Steelers',
+            'sf': 'San Francisco 49ers',
+            'lar': 'Los Angeles Rams',
+            'tb': 'Tampa Bay Buccaneers',
+            'sea': 'Seattle Seahawks',
+            'bal': 'Baltimore Ravens',
+            'ten': 'Tennessee Titans',
+            'ind': 'Indianapolis Colts',
+            'hou': 'Houston Texans',
+            'jax': 'Jacksonville Jaguars',
+            'cle': 'Cleveland Browns',
+            'cin': 'Cincinnati Bengals',
+            'den': 'Denver Broncos',
+            'lv': 'Las Vegas Raiders',
+            'lac': 'Los Angeles Chargers',
+            'mia': 'Miami Dolphins',
+            'nyj': 'New York Jets',
+            'nyg': 'New York Giants',
+            'phi': 'Philadelphia Eagles',
+            'was': 'Washington Commanders',
+            'chi': 'Chicago Bears',
+            'det': 'Detroit Lions',
+            'min': 'Minnesota Vikings',
+            'atl': 'Atlanta Falcons',
+            'car': 'Carolina Panthers',
+            'no': 'New Orleans Saints',
+            'ari': 'Arizona Cardinals'
+        };
+        
+        Object.entries(abbreviations).forEach(([abbrev, fullName]) => {
+            this.teamNameMappings.set(abbrev, fullName);
+        });
+        
+        console.log(`✅ Initialized ${this.teamNameMappings.size} team name mappings`);
+    }
+    
+    /**
+     * Synchronizes game data between local and ESPN sources
+     * @param {Array} localGames - Local game data
+     * @param {Array} espnGames - ESPN game data
+     * @returns {Object} - Sync results with matched, unmatched, and conflicts
+     */
+    syncGameData(localGames, espnGames) {
+        console.log(`🔄 Starting data sync: ${localGames.length} local games, ${espnGames.length} ESPN games`);
+        
+        const syncResult = {
+            matched: [],
+            unmatched: {
+                local: [],
+                espn: []
+            },
+            conflicts: [],
+            updated: [],
+            timestamp: new Date()
+        };
+        
+        const usedEspnGames = new Set();
+        
+        // Process each local game
+        localGames.forEach(localGame => {
+            const matchResult = this.findBestMatch(localGame, espnGames, usedEspnGames);
+            
+            if (matchResult.match) {
+                // Mark ESPN game as used
+                usedEspnGames.add(matchResult.match.id);
+                
+                // Check for conflicts
+                const conflicts = this.detectDataConflicts(localGame, matchResult.match);
+                
+                if (conflicts.length > 0) {
+                    const resolution = this.resolveDataConflicts(localGame, matchResult.match, conflicts);
+                    syncResult.conflicts.push({
+                        localGame,
+                        espnGame: matchResult.match,
+                        conflicts,
+                        resolution,
+                        strategy: matchResult.strategy
+                    });
+                    syncResult.updated.push(resolution.resolvedGame);
+                } else {
+                    // No conflicts, merge data
+                    const mergedGame = this.mergeGameData(localGame, matchResult.match);
+                    syncResult.matched.push({
+                        localGame,
+                        espnGame: matchResult.match,
+                        mergedGame,
+                        strategy: matchResult.strategy
+                    });
+                    syncResult.updated.push(mergedGame);
+                }
+                
+                this.logSyncOperation('MATCH_FOUND', localGame, matchResult.match, matchResult.strategy);
+            } else {
+                syncResult.unmatched.local.push(localGame);
+                this.logSyncOperation('NO_MATCH', localGame, null, 'none');
+            }
+        });
+        
+        // Find unmatched ESPN games
+        espnGames.forEach(espnGame => {
+            if (!usedEspnGames.has(espnGame.id)) {
+                syncResult.unmatched.espn.push(espnGame);
+            }
+        });
+        
+        console.log(`✅ Sync complete: ${syncResult.matched.length} matched, ${syncResult.conflicts.length} conflicts, ${syncResult.unmatched.local.length + syncResult.unmatched.espn.length} unmatched`);
+        
+        return syncResult;
+    }
+    
+    /**
+     * Finds the best match for a local game using multiple strategies
+     * @param {Object} localGame - Local game data
+     * @param {Array} espnGames - ESPN games to search
+     * @param {Set} usedGames - Set of already matched ESPN game IDs
+     * @returns {Object} - Match result with game and strategy used
+     */
+    findBestMatch(localGame, espnGames, usedGames = new Set()) {
+        console.log(`🔍 Finding match for: ${localGame.awayTeam} @ ${localGame.homeTeam}`);
+        
+        // Try each matching strategy in order of preference
+        for (const strategy of this.matchingStrategies) {
+            const match = this.applyMatchingStrategy(localGame, espnGames, strategy, usedGames);
+            
+            if (match) {
+                console.log(`✅ Match found using ${strategy} strategy: ${match.awayTeam} @ ${match.homeTeam}`);
+                return {
+                    match,
+                    strategy,
+                    confidence: this.calculateMatchConfidence(localGame, match, strategy)
+                };
+            }
+        }
+        
+        console.log(`❌ No match found for: ${localGame.awayTeam} @ ${localGame.homeTeam}`);
+        return { match: null, strategy: 'none', confidence: 0 };
+    }
+    
+    /**
+     * Applies a specific matching strategy
+     * @param {Object} localGame - Local game data
+     * @param {Array} espnGames - ESPN games to search
+     * @param {string} strategy - Matching strategy to use
+     * @param {Set} usedGames - Set of already matched ESPN game IDs
+     * @returns {Object|null} - Matched ESPN game or null
+     */
+    applyMatchingStrategy(localGame, espnGames, strategy, usedGames) {
+        const availableGames = espnGames.filter(game => !usedGames.has(game.id));
+        
+        switch (strategy) {
+            case 'exact':
+                return this.exactMatch(localGame, availableGames);
+            case 'fuzzy':
+                return this.fuzzyMatch(localGame, availableGames);
+            case 'partial':
+                return this.partialMatch(localGame, availableGames);
+            case 'abbreviation':
+                return this.abbreviationMatch(localGame, availableGames);
+            case 'fallback':
+                return this.fallbackMatch(localGame, availableGames);
+            default:
+                return null;
+        }
+    }
+    
+    /**
+     * Exact team name matching
+     */
+    exactMatch(localGame, espnGames) {
+        return espnGames.find(espnGame => 
+            localGame.homeTeam === espnGame.homeTeam &&
+            localGame.awayTeam === espnGame.awayTeam
+        );
+    }
+    
+    /**
+     * Fuzzy matching using team name mappings
+     */
+    fuzzyMatch(localGame, espnGames) {
+        const localHomeCanonical = this.getCanonicalTeamName(localGame.homeTeam);
+        const localAwayCanonical = this.getCanonicalTeamName(localGame.awayTeam);
+        
+        return espnGames.find(espnGame => {
+            const espnHomeCanonical = this.getCanonicalTeamName(espnGame.homeTeam);
+            const espnAwayCanonical = this.getCanonicalTeamName(espnGame.awayTeam);
+            
+            return localHomeCanonical === espnHomeCanonical &&
+                   localAwayCanonical === espnAwayCanonical;
+        });
+    }
+    
+    /**
+     * Partial string matching
+     */
+    partialMatch(localGame, espnGames) {
+        return espnGames.find(espnGame => {
+            const homeMatch = this.isPartialMatch(localGame.homeTeam, espnGame.homeTeam);
+            const awayMatch = this.isPartialMatch(localGame.awayTeam, espnGame.awayTeam);
+            
+            return homeMatch && awayMatch;
+        });
+    }
+    
+    /**
+     * Abbreviation-based matching
+     */
+    abbreviationMatch(localGame, espnGames) {
+        return espnGames.find(espnGame => {
+            const homeMatch = this.isAbbreviationMatch(localGame.homeTeam, espnGame.homeTeam);
+            const awayMatch = this.isAbbreviationMatch(localGame.awayTeam, espnGame.awayTeam);
+            
+            return homeMatch && awayMatch;
+        });
+    }
+    
+    /**
+     * Fallback matching with relaxed criteria
+     */
+    fallbackMatch(localGame, espnGames) {
+        // Strategy 1: Try matching by date and time if available
+        if (localGame.date) {
+            const dateMatches = espnGames.filter(espnGame => {
+                if (!espnGame.date) return false;
+                
+                const localDate = new Date(localGame.date);
+                const espnDate = new Date(espnGame.date);
+                
+                // Same day matching
+                return localDate.toDateString() === espnDate.toDateString();
+            });
+            
+            if (dateMatches.length > 0) {
+                // Find best match among date matches
+                for (const dateMatch of dateMatches) {
+                    const homePartial = this.isPartialMatch(localGame.homeTeam, dateMatch.homeTeam);
+                    const awayPartial = this.isPartialMatch(localGame.awayTeam, dateMatch.awayTeam);
+                    
+                    if (homePartial && awayPartial) {
+                        return dateMatch;
+                    }
+                }
+                
+                // If no perfect match, try single team match
+                for (const dateMatch of dateMatches) {
+                    const homePartial = this.isPartialMatch(localGame.homeTeam, dateMatch.homeTeam);
+                    const awayPartial = this.isPartialMatch(localGame.awayTeam, dateMatch.awayTeam);
+                    
+                    if (homePartial || awayPartial) {
+                        return dateMatch;
+                    }
+                }
+            }
+        }
+        
+        // Strategy 2: Try reverse matching (away/home swapped)
+        const reverseMatch = espnGames.find(espnGame => {
+            const homeMatch = this.isPartialMatch(localGame.homeTeam, espnGame.awayTeam);
+            const awayMatch = this.isPartialMatch(localGame.awayTeam, espnGame.homeTeam);
+            
+            return homeMatch && awayMatch;
+        });
+        
+        if (reverseMatch) {
+            console.log(`🔄 Found reverse match: ${localGame.awayTeam} @ ${localGame.homeTeam} matched with ${reverseMatch.awayTeam} @ ${reverseMatch.homeTeam}`);
+            return reverseMatch;
+        }
+        
+        // Strategy 3: Try single team strong match
+        const singleTeamMatch = espnGames.find(espnGame => {
+            const homeExact = localGame.homeTeam.toLowerCase() === espnGame.homeTeam.toLowerCase();
+            const awayExact = localGame.awayTeam.toLowerCase() === espnGame.awayTeam.toLowerCase();
+            const homeCanonical = this.getCanonicalTeamName(localGame.homeTeam) === this.getCanonicalTeamName(espnGame.homeTeam);
+            const awayCanonical = this.getCanonicalTeamName(localGame.awayTeam) === this.getCanonicalTeamName(espnGame.awayTeam);
+            
+            // At least one exact match and one canonical match
+            return (homeExact && awayCanonical) || (awayExact && homeCanonical);
+        });
+        
+        if (singleTeamMatch) {
+            console.log(`🎯 Found single team strong match: ${localGame.awayTeam} @ ${localGame.homeTeam}`);
+            return singleTeamMatch;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Gets canonical team name from mappings
+     */
+    getCanonicalTeamName(teamName) {
+        const canonical = this.teamNameMappings.get(teamName.toLowerCase());
+        return canonical || teamName;
+    }
+    
+    /**
+     * Checks if two team names are partial matches
+     */
+    isPartialMatch(name1, name2) {
+        if (!name1 || !name2) return false;
+        
+        const n1 = name1.toLowerCase().trim();
+        const n2 = name2.toLowerCase().trim();
+        
+        // Direct inclusion check
+        if (n1.includes(n2) || n2.includes(n1)) {
+            return true;
+        }
+        
+        // Keyword matching
+        const keywords1 = this.getTeamKeywords(n1);
+        const keywords2 = this.getTeamKeywords(n2);
+        
+        // Check if any keyword from name1 is in name2
+        if (keywords1.some(keyword => n2.includes(keyword))) {
+            return true;
+        }
+        
+        // Check if any keyword from name2 is in name1
+        if (keywords2.some(keyword => n1.includes(keyword))) {
+            return true;
+        }
+        
+        // City/State matching
+        const cityMatch = this.isCityMatch(n1, n2);
+        if (cityMatch) {
+            return true;
+        }
+        
+        // Mascot matching
+        const mascotMatch = this.isMascotMatch(n1, n2);
+        if (mascotMatch) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Checks if team names match by city
+     */
+    isCityMatch(name1, name2) {
+        const cities = [
+            'kansas city', 'buffalo', 'dallas', 'green bay', 'new england',
+            'pittsburgh', 'san francisco', 'los angeles', 'tampa bay', 'seattle',
+            'baltimore', 'tennessee', 'indianapolis', 'houston', 'jacksonville',
+            'cleveland', 'cincinnati', 'denver', 'las vegas', 'miami',
+            'new york', 'philadelphia', 'washington', 'chicago', 'detroit',
+            'minnesota', 'atlanta', 'carolina', 'new orleans', 'arizona'
+        ];
+        
+        return cities.some(city => {
+            return (name1.includes(city) && name2.includes(city));
+        });
+    }
+    
+    /**
+     * Checks if team names match by mascot
+     */
+    isMascotMatch(name1, name2) {
+        const mascots = [
+            'chiefs', 'bills', 'cowboys', 'packers', 'patriots',
+            'steelers', '49ers', 'rams', 'buccaneers', 'seahawks',
+            'ravens', 'titans', 'colts', 'texans', 'jaguars',
+            'browns', 'bengals', 'broncos', 'raiders', 'chargers',
+            'dolphins', 'jets', 'giants', 'eagles', 'commanders',
+            'bears', 'lions', 'vikings', 'falcons', 'panthers',
+            'saints', 'cardinals'
+        ];
+        
+        return mascots.some(mascot => {
+            return (name1.includes(mascot) && name2.includes(mascot));
+        });
+    }
+    
+    /**
+     * Checks if team names match by abbreviation
+     */
+    isAbbreviationMatch(name1, name2) {
+        const abbrev1 = this.getTeamAbbreviation(name1);
+        const abbrev2 = this.getTeamAbbreviation(name2);
+        
+        return abbrev1 === abbrev2;
+    }
+    
+    /**
+     * Extracts team keywords (city, mascot)
+     */
+    getTeamKeywords(teamName) {
+        const words = teamName.toLowerCase().split(' ');
+        return words.filter(word => word.length > 2); // Filter out short words
+    }
+    
+    /**
+     * Gets team abbreviation
+     */
+    getTeamAbbreviation(teamName) {
+        const words = teamName.split(' ');
+        if (words.length >= 2) {
+            return words.map(word => word.charAt(0).toUpperCase()).join('');
+        }
+        return teamName.substring(0, 3).toUpperCase();
+    }
+    
+    /**
+     * Calculates match confidence based on strategy used
+     */
+    calculateMatchConfidence(localGame, espnGame, strategy) {
+        const confidenceMap = {
+            'exact': 100,
+            'fuzzy': 90,
+            'partial': 75,
+            'abbreviation': 60,
+            'fallback': 40
+        };
+        
+        return confidenceMap[strategy] || 0;
+    }
+    
+    /**
+     * Detects conflicts between local and ESPN game data
+     */
+    detectDataConflicts(localGame, espnGame) {
+        const conflicts = [];
+        
+        // Score conflicts
+        if (localGame.homeScore !== espnGame.homeScore) {
+            conflicts.push({
+                field: 'homeScore',
+                local: localGame.homeScore,
+                espn: espnGame.homeScore,
+                severity: 'high'
+            });
+        }
+        
+        if (localGame.awayScore !== espnGame.awayScore) {
+            conflicts.push({
+                field: 'awayScore',
+                local: localGame.awayScore,
+                espn: espnGame.awayScore,
+                severity: 'high'
+            });
+        }
+        
+        // Status conflicts
+        if (localGame.status !== espnGame.status) {
+            conflicts.push({
+                field: 'status',
+                local: localGame.status,
+                espn: espnGame.status,
+                severity: 'medium'
+            });
+        }
+        
+        // Time conflicts
+        if (localGame.timeRemaining !== espnGame.timeRemaining) {
+            conflicts.push({
+                field: 'timeRemaining',
+                local: localGame.timeRemaining,
+                espn: espnGame.timeRemaining,
+                severity: 'low'
+            });
+        }
+        
+        return conflicts;
+    }
+    
+    /**
+     * Resolves data conflicts using ESPN as authoritative source
+     */
+    resolveDataConflicts(localGame, espnGame, conflicts) {
+        console.log(`🔧 Resolving ${conflicts.length} conflicts for ${localGame.awayTeam} @ ${localGame.homeTeam}`);
+        
+        const resolution = {
+            strategy: 'espn_authoritative',
+            resolvedGame: { ...localGame },
+            appliedChanges: [],
+            timestamp: new Date()
+        };
+        
+        // Apply ESPN data as authoritative source
+        conflicts.forEach(conflict => {
+            const oldValue = resolution.resolvedGame[conflict.field];
+            resolution.resolvedGame[conflict.field] = espnGame[conflict.field];
+            
+            resolution.appliedChanges.push({
+                field: conflict.field,
+                oldValue,
+                newValue: espnGame[conflict.field],
+                reason: 'ESPN authoritative'
+            });
+            
+            console.log(`  ✅ ${conflict.field}: ${oldValue} → ${espnGame[conflict.field]}`);
+        });
+        
+        // Store resolution for audit
+        this.conflictResolutions.push({
+            localGame: { ...localGame },
+            espnGame: { ...espnGame },
+            conflicts,
+            resolution,
+            timestamp: new Date()
+        });
+        
+        return resolution;
+    }
+    
+    /**
+     * Merges local and ESPN game data
+     */
+    mergeGameData(localGame, espnGame) {
+        return {
+            ...localGame,
+            // Use ESPN data as authoritative for scores and status
+            homeScore: espnGame.homeScore,
+            awayScore: espnGame.awayScore,
+            status: espnGame.status,
+            // Merge additional ESPN data
+            quarter: espnGame.quarter || localGame.quarter,
+            timeRemaining: espnGame.timeRemaining || localGame.timeRemaining,
+            venue: espnGame.venue || localGame.venue,
+            network: espnGame.network || localGame.network,
+            // Add ESPN metadata
+            espnId: espnGame.id,
+            lastSynced: new Date(),
+            dataSource: 'merged'
+        };
+    }
+    
+    /**
+     * Logs sync operations for audit and debugging
+     */
+    logSyncOperation(operation, localGame, espnGame, strategy) {
+        const logEntry = {
+            operation,
+            timestamp: new Date(),
+            localGame: {
+                id: localGame.id,
+                homeTeam: localGame.homeTeam,
+                awayTeam: localGame.awayTeam
+            },
+            espnGame: espnGame ? {
+                id: espnGame.id,
+                homeTeam: espnGame.homeTeam,
+                awayTeam: espnGame.awayTeam
+            } : null,
+            strategy,
+            success: operation === 'MATCH_FOUND'
+        };
+        
+        this.syncLog.push(logEntry);
+        
+        // Keep log manageable (last 100 entries)
+        if (this.syncLog.length > 100) {
+            this.syncLog.shift();
+        }
+        
+        if (operation === 'NO_MATCH') {
+            console.warn(`🚨 Sync Warning: No match found for ${localGame.awayTeam} @ ${localGame.homeTeam}`);
+        }
+    }
+    
+    /**
+     * Gets sync statistics and audit information
+     */
+    getSyncStats() {
+        const stats = {
+            totalOperations: this.syncLog.length,
+            successfulMatches: this.syncLog.filter(log => log.success).length,
+            failedMatches: this.syncLog.filter(log => !log.success).length,
+            conflictResolutions: this.conflictResolutions.length,
+            strategyUsage: {},
+            recentOperations: this.syncLog.slice(-10)
+        };
+        
+        // Calculate strategy usage
+        this.syncLog.forEach(log => {
+            if (log.strategy) {
+                stats.strategyUsage[log.strategy] = (stats.strategyUsage[log.strategy] || 0) + 1;
+            }
+        });
+        
+        return stats;
+    }
+    
+    /**
+     * Validates and sanitizes game data
+     */
+    validateGameData(game) {
+        const validation = {
+            isValid: true,
+            errors: [],
+            warnings: []
+        };
+        
+        // Required fields
+        if (!game.homeTeam) {
+            validation.errors.push('Missing homeTeam');
+            validation.isValid = false;
+        }
+        
+        if (!game.awayTeam) {
+            validation.errors.push('Missing awayTeam');
+            validation.isValid = false;
+        }
+        
+        // Score validation
+        if (typeof game.homeScore !== 'number' || game.homeScore < 0) {
+            validation.warnings.push('Invalid homeScore');
+        }
+        
+        if (typeof game.awayScore !== 'number' || game.awayScore < 0) {
+            validation.warnings.push('Invalid awayScore');
+        }
+        
+        // Status validation
+        const validStatuses = ['SCHEDULED', 'LIVE', 'FINAL', 'POSTPONED', 'CANCELLED'];
+        if (!validStatuses.includes(game.status)) {
+            validation.warnings.push(`Unknown status: ${game.status}`);
+        }
+        
+        return validation;
+    }
+    
+    /**
+     * Sanitizes game data by fixing common issues
+     */
+    sanitizeGameData(game) {
+        const sanitized = { ...game };
+        
+        // Ensure scores are numbers
+        sanitized.homeScore = parseInt(sanitized.homeScore) || 0;
+        sanitized.awayScore = parseInt(sanitized.awayScore) || 0;
+        
+        // Normalize team names
+        sanitized.homeTeam = this.normalizeTeamName(sanitized.homeTeam);
+        sanitized.awayTeam = this.normalizeTeamName(sanitized.awayTeam);
+        
+        // Normalize status
+        sanitized.status = this.normalizeGameStatus(sanitized.status);
+        
+        return sanitized;
+    }
+    
+    /**
+     * Normalizes team names
+     */
+    normalizeTeamName(teamName) {
+        if (!teamName) return '';
+        
+        // Trim whitespace and normalize case
+        let normalized = teamName.trim();
+        
+        // Get canonical name if available
+        const canonical = this.getCanonicalTeamName(normalized);
+        
+        return canonical;
+    }
+    
+    /**
+     * Normalizes game status
+     */
+    normalizeGameStatus(status) {
+        if (!status) return 'SCHEDULED';
+        
+        const statusMap = {
+            'final': 'FINAL',
+            'completed': 'FINAL',
+            'finished': 'FINAL',
+            'live': 'LIVE',
+            'in progress': 'LIVE',
+            'active': 'LIVE',
+            'playing': 'LIVE',
+            'scheduled': 'SCHEDULED',
+            'upcoming': 'SCHEDULED',
+            'not started': 'SCHEDULED',
+            'postponed': 'POSTPONED',
+            'cancelled': 'CANCELLED',
+            'canceled': 'CANCELLED'
+        };
+        
+        return statusMap[status.toLowerCase()] || status.toUpperCase();
+    }
+}
+
+/**
+ * Game Status Classification System
+ * Provides comprehensive status detection and categorization for NFL games
+ * Handles multiple API formats and edge cases with priority-based classification
+ */
+class GameStatusClassifier {
+    constructor() {
+        // Comprehensive status mappings for different API formats
+        this.statusMappings = {
+            // Live game statuses
+            live: [
+                'LIVE', 'IN_PROGRESS', 'HALFTIME', 'ACTIVE', 'PLAYING',
+                'IN PROGRESS', 'LIVE GAME', 'GAME IN PROGRESS', 'ONGOING',
+                'QUARTER 1', 'QUARTER 2', 'QUARTER 3', 'QUARTER 4',
+                'Q1', 'Q2', 'Q3', 'Q4', 'OT', 'OVERTIME',
+                'FIRST QUARTER', 'SECOND QUARTER', 'THIRD QUARTER', 'FOURTH QUARTER',
+                'HALF TIME', 'HALF-TIME', 'INTERMISSION', 'BREAK',
+                'TWO MINUTE WARNING', '2 MINUTE WARNING'
+            ],
+            
+            // Upcoming/scheduled game statuses
+            upcoming: [
+                'SCHEDULED', 'PRE_GAME', 'UPCOMING', 'NOT_STARTED',
+                'PRE GAME', 'PREGAME', 'BEFORE GAME', 'GAME SCHEDULED',
+                'SCHEDULED GAME', 'FUTURE', 'PENDING', 'WAITING',
+                'TBD', 'TO BE DETERMINED', 'TBA', 'TO BE ANNOUNCED'
+            ],
+            
+            // Completed game statuses
+            completed: [
+                'FINAL', 'FINISHED', 'COMPLETED', 'GAME OVER',
+                'FINAL SCORE', 'ENDED', 'DONE', 'CONCLUDED'
+            ],
+            
+            // Special statuses
+            postponed: [
+                'POSTPONED', 'DELAYED', 'SUSPENDED', 'CANCELLED',
+                'CANCELED', 'RESCHEDULED', 'MOVED', 'WEATHER DELAY'
+            ]
+        };
+        
+        // Status priority for edge cases (higher number = higher priority)
+        this.statusPriority = {
+            'LIVE': 100,
+            'IN_PROGRESS': 95,
+            'HALFTIME': 90,
+            'ACTIVE': 85,
+            'PLAYING': 80,
+            'FINAL': 75,
+            'COMPLETED': 70,
+            'FINISHED': 65,
+            'POSTPONED': 60,
+            'DELAYED': 55,
+            'CANCELLED': 50,
+            'SCHEDULED': 45,
+            'PRE_GAME': 40,
+            'UPCOMING': 35,
+            'NOT_STARTED': 30,
+            'TBD': 25,
+            'UNKNOWN': 0
+        };
+        
+        // Default status for unknown/null values
+        this.defaultStatus = 'SCHEDULED';
+        
+        console.log('✅ GameStatusClassifier initialized with comprehensive status mapping');
+    }
+    
+    /**
+     * Classifies a game's status into a standardized format
+     * @param {Object} game - Game object with status information
+     * @returns {Object} - Classification result with normalized status and category
+     */
+    classifyGameStatus(game) {
+        if (!game) {
+            console.warn('❌ GameStatusClassifier: No game provided');
+            return this.createClassificationResult(this.defaultStatus, 'upcoming', 0, 'No game data');
+        }
+        
+        const rawStatus = game.status || game.gameStatus || game.state || null;
+        const espnStatus = game.espnStatus || null;
+        const espnStatusName = game.espnStatusName || null;
+        
+        console.log(`🔍 Classifying game status: ${game.awayTeam} @ ${game.homeTeam}`);
+        console.log(`  Raw status: ${rawStatus}`);
+        console.log(`  ESPN status: ${espnStatus}`);
+        console.log(`  ESPN status name: ${espnStatusName}`);
+        
+        // Try multiple status sources in priority order
+        const statusSources = [
+            { value: rawStatus, source: 'primary' },
+            { value: espnStatus, source: 'espn' },
+            { value: espnStatusName, source: 'espnName' }
+        ];
+        
+        let bestClassification = null;
+        let highestPriority = -1;
+        
+        for (const statusSource of statusSources) {
+            if (!statusSource.value) continue;
+            
+            const classification = this.classifySingleStatus(statusSource.value, statusSource.source);
+            const priority = this.getStatusPriority(classification.normalizedStatus);
+            
+            if (priority > highestPriority) {
+                highestPriority = priority;
+                bestClassification = classification;
+            }
+        }
+        
+        // Fallback to default if no valid status found
+        if (!bestClassification) {
+            console.warn(`⚠️ No valid status found for game, using default: ${this.defaultStatus}`);
+            bestClassification = this.createClassificationResult(
+                this.defaultStatus, 
+                'upcoming', 
+                this.getStatusPriority(this.defaultStatus),
+                'No valid status found'
+            );
+        }
+        
+        // Additional context-based validation
+        bestClassification = this.validateWithContext(game, bestClassification);
+        
+        console.log(`✅ Status classified: ${bestClassification.normalizedStatus} (${bestClassification.category})`);
+        
+        return bestClassification;
+    }
+    
+    /**
+     * Classifies a single status string
+     * @param {string} status - Status string to classify
+     * @param {string} source - Source of the status
+     * @returns {Object} - Classification result
+     */
+    classifySingleStatus(status, source = 'unknown') {
+        if (!status) {
+            return this.createClassificationResult(this.defaultStatus, 'upcoming', 0, 'Empty status');
+        }
+        
+        const normalizedInput = status.toString().toUpperCase().trim();
+        
+        // Direct mapping check first
+        const directMapping = this.getDirectMapping(normalizedInput);
+        if (directMapping) {
+            return this.createClassificationResult(
+                directMapping.status,
+                directMapping.category,
+                this.getStatusPriority(directMapping.status),
+                `Direct mapping from ${source}`
+            );
+        }
+        
+        // Pattern matching for complex statuses
+        const patternMatch = this.matchStatusPattern(normalizedInput);
+        if (patternMatch) {
+            return this.createClassificationResult(
+                patternMatch.status,
+                patternMatch.category,
+                this.getStatusPriority(patternMatch.status),
+                `Pattern match from ${source}: ${normalizedInput}`
+            );
+        }
+        
+        // Fallback to keyword matching
+        const keywordMatch = this.matchStatusKeywords(normalizedInput);
+        if (keywordMatch) {
+            return this.createClassificationResult(
+                keywordMatch.status,
+                keywordMatch.category,
+                this.getStatusPriority(keywordMatch.status),
+                `Keyword match from ${source}: ${normalizedInput}`
+            );
+        }
+        
+        // Ultimate fallback
+        console.warn(`⚠️ Unknown status: ${status} from ${source}, using default`);
+        return this.createClassificationResult(
+            this.defaultStatus,
+            'upcoming',
+            this.getStatusPriority(this.defaultStatus),
+            `Unknown status: ${status}`
+        );
+    }
+    
+    /**
+     * Gets direct mapping for known status values
+     * @param {string} status - Normalized status string
+     * @returns {Object|null} - Direct mapping result or null
+     */
+    getDirectMapping(status) {
+        // Check each category for exact matches
+        for (const [category, statuses] of Object.entries(this.statusMappings)) {
+            if (statuses.includes(status)) {
+                const normalizedStatus = this.getCategoryRepresentativeStatus(category, status);
+                return {
+                    status: normalizedStatus,
+                    category: this.getCategoryName(category)
+                };
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Matches status using pattern recognition
+     * @param {string} status - Normalized status string
+     * @returns {Object|null} - Pattern match result or null
+     */
+    matchStatusPattern(status) {
+        // Quarter patterns
+        if (/^(Q|QUARTER)\s*[1-4]$/.test(status) || /^[1-4](ST|ND|RD|TH)\s*QUARTER$/.test(status)) {
+            return { status: 'LIVE', category: 'live' };
+        }
+        
+        // Overtime patterns
+        if (/^(OT|OVERTIME)(\s*[1-9])?$/.test(status)) {
+            return { status: 'LIVE', category: 'live' };
+        }
+        
+        // Time-based patterns
+        if (/^\d{1,2}:\d{2}/.test(status) || /REMAINING|LEFT/.test(status)) {
+            return { status: 'LIVE', category: 'live' };
+        }
+        
+        // Final score patterns
+        if (/FINAL|ENDED|FINISHED/.test(status)) {
+            return { status: 'FINAL', category: 'completed' };
+        }
+        
+        // Pre-game patterns
+        if (/PRE|BEFORE|STARTS|BEGINS/.test(status)) {
+            return { status: 'SCHEDULED', category: 'upcoming' };
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Matches status using keyword search
+     * @param {string} status - Normalized status string
+     * @returns {Object|null} - Keyword match result or null
+     */
+    matchStatusKeywords(status) {
+        // Live game keywords
+        const liveKeywords = ['LIVE', 'PROGRESS', 'ACTIVE', 'PLAYING', 'ONGOING'];
+        if (liveKeywords.some(keyword => status.includes(keyword))) {
+            return { status: 'LIVE', category: 'live' };
+        }
+        
+        // Completed game keywords
+        const completedKeywords = ['FINAL', 'FINISHED', 'COMPLETED', 'ENDED', 'OVER'];
+        if (completedKeywords.some(keyword => status.includes(keyword))) {
+            return { status: 'FINAL', category: 'completed' };
+        }
+        
+        // Postponed game keywords
+        const postponedKeywords = ['POSTPONED', 'DELAYED', 'CANCELLED', 'SUSPENDED'];
+        if (postponedKeywords.some(keyword => status.includes(keyword))) {
+            return { status: 'POSTPONED', category: 'postponed' };
+        }
+        
+        // Scheduled game keywords
+        const scheduledKeywords = ['SCHEDULED', 'UPCOMING', 'FUTURE', 'PENDING'];
+        if (scheduledKeywords.some(keyword => status.includes(keyword))) {
+            return { status: 'SCHEDULED', category: 'upcoming' };
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Validates classification with game context
+     * @param {Object} game - Game object
+     * @param {Object} classification - Initial classification
+     * @returns {Object} - Validated classification
+     */
+    validateWithContext(game, classification) {
+        // Check if scores exist and status makes sense
+        if (game.homeScore > 0 || game.awayScore > 0) {
+            if (classification.category === 'upcoming') {
+                console.log(`🔄 Adjusting status: Game has scores but classified as upcoming`);
+                // If there are scores but game is classified as upcoming, it's likely live or final
+                if (game.quarter || game.timeRemaining) {
+                    return this.createClassificationResult('LIVE', 'live', 95, 'Scores + time context');
+                } else {
+                    return this.createClassificationResult('FINAL', 'completed', 75, 'Scores without time context');
+                }
+            }
+        }
+        
+        // Check date context if available
+        if (game.date) {
+            const gameDate = new Date(game.date);
+            const now = new Date();
+            const timeDiff = gameDate.getTime() - now.getTime();
+            const hoursDiff = timeDiff / (1000 * 60 * 60);
+            
+            // If game is more than 4 hours in the future and classified as live
+            if (hoursDiff > 4 && classification.category === 'live') {
+                console.log(`🔄 Adjusting status: Game is ${hoursDiff.toFixed(1)} hours in future but classified as live`);
+                return this.createClassificationResult('SCHEDULED', 'upcoming', 45, 'Future date context');
+            }
+            
+            // If game is more than 4 hours in the past and classified as upcoming
+            if (hoursDiff < -4 && classification.category === 'upcoming') {
+                console.log(`🔄 Adjusting status: Game is ${Math.abs(hoursDiff).toFixed(1)} hours in past but classified as upcoming`);
+                return this.createClassificationResult('FINAL', 'completed', 75, 'Past date context');
+            }
+        }
+        
+        return classification;
+    }
+    
+    /**
+     * Determines if a game is currently live
+     * @param {string|Object} statusOrGame - Status string or game object
+     * @returns {boolean} - True if game is live
+     */
+    isLiveGame(statusOrGame) {
+        let classification;
+        
+        if (typeof statusOrGame === 'string') {
+            classification = this.classifySingleStatus(statusOrGame);
+        } else if (typeof statusOrGame === 'object') {
+            classification = this.classifyGameStatus(statusOrGame);
+        } else {
+            return false;
+        }
+        
+        return classification.category === 'live';
+    }
+    
+    /**
+     * Determines if a game is upcoming/scheduled
+     * @param {string|Object} statusOrGame - Status string or game object
+     * @returns {boolean} - True if game is upcoming
+     */
+    isUpcomingGame(statusOrGame) {
+        let classification;
+        
+        if (typeof statusOrGame === 'string') {
+            classification = this.classifySingleStatus(statusOrGame);
+        } else if (typeof statusOrGame === 'object') {
+            classification = this.classifyGameStatus(statusOrGame);
+        } else {
+            return false;
+        }
+        
+        return classification.category === 'upcoming';
+    }
+    
+    /**
+     * Normalizes status for different API formats
+     * @param {string} rawStatus - Raw status from API
+     * @returns {string} - Normalized status
+     */
+    normalizeStatus(rawStatus) {
+        const classification = this.classifySingleStatus(rawStatus);
+        return classification.normalizedStatus;
+    }
+    
+    /**
+     * Gets status priority for edge case resolution
+     * @param {string} status - Status to get priority for
+     * @returns {number} - Priority value (higher = more important)
+     */
+    getStatusPriority(status) {
+        return this.statusPriority[status] || this.statusPriority['UNKNOWN'];
+    }
+    
+    /**
+     * Creates a standardized classification result
+     * @param {string} status - Normalized status
+     * @param {string} category - Status category
+     * @param {number} priority - Status priority
+     * @param {string} reason - Classification reason
+     * @returns {Object} - Classification result
+     */
+    createClassificationResult(status, category, priority, reason) {
+        return {
+            normalizedStatus: status,
+            category: category,
+            priority: priority,
+            reason: reason,
+            timestamp: new Date()
+        };
+    }
+    
+    /**
+     * Gets the representative status for a category
+     * @param {string} category - Status category
+     * @param {string} originalStatus - Original status that matched
+     * @returns {string} - Representative status
+     */
+    getCategoryRepresentativeStatus(category, originalStatus) {
+        const representatives = {
+            'live': 'LIVE',
+            'upcoming': 'SCHEDULED',
+            'completed': 'FINAL',
+            'postponed': 'POSTPONED'
+        };
+        
+        // For some specific cases, preserve the original
+        if (originalStatus === 'HALFTIME') return 'HALFTIME';
+        if (originalStatus.startsWith('Q') || originalStatus.includes('QUARTER')) return 'LIVE';
+        if (originalStatus === 'OVERTIME' || originalStatus === 'OT') return 'LIVE';
+        
+        return representatives[category] || originalStatus;
+    }
+    
+    /**
+     * Gets the category name from internal category key
+     * @param {string} categoryKey - Internal category key
+     * @returns {string} - Human-readable category name
+     */
+    getCategoryName(categoryKey) {
+        const categoryNames = {
+            'live': 'live',
+            'upcoming': 'upcoming',
+            'completed': 'completed',
+            'postponed': 'postponed'
+        };
+        
+        return categoryNames[categoryKey] || 'unknown';
+    }
+    
+    /**
+     * Gets comprehensive status information for debugging
+     * @param {Object} game - Game object to analyze
+     * @returns {Object} - Detailed status information
+     */
+    getStatusDebugInfo(game) {
+        const classification = this.classifyGameStatus(game);
+        
+        return {
+            game: {
+                id: game.id,
+                teams: `${game.awayTeam} @ ${game.homeTeam}`,
+                scores: `${game.awayScore || 0} - ${game.homeScore || 0}`
+            },
+            rawStatuses: {
+                primary: game.status,
+                espn: game.espnStatus,
+                espnName: game.espnStatusName
+            },
+            classification: classification,
+            checks: {
+                isLive: this.isLiveGame(game),
+                isUpcoming: this.isUpcomingGame(game),
+                hasScores: (game.homeScore > 0 || game.awayScore > 0),
+                hasTime: !!(game.quarter || game.timeRemaining)
+            },
+            availableStatuses: Object.keys(this.statusMappings),
+            timestamp: new Date()
+        };
+    }
+}
+
+/**
+ * Memory Management System
+ * Comprehensive memory management with garbage collection helpers and monitoring
+ */
+class MemoryManager {
+    constructor() {
+        this.memoryStats = {
+            totalAllocations: 0,
+            totalDeallocations: 0,
+            currentAllocations: 0,
+            peakAllocations: 0,
+            lastGCTime: null,
+            gcCount: 0,
+            memoryLeaks: [],
+            largeObjects: new Map(),
+            eventListeners: new Map(),
+            timers: new Map(),
+            observers: new Map()
+        };
+        
+        this.gcThresholds = {
+            maxAllocations: 1000,
+            maxMemoryMB: 100,
+            gcInterval: 30000, // 30 seconds
+            leakDetectionInterval: 60000 // 1 minute
+        };
+        
+        this.startMemoryMonitoring();
+        console.log('🧠 MemoryManager initialized with comprehensive tracking');
+    }
+    
+    /**
+     * Register a memory allocation
+     */
+    registerAllocation(type, size, identifier, object = null) {
+        const allocation = {
+            id: identifier || this.generateId(),
+            type,
+            size: size || 0,
+            timestamp: Date.now(),
+            object: object ? new WeakRef(object) : null,
+            stack: this.captureStack()
+        };
+        
+        this.memoryStats.totalAllocations++;
+        this.memoryStats.currentAllocations++;
+        
+        if (this.memoryStats.currentAllocations > this.memoryStats.peakAllocations) {
+            this.memoryStats.peakAllocations = this.memoryStats.currentAllocations;
+        }
+        
+        // Track large objects separately
+        if (size > 1024 * 1024) { // 1MB threshold
+            this.memoryStats.largeObjects.set(allocation.id, allocation);
+            console.warn(`🐘 Large object allocated: ${type} (${this.formatBytes(size)})`);
+        }
+        
+        return allocation.id;
+    }
+    
+    /**
+     * Register a memory deallocation
+     */
+    registerDeallocation(identifier) {
+        this.memoryStats.totalDeallocations++;
+        this.memoryStats.currentAllocations--;
+        
+        // Remove from large objects if present
+        if (this.memoryStats.largeObjects.has(identifier)) {
+            this.memoryStats.largeObjects.delete(identifier);
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Register event listener for cleanup tracking
+     */
+    registerEventListener(element, event, handler, identifier = null) {
+        const id = identifier || this.generateId();
+        const listener = {
+            id,
+            element: new WeakRef(element),
+            event,
+            handler,
+            timestamp: Date.now()
+        };
+        
+        this.memoryStats.eventListeners.set(id, listener);
+        this.registerAllocation('event_listener', 0, id);
+        
+        return id;
+    }
+    
+    /**
+     * Unregister event listener
+     */
+    unregisterEventListener(identifier) {
+        if (this.memoryStats.eventListeners.has(identifier)) {
+            const listener = this.memoryStats.eventListeners.get(identifier);
+            const element = listener.element.deref();
+            
+            if (element) {
+                try {
+                    element.removeEventListener(listener.event, listener.handler);
+                } catch (error) {
+                    console.warn('Failed to remove event listener:', error);
+                }
+            }
+            
+            this.memoryStats.eventListeners.delete(identifier);
+            this.registerDeallocation(identifier);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Register timer for cleanup tracking
+     */
+    registerTimer(timerId, type = 'timeout', callback = null) {
+        const timer = {
+            id: timerId,
+            type,
+            callback,
+            timestamp: Date.now()
+        };
+        
+        this.memoryStats.timers.set(timerId, timer);
+        this.registerAllocation('timer', 0, `timer_${timerId}`);
+        
+        return timerId;
+    }
+    
+    /**
+     * Unregister timer
+     */
+    unregisterTimer(timerId) {
+        if (this.memoryStats.timers.has(timerId)) {
+            const timer = this.memoryStats.timers.get(timerId);
+            
+            try {
+                if (timer.type === 'timeout') {
+                    clearTimeout(timerId);
+                } else if (timer.type === 'interval') {
+                    clearInterval(timerId);
+                }
+            } catch (error) {
+                console.warn('Failed to clear timer:', error);
+            }
+            
+            this.memoryStats.timers.delete(timerId);
+            this.registerDeallocation(`timer_${timerId}`);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Register observer for cleanup tracking
+     */
+    registerObserver(observer, type, identifier = null) {
+        const id = identifier || this.generateId();
+        const observerInfo = {
+            id,
+            observer: new WeakRef(observer),
+            type,
+            timestamp: Date.now()
+        };
+        
+        this.memoryStats.observers.set(id, observerInfo);
+        this.registerAllocation('observer', 0, id);
+        
+        return id;
+    }
+    
+    /**
+     * Unregister observer
+     */
+    unregisterObserver(identifier) {
+        if (this.memoryStats.observers.has(identifier)) {
+            const observerInfo = this.memoryStats.observers.get(identifier);
+            const observer = observerInfo.observer.deref();
+            
+            if (observer && typeof observer.disconnect === 'function') {
+                try {
+                    observer.disconnect();
+                } catch (error) {
+                    console.warn('Failed to disconnect observer:', error);
+                }
+            }
+            
+            this.memoryStats.observers.delete(identifier);
+            this.registerDeallocation(identifier);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Force garbage collection of tracked resources
+     */
+    forceGarbageCollection() {
+        console.log('🧹 Starting forced garbage collection...');
+        
+        const startTime = Date.now();
+        let cleaned = 0;
+        
+        // Clean up dead event listeners
+        for (const [id, listener] of this.memoryStats.eventListeners) {
+            if (!listener.element.deref()) {
+                this.memoryStats.eventListeners.delete(id);
+                this.registerDeallocation(id);
+                cleaned++;
+            }
+        }
+        
+        // Clean up dead observers
+        for (const [id, observerInfo] of this.memoryStats.observers) {
+            if (!observerInfo.observer.deref()) {
+                this.memoryStats.observers.delete(id);
+                this.registerDeallocation(id);
+                cleaned++;
+            }
+        }
+        
+        // Clean up large objects that are no longer referenced
+        for (const [id, allocation] of this.memoryStats.largeObjects) {
+            if (allocation.object && !allocation.object.deref()) {
+                this.memoryStats.largeObjects.delete(id);
+                this.registerDeallocation(id);
+                cleaned++;
+            }
+        }
+        
+        // Trigger browser garbage collection if available
+        if (window.gc && typeof window.gc === 'function') {
+            try {
+                window.gc();
+            } catch (error) {
+                console.warn('Browser GC not available:', error);
+            }
+        }
+        
+        const duration = Date.now() - startTime;
+        this.memoryStats.lastGCTime = Date.now();
+        this.memoryStats.gcCount++;
+        
+        console.log(`✅ Garbage collection completed: ${cleaned} objects cleaned in ${duration}ms`);
+        
+        return {
+            cleaned,
+            duration,
+            timestamp: this.memoryStats.lastGCTime
+        };
+    }
+    
+    /**
+     * Detect potential memory leaks
+     */
+    detectMemoryLeaks() {
+        const leaks = [];
+        const now = Date.now();
+        const leakThreshold = 5 * 60 * 1000; // 5 minutes
+        
+        // Check for long-lived event listeners
+        for (const [id, listener] of this.memoryStats.eventListeners) {
+            if (now - listener.timestamp > leakThreshold) {
+                leaks.push({
+                    type: 'event_listener',
+                    id,
+                    age: now - listener.timestamp,
+                    event: listener.event
+                });
+            }
+        }
+        
+        // Check for long-lived timers
+        for (const [id, timer] of this.memoryStats.timers) {
+            if (now - timer.timestamp > leakThreshold) {
+                leaks.push({
+                    type: 'timer',
+                    id,
+                    age: now - timer.timestamp,
+                    timerType: timer.type
+                });
+            }
+        }
+        
+        // Check for long-lived large objects
+        for (const [id, allocation] of this.memoryStats.largeObjects) {
+            if (now - allocation.timestamp > leakThreshold) {
+                leaks.push({
+                    type: 'large_object',
+                    id,
+                    age: now - allocation.timestamp,
+                    size: allocation.size,
+                    objectType: allocation.type
+                });
+            }
+        }
+        
+        if (leaks.length > 0) {
+            console.warn(`🚨 Potential memory leaks detected: ${leaks.length} items`);
+            this.memoryStats.memoryLeaks = leaks;
+        }
+        
+        return leaks;
+    }
+    
+    /**
+     * Start memory monitoring
+     */
+    startMemoryMonitoring() {
+        // Periodic garbage collection
+        const gcInterval = setInterval(() => {
+            if (this.shouldRunGC()) {
+                this.forceGarbageCollection();
+            }
+        }, this.gcThresholds.gcInterval);
+        
+        this.registerTimer(gcInterval, 'interval');
+        
+        // Periodic leak detection
+        const leakInterval = setInterval(() => {
+            this.detectMemoryLeaks();
+        }, this.gcThresholds.leakDetectionInterval);
+        
+        this.registerTimer(leakInterval, 'interval');
+        
+        // Monitor browser memory if available
+        if ('memory' in performance) {
+            const memoryInterval = setInterval(() => {
+                this.logBrowserMemory();
+            }, 30000);
+            
+            this.registerTimer(memoryInterval, 'interval');
+        }
+        
+        console.log('📊 Memory monitoring started');
+    }
+    
+    /**
+     * Check if garbage collection should run
+     */
+    shouldRunGC() {
+        const stats = this.getMemoryStats();
+        
+        return (
+            stats.currentAllocations > this.gcThresholds.maxAllocations ||
+            (this.getBrowserMemoryMB() > this.gcThresholds.maxMemoryMB) ||
+            (!this.memoryStats.lastGCTime || 
+             Date.now() - this.memoryStats.lastGCTime > this.gcThresholds.gcInterval * 2)
+        );
+    }
+    
+    /**
+     * Get browser memory usage in MB
+     */
+    getBrowserMemoryMB() {
+        if ('memory' in performance) {
+            return performance.memory.usedJSHeapSize / (1024 * 1024);
+        }
+        return 0;
+    }
+    
+    /**
+     * Log browser memory information
+     */
+    logBrowserMemory() {
+        if ('memory' in performance) {
+            const memory = performance.memory;
+            const used = memory.usedJSHeapSize / (1024 * 1024);
+            const total = memory.totalJSHeapSize / (1024 * 1024);
+            const limit = memory.jsHeapSizeLimit / (1024 * 1024);
+            
+            console.log(`🧠 Browser Memory: ${used.toFixed(2)}MB used / ${total.toFixed(2)}MB total (limit: ${limit.toFixed(2)}MB)`);
+            
+            if (used / limit > 0.8) {
+                console.warn('🚨 High memory usage detected!');
+                this.forceGarbageCollection();
+            }
+        }
+    }
+    
+    /**
+     * Get comprehensive memory statistics
+     */
+    getMemoryStats() {
+        const browserMemory = 'memory' in performance ? {
+            used: performance.memory.usedJSHeapSize,
+            total: performance.memory.totalJSHeapSize,
+            limit: performance.memory.jsHeapSizeLimit
+        } : null;
+        
+        return {
+            ...this.memoryStats,
+            browserMemory,
+            activeEventListeners: this.memoryStats.eventListeners.size,
+            activeTimers: this.memoryStats.timers.size,
+            activeObservers: this.memoryStats.observers.size,
+            activeLargeObjects: this.memoryStats.largeObjects.size,
+            memoryLeakCount: this.memoryStats.memoryLeaks.length,
+            lastGCAge: this.memoryStats.lastGCTime ? Date.now() - this.memoryStats.lastGCTime : null
+        };
+    }
+    
+    /**
+     * Clean up all tracked resources
+     */
+    cleanup() {
+        console.log('🧹 Cleaning up all tracked resources...');
+        
+        let cleaned = 0;
+        
+        // Clean up event listeners
+        for (const id of this.memoryStats.eventListeners.keys()) {
+            if (this.unregisterEventListener(id)) cleaned++;
+        }
+        
+        // Clean up timers
+        for (const id of this.memoryStats.timers.keys()) {
+            if (this.unregisterTimer(id)) cleaned++;
+        }
+        
+        // Clean up observers
+        for (const id of this.memoryStats.observers.keys()) {
+            if (this.unregisterObserver(id)) cleaned++;
+        }
+        
+        // Clear large objects
+        this.memoryStats.largeObjects.clear();
+        
+        console.log(`✅ Cleanup completed: ${cleaned} resources cleaned`);
+        
+        return cleaned;
+    }
+    
+    /**
+     * Utility methods
+     */
+    generateId() {
+        return `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    captureStack() {
+        try {
+            throw new Error();
+        } catch (e) {
+            return e.stack ? e.stack.split('\n').slice(2, 5) : [];
+        }
+    }
+    
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+}
+
+/**
+ * Navigation Performance Optimizer
+ * Implements lazy loading, caching, and DOM optimization for navigation
+ */
+class NavigationPerformanceOptimizer {
+    constructor(memoryManager = null) {
+        this.memoryManager = memoryManager;
+        this.viewCache = new Map();
+        this.contentCache = new Map();
+        this.lazyLoadQueue = new Map();
+        this.performanceMetrics = {
+            navigationTimes: [],
+            cacheHits: 0,
+            cacheMisses: 0,
+            lazyLoadsCompleted: 0,
+            domOptimizations: 0
+        };
+        
+        this.cacheConfig = {
+            maxCacheSize: 50,
+            maxCacheAge: 5 * 60 * 1000, // 5 minutes
+            preloadThreshold: 3 // Preload after 3 visits
+        };
+        
+        this.initializePerformanceOptimizations();
+        console.log('⚡ NavigationPerformanceOptimizer initialized');
+    }
+    
+    /**
+     * Initialize performance optimizations
+     */
+    initializePerformanceOptimizations() {
+        // Set up intersection observer for lazy loading
+        this.setupIntersectionObserver();
+        
+        // Set up cache cleanup interval
+        this.setupCacheCleanup();
+        
+        // Set up DOM optimization observer
+        this.setupDOMOptimization();
+        
+        console.log('✅ Performance optimizations initialized');
+    }
+    
+    /**
+     * Set up intersection observer for lazy loading
+     */
+    setupIntersectionObserver() {
+        if ('IntersectionObserver' in window) {
+            this.intersectionObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            this.handleLazyLoad(entry.target);
+                        }
+                    });
+                },
+                {
+                    rootMargin: '50px',
+                    threshold: 0.1
+                }
+            );
+            
+            if (this.memoryManager) {
+                this.memoryManager.registerObserver(
+                    this.intersectionObserver, 
+                    'intersection', 
+                    'nav_lazy_loader'
+                );
+            }
+        }
+    }
+    
+    /**
+     * Set up cache cleanup interval
+     */
+    setupCacheCleanup() {
+        const cleanupInterval = setInterval(() => {
+            this.cleanupExpiredCache();
+        }, 60000); // Clean every minute
+        
+        if (this.memoryManager) {
+            this.memoryManager.registerTimer(cleanupInterval, 'interval');
+        }
+    }
+    
+    /**
+     * Set up DOM optimization observer
+     */
+    setupDOMOptimization() {
+        if ('MutationObserver' in window) {
+            this.mutationObserver = new MutationObserver((mutations) => {
+                this.optimizeDOMChanges(mutations);
+            });
+            
+            if (this.memoryManager) {
+                this.memoryManager.registerObserver(
+                    this.mutationObserver,
+                    'mutation',
+                    'nav_dom_optimizer'
+                );
+            }
+        }
+    }
+    
+    /**
+     * Optimize navigation with lazy loading and caching
+     */
+    async optimizeNavigation(viewName, viewElement, options = {}) {
+        const startTime = performance.now();
+        
+        try {
+            // Check cache first
+            const cachedContent = this.getCachedContent(viewName);
+            if (cachedContent && !options.forceRefresh) {
+                console.log(`⚡ Cache hit for view: ${viewName}`);
+                this.performanceMetrics.cacheHits++;
+                
+                await this.applyCachedContent(viewElement, cachedContent);
+                
+                const duration = performance.now() - startTime;
+                this.recordNavigationTime(viewName, duration, 'cached');
+                
+                return { success: true, cached: true, duration };
+            }
+            
+            console.log(`⚡ Cache miss for view: ${viewName}, loading content`);
+            this.performanceMetrics.cacheMisses++;
+            
+            // Optimize DOM before loading
+            this.optimizeViewElement(viewElement);
+            
+            // Load content with lazy loading
+            const content = await this.loadViewContent(viewName, viewElement, options);
+            
+            // Cache the content
+            this.cacheContent(viewName, content);
+            
+            // Set up lazy loading for child elements
+            this.setupLazyLoadingForView(viewElement);
+            
+            const duration = performance.now() - startTime;
+            this.recordNavigationTime(viewName, duration, 'fresh');
+            
+            return { success: true, cached: false, duration };
+            
+        } catch (error) {
+            console.error(`❌ Navigation optimization failed for ${viewName}:`, error);
+            const duration = performance.now() - startTime;
+            this.recordNavigationTime(viewName, duration, 'error');
+            
+            return { success: false, error: error.message, duration };
+        }
+    }
+    
+    /**
+     * Get cached content for a view
+     */
+    getCachedContent(viewName) {
+        const cached = this.contentCache.get(viewName);
+        
+        if (!cached) return null;
+        
+        // Check if cache is expired
+        if (Date.now() - cached.timestamp > this.cacheConfig.maxCacheAge) {
+            this.contentCache.delete(viewName);
+            return null;
+        }
+        
+        // Update access time
+        cached.lastAccessed = Date.now();
+        cached.accessCount++;
+        
+        return cached.content;
+    }
+    
+    /**
+     * Cache content for a view
+     */
+    cacheContent(viewName, content) {
+        // Check cache size limit
+        if (this.contentCache.size >= this.cacheConfig.maxCacheSize) {
+            this.evictLeastRecentlyUsed();
+        }
+        
+        const cacheEntry = {
+            content: this.cloneContent(content),
+            timestamp: Date.now(),
+            lastAccessed: Date.now(),
+            accessCount: 1,
+            size: this.estimateContentSize(content)
+        };
+        
+        this.contentCache.set(viewName, cacheEntry);
+        
+        // Register with memory manager
+        if (this.memoryManager) {
+            this.memoryManager.registerAllocation(
+                'view_cache',
+                cacheEntry.size,
+                `cache_${viewName}`,
+                cacheEntry
+            );
+        }
+        
+        console.log(`💾 Cached content for view: ${viewName} (${this.formatBytes(cacheEntry.size)})`);
+    }
+    
+    /**
+     * Apply cached content to view element
+     */
+    async applyCachedContent(viewElement, content) {
+        // Use document fragment for efficient DOM manipulation
+        const fragment = document.createDocumentFragment();
+        
+        if (typeof content === 'string') {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            
+            while (tempDiv.firstChild) {
+                fragment.appendChild(tempDiv.firstChild);
+            }
+        } else if (content instanceof DocumentFragment) {
+            fragment.appendChild(content.cloneNode(true));
+        }
+        
+        // Clear and append in one operation
+        viewElement.innerHTML = '';
+        viewElement.appendChild(fragment);
+        
+        // Re-initialize any interactive elements
+        this.reinitializeInteractiveElements(viewElement);
+    }
+    
+    /**
+     * Load view content with optimization
+     */
+    async loadViewContent(viewName, viewElement, options) {
+        // Implement view-specific loading logic
+        switch (viewName) {
+            case 'dashboard':
+                return await this.loadDashboardContent(viewElement, options);
+            case 'live':
+                return await this.loadLiveContent(viewElement, options);
+            case 'predictions':
+                return await this.loadPredictionsContent(viewElement, options);
+            case 'fantasy':
+                return await this.loadFantasyContent(viewElement, options);
+            case 'betting':
+                return await this.loadBettingContent(viewElement, options);
+            case 'news':
+                return await this.loadNewsContent(viewElement, options);
+            default:
+                return await this.loadGenericContent(viewName, viewElement, options);
+        }
+    }
+    
+    /**
+     * Load dashboard content with lazy loading
+     */
+    async loadDashboardContent(viewElement, options) {
+        const content = document.createDocumentFragment();
+        
+        // Create skeleton structure first
+        const skeleton = this.createContentSkeleton('dashboard');
+        content.appendChild(skeleton);
+        
+        // Apply skeleton immediately
+        viewElement.appendChild(content);
+        
+        // Load actual content asynchronously
+        setTimeout(async () => {
+            try {
+                await this.loadDashboardData(viewElement);
+                this.removeSkeleton(viewElement);
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                this.showLoadingError(viewElement, 'dashboard');
+            }
+        }, 0);
+        
+        return content;
+    }
+    
+    /**
+     * Create content skeleton for loading states
+     */
+    createContentSkeleton(viewType) {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'content-skeleton';
+        skeleton.innerHTML = `
+            <div class="skeleton-header"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+            </div>
+        `;
+        
+        // Add skeleton styles if not already present
+        this.addSkeletonStyles();
+        
+        return skeleton;
+    }
+    
+    /**
+     * Add skeleton loading styles
+     */
+    addSkeletonStyles() {
+        if (document.getElementById('skeleton-styles')) return;
+        
+        const styles = document.createElement('style');
+        styles.id = 'skeleton-styles';
+        styles.textContent = `
+            .content-skeleton {
+                animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+            }
+            
+            .skeleton-header {
+                height: 40px;
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                margin-bottom: 20px;
+                border-radius: 4px;
+            }
+            
+            .skeleton-content {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .skeleton-item {
+                height: 60px;
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                border-radius: 4px;
+            }
+            
+            @keyframes skeleton-pulse {
+                0% { opacity: 1; }
+                100% { opacity: 0.7; }
+            }
+        `;
+        
+        document.head.appendChild(styles);
+    }
+    
+    /**
+     * Set up lazy loading for view elements
+     */
+    setupLazyLoadingForView(viewElement) {
+        if (!this.intersectionObserver) return;
+        
+        // Find elements that can be lazy loaded
+        const lazyElements = viewElement.querySelectorAll('[data-lazy-load]');
+        
+        lazyElements.forEach(element => {
+            this.intersectionObserver.observe(element);
+            this.lazyLoadQueue.set(element, {
+                viewName: viewElement.id,
+                loadType: element.dataset.lazyLoad,
+                timestamp: Date.now()
+            });
+        });
+    }
+    
+    /**
+     * Handle lazy loading of elements
+     */
+    async handleLazyLoad(element) {
+        const lazyInfo = this.lazyLoadQueue.get(element);
+        if (!lazyInfo) return;
+        
+        try {
+            console.log(`⚡ Lazy loading: ${lazyInfo.loadType}`);
+            
+            switch (lazyInfo.loadType) {
+                case 'chart':
+                    await this.lazyLoadChart(element);
+                    break;
+                case 'data-table':
+                    await this.lazyLoadDataTable(element);
+                    break;
+                case 'image':
+                    await this.lazyLoadImage(element);
+                    break;
+                default:
+                    await this.lazyLoadGeneric(element);
+            }
+            
+            this.performanceMetrics.lazyLoadsCompleted++;
+            this.intersectionObserver.unobserve(element);
+            this.lazyLoadQueue.delete(element);
+            
+        } catch (error) {
+            console.error(`❌ Lazy load failed for ${lazyInfo.loadType}:`, error);
+        }
+    }
+    
+    /**
+     * Optimize view element before content loading
+     */
+    optimizeViewElement(viewElement) {
+        // Use document fragment for batch DOM operations
+        const fragment = document.createDocumentFragment();
+        
+        // Move children to fragment temporarily
+        while (viewElement.firstChild) {
+            fragment.appendChild(viewElement.firstChild);
+        }
+        
+        // Clear the element
+        viewElement.innerHTML = '';
+        
+        // Add optimized structure
+        const optimizedContainer = document.createElement('div');
+        optimizedContainer.className = 'optimized-view-container';
+        optimizedContainer.appendChild(fragment);
+        
+        viewElement.appendChild(optimizedContainer);
+        
+        this.performanceMetrics.domOptimizations++;
+    }
+    
+    /**
+     * Optimize DOM changes during mutations
+     */
+    optimizeDOMChanges(mutations) {
+        const batchedChanges = new Map();
+        
+        mutations.forEach(mutation => {
+            if (mutation.type === 'childList') {
+                const target = mutation.target;
+                if (!batchedChanges.has(target)) {
+                    batchedChanges.set(target, []);
+                }
+                batchedChanges.get(target).push(mutation);
+            }
+        });
+        
+        // Process batched changes
+        batchedChanges.forEach((changes, target) => {
+            this.processBatchedDOMChanges(target, changes);
+        });
+    }
+    
+    /**
+     * Process batched DOM changes
+     */
+    processBatchedDOMChanges(target, changes) {
+        // Implement batched DOM optimization logic
+        if (changes.length > 5) {
+            console.log(`⚡ Optimizing ${changes.length} DOM changes for element`);
+            this.performanceMetrics.domOptimizations++;
+        }
+    }
+    
+    /**
+     * Clean up expired cache entries
+     */
+    cleanupExpiredCache() {
+        const now = Date.now();
+        let cleaned = 0;
+        
+        for (const [viewName, cacheEntry] of this.contentCache) {
+            if (now - cacheEntry.timestamp > this.cacheConfig.maxCacheAge) {
+                this.contentCache.delete(viewName);
+                
+                if (this.memoryManager) {
+                    this.memoryManager.registerDeallocation(`cache_${viewName}`);
+                }
+                
+                cleaned++;
+            }
+        }
+        
+        if (cleaned > 0) {
+            console.log(`🧹 Cleaned ${cleaned} expired cache entries`);
+        }
+    }
+    
+    /**
+     * Evict least recently used cache entry
+     */
+    evictLeastRecentlyUsed() {
+        let oldestEntry = null;
+        let oldestTime = Date.now();
+        
+        for (const [viewName, cacheEntry] of this.contentCache) {
+            if (cacheEntry.lastAccessed < oldestTime) {
+                oldestTime = cacheEntry.lastAccessed;
+                oldestEntry = viewName;
+            }
+        }
+        
+        if (oldestEntry) {
+            this.contentCache.delete(oldestEntry);
+            
+            if (this.memoryManager) {
+                this.memoryManager.registerDeallocation(`cache_${oldestEntry}`);
+            }
+            
+            console.log(`🧹 Evicted LRU cache entry: ${oldestEntry}`);
+        }
+    }
+    
+    /**
+     * Record navigation timing
+     */
+    recordNavigationTime(viewName, duration, type) {
+        const timing = {
+            viewName,
+            duration,
+            type,
+            timestamp: Date.now()
+        };
+        
+        this.performanceMetrics.navigationTimes.push(timing);
+        
+        // Keep only last 100 timings
+        if (this.performanceMetrics.navigationTimes.length > 100) {
+            this.performanceMetrics.navigationTimes.shift();
+        }
+        
+        console.log(`⚡ Navigation timing: ${viewName} (${type}) - ${duration.toFixed(2)}ms`);
+    }
+    
+    /**
+     * Get performance statistics
+     */
+    getPerformanceStats() {
+        const timings = this.performanceMetrics.navigationTimes;
+        const avgTime = timings.length > 0 
+            ? timings.reduce((sum, t) => sum + t.duration, 0) / timings.length 
+            : 0;
+        
+        const cacheHitRate = this.performanceMetrics.cacheHits + this.performanceMetrics.cacheMisses > 0
+            ? (this.performanceMetrics.cacheHits / (this.performanceMetrics.cacheHits + this.performanceMetrics.cacheMisses)) * 100
+            : 0;
+        
+        return {
+            ...this.performanceMetrics,
+            averageNavigationTime: avgTime,
+            cacheHitRate,
+            cacheSize: this.contentCache.size,
+            lazyLoadQueueSize: this.lazyLoadQueue.size
+        };
+    }
+    
+    /**
+     * Utility methods
+     */
+    cloneContent(content) {
+        if (typeof content === 'string') {
+            return content;
+        } else if (content instanceof DocumentFragment) {
+            return content.cloneNode(true);
+        } else if (content instanceof Element) {
+            return content.cloneNode(true);
+        }
+        return content;
+    }
+    
+    estimateContentSize(content) {
+        if (typeof content === 'string') {
+            return content.length * 2; // Rough estimate for UTF-16
+        } else if (content instanceof DocumentFragment || content instanceof Element) {
+            return content.innerHTML ? content.innerHTML.length * 2 : 1024;
+        }
+        return 1024; // Default estimate
+    }
+    
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Placeholder methods for specific content loading
+    async loadDashboardData(viewElement) {
+        // Implementation would load actual dashboard data
+        console.log('Loading dashboard data...');
+    }
+    
+    async loadLiveContent(viewElement, options) {
+        return this.createContentSkeleton('live');
+    }
+    
+    async loadPredictionsContent(viewElement, options) {
+        return this.createContentSkeleton('predictions');
+    }
+    
+    async loadFantasyContent(viewElement, options) {
+        return this.createContentSkeleton('fantasy');
+    }
+    
+    async loadBettingContent(viewElement, options) {
+        return this.createContentSkeleton('betting');
+    }
+    
+    async loadNewsContent(viewElement, options) {
+        return this.createContentSkeleton('news');
+    }
+    
+    async loadGenericContent(viewName, viewElement, options) {
+        return this.createContentSkeleton('generic');
+    }
+    
+    async lazyLoadChart(element) {
+        console.log('Lazy loading chart...');
+        element.innerHTML = '<div>Chart loaded!</div>';
+    }
+    
+    async lazyLoadDataTable(element) {
+        console.log('Lazy loading data table...');
+        element.innerHTML = '<div>Data table loaded!</div>';
+    }
+    
+    async lazyLoadImage(element) {
+        console.log('Lazy loading image...');
+        if (element.dataset.src) {
+            element.src = element.dataset.src;
+        }
+    }
+    
+    async lazyLoadGeneric(element) {
+        console.log('Lazy loading generic content...');
+        element.innerHTML = '<div>Content loaded!</div>';
+    }
+    
+    removeSkeleton(viewElement) {
+        const skeleton = viewElement.querySelector('.content-skeleton');
+        if (skeleton) {
+            skeleton.remove();
+        }
+    }
+    
+    showLoadingError(viewElement, viewType) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'loading-error';
+        errorDiv.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #666;">
+                <p>Failed to load ${viewType} content</p>
+                <button onclick="location.reload()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Retry
+                </button>
+            </div>
+        `;
+        
+        viewElement.innerHTML = '';
+        viewElement.appendChild(errorDiv);
+    }
+    
+    reinitializeInteractiveElements(viewElement) {
+        // Re-initialize any interactive elements that need event listeners
+        const buttons = viewElement.querySelectorAll('button[onclick]');
+        buttons.forEach(button => {
+            // Re-evaluate onclick attributes if needed
+            if (button.onclick && typeof button.onclick === 'string') {
+                button.onclick = new Function(button.onclick);
+            }
+        });
+    }
+}
+
+/**
+ * Performance Monitor
+ * Comprehensive performance monitoring with metrics, alerts, and dashboards
+ */
+class PerformanceMonitor {
+    constructor(memoryManager = null) {
+        this.memoryManager = memoryManager;
+        this.metrics = {
+            navigation: {
+                totalNavigations: 0,
+                successfulNavigations: 0,
+                failedNavigations: 0,
+                averageTime: 0,
+                timings: [],
+                slowNavigations: []
+            },
+            memory: {
+                peakUsage: 0,
+                currentUsage: 0,
+                gcEvents: 0,
+                leakDetections: 0,
+                samples: []
+            },
+            api: {
+                totalRequests: 0,
+                successfulRequests: 0,
+                failedRequests: 0,
+                averageResponseTime: 0,
+                timeouts: 0,
+                responses: []
+            },
+            charts: {
+                totalCreated: 0,
+                totalDestroyed: 0,
+                creationFailures: 0,
+                averageCreationTime: 0,
+                activeCharts: 0
+            },
+            errors: {
+                totalErrors: 0,
+                errorsByType: new Map(),
+                criticalErrors: 0,
+                recoveredErrors: 0
+            }
+        };
+        
+        this.thresholds = {
+            slowNavigationMs: 1000,
+            highMemoryMB: 100,
+            slowApiMs: 5000,
+            maxErrorRate: 0.1
+        };
+        
+        this.alerts = [];
+        this.isMonitoring = false;
+        this.monitoringInterval = null;
+        
+        this.initializePerformanceMonitoring();
+        console.log('📊 PerformanceMonitor initialized with comprehensive tracking');
+    }
+    
+    /**
+     * Initialize performance monitoring
+     */
+    initializePerformanceMonitoring() {
+        // Set up performance observers
+        this.setupPerformanceObservers();
+        
+        // Start monitoring intervals
+        this.startMonitoring();
+        
+        // Set up error tracking
+        this.setupErrorTracking();
+        
+        // Create performance dashboard
+        this.createPerformanceDashboard();
+        
+        console.log('✅ Performance monitoring initialized');
+    }
+    
+    /**
+     * Set up performance observers
+     */
+    setupPerformanceObservers() {
+        // Navigation timing observer
+        if ('PerformanceObserver' in window) {
+            try {
+                this.navigationObserver = new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        this.recordNavigationTiming(entry);
+                    }
+                });
+                
+                this.navigationObserver.observe({ entryTypes: ['navigation'] });
+                
+                // Resource timing observer
+                this.resourceObserver = new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        this.recordResourceTiming(entry);
+                    }
+                });
+                
+                this.resourceObserver.observe({ entryTypes: ['resource'] });
+                
+                // Register observers with memory manager
+                if (this.memoryManager) {
+                    this.memoryManager.registerObserver(this.navigationObserver, 'performance', 'nav_observer');
+                    this.memoryManager.registerObserver(this.resourceObserver, 'performance', 'resource_observer');
+                }
+                
+            } catch (error) {
+                console.warn('Performance observers not fully supported:', error);
+            }
+        }
+    }
+    
+    /**
+     * Start monitoring intervals
+     */
+    startMonitoring() {
+        if (this.isMonitoring) return;
+        
+        this.isMonitoring = true;
+        
+        // Main monitoring interval
+        this.monitoringInterval = setInterval(() => {
+            this.collectMetrics();
+            this.checkThresholds();
+            this.cleanupOldData();
+        }, 5000); // Every 5 seconds
+        
+        // Memory sampling interval
+        const memoryInterval = setInterval(() => {
+            this.sampleMemoryUsage();
+        }, 1000); // Every second
+        
+        // Register intervals with memory manager
+        if (this.memoryManager) {
+            this.memoryManager.registerTimer(this.monitoringInterval, 'interval');
+            this.memoryManager.registerTimer(memoryInterval, 'interval');
+        }
+        
+        console.log('📊 Performance monitoring started');
+    }
+    
+    /**
+     * Stop monitoring
+     */
+    stopMonitoring() {
+        if (!this.isMonitoring) return;
+        
+        this.isMonitoring = false;
+        
+        if (this.monitoringInterval) {
+            clearInterval(this.monitoringInterval);
+            this.monitoringInterval = null;
+        }
+        
+        if (this.navigationObserver) {
+            this.navigationObserver.disconnect();
+        }
+        
+        if (this.resourceObserver) {
+            this.resourceObserver.disconnect();
+        }
+        
+        console.log('📊 Performance monitoring stopped');
+    }
+    
+    /**
+     * Set up error tracking
+     */
+    setupErrorTracking() {
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            this.recordError('javascript_error', event.error, {
+                filename: event.filename,
+                lineno: event.lineno,
+                colno: event.colno
+            });
+        });
+        
+        // Unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', (event) => {
+            this.recordError('unhandled_promise_rejection', event.reason, {
+                promise: event.promise
+            });
+        });
+        
+        // Register error handlers with memory manager
+        if (this.memoryManager) {
+            const errorHandlerId = this.memoryManager.registerEventListener(
+                window, 
+                'error', 
+                this.recordError.bind(this)
+            );
+            
+            const rejectionHandlerId = this.memoryManager.registerEventListener(
+                window, 
+                'unhandledrejection', 
+                this.recordError.bind(this)
+            );
+        }
+    }
+    
+    /**
+     * Record navigation timing
+     */
+    recordNavigationTiming(entry) {
+        const timing = {
+            name: entry.name,
+            duration: entry.duration,
+            startTime: entry.startTime,
+            type: entry.type || 'navigation',
+            timestamp: Date.now()
+        };
+        
+        this.metrics.navigation.timings.push(timing);
+        this.metrics.navigation.totalNavigations++;
+        
+        if (entry.duration > this.thresholds.slowNavigationMs) {
+            this.metrics.navigation.slowNavigations.push(timing);
+            this.createAlert('slow_navigation', `Slow navigation detected: ${entry.duration.toFixed(2)}ms`);
+        }
+        
+        // Update average
+        this.updateNavigationAverage();
+        
+        console.log(`📊 Navigation timing recorded: ${entry.name} (${entry.duration.toFixed(2)}ms)`);
+    }
+    
+    /**
+     * Record resource timing
+     */
+    recordResourceTiming(entry) {
+        if (entry.name.includes('api') || entry.name.includes('data')) {
+            const apiTiming = {
+                url: entry.name,
+                duration: entry.duration,
+                responseStart: entry.responseStart,
+                responseEnd: entry.responseEnd,
+                timestamp: Date.now()
+            };
+            
+            this.metrics.api.responses.push(apiTiming);
+            this.metrics.api.totalRequests++;
+            
+            if (entry.duration > this.thresholds.slowApiMs) {
+                this.createAlert('slow_api', `Slow API response: ${entry.name} (${entry.duration.toFixed(2)}ms)`);
+            }
+            
+            // Update API average
+            this.updateApiAverage();
+        }
+    }
+    
+    /**
+     * Record custom navigation timing
+     */
+    recordCustomNavigation(viewName, duration, success = true) {
+        const timing = {
+            viewName,
+            duration,
+            success,
+            timestamp: Date.now()
+        };
+        
+        this.metrics.navigation.timings.push(timing);
+        this.metrics.navigation.totalNavigations++;
+        
+        if (success) {
+            this.metrics.navigation.successfulNavigations++;
+        } else {
+            this.metrics.navigation.failedNavigations++;
+        }
+        
+        if (duration > this.thresholds.slowNavigationMs) {
+            this.metrics.navigation.slowNavigations.push(timing);
+            this.createAlert('slow_navigation', `Slow navigation to ${viewName}: ${duration.toFixed(2)}ms`);
+        }
+        
+        this.updateNavigationAverage();
+        
+        console.log(`📊 Custom navigation recorded: ${viewName} (${duration.toFixed(2)}ms, success: ${success})`);
+    }
+    
+    /**
+     * Record API call timing
+     */
+    recordApiCall(url, duration, success = true) {
+        const apiCall = {
+            url,
+            duration,
+            success,
+            timestamp: Date.now()
+        };
+        
+        this.metrics.api.responses.push(apiCall);
+        this.metrics.api.totalRequests++;
+        
+        if (success) {
+            this.metrics.api.successfulRequests++;
+        } else {
+            this.metrics.api.failedRequests++;
+        }
+        
+        if (duration > this.thresholds.slowApiMs) {
+            this.createAlert('slow_api', `Slow API call: ${url} (${duration.toFixed(2)}ms)`);
+        }
+        
+        this.updateApiAverage();
+        
+        console.log(`📊 API call recorded: ${url} (${duration.toFixed(2)}ms, success: ${success})`);
+    }
+    
+    /**
+     * Record chart operation timing
+     */
+    recordChartOperation(operation, canvasId, duration, success = true) {
+        const chartOp = {
+            operation,
+            canvasId,
+            duration,
+            success,
+            timestamp: Date.now()
+        };
+        
+        if (operation === 'create') {
+            this.metrics.charts.totalCreated++;
+            if (!success) {
+                this.metrics.charts.creationFailures++;
+            }
+        } else if (operation === 'destroy') {
+            this.metrics.charts.totalDestroyed++;
+        }
+        
+        // Update chart creation average
+        if (operation === 'create' && success) {
+            this.updateChartAverage(duration);
+        }
+        
+        console.log(`📊 Chart operation recorded: ${operation} on ${canvasId} (${duration.toFixed(2)}ms, success: ${success})`);
+    }
+    
+    /**
+     * Record error
+     */
+    recordError(type, error, context = {}) {
+        const errorRecord = {
+            type,
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : null,
+            context,
+            timestamp: Date.now()
+        };
+        
+        this.metrics.errors.totalErrors++;
+        
+        // Count by type
+        const currentCount = this.metrics.errors.errorsByType.get(type) || 0;
+        this.metrics.errors.errorsByType.set(type, currentCount + 1);
+        
+        // Check if critical
+        const criticalTypes = ['javascript_error', 'unhandled_promise_rejection', 'navigation_failure'];
+        if (criticalTypes.includes(type)) {
+            this.metrics.errors.criticalErrors++;
+            this.createAlert('critical_error', `Critical error: ${type} - ${errorRecord.message}`);
+        }
+        
+        console.error(`📊 Error recorded: ${type}`, errorRecord);
+    }
+    
+    /**
+     * Sample memory usage
+     */
+    sampleMemoryUsage() {
+        let memoryUsage = 0;
+        
+        // Browser memory if available
+        if ('memory' in performance) {
+            memoryUsage = performance.memory.usedJSHeapSize / (1024 * 1024); // MB
+        }
+        
+        // Memory manager stats if available
+        let managerStats = null;
+        if (this.memoryManager) {
+            managerStats = this.memoryManager.getMemoryStats();
+        }
+        
+        const sample = {
+            browserMemoryMB: memoryUsage,
+            managerStats,
+            timestamp: Date.now()
+        };
+        
+        this.metrics.memory.samples.push(sample);
+        this.metrics.memory.currentUsage = memoryUsage;
+        
+        if (memoryUsage > this.metrics.memory.peakUsage) {
+            this.metrics.memory.peakUsage = memoryUsage;
+        }
+        
+        if (memoryUsage > this.thresholds.highMemoryMB) {
+            this.createAlert('high_memory', `High memory usage: ${memoryUsage.toFixed(2)}MB`);
+        }
+        
+        // Keep only last 100 samples
+        if (this.metrics.memory.samples.length > 100) {
+            this.metrics.memory.samples.shift();
+        }
+    }
+    
+    /**
+     * Collect comprehensive metrics
+     */
+    collectMetrics() {
+        // Update chart metrics from chart manager if available
+        if (window.chartManager) {
+            const chartStats = window.chartManager.getMemoryUsage();
+            this.metrics.charts.activeCharts = chartStats.activeCharts;
+            this.metrics.charts.totalCreated = chartStats.totalChartsCreated;
+            this.metrics.charts.totalDestroyed = chartStats.totalChartsDestroyed;
+        }
+        
+        // Update memory metrics from memory manager
+        if (this.memoryManager) {
+            const memStats = this.memoryManager.getMemoryStats();
+            this.metrics.memory.gcEvents = memStats.gcCount;
+            this.metrics.memory.leakDetections = memStats.memoryLeakCount;
+        }
+        
+        // Calculate error rates
+        this.calculateErrorRates();
+    }
+    
+    /**
+     * Check performance thresholds and create alerts
+     */
+    checkThresholds() {
+        // Check error rate
+        const errorRate = this.getErrorRate();
+        if (errorRate > this.thresholds.maxErrorRate) {
+            this.createAlert('high_error_rate', `High error rate: ${(errorRate * 100).toFixed(2)}%`);
+        }
+        
+        // Check navigation success rate
+        const navSuccessRate = this.getNavigationSuccessRate();
+        if (navSuccessRate < 0.9) { // Less than 90% success
+            this.createAlert('low_nav_success', `Low navigation success rate: ${(navSuccessRate * 100).toFixed(2)}%`);
+        }
+        
+        // Check API success rate
+        const apiSuccessRate = this.getApiSuccessRate();
+        if (apiSuccessRate < 0.9) { // Less than 90% success
+            this.createAlert('low_api_success', `Low API success rate: ${(apiSuccessRate * 100).toFixed(2)}%`);
+        }
+    }
+    
+    /**
+     * Create performance alert
+     */
+    createAlert(type, message, severity = 'warning') {
+        const alert = {
+            id: this.generateId(),
+            type,
+            message,
+            severity,
+            timestamp: Date.now(),
+            acknowledged: false
+        };
+        
+        this.alerts.push(alert);
+        
+        // Keep only last 50 alerts
+        if (this.alerts.length > 50) {
+            this.alerts.shift();
+        }
+        
+        console.warn(`🚨 Performance Alert [${severity}]: ${message}`);
+        
+        // Show user notification for critical alerts
+        if (severity === 'critical' && window.errorRecoveryManager) {
+            window.errorRecoveryManager.showUserNotification(
+                type,
+                message,
+                'high'
+            );
+        }
+        
+        return alert.id;
+    }
+    
+    /**
+     * Create performance dashboard
+     */
+    createPerformanceDashboard() {
+        // Add dashboard styles
+        this.addDashboardStyles();
+        
+        // Create dashboard container
+        const dashboard = document.createElement('div');
+        dashboard.id = 'performance-dashboard';
+        dashboard.className = 'performance-dashboard hidden';
+        dashboard.innerHTML = this.getDashboardHTML();
+        
+        document.body.appendChild(dashboard);
+        
+        // Add global function to toggle dashboard
+        window.showPerformanceDashboard = () => {
+            this.toggleDashboard();
+        };
+        
+        // Update dashboard periodically
+        setInterval(() => {
+            this.updateDashboard();
+        }, 2000);
+        
+        console.log('📊 Performance dashboard created');
+    }
+    
+    /**
+     * Get dashboard HTML
+     */
+    getDashboardHTML() {
+        return `
+            <div class="dashboard-header">
+                <h3>Performance Monitor</h3>
+                <button onclick="window.showPerformanceDashboard()" class="close-btn">&times;</button>
+            </div>
+            <div class="dashboard-content">
+                <div class="metric-section">
+                    <h4>Navigation</h4>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-label">Total</span>
+                            <span class="metric-value" id="nav-total">0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Success Rate</span>
+                            <span class="metric-value" id="nav-success">0%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg Time</span>
+                            <span class="metric-value" id="nav-avg">0ms</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-section">
+                    <h4>Memory</h4>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value" id="mem-current">0MB</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value" id="mem-peak">0MB</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">GC Events</span>
+                            <span class="metric-value" id="mem-gc">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-section">
+                    <h4>API</h4>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-label">Total</span>
+                            <span class="metric-value" id="api-total">0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Success Rate</span>
+                            <span class="metric-value" id="api-success">0%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg Time</span>
+                            <span class="metric-value" id="api-avg">0ms</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-section">
+                    <h4>Charts</h4>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-label">Active</span>
+                            <span class="metric-value" id="chart-active">0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Created</span>
+                            <span class="metric-value" id="chart-created">0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Failures</span>
+                            <span class="metric-value" id="chart-failures">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-section">
+                    <h4>Recent Alerts</h4>
+                    <div id="recent-alerts" class="alerts-list">
+                        <div class="no-alerts">No recent alerts</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Add dashboard styles
+     */
+    addDashboardStyles() {
+        if (document.getElementById('performance-dashboard-styles')) return;
+        
+        const styles = document.createElement('style');
+        styles.id = 'performance-dashboard-styles';
+        styles.textContent = `
+            .performance-dashboard {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: 400px;
+                max-height: 80vh;
+                background: rgba(0, 0, 0, 0.95);
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                z-index: 10001;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-size: 14px;
+                overflow: hidden;
+                transition: transform 0.3s ease;
+            }
+            
+            .performance-dashboard.hidden {
+                transform: translateX(100%);
+            }
+            
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 20px;
+                background: rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .dashboard-header h3 {
+                margin: 0;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            
+            .close-btn {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                padding: 0;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .dashboard-content {
+                padding: 20px;
+                max-height: calc(80vh - 60px);
+                overflow-y: auto;
+            }
+            
+            .metric-section {
+                margin-bottom: 20px;
+            }
+            
+            .metric-section h4 {
+                margin: 0 0 10px 0;
+                font-size: 14px;
+                font-weight: 600;
+                color: #4CAF50;
+            }
+            
+            .metrics-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .metric {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 4px;
+            }
+            
+            .metric-label {
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .metric-value {
+                font-size: 16px;
+                font-weight: 600;
+                color: #4CAF50;
+            }
+            
+            .alerts-list {
+                max-height: 150px;
+                overflow-y: auto;
+            }
+            
+            .alert-item {
+                padding: 8px 12px;
+                margin-bottom: 8px;
+                background: rgba(255, 152, 0, 0.1);
+                border-left: 3px solid #FF9800;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            
+            .alert-item.critical {
+                background: rgba(244, 67, 54, 0.1);
+                border-left-color: #F44336;
+            }
+            
+            .no-alerts {
+                text-align: center;
+                opacity: 0.6;
+                font-style: italic;
+                padding: 20px;
+            }
+        `;
+        
+        document.head.appendChild(styles);
+    }
+    
+    /**
+     * Toggle dashboard visibility
+     */
+    toggleDashboard() {
+        const dashboard = document.getElementById('performance-dashboard');
+        if (dashboard) {
+            dashboard.classList.toggle('hidden');
+        }
+    }
+    
+    /**
+     * Update dashboard with current metrics
+     */
+    updateDashboard() {
+        // Navigation metrics
+        this.updateElement('nav-total', this.metrics.navigation.totalNavigations);
+        this.updateElement('nav-success', `${(this.getNavigationSuccessRate() * 100).toFixed(1)}%`);
+        this.updateElement('nav-avg', `${this.metrics.navigation.averageTime.toFixed(0)}ms`);
+        
+        // Memory metrics
+        this.updateElement('mem-current', `${this.metrics.memory.currentUsage.toFixed(1)}MB`);
+        this.updateElement('mem-peak', `${this.metrics.memory.peakUsage.toFixed(1)}MB`);
+        this.updateElement('mem-gc', this.metrics.memory.gcEvents);
+        
+        // API metrics
+        this.updateElement('api-total', this.metrics.api.totalRequests);
+        this.updateElement('api-success', `${(this.getApiSuccessRate() * 100).toFixed(1)}%`);
+        this.updateElement('api-avg', `${this.metrics.api.averageResponseTime.toFixed(0)}ms`);
+        
+        // Chart metrics
+        this.updateElement('chart-active', this.metrics.charts.activeCharts);
+        this.updateElement('chart-created', this.metrics.charts.totalCreated);
+        this.updateElement('chart-failures', this.metrics.charts.creationFailures);
+        
+        // Update alerts
+        this.updateAlertsList();
+    }
+    
+    /**
+     * Update element text content
+     */
+    updateElement(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    }
+    
+    /**
+     * Update alerts list
+     */
+    updateAlertsList() {
+        const alertsList = document.getElementById('recent-alerts');
+        if (!alertsList) return;
+        
+        const recentAlerts = this.alerts.slice(-5).reverse();
+        
+        if (recentAlerts.length === 0) {
+            alertsList.innerHTML = '<div class="no-alerts">No recent alerts</div>';
+            return;
+        }
+        
+        alertsList.innerHTML = recentAlerts.map(alert => `
+            <div class="alert-item ${alert.severity}">
+                <div>${alert.message}</div>
+                <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">
+                    ${new Date(alert.timestamp).toLocaleTimeString()}
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    /**
+     * Utility methods for calculations
+     */
+    updateNavigationAverage() {
+        const timings = this.metrics.navigation.timings;
+        if (timings.length > 0) {
+            const total = timings.reduce((sum, t) => sum + t.duration, 0);
+            this.metrics.navigation.averageTime = total / timings.length;
+        }
+    }
+    
+    updateApiAverage() {
+        const responses = this.metrics.api.responses;
+        if (responses.length > 0) {
+            const total = responses.reduce((sum, r) => sum + r.duration, 0);
+            this.metrics.api.averageResponseTime = total / responses.length;
+        }
+    }
+    
+    updateChartAverage(duration) {
+        // Simple running average for chart creation time
+        const currentAvg = this.metrics.charts.averageCreationTime;
+        const count = this.metrics.charts.totalCreated;
+        this.metrics.charts.averageCreationTime = ((currentAvg * (count - 1)) + duration) / count;
+    }
+    
+    getNavigationSuccessRate() {
+        const total = this.metrics.navigation.totalNavigations;
+        return total > 0 ? this.metrics.navigation.successfulNavigations / total : 1;
+    }
+    
+    getApiSuccessRate() {
+        const total = this.metrics.api.totalRequests;
+        return total > 0 ? this.metrics.api.successfulRequests / total : 1;
+    }
+    
+    getErrorRate() {
+        const totalOperations = this.metrics.navigation.totalNavigations + this.metrics.api.totalRequests;
+        return totalOperations > 0 ? this.metrics.errors.totalErrors / totalOperations : 0;
+    }
+    
+    calculateErrorRates() {
+        // Calculate error rates by type
+        const totalErrors = this.metrics.errors.totalErrors;
+        if (totalErrors > 0) {
+            for (const [type, count] of this.metrics.errors.errorsByType) {
+                const rate = count / totalErrors;
+                // Store rates for analysis if needed
+            }
+        }
+    }
+    
+    cleanupOldData() {
+        const maxAge = 10 * 60 * 1000; // 10 minutes
+        const now = Date.now();
+        
+        // Clean old navigation timings
+        this.metrics.navigation.timings = this.metrics.navigation.timings.filter(
+            t => now - t.timestamp < maxAge
+        );
+        
+        // Clean old API responses
+        this.metrics.api.responses = this.metrics.api.responses.filter(
+            r => now - r.timestamp < maxAge
+        );
+        
+        // Clean old alerts
+        this.alerts = this.alerts.filter(
+            a => now - a.timestamp < maxAge
+        );
+    }
+    
+    /**
+     * Get comprehensive performance report
+     */
+    getPerformanceReport() {
+        return {
+            timestamp: Date.now(),
+            metrics: { ...this.metrics },
+            alerts: [...this.alerts],
+            thresholds: { ...this.thresholds },
+            rates: {
+                navigationSuccess: this.getNavigationSuccessRate(),
+                apiSuccess: this.getApiSuccessRate(),
+                errorRate: this.getErrorRate()
+            }
+        };
+    }
+    
+    /**
+     * Generate unique ID
+     */
+    generateId() {
+        return `perf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+}
+
+/**
+ * Chart Lifecycle Manager
+ * Handles chart instance registry, creation, destruction, and memory management
+ * Prevents "Canvas is already in use" errors by properly managing chart instances
+ */
+class ChartManager {
+    constructor(errorRecoveryManager = null, memoryManager = null) {
+        this.chartInstances = new Map();
+        this.canvasRegistry = new Map();
+        this.chartCreationLog = [];
+        this.errorRecoveryManager = errorRecoveryManager;
+        this.memoryManager = memoryManager;
+        this.memoryUsage = {
+            totalChartsCreated: 0,
+            totalChartsDestroyed: 0,
+            activeCharts: 0,
+            peakActiveCharts: 0
+        };
+        
+        console.log('📊 ChartManager initialized with enhanced memory tracking and error recovery');
+    }
+    
+    /**
+     * Creates a chart with conflict detection and proper cleanup
+     * @param {string} canvasId - The canvas element ID
+     * @param {Object} config - Chart.js configuration object
+     * @param {Object} options - Additional options for chart creation
+     * @returns {Object|null} - Chart instance or null if creation failed
+     */
+    createChart(canvasId, config, options = {}) {
+        console.log(`📊 Creating chart for canvas: ${canvasId}`);
+        
+        const startTime = performance.now();
+        
+        try {
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.warn('📊 Chart.js not available - cannot create chart');
+                
+                // Use error recovery manager for missing Chart.js
+                if (this.errorRecoveryManager) {
+                    this.errorRecoveryManager.handleError(
+                        'CHART_JS_MISSING',
+                        'Chart.js library not loaded',
+                        {
+                            canvasId,
+                            config,
+                            options
+                        }
+                    ).catch(recoveryError => {
+                        console.error('Chart.js missing recovery failed:', recoveryError);
+                    });
+                }
+                
+                return null;
+            }
+            
+            // Get canvas element
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.warn(`📊 Canvas element not found: ${canvasId}`);
+                return null;
+            }
+            
+            // Check for existing chart on this canvas
+            if (this.isChartActive(canvasId)) {
+                console.log(`📊 Existing chart found on canvas ${canvasId}, destroying first`);
+                
+                try {
+                    this.destroyChart(canvasId);
+                } catch (destroyError) {
+                    console.error(`❌ Failed to destroy existing chart on ${canvasId}:`, destroyError);
+                    
+                    // Use error recovery manager for canvas conflicts
+                    if (this.errorRecoveryManager) {
+                        await this.errorRecoveryManager.handleError(
+                            'CHART_CANVAS_CONFLICT',
+                            destroyError,
+                            {
+                                canvasId,
+                                existingChart: this.chartInstances.get(canvasId),
+                                config,
+                                options
+                            }
+                        );
+                    }
+                    
+                    // Continue with creation attempt after recovery
+                }
+            }
+            
+            // Clear canvas context to prevent conflicts
+            this.clearCanvasContext(canvas);
+            
+            // Create new chart instance
+            const chartInstance = new Chart(canvas, config);
+            
+            // Register the chart instance
+            this.registerChart(canvasId, chartInstance, options);
+            
+            // Register with memory manager if available
+            if (this.memoryManager) {
+                const chartSize = this.estimateChartMemorySize(config);
+                this.memoryManager.registerAllocation('chart', chartSize, `chart_${canvasId}`, chartInstance);
+            }
+            
+            // Update memory usage tracking
+            this.memoryUsage.totalChartsCreated++;
+            this.memoryUsage.activeCharts++;
+            if (this.memoryUsage.activeCharts > this.memoryUsage.peakActiveCharts) {
+                this.memoryUsage.peakActiveCharts = this.memoryUsage.activeCharts;
+            }
+            
+            console.log(`✅ Chart created successfully for canvas: ${canvasId}`);
+            
+            // Record performance metrics
+            const duration = performance.now() - startTime;
+            if (window.performanceMonitor) {
+                window.performanceMonitor.recordChartOperation('create', canvasId, duration, true);
+            }
+            
+            return chartInstance;
+            
+        } catch (error) {
+            console.error(`❌ Failed to create chart for canvas ${canvasId}:`, error);
+            this.logChartError('CHART_CREATION_FAILED', canvasId, error.message);
+            
+            // Record performance metrics for failed chart creation
+            const duration = performance.now() - startTime;
+            if (window.performanceMonitor) {
+                window.performanceMonitor.recordChartOperation('create', canvasId, duration, false);
+                window.performanceMonitor.recordError('chart_creation_failed', error, {
+                    canvasId,
+                    duration
+                });
+            }
+            
+            // Use error recovery manager if available
+            if (this.errorRecoveryManager) {
+                this.errorRecoveryManager.handleError(
+                    'CHART_CREATION_FAILED',
+                    error,
+                    {
+                        canvasId,
+                        config,
+                        options,
+                        chartInstances: this.chartInstances.size,
+                        memoryUsage: this.memoryUsage
+                    }
+                ).catch(recoveryError => {
+                    console.error('Chart creation recovery failed:', recoveryError);
+                });
+            }
+            
+            return null;
+        }
+    }
+    
+    /**
+     * Destroys a chart instance and cleans up resources
+     * @param {string} canvasId - The canvas element ID
+     * @returns {boolean} - True if destruction was successful
+     */
+    destroyChart(canvasId) {
+        console.log(`🗑️ Destroying chart for canvas: ${canvasId}`);
+        
+        const startTime = performance.now();
+        
+        try {
+            const chartData = this.chartInstances.get(canvasId);
+            
+            if (!chartData) {
+                console.log(`📊 No chart found for canvas: ${canvasId}`);
+                return true; // Not an error if chart doesn't exist
+            }
+            
+            // Destroy the Chart.js instance
+            if (chartData.instance && typeof chartData.instance.destroy === 'function') {
+                chartData.instance.destroy();
+                console.log(`✅ Chart instance destroyed for: ${canvasId}`);
+            }
+            
+            // Clear canvas context
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                this.clearCanvasContext(canvas);
+            }
+            
+            // Remove from registries
+            this.chartInstances.delete(canvasId);
+            this.canvasRegistry.delete(canvasId);
+            
+            // Unregister from memory manager if available
+            if (this.memoryManager) {
+                this.memoryManager.registerDeallocation(`chart_${canvasId}`);
+            }
+            
+            // Update memory usage tracking
+            this.memoryUsage.totalChartsDestroyed++;
+            this.memoryUsage.activeCharts--;
+            
+            console.log(`✅ Chart cleanup completed for: ${canvasId}`);
+            
+            // Record performance metrics
+            const duration = performance.now() - startTime;
+            if (window.performanceMonitor) {
+                window.performanceMonitor.recordChartOperation('destroy', canvasId, duration, true);
+            }
+            
+            return true;
+            
+        } catch (error) {
+            console.error(`❌ Failed to destroy chart for canvas ${canvasId}:`, error);
+            this.logChartError('CHART_DESTRUCTION_FAILED', canvasId, error.message);
+            return false;
+        }
+    }
+    
+    /**
+     * Destroys all active chart instances
+     * @returns {number} - Number of charts destroyed
+     */
+    destroyAllCharts() {
+        console.log('🗑️ Destroying all active charts...');
+        
+        const canvasIds = Array.from(this.chartInstances.keys());
+        let destroyedCount = 0;
+        
+        canvasIds.forEach(canvasId => {
+            if (this.destroyChart(canvasId)) {
+                destroyedCount++;
+            }
+        });
+        
+        console.log(`✅ Destroyed ${destroyedCount} charts`);
+        return destroyedCount;
+    }
+    
+    /**
+     * Checks if a chart is currently active on the given canvas
+     * @param {string} canvasId - The canvas element ID
+     * @returns {boolean} - True if chart is active
+     */
+    isChartActive(canvasId) {
+        return this.chartInstances.has(canvasId);
+    }
+    
+    /**
+     * Gets a chart instance by canvas ID
+     * @param {string} canvasId - The canvas element ID
+     * @returns {Object|null} - Chart instance or null if not found
+     */
+    getChartInstance(canvasId) {
+        const chartData = this.chartInstances.get(canvasId);
+        return chartData ? chartData.instance : null;
+    }
+    
+    /**
+     * Gets all active chart instances
+     * @returns {Map} - Map of canvas IDs to chart data
+     */
+    getAllChartInstances() {
+        return new Map(this.chartInstances);
+    }
+    
+    /**
+     * Updates chart data for an existing chart
+     * @param {string} canvasId - The canvas element ID
+     * @param {Object} newData - New data for the chart
+     * @returns {boolean} - True if update was successful
+     */
+    updateChart(canvasId, newData) {
+        const chartData = this.chartInstances.get(canvasId);
+        
+        if (!chartData || !chartData.instance) {
+            console.warn(`📊 Cannot update chart - not found: ${canvasId}`);
+            return false;
+        }
+        
+        try {
+            chartData.instance.data = newData;
+            chartData.instance.update();
+            chartData.lastUpdated = new Date();
+            
+            console.log(`✅ Chart updated successfully: ${canvasId}`);
+            return true;
+            
+        } catch (error) {
+            console.error(`❌ Failed to update chart ${canvasId}:`, error);
+            this.logChartError('CHART_UPDATE_FAILED', canvasId, error.message);
+            return false;
+        }
+    }
+    
+    /**
+     * Registers a chart instance in the registry
+     * @param {string} canvasId - The canvas element ID
+     * @param {Object} chartInstance - The Chart.js instance
+     * @param {Object} options - Additional options
+     */
+    registerChart(canvasId, chartInstance, options = {}) {
+        const chartData = {
+            instance: chartInstance,
+            canvasId,
+            createdAt: new Date(),
+            lastUpdated: new Date(),
+            viewContext: options.viewContext || 'unknown',
+            config: options.config || null,
+            metadata: options.metadata || {}
+        };
+        
+        this.chartInstances.set(canvasId, chartData);
+        this.canvasRegistry.set(canvasId, true);
+        
+        // Log chart creation
+        this.chartCreationLog.push({
+            canvasId,
+            action: 'created',
+            timestamp: new Date(),
+            viewContext: chartData.viewContext
+        });
+        
+        // Keep log manageable (last 50 entries)
+        if (this.chartCreationLog.length > 50) {
+            this.chartCreationLog.shift();
+        }
+    }
+    
+    /**
+     * Clears canvas context to prevent conflicts
+     * @param {HTMLCanvasElement} canvas - The canvas element
+     */
+    clearCanvasContext(canvas) {
+        try {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Reset canvas size to force context recreation
+                const { width, height } = canvas.getBoundingClientRect();
+                canvas.width = width;
+                canvas.height = height;
+            }
+        } catch (error) {
+            console.warn('⚠️ Failed to clear canvas context:', error);
+        }
+    }
+    
+    /**
+     * Logs chart-related errors for debugging
+     * @param {string} errorType - Type of error
+     * @param {string} canvasId - Canvas that caused the error
+     * @param {string} details - Error details
+     */
+    logChartError(errorType, canvasId, details) {
+        const error = {
+            type: errorType,
+            canvasId,
+            details,
+            timestamp: new Date(),
+            activeCharts: this.memoryUsage.activeCharts,
+            memoryUsage: { ...this.memoryUsage }
+        };
+        
+        this.chartCreationLog.push({
+            ...error,
+            action: 'error'
+        });
+        
+        console.error(`🚨 Chart Error [${errorType}]:`, error);
+    }
+    
+    /**
+     * Estimate memory size of a chart configuration
+     * @param {Object} config - Chart.js configuration
+     * @returns {number} - Estimated memory size in bytes
+     */
+    estimateChartMemorySize(config) {
+        let estimatedSize = 1024; // Base chart overhead
+        
+        if (config.data && config.data.datasets) {
+            config.data.datasets.forEach(dataset => {
+                if (dataset.data) {
+                    estimatedSize += dataset.data.length * 8; // 8 bytes per data point
+                }
+            });
+        }
+        
+        if (config.data && config.data.labels) {
+            estimatedSize += config.data.labels.length * 20; // 20 bytes per label
+        }
+        
+        // Add overhead for options and plugins
+        estimatedSize += JSON.stringify(config.options || {}).length;
+        
+        return estimatedSize;
+    }
+    
+    /**
+     * Gets memory usage statistics
+     * @returns {Object} - Memory usage statistics
+     */
+    getMemoryUsage() {
+        return {
+            ...this.memoryUsage,
+            currentActiveCharts: Array.from(this.chartInstances.keys()),
+            chartCreationLog: [...this.chartCreationLog]
+        };
+    }
+    
+    /**
+     * Performs cleanup for charts associated with a specific view
+     * @param {string} viewContext - The view context to clean up
+     * @returns {number} - Number of charts cleaned up
+     */
+    cleanupChartsForView(viewContext) {
+        console.log(`🧹 Cleaning up charts for view: ${viewContext}`);
+        
+        let cleanedCount = 0;
+        const chartsToCleanup = [];
+        
+        // Find charts associated with this view
+        this.chartInstances.forEach((chartData, canvasId) => {
+            if (chartData.viewContext === viewContext) {
+                chartsToCleanup.push(canvasId);
+            }
+        });
+        
+        // Destroy the charts
+        chartsToCleanup.forEach(canvasId => {
+            if (this.destroyChart(canvasId)) {
+                cleanedCount++;
+            }
+        });
+        
+        console.log(`✅ Cleaned up ${cleanedCount} charts for view: ${viewContext}`);
+        return cleanedCount;
+    }
+    
+    /**
+     * Validates chart health and performs maintenance
+     * @returns {Object} - Health check results
+     */
+    performHealthCheck() {
+        console.log('🔍 Performing chart health check...');
+        
+        const healthReport = {
+            totalActiveCharts: this.chartInstances.size,
+            healthyCharts: 0,
+            unhealthyCharts: 0,
+            orphanedCanvases: 0,
+            memoryUsage: { ...this.memoryUsage },
+            issues: []
+        };
+        
+        // Check each active chart
+        this.chartInstances.forEach((chartData, canvasId) => {
+            const canvas = document.getElementById(canvasId);
+            
+            if (!canvas) {
+                healthReport.issues.push(`Orphaned chart: ${canvasId} (canvas element not found)`);
+                healthReport.unhealthyCharts++;
+            } else if (!chartData.instance) {
+                healthReport.issues.push(`Invalid chart instance: ${canvasId}`);
+                healthReport.unhealthyCharts++;
+            } else {
+                healthReport.healthyCharts++;
+            }
+        });
+        
+        // Check for orphaned canvases
+        const allCanvases = document.querySelectorAll('canvas[id*="chart"]');
+        allCanvases.forEach(canvas => {
+            if (!this.chartInstances.has(canvas.id)) {
+                healthReport.orphanedCanvases++;
+                healthReport.issues.push(`Orphaned canvas: ${canvas.id}`);
+            }
+        });
+        
+        console.log('📊 Chart Health Report:', healthReport);
+        return healthReport;
+    }
+}
 
 class ComprehensiveNFLApp {
     constructor() {
+        // Initialize DataSyncManager for intelligent game data synchronization
+        this.dataSyncManager = new DataSyncManager();
+        
+        // Initialize GameStatusClassifier for comprehensive status detection
+        this.gameStatusClassifier = new GameStatusClassifier();
+        
+        // Initialize MemoryManager first for comprehensive memory tracking
+        this.memoryManager = new MemoryManager();
+        
+        // Initialize PerformanceMonitor for comprehensive performance tracking
+        this.performanceMonitor = new PerformanceMonitor(this.memoryManager);
+        
+        // Initialize ErrorRecoveryManager
+        this.errorRecoveryManager = new ErrorRecoveryManager();
+        
+        // Initialize NavigationPerformanceOptimizer
+        this.performanceOptimizer = new NavigationPerformanceOptimizer(this.memoryManager);
+        
+        // Make managers globally available
+        window.memoryManager = this.memoryManager;
+        window.performanceMonitor = this.performanceMonitor;
+        window.errorRecoveryManager = this.errorRecoveryManager;
+        window.performanceOptimizer = this.performanceOptimizer;
+        
+        // Initialize ChartManager with memory management
+        this.chartManager = new ChartManager(this.errorRecoveryManager, this.memoryManager);
+        
+        // Initialize ViewManager for enhanced navigation with performance optimization
+        this.viewManager = new ViewManager(this.chartManager, this.errorRecoveryManager, this.performanceOptimizer);
+        
         this.currentView = 'dashboard';
         this.nflTeams = [];
         this.nflPlayers = [];
@@ -116,6 +6054,18 @@ class ComprehensiveNFLApp {
             }
         };
         
+        // Add data sync debugging functions
+        window.debugDataSync = () => {
+            const stats = this.dataSyncManager.getSyncStats();
+            console.log('📊 Data Sync Statistics:', stats);
+            return stats;
+        };
+        
+        window.testDataSync = () => {
+            console.log('🧪 Testing data synchronization...');
+            this.fetchRealLiveScores();
+        };
+        
         // Add demo data elimination function
         window.eliminateAllDemo = () => {
             console.log('🚫 Eliminating ALL demo data...');
@@ -147,6 +6097,39 @@ class ComprehensiveNFLApp {
             console.log('Available views:', Array.from(document.querySelectorAll('.view')).map(v => v.id));
             console.log('Active view:', document.querySelector('.view.active')?.id);
             console.log('Navigation items:', document.querySelectorAll('.nav-link').length);
+            console.log('ViewManager state:', this.viewManager.getNavigationState());
+        };
+        
+        // Navigation testing functions
+        window.testNavigation = (viewName) => {
+            console.log(`🧪 Testing navigation to: ${viewName}`);
+            const success = this.switchView(viewName);
+            console.log(`Result: ${success ? '✅ Success' : '❌ Failed'}`);
+            return success;
+        };
+        
+        window.testAllViews = () => {
+            console.log('🧪 Testing navigation to all views...');
+            const testViews = ['dashboard', 'live-games', 'predictions', 'fantasy', 'betting', 'news'];
+            const results = {};
+            
+            testViews.forEach(view => {
+                results[view] = this.switchView(view);
+                console.log(`${view}: ${results[view] ? '✅' : '❌'}`);
+            });
+            
+            return results;
+        };
+        
+        window.getNavigationErrors = () => {
+            const errors = this.viewManager.getNavigationErrors();
+            console.log('🚨 Navigation Errors:', errors);
+            return errors;
+        };
+        
+        window.clearNavigationErrors = () => {
+            this.viewManager.navigationState.navigationErrors = [];
+            console.log('✅ Navigation errors cleared');
         };
         
         // Add manual reload function to global scope
@@ -163,6 +6146,120 @@ class ComprehensiveNFLApp {
         window.testAllESPNAPIs = () => {
             console.log('🧪 Testing ALL ESPN APIs...');
             this.testESPNAPIEndpoints();
+        };
+        
+        // Chart Testing Functions
+        window.testChartCreation = () => {
+            console.log('🧪 Testing chart creation/destruction cycles...');
+            return this.testChartCreationDestruction();
+        };
+        
+        window.getChartMemoryUsage = () => {
+            const usage = this.chartManager.getMemoryUsage();
+            console.log('📊 Chart Memory Usage:', usage);
+            return usage;
+        };
+        
+        // Global performance monitoring functions
+        window.getPerformanceStats = () => {
+            const stats = this.performanceMonitor.getPerformanceReport();
+            console.log('📊 Performance Stats:', stats);
+            return stats;
+        };
+        
+        window.getMemoryStats = () => {
+            const stats = this.memoryManager.getMemoryStats();
+            console.log('🧠 Memory Stats:', stats);
+            return stats;
+        };
+        
+        window.showPerformanceDashboard = () => {
+            this.performanceMonitor.toggleDashboard();
+        };
+        
+        window.forceGarbageCollection = () => {
+            const result = this.memoryManager.forceGarbageCollection();
+            console.log('🧹 Garbage Collection Result:', result);
+            return result;
+        };
+        
+        window.destroyAllCharts = () => {
+            console.log('🗑️ Destroying all charts...');
+            const count = this.chartManager.destroyAllCharts();
+            console.log(`✅ Destroyed ${count} charts`);
+            return count;
+        };
+        
+        window.performChartHealthCheck = () => {
+            console.log('🔍 Performing chart health check...');
+            return this.chartManager.performHealthCheck();
+        };
+        
+        window.testChartNavigationIntegration = () => {
+            console.log('🧪 Testing chart cleanup integration with navigation...');
+            
+            const testResults = {
+                totalTests: 0,
+                passedTests: 0,
+                failedTests: 0,
+                details: []
+            };
+            
+            // Test navigation between views with charts
+            const testSequence = [
+                { view: 'dashboard', expectedCharts: ['accuracy-chart', 'conference-chart'] },
+                { view: 'predictions', expectedCharts: ['accuracy-chart'] },
+                { view: 'live-games', expectedCharts: [] },
+                { view: 'dashboard', expectedCharts: ['accuracy-chart', 'conference-chart'] }
+            ];
+            
+            testSequence.forEach((test, index) => {
+                testResults.totalTests++;
+                
+                try {
+                    console.log(`🧪 Test ${index + 1}: Navigating to ${test.view}`);
+                    
+                    // Navigate to view
+                    const navSuccess = this.switchView(test.view);
+                    
+                    if (!navSuccess) {
+                        testResults.failedTests++;
+                        testResults.details.push(`❌ Navigation to ${test.view} failed`);
+                        return;
+                    }
+                    
+                    // Wait for charts to be recreated
+                    setTimeout(() => {
+                        const activeCharts = Array.from(this.chartManager.getAllChartInstances().keys());
+                        const hasExpectedCharts = test.expectedCharts.every(chartId => 
+                            activeCharts.includes(chartId) || document.getElementById(chartId) === null
+                        );
+                        
+                        if (hasExpectedCharts) {
+                            testResults.passedTests++;
+                            testResults.details.push(`✅ ${test.view}: Charts managed correctly`);
+                        } else {
+                            testResults.failedTests++;
+                            testResults.details.push(`❌ ${test.view}: Chart management failed`);
+                        }
+                    }, 200);
+                    
+                } catch (error) {
+                    testResults.failedTests++;
+                    testResults.details.push(`❌ ${test.view}: Error - ${error.message}`);
+                }
+            });
+            
+            // Return results after all tests complete
+            setTimeout(() => {
+                console.log('🧪 Chart Navigation Integration Test Results:');
+                console.log(`Total Tests: ${testResults.totalTests}`);
+                console.log(`Passed: ${testResults.passedTests}`);
+                console.log(`Failed: ${testResults.failedTests}`);
+                testResults.details.forEach(detail => console.log(detail));
+            }, 1000);
+            
+            return testResults;
         };
         
         window.inspectESPNData = (url) => {
@@ -481,54 +6578,271 @@ class ComprehensiveNFLApp {
     }
 
     setupEventListeners() {
-        console.log('🔧 Setting up event listeners...');
+        console.log('🔧 Setting up enhanced event listeners with error handling...');
         
-        // Find all navigation links
-        const navLinks = document.querySelectorAll('.menu-item, .nav-link');
-        console.log(`Found ${navLinks.length} navigation links`);
+        try {
+            // Find all navigation links with comprehensive selectors
+            const navLinks = document.querySelectorAll('.menu-item, .nav-link, [data-view]');
+            console.log(`Found ${navLinks.length} navigation links`);
+            
+            // Validate and setup navigation event listeners
+            this.setupNavigationListeners(navLinks);
+            
+            // Setup other button event listeners
+            this.setupButtonListeners();
+            
+            // Setup filter event listeners
+            this.setupFilterListeners();
+            
+            // Test navigation after setup
+            this.testNavigationSetup();
+            
+            console.log('✅ All event listeners setup successfully');
+            
+        } catch (error) {
+            console.error('❌ Error setting up event listeners:', error);
+        }
+    }
+    
+    /**
+     * Setup navigation event listeners with enhanced error handling
+     * @param {NodeList} navLinks - Navigation link elements
+     */
+    setupNavigationListeners(navLinks) {
+        const expectedViews = ['dashboard', 'live-games', 'predictions', 'fantasy', 'betting', 'news'];
+        const foundViews = new Set();
         
-        // Menu item clicks (both menu-item and nav-link)
         navLinks.forEach((item, index) => {
             const view = item.getAttribute('data-view');
-            console.log(`Nav link ${index}: ${view || 'no data-view'}`);
+            console.log(`Nav link ${index}: ${view || 'no data-view'} (${item.tagName}.${item.className})`);
             
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log(`🔄 Navigation clicked: ${view}`);
-                if (view) {
-                    this.switchView(view);
-                } else {
-                    console.warn('❌ No data-view attribute found');
-                }
-            });
+            if (view) {
+                foundViews.add(view);
+                
+                // Validate view exists before setting up listener
+                const viewExists = this.viewManager.validateViewExists(view);
+                console.log(`  View '${view}' exists: ${viewExists}`);
+                
+                item.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    console.log(`🔄 Navigation clicked: ${view}`);
+                    
+                    try {
+                        const success = await this.switchView(view);
+                        if (!success) {
+                            console.error(`❌ Navigation failed for: ${view}`);
+                            
+                            // Use error recovery manager if available
+                            if (this.errorRecoveryManager) {
+                                await this.errorRecoveryManager.handleError(
+                                    'NAVIGATION_CLICK_FAILED',
+                                    `Navigation click failed for view: ${view}`,
+                                    {
+                                        viewName: view,
+                                        clickedElement: item,
+                                        navigationState: this.viewManager.getNavigationState()
+                                    }
+                                );
+                            } else {
+                                // Fallback user feedback
+                                this.showNavigationError(view);
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`❌ Navigation error for ${view}:`, error);
+                        
+                        // Use error recovery manager if available
+                        if (this.errorRecoveryManager) {
+                            await this.errorRecoveryManager.handleError(
+                                'NAVIGATION_CLICK_EXCEPTION',
+                                error,
+                                {
+                                    viewName: view,
+                                    clickedElement: item,
+                                    stackTrace: error.stack,
+                                    navigationState: this.viewManager.getNavigationState()
+                                }
+                            );
+                        } else {
+                            // Fallback user feedback
+                            this.showNavigationError(view);
+                        }
+                    }
+                });
+                
+                // Add hover effect for better UX
+                item.addEventListener('mouseenter', () => {
+                    if (!item.classList.contains('active')) {
+                        item.style.opacity = '0.8';
+                    }
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    item.style.opacity = '';
+                });
+                
+            } else {
+                console.warn(`❌ Navigation link ${index} missing data-view attribute:`, item);
+            }
         });
-
-        // Refresh games button
-        const refreshBtn = document.getElementById('refresh-games');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                this.loadLiveGames();
-            });
+        
+        // Check for missing expected views
+        expectedViews.forEach(expectedView => {
+            if (!foundViews.has(expectedView)) {
+                console.warn(`⚠️ Expected view '${expectedView}' not found in navigation`);
+            }
+        });
+        
+        console.log(`✅ Setup navigation for views: ${Array.from(foundViews).join(', ')}`);
+    }
+    
+    /**
+     * Cache API data for error recovery
+     * @param {string} key - Cache key
+     * @param {*} data - Data to cache
+     */
+    cacheApiData(key, data) {
+        try {
+            const cacheEntry = {
+                data,
+                timestamp: Date.now(),
+                version: '1.0'
+            };
+            
+            // Store in localStorage
+            localStorage.setItem(key, JSON.stringify(cacheEntry));
+            
+            // Also store in sessionStorage as backup
+            sessionStorage.setItem(key, JSON.stringify(cacheEntry));
+            
+            console.log(`💾 Cached data for key: ${key}`);
+        } catch (error) {
+            console.warn(`Failed to cache data for ${key}:`, error);
         }
-
-        // Run simulation button
-        const runSimBtn = document.getElementById('run-simulation');
-        if (runSimBtn) {
-            runSimBtn.addEventListener('click', () => {
-                this.runMonteCarloSimulation();
-            });
+    }
+    
+    /**
+     * Log navigation errors for debugging
+     * @param {string} viewName - The view that failed to navigate
+     * @param {string} errorType - Type of navigation error
+     * @param {Object} details - Additional error details
+     */
+    logNavigationError(viewName, errorType, details = {}) {
+        const errorInfo = {
+            viewName,
+            errorType,
+            details,
+            timestamp: new Date(),
+            availableViews: Array.from(document.querySelectorAll('.view')).map(v => v.id),
+            navigationState: this.viewManager ? this.viewManager.getNavigationState() : null,
+            userAgent: navigator.userAgent,
+            url: window.location.href
+        };
+        
+        console.error(`🚨 Navigation Error Log:`, errorInfo);
+        
+        // Store in session storage for debugging
+        try {
+            const existingErrors = JSON.parse(sessionStorage.getItem('navigationErrors') || '[]');
+            existingErrors.push(errorInfo);
+            
+            // Keep only last 20 errors
+            if (existingErrors.length > 20) {
+                existingErrors.shift();
+            }
+            
+            sessionStorage.setItem('navigationErrors', JSON.stringify(existingErrors));
+        } catch (storageError) {
+            console.warn('Failed to store navigation error:', storageError);
         }
-
-        // Clear alerts button
-        const clearAlertsBtn = document.getElementById('clear-alerts');
-        if (clearAlertsBtn) {
-            clearAlertsBtn.addEventListener('click', () => {
-                this.clearAllAlerts();
-            });
+        
+        return errorInfo;
+    }
+    
+    /**
+     * Get navigation error history for debugging
+     * @returns {Array} - Array of navigation errors
+     */
+    getNavigationErrorHistory() {
+        try {
+            return JSON.parse(sessionStorage.getItem('navigationErrors') || '[]');
+        } catch (error) {
+            console.warn('Failed to retrieve navigation error history:', error);
+            return [];
         }
-
-        // Filter event listeners
-        this.setupFilterListeners();
+    }
+    
+    /**
+     * Setup other button event listeners
+     */
+    setupButtonListeners() {
+        const buttonConfigs = [
+            {
+                id: 'refresh-games',
+                handler: () => this.loadLiveGames(),
+                description: 'Refresh games button'
+            },
+            {
+                id: 'run-simulation',
+                handler: () => this.runMonteCarloSimulation(),
+                description: 'Run simulation button'
+            },
+            {
+                id: 'clear-alerts',
+                handler: () => this.clearAllAlerts(),
+                description: 'Clear alerts button'
+            }
+        ];
+        
+        buttonConfigs.forEach(config => {
+            const button = document.getElementById(config.id);
+            if (button) {
+                button.addEventListener('click', (e) => {
+                    try {
+                        console.log(`🔘 ${config.description} clicked`);
+                        config.handler();
+                    } catch (error) {
+                        console.error(`❌ Error in ${config.description}:`, error);
+                    }
+                });
+                console.log(`✅ Setup ${config.description}`);
+            } else {
+                console.log(`ℹ️ ${config.description} not found (optional)`);
+            }
+        });
+    }
+    
+    /**
+     * Test navigation setup by validating all expected views
+     */
+    testNavigationSetup() {
+        console.log('🧪 Testing navigation setup...');
+        
+        const testViews = ['dashboard', 'live-games', 'predictions', 'fantasy', 'betting', 'news'];
+        const results = {
+            passed: [],
+            failed: []
+        };
+        
+        testViews.forEach(viewName => {
+            const exists = this.viewManager.validateViewExists(viewName);
+            if (exists) {
+                results.passed.push(viewName);
+            } else {
+                results.failed.push(viewName);
+            }
+        });
+        
+        console.log(`✅ Navigation test results:`);
+        console.log(`  Passed (${results.passed.length}): ${results.passed.join(', ')}`);
+        if (results.failed.length > 0) {
+            console.warn(`  Failed (${results.failed.length}): ${results.failed.join(', ')}`);
+        }
+        
+        // Add test results to global scope for debugging
+        window.navigationTestResults = results;
+        
+        return results;
     }
 
     setupFilterListeners() {
@@ -571,51 +6885,92 @@ class ComprehensiveNFLApp {
         });
     }
 
-    switchView(viewName) {
-        console.log(`🔄 Switching to view: ${viewName}`);
+    async switchView(viewName, options = {}) {
+        console.log(`🔄 ComprehensiveNFLApp switching to view: ${viewName}`);
         
-        // Find all views and log them
-        const allViews = document.querySelectorAll('.view');
-        console.log(`Found ${allViews.length} views:`, Array.from(allViews).map(v => v.id));
+        try {
+            // Use ViewManager for enhanced navigation with fallback resolution
+            const navigationSuccess = await this.viewManager.switchView(viewName, options);
+            
+            if (navigationSuccess) {
+                // Update app state to match ViewManager state
+                this.currentView = viewName;
+                
+                // Load view-specific content
+                console.log(`📚 Loading content for: ${viewName}`);
+                this.loadViewContent(viewName);
+                
+                // Update breadcrumb
+                this.updateBreadcrumb(viewName);
+                
+                console.log(`✅ View switch completed successfully: ${viewName}`);
+                return true;
+            } else {
+                console.error(`❌ ViewManager failed to switch to: ${viewName}`);
+                
+                // Log detailed error information
+                const errors = this.viewManager.getNavigationErrors();
+                if (errors.length > 0) {
+                    console.error('Recent navigation errors:', errors.slice(-3));
+                }
+                
+                // Show user-friendly error message
+                this.showNavigationError(viewName);
+                return false;
+            }
+            
+        } catch (error) {
+            console.error(`❌ Critical error during view switch to ${viewName}:`, error);
+            
+            // Attempt emergency fallback to dashboard
+            if (viewName !== 'dashboard') {
+                console.log('🚨 Attempting emergency fallback to dashboard...');
+                return await this.switchView('dashboard', { ...options, emergency: true });
+            }
+            
+            return false;
+        }
+    }
+    
+    /**
+     * Shows user-friendly navigation error message
+     * @param {string} failedViewName - The view that failed to load
+     */
+    showNavigationError(failedViewName) {
+        // Try to find a notification area or create a temporary one
+        let notificationArea = document.getElementById('notification-area');
         
-        // Hide all views
-        allViews.forEach(view => {
-            view.classList.remove('active');
-            console.log(`Hiding view: ${view.id}`);
-        });
-
-        // Remove active class from all menu items
-        document.querySelectorAll('.menu-item, .nav-link').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Show selected view
-        const targetView = document.getElementById(`${viewName}-view`);
-        console.log(`Looking for view: ${viewName}-view`);
-        if (targetView) {
-            targetView.classList.add('active');
-            console.log(`✅ Activated view: ${viewName}-view`);
-        } else {
-            console.error(`❌ View not found: ${viewName}-view`);
-            console.log('Available views:', Array.from(document.querySelectorAll('.view')).map(v => v.id));
+        if (!notificationArea) {
+            // Create temporary notification
+            notificationArea = document.createElement('div');
+            notificationArea.id = 'temp-notification';
+            notificationArea.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            document.body.appendChild(notificationArea);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notificationArea.parentNode) {
+                    notificationArea.parentNode.removeChild(notificationArea);
+                }
+            }, 5000);
         }
-
-        // Add active class to clicked menu item
-        const activeMenuItem = document.querySelector(`[data-view="${viewName}"]`);
-        if (activeMenuItem) {
-            activeMenuItem.classList.add('active');
-            console.log(`✅ Activated menu item for: ${viewName}`);
-        } else {
-            console.warn(`❌ Menu item not found for: ${viewName}`);
-        }
-
-        // Load view content
-        this.currentView = viewName;
-        console.log(`📚 Loading content for: ${viewName}`);
-        this.loadViewContent(viewName);
-
-        // Update breadcrumb
-        this.updateBreadcrumb(viewName);
+        
+        notificationArea.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Unable to load ${failedViewName} view. Redirected to dashboard.</span>
+            </div>
+        `;
     }
 
     updateBreadcrumb(viewName) {
@@ -708,8 +7063,7 @@ class ComprehensiveNFLApp {
         console.log('📊 Loading Dashboard...');
         
         // Load live games in dashboard grids
-        this.displayGamesInGrid('live-games-grid');
-        this.displayGamesInGrid('top-predictions-grid');
+        this.displayGamesInGrid('live-games-container');
         
         // Update stats
         this.updateDashboardStats();
@@ -724,8 +7078,8 @@ class ComprehensiveNFLApp {
         console.log('🏈 Loading Live Games...');
         
         // Load in both the dedicated live games container and the live games view
-        this.displayGamesInGrid('live-games-grid');
         this.displayGamesInGrid('live-games-container');
+        this.displayGamesInGrid('all-games-container');
     }
 
     updateDashboardStats() {
@@ -734,7 +7088,8 @@ class ComprehensiveNFLApp {
         // Update live games count
         const liveGamesCount = document.getElementById('live-games-count');
         if (liveGamesCount && this.games) {
-            const liveCount = this.games.filter(g => g.status === 'LIVE').length;
+            // Use GameStatusClassifier for accurate live game counting
+            const liveCount = this.games.filter(g => this.gameStatusClassifier.isLiveGame(g)).length;
             liveGamesCount.textContent = liveCount;
         }
         
@@ -770,6 +7125,7 @@ class ComprehensiveNFLApp {
                 <div class="no-games-message" style="text-align: center; padding: 2rem; color: #fff;">
                     <div class="loading-spinner" style="font-size: 2rem; margin-bottom: 1rem;">🔄</div>
                     <p style="margin-bottom: 1rem;">Loading live games from ESPN API...</p>
+                    <p style="font-size: 0.9em; opacity: 0.7; margin-bottom: 1rem;">If loading fails, cached data will be used automatically</p>
                     <button onclick="window.app?.fetchTodaysGames()" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Reload Games</button>
                     <button onclick="window.debugApp()" style="background: #333; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-left: 8px;">Debug</button>
                 </div>
@@ -779,34 +7135,42 @@ class ComprehensiveNFLApp {
 
         console.log(`📊 Displaying ${this.games.length} games in ${gridId}`);
 
-        grid.innerHTML = this.games.map(game => `
-            <div class="game-card liquid-glass ${game.status?.toLowerCase() || 'scheduled'}" data-game-id="${game.id}">
+        grid.innerHTML = this.games.map(game => {
+            // Use GameStatusClassifier for comprehensive status handling
+            const classification = this.gameStatusClassifier.classifyGameStatus(game);
+            const displayStatus = classification.normalizedStatus || 'SCHEDULED';
+            const statusCategory = classification.category || 'upcoming';
+            const isLive = this.gameStatusClassifier.isLiveGame(game);
+            const isCompleted = classification.category === 'completed';
+            
+            return `
+            <div class="game-card liquid-glass ${statusCategory}" data-game-id="${game.id}">
                 <div class="game-header">
-                    <div class="game-status ${game.status?.toLowerCase() || 'scheduled'}">
-                        <strong>${game.status || 'SCHEDULED'}</strong> - ${game.week}
-                        ${game.status === 'LIVE' ? '<div class="live-pulse">🔴</div>' : ''}
-                    </div>
+                    <div class="game-status ${statusCategory}">
+                        <strong>${displayStatus}</strong> - ${game.week}
+                        ${isLive ? '<div class="live-pulse">🔴</div>' : ''}
+                    </div>`;
                     <div class="game-network">${game.network}</div>
                     <div class="game-time">${game.time}</div>
                 </div>
                 <div class="game-teams">
-                    <div class="team ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'winner' : ''}">
+                    <div class="team ${isCompleted && game.awayScore > game.homeScore ? 'winner' : ''}">
                         <div class="team-logo">
                             ${game.awayTeamLogo ? `<img src="${game.awayTeamLogo}" alt="${game.awayTeam}" width="32" height="32" />` : this.getTeamAbbreviation(game.awayTeam)}
                         </div>
                         <div class="team-name">${game.awayTeam}</div>
-                        <div class="team-score ${game.status === 'LIVE' ? 'live-score' : ''}">${game.awayScore || 0}</div>
+                        <div class="team-score ${isLive ? 'live-score' : ''}">${game.awayScore || 0}</div>
                     </div>
                     <div class="vs">
-                        ${game.status === 'FINAL' ? 'FINAL' : 
-                          game.status === 'LIVE' ? `Q${game.quarter || ''} ${game.timeRemaining || ''}` : 'VS'}
+                        ${isCompleted ? 'FINAL' : 
+                          isLive ? `Q${game.quarter || ''} ${game.timeRemaining || ''}` : 'VS'}
                     </div>
-                    <div class="team ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'winner' : ''}">
+                    <div class="team ${isCompleted && game.homeScore > game.awayScore ? 'winner' : ''}">
                         <div class="team-logo">
                             ${game.homeTeamLogo ? `<img src="${game.homeTeamLogo}" alt="${game.homeTeam}" width="32" height="32" />` : this.getTeamAbbreviation(game.homeTeam)}
                         </div>
                         <div class="team-name">${game.homeTeam}</div>
-                        <div class="team-score ${game.status === 'LIVE' ? 'live-score' : ''}">${game.homeScore || 0}</div>
+                        <div class="team-score ${isLive ? 'live-score' : ''}">${game.homeScore || 0}</div>
                     </div>
                 </div>
                 <div class="game-prediction">
@@ -822,7 +7186,8 @@ class ComprehensiveNFLApp {
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     getTeamAbbreviation(teamName) {
@@ -3003,6 +9368,10 @@ class ComprehensiveNFLApp {
         }
     }
 
+    loadPlayers() {
+        const grid = document.getElementById('players-grid');
+        if (!grid) return;
+
         // Populate team filter
         const teamFilter = document.getElementById('team-filter');
         if (teamFilter && this.nflTeams) {
@@ -4267,21 +10636,22 @@ class ComprehensiveNFLApp {
     }
 
     initializeCharts() {
-        // Only initialize charts if Chart.js is available
-        if (typeof Chart === 'undefined') {
+        // Check Chart.js availability with graceful fallbacks
+        if (!this.viewManager.checkChartJSAvailability()) {
             console.log('📊 Chart.js not available - skipping chart initialization');
             return;
         }
 
+        console.log('📊 Initializing charts with ChartManager...');
         this.initAccuracyChart();
         this.initConferenceChart();
     }
 
     initAccuracyChart() {
-        const ctx = document.getElementById('accuracy-chart');
-        if (!ctx) return;
-
-        new Chart(ctx, {
+        console.log('📊 Initializing accuracy chart with ChartManager...');
+        
+        const canvasId = 'accuracy-chart';
+        const config = {
             type: 'line',
             data: {
                 labels: ['Aug 1', 'Aug 2', 'Aug 3', 'Aug 4', 'Aug 5', 'Aug 6', 'Aug 7', 'Aug 8 (Today)'],
@@ -4328,14 +10698,30 @@ class ComprehensiveNFLApp {
                     y: { ticks: { color: '#ffffff' } }
                 }
             }
-        });
+        };
+        
+        const options = {
+            viewContext: 'dashboard',
+            metadata: { chartType: 'accuracy', category: 'predictions' }
+        };
+        
+        // Use ChartManager to create chart with conflict detection
+        const chartInstance = this.chartManager.createChart(canvasId, config, options);
+        
+        if (chartInstance) {
+            console.log('✅ Accuracy chart created successfully with ChartManager');
+        } else {
+            console.warn('❌ Failed to create accuracy chart');
+        }
+        
+        return chartInstance;
     }
 
     initConferenceChart() {
-        const ctx = document.getElementById('conference-chart');
-        if (!ctx) return;
-
-        new Chart(ctx, {
+        console.log('📊 Initializing conference chart with ChartManager...');
+        
+        const canvasId = 'conference-chart';
+        const config = {
             type: 'bar',
             data: {
                 labels: ['AFC East', 'AFC North', 'AFC South', 'AFC West', 'NFC East', 'NFC North', 'NFC South', 'NFC West'],
@@ -4360,7 +10746,174 @@ class ComprehensiveNFLApp {
                     y: { ticks: { color: '#ffffff' } }
                 }
             }
+        };
+        
+        const options = {
+            viewContext: 'dashboard',
+            metadata: { chartType: 'conference', category: 'standings' }
+        };
+        
+        // Use ChartManager to create chart with conflict detection
+        const chartInstance = this.chartManager.createChart(canvasId, config, options);
+        
+        if (chartInstance) {
+            console.log('✅ Conference chart created successfully with ChartManager');
+        } else {
+            console.warn('❌ Failed to create conference chart');
+        }
+        
+        return chartInstance;
+    }
+    
+    /**
+     * Tests chart creation/destruction cycles to verify ChartManager functionality
+     * @returns {Object} - Test results
+     */
+    testChartCreationDestruction() {
+        console.log('🧪 Testing chart creation/destruction cycles...');
+        
+        const testResults = {
+            totalTests: 0,
+            passedTests: 0,
+            failedTests: 0,
+            errors: [],
+            details: []
+        };
+        
+        const testCases = [
+            {
+                name: 'Create accuracy chart',
+                test: () => {
+                    const chart = this.initAccuracyChart();
+                    return chart !== null;
+                }
+            },
+            {
+                name: 'Recreate accuracy chart (conflict test)',
+                test: () => {
+                    const chart = this.initAccuracyChart();
+                    return chart !== null;
+                }
+            },
+            {
+                name: 'Create conference chart',
+                test: () => {
+                    const chart = this.initConferenceChart();
+                    return chart !== null;
+                }
+            },
+            {
+                name: 'Destroy accuracy chart',
+                test: () => {
+                    return this.chartManager.destroyChart('accuracy-chart');
+                }
+            },
+            {
+                name: 'Destroy conference chart',
+                test: () => {
+                    return this.chartManager.destroyChart('conference-chart');
+                }
+            },
+            {
+                name: 'Recreate after destruction',
+                test: () => {
+                    const chart = this.initAccuracyChart();
+                    return chart !== null;
+                }
+            },
+            {
+                name: 'Destroy all charts',
+                test: () => {
+                    const destroyedCount = this.chartManager.destroyAllCharts();
+                    return destroyedCount >= 0;
+                }
+            }
+        ];
+        
+        testCases.forEach((testCase, index) => {
+            testResults.totalTests++;
+            
+            try {
+                const result = testCase.test();
+                
+                if (result) {
+                    testResults.passedTests++;
+                    testResults.details.push(`✅ ${testCase.name}: PASSED`);
+                    console.log(`✅ Test ${index + 1}: ${testCase.name} - PASSED`);
+                } else {
+                    testResults.failedTests++;
+                    testResults.details.push(`❌ ${testCase.name}: FAILED`);
+                    console.log(`❌ Test ${index + 1}: ${testCase.name} - FAILED`);
+                }
+            } catch (error) {
+                testResults.failedTests++;
+                testResults.errors.push(`${testCase.name}: ${error.message}`);
+                testResults.details.push(`❌ ${testCase.name}: ERROR - ${error.message}`);
+                console.error(`❌ Test ${index + 1}: ${testCase.name} - ERROR:`, error);
+            }
         });
+        
+        // Get memory usage after tests
+        const memoryUsage = this.chartManager.getMemoryUsage();
+        testResults.memoryUsage = memoryUsage;
+        
+        console.log('🧪 Chart Creation/Destruction Test Results:');
+        console.log(`Total Tests: ${testResults.totalTests}`);
+        console.log(`Passed: ${testResults.passedTests}`);
+        console.log(`Failed: ${testResults.failedTests}`);
+        console.log('Memory Usage:', memoryUsage);
+        
+        if (testResults.errors.length > 0) {
+            console.log('Errors:', testResults.errors);
+        }
+        
+        return testResults;
+    }
+    
+    /**
+     * Recreates a specific chart by ID
+     * @param {string} chartId - The chart canvas ID
+     * @param {string} viewName - The current view name
+     * @returns {Object|null} - The recreated chart instance
+     */
+    recreateChart(chartId, viewName) {
+        console.log(`📊 Recreating chart: ${chartId} for view: ${viewName}`);
+        
+        try {
+            // Map chart IDs to their creation methods
+            const chartCreationMap = {
+                'accuracy-chart': () => this.initAccuracyChart(),
+                'conference-chart': () => this.initConferenceChart()
+            };
+            
+            const creationMethod = chartCreationMap[chartId];
+            
+            if (!creationMethod) {
+                console.warn(`📊 No creation method found for chart: ${chartId}`);
+                return null;
+            }
+            
+            // Destroy existing chart if it exists
+            if (this.chartManager.isChartActive(chartId)) {
+                console.log(`📊 Destroying existing chart: ${chartId}`);
+                this.chartManager.destroyChart(chartId);
+            }
+            
+            // Recreate the chart
+            const chartInstance = creationMethod();
+            
+            if (chartInstance) {
+                console.log(`✅ Successfully recreated chart: ${chartId}`);
+            } else {
+                console.warn(`❌ Failed to recreate chart: ${chartId}`);
+            }
+            
+            return chartInstance;
+            
+        } catch (error) {
+            console.error(`❌ Error recreating chart ${chartId}:`, error);
+            return null;
+        }
     }
 
     verifyIntegration() {
@@ -4638,13 +11191,38 @@ class ComprehensiveNFLApp {
                     color: teamData.team.color
                 }));
                 console.log(`✅ Loaded ${this.nflTeams.length} NFL teams from ESPN`);
+                
+                // Cache successful data for error recovery
+                this.cacheApiData('nfl_teams_cache', this.nflTeams);
             } else {
                 console.warn('⚠️ No teams found in ESPN response');
                 this.nflTeams = [];
             }
         } catch (error) {
             console.error('❌ Error fetching NFL teams:', error);
-            this.nflTeams = [];
+            
+            // Use error recovery manager if available
+            if (this.errorRecoveryManager) {
+                const recoveryResult = await this.errorRecoveryManager.handleError(
+                    'ESPN_API_FAILURE',
+                    error,
+                    {
+                        endpoint: 'teams',
+                        url: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams',
+                        operation: 'fetchNFLTeams',
+                        dataType: 'teams'
+                    }
+                );
+                
+                if (recoveryResult.success && recoveryResult.data) {
+                    console.log('✅ Using recovered teams data');
+                    this.nflTeams = Array.isArray(recoveryResult.data) ? recoveryResult.data : [];
+                } else {
+                    this.nflTeams = [];
+                }
+            } else {
+                this.nflTeams = [];
+            }
         }
     }
 
@@ -4688,6 +11266,9 @@ class ComprehensiveNFLApp {
                     console.log(`🏈 GAME: ${game.awayTeam} ${game.awayScore} - ${game.homeScore} ${game.homeTeam} (${game.status})`);
                 });
                 
+                // Cache successful data for error recovery
+                this.cacheApiData('nfl_games_cache', this.games);
+                
             } else {
                 console.log('ℹ️ No games found on ESPN today');
                 this.games = [];
@@ -4695,7 +11276,29 @@ class ComprehensiveNFLApp {
             
         } catch (error) {
             console.error('❌ Error fetching today\'s games:', error);
-            this.games = [];
+            
+            // Use error recovery manager if available
+            if (this.errorRecoveryManager) {
+                const recoveryResult = await this.errorRecoveryManager.handleError(
+                    'ESPN_API_FAILURE',
+                    error,
+                    {
+                        endpoint: 'scoreboard',
+                        url: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard',
+                        operation: 'fetchTodaysGames',
+                        dataType: 'games'
+                    }
+                );
+                
+                if (recoveryResult.success && recoveryResult.data) {
+                    console.log('✅ Using recovered games data');
+                    this.games = Array.isArray(recoveryResult.data) ? recoveryResult.data : [];
+                } else {
+                    this.games = [];
+                }
+            } else {
+                this.games = [];
+            }
         }
     }
 
@@ -4745,71 +11348,145 @@ class ComprehensiveNFLApp {
                     return `${away.team.displayName} @ ${home.team.displayName} (${away.score || 0}-${home.score || 0})`;
                 }));
                 
-                // Update our games with real ESPN data
-                data.events.forEach(espnGame => {
+                // Convert ESPN data to our format with enhanced data extraction
+                const espnGames = data.events.map(espnGame => {
                     const competition = espnGame.competitions[0];
                     const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
                     const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
                     
-                    console.log(`🔍 Looking for ESPN game: ${awayTeam.team.displayName} @ ${homeTeam.team.displayName}`);
+                    // Extract team names with fallbacks
+                    const homeTeamName = homeTeam.team.displayName || 
+                                        homeTeam.team.shortDisplayName || 
+                                        homeTeam.team.name || 
+                                        homeTeam.team.abbreviation;
                     
-                    // Find matching game in our data (enhanced matching for preseason)
-                    const ourGame = this.games.find(game => {
-                        // Exact match first
-                        let matchHome = game.homeTeam === homeTeam.team.displayName;
-                        let matchAway = game.awayTeam === awayTeam.team.displayName;
-                        
-                        // If no exact match, try partial matching
-                        if (!matchHome || !matchAway) {
-                            matchHome = game.homeTeam.includes(homeTeam.team.displayName) || 
-                                       homeTeam.team.displayName.includes(game.homeTeam) ||
-                                       game.homeTeam.includes(homeTeam.team.shortDisplayName) ||
-                                       homeTeam.team.shortDisplayName?.includes(game.homeTeam);
-                            
-                            matchAway = game.awayTeam.includes(awayTeam.team.displayName) || 
-                                       awayTeam.team.displayName.includes(game.awayTeam) ||
-                                       game.awayTeam.includes(awayTeam.team.shortDisplayName) ||
-                                       awayTeam.team.shortDisplayName?.includes(game.awayTeam);
-                        }
-                        
-                        const finalMatch = matchHome && matchAway;
-                        console.log(`🔍 Checking ${game.awayTeam} @ ${game.homeTeam} vs ${awayTeam.team.displayName} @ ${homeTeam.team.displayName} = ${finalMatch}`);
-                        
-                        if (finalMatch) {
-                            console.log(`✅ GAME MATCH FOUND: ${game.id}`);
-                        }
-                        
-                        return finalMatch;
-                    });
+                    const awayTeamName = awayTeam.team.displayName || 
+                                        awayTeam.team.shortDisplayName || 
+                                        awayTeam.team.name || 
+                                        awayTeam.team.abbreviation;
                     
-                    if (ourGame) {
-                        console.log(`✅ MATCH FOUND! Updating scores for ${ourGame.awayTeam} @ ${ourGame.homeTeam}`);
+                    // Normalize status with comprehensive mapping
+                    let normalizedStatus = 'SCHEDULED';
+                    const statusDesc = espnGame.status.type.description?.toLowerCase() || '';
+                    const statusName = espnGame.status.type.name?.toLowerCase() || '';
+                    
+                    if (statusDesc.includes('final') || statusName.includes('final')) {
+                        normalizedStatus = 'FINAL';
+                    } else if (statusDesc.includes('progress') || statusDesc.includes('live') || 
+                              statusName.includes('progress') || statusName.includes('live') ||
+                              statusDesc.includes('active') || statusName.includes('active')) {
+                        normalizedStatus = 'LIVE';
+                    } else if (statusDesc.includes('halftime') || statusName.includes('halftime')) {
+                        normalizedStatus = 'LIVE';
+                    } else if (statusDesc.includes('postponed') || statusName.includes('postponed')) {
+                        normalizedStatus = 'POSTPONED';
+                    } else if (statusDesc.includes('cancelled') || statusName.includes('cancelled')) {
+                        normalizedStatus = 'CANCELLED';
+                    }
+                    
+                    return {
+                        id: espnGame.id,
+                        homeTeam: homeTeamName,
+                        awayTeam: awayTeamName,
+                        homeScore: parseInt(homeTeam.score || 0),
+                        awayScore: parseInt(awayTeam.score || 0),
+                        status: normalizedStatus,
+                        quarter: espnGame.status.period ? (espnGame.status.period === 5 ? 'OT' : `${espnGame.status.period}`) : null,
+                        timeRemaining: espnGame.status.displayClock || null,
+                        date: espnGame.date,
+                        venue: competition.venue?.fullName,
+                        network: competition.broadcasts?.[0]?.names?.[0],
+                        // Additional ESPN metadata for better matching
+                        espnStatus: espnGame.status.type.description,
+                        espnStatusName: espnGame.status.type.name,
+                        homeTeamAbbr: homeTeam.team.abbreviation,
+                        awayTeamAbbr: awayTeam.team.abbreviation,
+                        homeTeamShort: homeTeam.team.shortDisplayName,
+                        awayTeamShort: awayTeam.team.shortDisplayName
+                    };
+                });
+                
+                // Use DataSyncManager for intelligent game matching and synchronization
+                const syncResult = this.dataSyncManager.syncGameData(this.games, espnGames);
+                
+                // Update our games with synchronized data
+                syncResult.updated.forEach(updatedGame => {
+                    const gameIndex = this.games.findIndex(g => g.id === updatedGame.id);
+                    if (gameIndex !== -1) {
+                        const oldGame = { ...this.games[gameIndex] };
+                        this.games[gameIndex] = updatedGame;
                         
-                        // Update with REAL ESPN scores
-                        const oldHomeScore = ourGame.homeScore;
-                        const oldAwayScore = ourGame.awayScore;
+                        // Handle status transitions
+                        this.handleGameStatusTransition(updatedGame, oldGame);
                         
-                        ourGame.homeScore = parseInt(homeTeam.score || 0);
-                        ourGame.awayScore = parseInt(awayTeam.score || 0);
-                        ourGame.status = espnGame.status.type.description === 'Final' ? 'FINAL' : 
-                                       espnGame.status.type.description.includes('Progress') || 
-                                       espnGame.status.type.description.includes('In Progress') ? 'LIVE' : 
-                                       'SCHEDULED';
+                        console.log(`🏈 SYNC UPDATE: ${updatedGame.awayTeam} ${updatedGame.awayScore} - ${updatedGame.homeScore} ${updatedGame.homeTeam} (${updatedGame.status})`);
                         
-                        if (espnGame.status.period) {
-                            ourGame.quarter = espnGame.status.period === 5 ? 'OT' : `${espnGame.status.period}`;
+                        // Log significant changes
+                        if (oldGame.homeScore !== updatedGame.homeScore || oldGame.awayScore !== updatedGame.awayScore) {
+                            console.log(`  📊 Score change: ${oldGame.awayScore}-${oldGame.homeScore} → ${updatedGame.awayScore}-${updatedGame.homeScore}`);
                         }
                         
-                        if (espnGame.status.displayClock) {
-                            ourGame.timeRemaining = espnGame.status.displayClock;
+                        if (oldGame.status !== updatedGame.status) {
+                            console.log(`  🔄 Status change: ${oldGame.status} → ${updatedGame.status}`);
                         }
-                        
-                        console.log(`🏈 REAL SCORE UPDATE: ${ourGame.awayTeam} ${ourGame.awayScore} - ${ourGame.homeScore} ${ourGame.homeTeam} (${ourGame.status})`);
-                        
-                    } else {
-                        console.log(`❌ NO MATCH found for ESPN game: ${awayTeam.team.displayName} @ ${homeTeam.team.displayName}`);
                     }
                 });
+                
+                // Log sync statistics
+                const syncStats = this.dataSyncManager.getSyncStats();
+                console.log(`📊 Sync Stats: ${syncStats.successfulMatches}/${syncStats.totalOperations} successful matches`);
+                
+                // Handle unmatched ESPN games - add them as new games if they're current
+                if (syncResult.unmatched.espn.length > 0) {
+                    console.log(`⚠️ Unmatched ESPN games (${syncResult.unmatched.espn.length}):`);
+                    syncResult.unmatched.espn.forEach(espnGame => {
+                        console.log(`  - ${espnGame.awayTeam} @ ${espnGame.homeTeam}`);
+                        
+                        // Add current/live ESPN games that we don't have locally using comprehensive status checking
+                        if (this.gameStatusClassifier.isLiveGame(espnGame) || this.isGameToday(espnGame.date)) {
+                            const newGame = {
+                                ...espnGame,
+                                id: `espn_${espnGame.id}`,
+                                dataSource: 'espn',
+                                addedFromSync: true,
+                                prediction: {
+                                    homeWinProbability: 50,
+                                    awayWinProbability: 50,
+                                    confidence: 60,
+                                    model: 'ESPN Sync'
+                                }
+                            };
+                            
+                            this.games.push(newGame);
+                            console.log(`✅ Added new ESPN game: ${newGame.awayTeam} @ ${newGame.homeTeam}`);
+                        }
+                    });
+                }
+                
+                if (syncResult.unmatched.local.length > 0) {
+                    console.log(`⚠️ Unmatched local games (${syncResult.unmatched.local.length}):`);
+                    syncResult.unmatched.local.forEach(game => {
+                        console.log(`  - ${game.awayTeam} @ ${game.homeTeam}`);
+                        
+                        // Mark local games that couldn't be matched
+                        game.syncStatus = 'unmatched';
+                        game.lastSyncAttempt = new Date();
+                    });
+                }
+                
+                // Handle conflicts with detailed logging
+                if (syncResult.conflicts.length > 0) {
+                    console.log(`🔧 Resolved ${syncResult.conflicts.length} data conflicts:`);
+                    syncResult.conflicts.forEach(conflict => {
+                        console.log(`  - ${conflict.localGame.awayTeam} @ ${conflict.localGame.homeTeam}:`);
+                        conflict.resolution.appliedChanges.forEach(change => {
+                            console.log(`    ${change.field}: ${change.oldValue} → ${change.newValue}`);
+                        });
+                    });
+                }
+                
+                // Update all views with synchronized data
+                this.updateAllViewsWithSyncedData(syncResult);
                 
                 // Check for finished games and update prediction results
                 this.checkGameResults();
@@ -4823,7 +11500,9 @@ class ComprehensiveNFLApp {
             
         } catch (error) {
             console.error('❌ Failed to fetch real live scores:', error);
-            console.error('Error details:', error);
+            
+            // Use graceful degradation with fallback data
+            this.handleSyncFailure(error, this.games.length > 0 ? this.games : null);
         }
     }
 
@@ -4836,12 +11515,18 @@ class ComprehensiveNFLApp {
             const gameStartTime = this.gameStartTimes[game.id];
             const gameElapsed = now - gameStartTime;
             
+            // Store old game state for transition detection
+            const oldGame = { ...game };
+            
             // Game hasn't started yet
             if (gameElapsed < 0) {
                 if (game.status !== 'SCHEDULED') {
                     game.status = 'SCHEDULED';
                     game.kickoffIn = this.getTimeUntilKickoff(gameStartTime);
                     gamesUpdated = true;
+                    
+                    // Handle status transition
+                    this.handleGameStatusTransition(game, oldGame);
                 }
                 return;
             }
@@ -4852,6 +11537,9 @@ class ComprehensiveNFLApp {
                     game.status = 'LIVE';
                     console.log(`🏈 Game ${game.awayTeam} @ ${game.homeTeam} is now LIVE!`);
                     gamesUpdated = true;
+                    
+                    // Handle status transition
+                    this.handleGameStatusTransition(game, oldGame);
                 }
                 
                 // Update live game data
@@ -4866,6 +11554,9 @@ class ComprehensiveNFLApp {
                     this.finalizeLiveGameData(game);
                     console.log(`🏁 Game ${game.awayTeam} @ ${game.homeTeam} is FINAL! ${game.awayScore}-${game.homeScore}`);
                     gamesUpdated = true;
+                    
+                    // Handle status transition
+                    this.handleGameStatusTransition(game, oldGame);
                 }
             }
         });
@@ -4891,7 +11582,7 @@ class ComprehensiveNFLApp {
         // Only update status indicators, don't modify real scores/quarters
         
         // Keep the original live data intact - don't simulate scores
-        if (game.status === 'LIVE') {
+        if (this.gameStatusClassifier.isLiveGame(game)) {
             // Just update the kickoff display based on real quarter and time remaining
             if (game.quarter && game.timeRemaining) {
                 game.kickoffIn = `LIVE - Q${game.quarter} ${game.timeRemaining}`;
@@ -5027,8 +11718,8 @@ class ComprehensiveNFLApp {
         
         // Refresh all game displays throughout the app
         if (this.currentView === 'dashboard' || this.currentView === 'live-games') {
-            this.displayGamesInGrid('games-grid');
-            this.displayGamesInGrid('live-games-grid');
+            this.displayGamesInGrid('live-games-container');
+            this.displayGamesInGrid('all-games-container');
         }
         
         // Update game selectors in ML models
@@ -5068,9 +11759,12 @@ class ComprehensiveNFLApp {
     }
 
     updateGameNotifications() {
-        // Add notifications for game events
-        const liveGames = this.games.filter(g => g.status === 'LIVE');
-        const finishedGames = this.games.filter(g => g.status === 'FINAL');
+        // Add notifications for game events using comprehensive status classification
+        const liveGames = this.games.filter(g => this.gameStatusClassifier.isLiveGame(g));
+        const finishedGames = this.games.filter(g => {
+            const classification = this.gameStatusClassifier.classifyGameStatus(g);
+            return classification.category === 'completed';
+        });
         
         liveGames.forEach(game => {
             // Could add notifications for scoring, quarters, etc.
@@ -5108,6 +11802,701 @@ class ComprehensiveNFLApp {
         }
     }
 
+    // ==================== DATA SYNCHRONIZATION HELPERS ====================
+    
+    /**
+     * Checks if a game is scheduled for today
+     */
+    isGameToday(gameDate) {
+        if (!gameDate) return false;
+        
+        const today = new Date();
+        const gameDay = new Date(gameDate);
+        
+        return today.toDateString() === gameDay.toDateString();
+    }
+    
+    /**
+     * Updates all views with synchronized data
+     */
+    updateAllViewsWithSyncedData(syncResult) {
+        console.log('🔄 Updating all views with synchronized data...');
+        
+        try {
+            // Update live games view
+            if (document.getElementById('live-view')) {
+                this.refreshLiveGamesDisplay();
+            }
+            
+            // Update dashboard
+            if (document.getElementById('dashboard-view')) {
+                this.refreshDashboardGames();
+            }
+            
+            // Update predictions view
+            if (document.getElementById('predictions-view')) {
+                this.refreshPredictionsDisplay();
+            }
+            
+            // Update any other game-dependent views
+            this.refreshGameDisplays();
+            
+            // Update global game data if it exists
+            if (window.LIVE_NFL_GAMES_TODAY) {
+                this.updateGlobalGameData();
+            }
+            
+            console.log('✅ All views updated with synchronized data');
+            
+        } catch (error) {
+            console.error('❌ Error updating views with synced data:', error);
+        }
+    }
+    
+    /**
+     * Refreshes live games display with latest data
+     */
+    refreshLiveGamesDisplay() {
+        // Use GameStatusClassifier for comprehensive status checking
+        const liveGames = this.games.filter(game => {
+            if (!game) return false;
+            
+            // Use comprehensive status classification
+            const isLive = this.gameStatusClassifier.isLiveGame(game);
+            
+            // Log classification for debugging
+            if (isLive) {
+                const debugInfo = this.gameStatusClassifier.getStatusDebugInfo(game);
+                console.log(`🔴 Live game detected: ${debugInfo.game.teams} - ${debugInfo.classification.normalizedStatus}`);
+            }
+            
+            return isLive;
+        });
+        
+        const upcomingGames = this.games.filter(game => {
+            if (!game) return false;
+            
+            // Use comprehensive status classification
+            const isUpcoming = this.gameStatusClassifier.isUpcomingGame(game);
+            
+            // Log classification for debugging
+            if (isUpcoming) {
+                const debugInfo = this.gameStatusClassifier.getStatusDebugInfo(game);
+                console.log(`⏰ Upcoming game detected: ${debugInfo.game.teams} - ${debugInfo.classification.normalizedStatus}`);
+            }
+            
+            return isUpcoming;
+        });
+        
+        // Update live games section
+        const liveContainer = document.getElementById('live-games-container');
+        if (liveContainer) {
+            if (liveGames.length > 0) {
+                liveContainer.innerHTML = liveGames.map(game => this.createGameCard(game, 'live')).join('');
+            } else {
+                liveContainer.innerHTML = `
+                    <div class="no-games-message">
+                        <i class="fas fa-clock"></i>
+                        <p>No live games at the moment</p>
+                        <p class="text-muted">Check back during game time</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update upcoming games section
+        const upcomingContainer = document.getElementById('upcoming-games-container');
+        if (upcomingContainer) {
+            if (upcomingGames.length > 0) {
+                upcomingContainer.innerHTML = upcomingGames.map(game => this.createGameCard(game, 'upcoming')).join('');
+            } else {
+                upcomingContainer.innerHTML = `
+                    <div class="no-games-message">
+                        <i class="fas fa-calendar"></i>
+                        <p>No upcoming games scheduled</p>
+                        <p class="text-muted">All games may be completed or in progress</p>
+                    </div>
+                `;
+            }
+        }
+        
+        console.log(`🔄 Refreshed live games: ${liveGames.length} live, ${upcomingGames.length} upcoming`);
+        
+        // Update live games count in dashboard
+        const liveGamesCount = document.getElementById('live-games-count');
+        if (liveGamesCount) {
+            liveGamesCount.textContent = liveGames.length;
+        }
+    }
+    
+    /**
+     * Ensures all games have proper status classification and handles unknown/null statuses
+     * @param {Array} games - Array of game objects to normalize
+     * @returns {Array} - Array of games with normalized statuses
+     */
+    normalizeGameStatuses(games) {
+        if (!games || !Array.isArray(games)) {
+            console.warn('❌ normalizeGameStatuses: Invalid games array provided');
+            return [];
+        }
+        
+        return games.map(game => {
+            if (!game) {
+                console.warn('❌ normalizeGameStatuses: Null game found, skipping');
+                return null;
+            }
+            
+            // Classify the game status using comprehensive classifier
+            const classification = this.gameStatusClassifier.classifyGameStatus(game);
+            
+            // Create normalized game object
+            const normalizedGame = {
+                ...game,
+                // Ensure we have the normalized status
+                normalizedStatus: classification.normalizedStatus,
+                statusCategory: classification.category,
+                statusReason: classification.reason,
+                // Keep original status for reference
+                originalStatus: game.status,
+                // Add classification metadata
+                statusClassification: classification
+            };
+            
+            // If the original status was null/undefined, update it with the normalized status
+            if (!game.status || game.status === 'undefined' || game.status === 'null') {
+                normalizedGame.status = classification.normalizedStatus;
+                console.log(`🔄 Updated null status for ${game.awayTeam} @ ${game.homeTeam}: ${classification.normalizedStatus}`);
+            }
+            
+            return normalizedGame;
+        }).filter(game => game !== null); // Remove any null games
+    }
+    
+    /**
+     * Filters games by status category using comprehensive classification
+     * @param {Array} games - Games to filter
+     * @param {string} category - Category to filter by ('live', 'upcoming', 'completed', 'postponed')
+     * @returns {Array} - Filtered games
+     */
+    filterGamesByStatusCategory(games, category) {
+        if (!games || !Array.isArray(games)) {
+            console.warn('❌ filterGamesByStatusCategory: Invalid games array provided');
+            return [];
+        }
+        
+        if (!category) {
+            console.warn('❌ filterGamesByStatusCategory: No category provided');
+            return games;
+        }
+        
+        return games.filter(game => {
+            if (!game) return false;
+            
+            const classification = this.gameStatusClassifier.classifyGameStatus(game);
+            const matches = classification.category === category;
+            
+            if (matches) {
+                console.log(`✅ Game matches ${category}: ${game.awayTeam} @ ${game.homeTeam} (${classification.normalizedStatus})`);
+            }
+            
+            return matches;
+        });
+    }
+    
+    /**
+     * Refreshes dashboard games display
+     */
+    refreshDashboardGames() {
+        // Filter today's games and normalize their statuses
+        const todaysGames = this.games.filter(game => this.isGameToday(game.date));
+        const normalizedGames = this.normalizeGameStatuses(todaysGames);
+        
+        // Categorize games by status for dashboard display
+        const liveGames = this.filterGamesByStatusCategory(normalizedGames, 'live');
+        const upcomingGames = this.filterGamesByStatusCategory(normalizedGames, 'upcoming');
+        const completedGames = this.filterGamesByStatusCategory(normalizedGames, 'completed');
+        
+        const dashboardContainer = document.getElementById('dashboard-games-container');
+        if (dashboardContainer) {
+            if (normalizedGames.length > 0) {
+                dashboardContainer.innerHTML = `
+                    <div class="dashboard-games-section">
+                        ${liveGames.length > 0 ? `
+                            <div class="games-category">
+                                <h3 class="category-title live">🔴 Live Games (${liveGames.length})</h3>
+                                <div class="games-grid">
+                                    ${liveGames.map(game => this.createDashboardGameCard(game, 'live')).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${upcomingGames.length > 0 ? `
+                            <div class="games-category">
+                                <h3 class="category-title upcoming">⏰ Upcoming Games (${upcomingGames.length})</h3>
+                                <div class="games-grid">
+                                    ${upcomingGames.map(game => this.createDashboardGameCard(game, 'upcoming')).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${completedGames.length > 0 ? `
+                            <div class="games-category">
+                                <h3 class="category-title completed">✅ Completed Games (${completedGames.length})</h3>
+                                <div class="games-grid">
+                                    ${completedGames.map(game => this.createDashboardGameCard(game, 'completed')).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                dashboardContainer.innerHTML = `
+                    <div class="no-games-message">
+                        <i class="fas fa-calendar-day"></i>
+                        <p>No games scheduled for today</p>
+                        <p class="text-muted">Check back tomorrow for upcoming games</p>
+                    </div>
+                `;
+            }
+        }
+        
+        console.log(`🔄 Refreshed dashboard: ${normalizedGames.length} today's games (${liveGames.length} live, ${upcomingGames.length} upcoming, ${completedGames.length} completed)`);
+    }
+    
+    /**
+     * Creates a dashboard-specific game card with comprehensive status classification
+     * @param {Object} game - Game object
+     * @param {string} category - Status category (live, upcoming, completed)
+     * @returns {string} - HTML string for the game card
+     */
+    createDashboardGameCard(game, category) {
+        const classification = this.gameStatusClassifier.classifyGameStatus(game);
+        const displayStatus = classification.normalizedStatus || 'SCHEDULED';
+        const isLive = classification.category === 'live';
+        const isCompleted = classification.category === 'completed';
+        
+        return `
+            <div class="dashboard-game-card ${category}" data-game-id="${game.id}">
+                <div class="game-header">
+                    <div class="game-status ${category}">
+                        <span class="status-badge">${displayStatus}</span>
+                        ${isLive ? '<span class="live-indicator">🔴</span>' : ''}
+                    </div>
+                    <div class="game-time">${game.time || game.date || 'TBD'}</div>
+                </div>
+                
+                <div class="game-matchup">
+                    <div class="team away ${isCompleted && game.awayScore > game.homeScore ? 'winner' : ''}">
+                        <div class="team-info">
+                            <span class="team-name">${game.awayTeam}</span>
+                            <span class="team-score ${isLive ? 'live' : ''}">${game.awayScore || 0}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="game-separator">
+                        ${isCompleted ? 'FINAL' : 
+                          isLive ? (game.quarter ? `Q${game.quarter}` : 'LIVE') : 
+                          'vs'}
+                    </div>
+                    
+                    <div class="team home ${isCompleted && game.homeScore > game.awayScore ? 'winner' : ''}">
+                        <div class="team-info">
+                            <span class="team-name">${game.homeTeam}</span>
+                            <span class="team-score ${isLive ? 'live' : ''}">${game.homeScore || 0}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                ${game.prediction ? `
+                    <div class="game-prediction">
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: ${game.prediction.homeWinProbability || 50}%"></div>
+                        </div>
+                        <div class="prediction-text">
+                            ${game.homeTeam} ${game.prediction.homeWinProbability || 50}% - ${game.prediction.awayWinProbability || 50}% ${game.awayTeam}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${game.network ? `<div class="game-network">${game.network}</div>` : ''}
+            </div>
+        `;
+    }
+    
+    /**
+     * Refreshes predictions display with latest data
+     */
+    refreshPredictionsDisplay() {
+        // Filter games with predictions and normalize their statuses
+        const gamesWithPredictions = this.games.filter(game => game.prediction);
+        const normalizedGames = this.normalizeGameStatuses(gamesWithPredictions);
+        
+        // Categorize predictions by game status
+        const livePredictions = this.filterGamesByStatusCategory(normalizedGames, 'live');
+        const upcomingPredictions = this.filterGamesByStatusCategory(normalizedGames, 'upcoming');
+        const completedPredictions = this.filterGamesByStatusCategory(normalizedGames, 'completed');
+        
+        const predictionsContainer = document.getElementById('predictions-container');
+        if (predictionsContainer) {
+            if (normalizedGames.length > 0) {
+                predictionsContainer.innerHTML = `
+                    <div class="predictions-section">
+                        ${livePredictions.length > 0 ? `
+                            <div class="predictions-category">
+                                <h3 class="category-title live">🔴 Live Game Predictions (${livePredictions.length})</h3>
+                                <div class="predictions-grid">
+                                    ${livePredictions.map(game => this.createPredictionCard(game, 'live')).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${upcomingPredictions.length > 0 ? `
+                            <div class="predictions-category">
+                                <h3 class="category-title upcoming">⏰ Upcoming Game Predictions (${upcomingPredictions.length})</h3>
+                                <div class="predictions-grid">
+                                    ${upcomingPredictions.map(game => this.createPredictionCard(game, 'upcoming')).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${completedPredictions.length > 0 ? `
+                            <div class="predictions-category">
+                                <h3 class="category-title completed">✅ Completed Game Results (${completedPredictions.length})</h3>
+                                <div class="predictions-grid">
+                                    ${completedPredictions.map(game => this.createPredictionCard(game, 'completed')).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                predictionsContainer.innerHTML = `
+                    <div class="no-predictions-message">
+                        <i class="fas fa-crystal-ball"></i>
+                        <p>No predictions available</p>
+                        <p class="text-muted">Predictions will appear when games are loaded</p>
+                    </div>
+                `;
+            }
+        }
+        
+        console.log(`🔄 Refreshed predictions: ${normalizedGames.length} games with predictions (${livePredictions.length} live, ${upcomingPredictions.length} upcoming, ${completedPredictions.length} completed)`);
+    }
+    
+    /**
+     * Creates a prediction card with comprehensive status classification
+     * @param {Object} game - Game object with prediction data
+     * @param {string} category - Status category (live, upcoming, completed)
+     * @returns {string} - HTML string for the prediction card
+     */
+    createPredictionCard(game, category = 'upcoming') {
+        const classification = this.gameStatusClassifier.classifyGameStatus(game);
+        const displayStatus = classification.normalizedStatus || 'SCHEDULED';
+        const isLive = classification.category === 'live';
+        const isCompleted = classification.category === 'completed';
+        const prediction = game.prediction || {};
+        
+        // Calculate prediction accuracy for completed games
+        let accuracyInfo = '';
+        if (isCompleted && prediction.predictedWinner) {
+            const actualWinner = game.homeScore > game.awayScore ? game.homeTeam : 
+                               game.awayScore > game.homeScore ? game.awayTeam : 'TIE';
+            const predictionCorrect = prediction.predictedWinner === actualWinner;
+            accuracyInfo = `
+                <div class="prediction-accuracy ${predictionCorrect ? 'correct' : 'incorrect'}">
+                    ${predictionCorrect ? '✅ Correct' : '❌ Incorrect'} Prediction
+                </div>
+            `;
+        }
+        
+        return `
+            <div class="prediction-card ${category}" data-game-id="${game.id}">
+                <div class="prediction-header">
+                    <div class="game-status ${category}">
+                        <span class="status-badge">${displayStatus}</span>
+                        ${isLive ? '<span class="live-indicator">🔴</span>' : ''}
+                    </div>
+                    <div class="prediction-confidence">
+                        Confidence: ${prediction.confidence || 75}%
+                    </div>
+                </div>
+                
+                <div class="game-matchup">
+                    <div class="team away ${isCompleted && game.awayScore > game.homeScore ? 'winner' : ''}">
+                        <div class="team-info">
+                            <span class="team-name">${game.awayTeam}</span>
+                            <span class="team-score ${isLive ? 'live' : ''}">${game.awayScore || 0}</span>
+                        </div>
+                        <div class="team-prediction">
+                            ${prediction.awayWinProbability || 50}%
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-separator">
+                        ${isCompleted ? 'FINAL' : 
+                          isLive ? (game.quarter ? `Q${game.quarter}` : 'LIVE') : 
+                          'vs'}
+                    </div>
+                    
+                    <div class="team home ${isCompleted && game.homeScore > game.awayScore ? 'winner' : ''}">
+                        <div class="team-info">
+                            <span class="team-name">${game.homeTeam}</span>
+                            <span class="team-score ${isLive ? 'live' : ''}">${game.homeScore || 0}</span>
+                        </div>
+                        <div class="team-prediction">
+                            ${prediction.homeWinProbability || 50}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="prediction-details">
+                    <div class="prediction-bar">
+                        <div class="prediction-fill away" style="width: ${prediction.awayWinProbability || 50}%"></div>
+                        <div class="prediction-fill home" style="width: ${prediction.homeWinProbability || 50}%"></div>
+                    </div>
+                    
+                    ${prediction.predictedWinner ? `
+                        <div class="predicted-winner">
+                            Predicted Winner: <strong>${prediction.predictedWinner}</strong>
+                        </div>
+                    ` : ''}
+                    
+                    ${prediction.model ? `
+                        <div class="prediction-model">
+                            Model: ${prediction.model}
+                        </div>
+                    ` : ''}
+                    
+                    ${accuracyInfo}
+                </div>
+                
+                ${game.time || game.date ? `
+                    <div class="game-time">${game.time || game.date}</div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    /**
+     * Handles real-time status updates when game states change
+     * @param {Object} updatedGame - Game with updated status
+     * @param {Object} previousGame - Game with previous status
+     */
+    handleGameStatusTransition(updatedGame, previousGame) {
+        if (!updatedGame || !previousGame) {
+            console.warn('❌ handleGameStatusTransition: Invalid game data provided');
+            return;
+        }
+        
+        const previousClassification = this.gameStatusClassifier.classifyGameStatus(previousGame);
+        const currentClassification = this.gameStatusClassifier.classifyGameStatus(updatedGame);
+        
+        // Check if status category changed
+        if (previousClassification.category !== currentClassification.category) {
+            console.log(`🔄 Game status transition detected: ${updatedGame.awayTeam} @ ${updatedGame.homeTeam}`);
+            console.log(`  Previous: ${previousClassification.normalizedStatus} (${previousClassification.category})`);
+            console.log(`  Current: ${currentClassification.normalizedStatus} (${currentClassification.category})`);
+            
+            // Trigger view updates for status transitions
+            this.updateViewsForStatusTransition(updatedGame, previousClassification, currentClassification);
+            
+            // Log significant transitions
+            this.logStatusTransition(updatedGame, previousClassification, currentClassification);
+        }
+    }
+    
+    /**
+     * Updates all relevant views when a game status transitions
+     * @param {Object} game - Game that transitioned
+     * @param {Object} previousClassification - Previous status classification
+     * @param {Object} currentClassification - Current status classification
+     */
+    updateViewsForStatusTransition(game, previousClassification, currentClassification) {
+        console.log(`🔄 Updating views for status transition: ${game.awayTeam} @ ${game.homeTeam}`);
+        
+        // Update live games display if transitioning to/from live
+        if (previousClassification.category === 'live' || currentClassification.category === 'live') {
+            console.log('  Updating live games display...');
+            this.refreshLiveGamesDisplay();
+        }
+        
+        // Update dashboard if it's a today's game
+        if (this.isGameToday(game.date)) {
+            console.log('  Updating dashboard games...');
+            this.refreshDashboardGames();
+        }
+        
+        // Update predictions display if game has predictions
+        if (game.prediction) {
+            console.log('  Updating predictions display...');
+            this.refreshPredictionsDisplay();
+        }
+        
+        // Update main games grid
+        console.log('  Updating main games grid...');
+        this.displayGamesInGrid('live-games-container');
+        this.displayGamesInGrid('all-games-container');
+        
+        // Update live games count
+        this.updateLiveGamesCount();
+    }
+    
+    /**
+     * Logs status transitions for monitoring and debugging
+     * @param {Object} game - Game that transitioned
+     * @param {Object} previousClassification - Previous status classification
+     * @param {Object} currentClassification - Current status classification
+     */
+    logStatusTransition(game, previousClassification, currentClassification) {
+        const transition = {
+            gameId: game.id,
+            teams: `${game.awayTeam} @ ${game.homeTeam}`,
+            scores: `${game.awayScore || 0} - ${game.homeScore || 0}`,
+            previousStatus: {
+                status: previousClassification.normalizedStatus,
+                category: previousClassification.category
+            },
+            currentStatus: {
+                status: currentClassification.normalizedStatus,
+                category: currentClassification.category
+            },
+            timestamp: new Date(),
+            transitionType: this.getTransitionType(previousClassification.category, currentClassification.category)
+        };
+        
+        // Store transition for analytics
+        if (!this.statusTransitions) {
+            this.statusTransitions = [];
+        }
+        this.statusTransitions.push(transition);
+        
+        // Keep only last 50 transitions
+        if (this.statusTransitions.length > 50) {
+            this.statusTransitions.shift();
+        }
+        
+        console.log('📊 Status transition logged:', transition);
+    }
+    
+    /**
+     * Determines the type of status transition
+     * @param {string} previousCategory - Previous status category
+     * @param {string} currentCategory - Current status category
+     * @returns {string} - Transition type
+     */
+    getTransitionType(previousCategory, currentCategory) {
+        const transitionMap = {
+            'upcoming-live': 'GAME_STARTED',
+            'live-completed': 'GAME_ENDED',
+            'upcoming-completed': 'GAME_SKIPPED', // Rare case
+            'live-upcoming': 'GAME_POSTPONED',
+            'completed-live': 'GAME_RESUMED', // Very rare
+            'upcoming-postponed': 'GAME_DELAYED',
+            'live-postponed': 'GAME_SUSPENDED'
+        };
+        
+        const key = `${previousCategory}-${currentCategory}`;
+        return transitionMap[key] || 'UNKNOWN_TRANSITION';
+    }
+    
+    /**
+     * Updates live games count across all views
+     */
+    updateLiveGamesCount() {
+        const liveCount = this.games.filter(g => this.gameStatusClassifier.isLiveGame(g)).length;
+        
+        // Update all live games count elements
+        const countElements = document.querySelectorAll('.live-games-count, #live-games-count');
+        countElements.forEach(element => {
+            element.textContent = liveCount;
+        });
+        
+        console.log(`🔄 Updated live games count: ${liveCount}`);
+    }
+    
+    /**
+     * Updates global game data for compatibility
+     */
+    updateGlobalGameData() {
+        if (window.LIVE_NFL_GAMES_TODAY && this.games) {
+            // Update existing global games with our synchronized data
+            this.games.forEach(ourGame => {
+                const globalGame = window.LIVE_NFL_GAMES_TODAY.find(g => g.id === ourGame.id);
+                if (globalGame) {
+                    // Update scores and status
+                    globalGame.homeScore = ourGame.homeScore;
+                    globalGame.awayScore = ourGame.awayScore;
+                    globalGame.status = ourGame.status;
+                    globalGame.quarter = ourGame.quarter;
+                    globalGame.timeRemaining = ourGame.timeRemaining;
+                    globalGame.lastSynced = new Date();
+                }
+            });
+            
+            // Add new games from ESPN that aren't in global data
+            const newGames = this.games.filter(game => 
+                game.addedFromSync && 
+                !window.LIVE_NFL_GAMES_TODAY.find(g => g.id === game.id)
+            );
+            
+            if (newGames.length > 0) {
+                window.LIVE_NFL_GAMES_TODAY.push(...newGames);
+                console.log(`✅ Added ${newGames.length} new games to global data`);
+            }
+        }
+    }
+    
+    /**
+     * Validates game data before processing
+     */
+    validateAndSanitizeGameData(games) {
+        return games.map(game => {
+            const validation = this.dataSyncManager.validateGameData(game);
+            
+            if (!validation.isValid) {
+                console.warn(`⚠️ Invalid game data for ${game.awayTeam} @ ${game.homeTeam}:`, validation.errors);
+                return null;
+            }
+            
+            if (validation.warnings.length > 0) {
+                console.warn(`⚠️ Game data warnings for ${game.awayTeam} @ ${game.homeTeam}:`, validation.warnings);
+            }
+            
+            return this.dataSyncManager.sanitizeGameData(game);
+        }).filter(game => game !== null);
+    }
+    
+    /**
+     * Handles graceful degradation when sync fails
+     */
+    handleSyncFailure(error, fallbackData = null) {
+        console.error('❌ Data synchronization failed:', error);
+        
+        // Add error notification
+        this.addGameNotification(
+            'Data Sync Warning',
+            'Some game data may be outdated. Using cached information.',
+            'warning'
+        );
+        
+        // Use fallback data if available
+        if (fallbackData && Array.isArray(fallbackData)) {
+            console.log('🔄 Using fallback data for game information');
+            const validatedGames = this.validateAndSanitizeGameData(fallbackData);
+            
+            if (validatedGames.length > 0) {
+                this.games = [...this.games, ...validatedGames];
+                this.updateAllViewsWithSyncedData({ updated: validatedGames });
+            }
+        }
+        
+        // Schedule retry
+        setTimeout(() => {
+            console.log('🔄 Retrying data synchronization...');
+            this.fetchRealLiveScores();
+        }, 30000); // Retry in 30 seconds
+    }
+
     // ==================== PREDICTION TRACKING SYSTEM ====================
     
     initializePredictionTracking() {
@@ -5138,9 +12527,9 @@ class ComprehensiveNFLApp {
     createTodaysPredictions() {
         const today = new Date().toISOString().split('T')[0];
         
-        // Create predictions for today's live games
+        // Create predictions for today's live and upcoming games using comprehensive status checking
         this.games.forEach(game => {
-            if (game.status === 'LIVE' || game.status === 'SCHEDULED') {
+            if (this.gameStatusClassifier.isLiveGame(game) || this.gameStatusClassifier.isUpcomingGame(game)) {
                 // Money Line prediction
                 this.addPrediction({
                     id: `${game.id}_moneyline`,

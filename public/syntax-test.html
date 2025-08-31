@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntax Test - NFL Analytics Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #10b981;
+        }
+        .error {
+            background: #ef4444;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 JavaScript Syntax Test</h1>
+    <div id="results"></div>
+
+    <!-- Test script loading -->
+    <script src="comprehensive-nfl-app.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+        
+        // Test 1: Check if comprehensive app loaded
+        try {
+            if (typeof ComprehensiveNFLApp !== 'undefined') {
+                addResult('✅ ComprehensiveNFLApp class loaded successfully');
+            } else {
+                addResult('❌ ComprehensiveNFLApp class not found', 'error');
+            }
+        } catch (error) {
+            addResult(`❌ Error loading ComprehensiveNFLApp: ${error.message}`, 'error');
+        }
+        
+        // Test 2: Check if ModernNFLApp loaded
+        try {
+            if (typeof ModernNFLApp !== 'undefined') {
+                addResult('✅ ModernNFLApp class loaded successfully');
+            } else {
+                addResult('❌ ModernNFLApp class not found', 'error');
+            }
+        } catch (error) {
+            addResult(`❌ Error loading ModernNFLApp: ${error.message}`, 'error');
+        }
+        
+        // Test 3: Check if global functions exist
+        const globalFunctions = [
+            'refreshAllData', 'switchSeason', 'changeWeek', 'selectWeek',
+            'loadLiveGames', 'showFantasyTab', 'connectESPN', 'connectYahoo',
+            'connectSleeper', 'optimizeLineup', 'analyzeTrade', 'handleWidgetError'
+        ];
+        
+        let functionsFound = 0;
+        globalFunctions.forEach(funcName => {
+            if (typeof window[funcName] === 'function') {
+                functionsFound++;
+            } else {
+                addResult(`❌ Function ${funcName} not found`, 'error');
+            }
+        });
+        
+        if (functionsFound === globalFunctions.length) {
+            addResult(`✅ All ${globalFunctions.length} global functions loaded successfully`);
+        } else {
+            addResult(`⚠️ ${functionsFound}/${globalFunctions.length} global functions loaded`, 'warning');
+        }
+        
+        // Test 4: Check if nflApp object exists
+        try {
+            if (window.nflApp && typeof window.nflApp === 'object') {
+                const nflAppMethods = ['viewGameDetails', 'simulateGame', 'optimizeLineup', 'analyzeTrade'];
+                let methodsFound = 0;
+                
+                nflAppMethods.forEach(method => {
+                    if (typeof window.nflApp[method] === 'function') {
+                        methodsFound++;
+                    }
+                });
+                
+                if (methodsFound === nflAppMethods.length) {
+                    addResult('✅ nflApp object with all methods loaded successfully');
+                } else {
+                    addResult(`⚠️ nflApp object loaded but missing ${nflAppMethods.length - methodsFound} methods`, 'warning');
+                }
+            } else {
+                addResult('❌ nflApp object not found', 'error');
+            }
+        } catch (error) {
+            addResult(`❌ Error checking nflApp: ${error.message}`, 'error');
+        }
+        
+        // Test 5: Check if modernApp exists
+        try {
+            if (window.modernApp && typeof window.modernApp === 'object') {
+                addResult('✅ modernApp instance loaded successfully');
+            } else {
+                addResult('❌ modernApp instance not found', 'error');
+            }
+        } catch (error) {
+            addResult(`❌ Error checking modernApp: ${error.message}`, 'error');
+        }
+        
+        // Test 6: Test a simple function call
+        try {
+            if (typeof window.refreshAllData === 'function') {
+                // Don't actually call it, just test that it exists and can be called
+                addResult('✅ Function calls should work - refreshAllData is callable');
+            }
+        } catch (error) {
+            addResult(`❌ Error testing function calls: ${error.message}`, 'error');
+        }
+        
+        // Summary
+        setTimeout(() => {
+            const errorCount = document.querySelectorAll('.error').length;
+            const warningCount = document.querySelectorAll('.warning').length;
+            
+            if (errorCount === 0 && warningCount === 0) {
+                addResult('🎉 ALL TESTS PASSED - No syntax errors detected!', 'success');
+                addResult('✅ All buttons should now work properly', 'success');
+            } else if (errorCount === 0) {
+                addResult(`⚠️ Tests completed with ${warningCount} warnings`, 'warning');
+            } else {
+                addResult(`❌ Tests failed with ${errorCount} errors and ${warningCount} warnings`, 'error');
+            }
+        }, 100);
+    </script>
+</body>
+</html>

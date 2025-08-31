@@ -188,6 +188,8 @@ npm i -g vercel
 vercel --prod
 ```
 
+**Troubleshooting**: If you encounter deployment issues, see [DEPLOYMENT_TROUBLESHOOTING.md](./DEPLOYMENT_TROUBLESHOOTING.md) for comprehensive solutions.
+
 ### Netlify  
 ```bash
 npm run build
@@ -209,6 +211,13 @@ CMD ["npm", "start"]
 ```bash
 git push heroku main
 ```
+
+## 📚 Deployment Documentation
+
+- **[DEPLOYMENT_TROUBLESHOOTING.md](./DEPLOYMENT_TROUBLESHOOTING.md)** - Comprehensive troubleshooting guide
+- **[DEPLOYMENT_QUICK_REFERENCE.md](./DEPLOYMENT_QUICK_REFERENCE.md)** - Quick commands and fixes  
+- **[VERCEL_DEPLOYMENT_CHECKLIST.md](./VERCEL_DEPLOYMENT_CHECKLIST.md)** - Step-by-step deployment checklist
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Full Kubernetes deployment guide
 
 ## 📈 Performance Metrics
 

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday Edge Pro Betting Quantum - Elite NFL Analytics Platform</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Production Styles -->
+    <link rel="stylesheet" href="sunday-edge-pro-styles.css">
+    
+    <style>
+        :root {
+            /* Sunday Edge Pro Quantum Brand Colors */
+            --quantum-primary: #00ff88;
+            --quantum-secondary: #0066ff;
+            --quantum-accent: #ff0066;
+            --quantum-gold: #ffd700;
+            --quantum-dark: #0a0a0a;
+            --quantum-darker: #050505;
+            --quantum-light: #ffffff;
+            --quantum-gray: #333333;
+            --quantum-border: rgba(0, 255, 136, 0.3);
+            --quantum-glow: 0 0 20px rgba(0, 255, 136, 0.5);
+            --quantum-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--quantum-darker) 0%, var(--quantum-dark) 100%);
+            color: var(--quantum-light);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--quantum-border);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--quantum-primary);
+            text-shadow: var(--quantum-glow);
+        }
+
+        .quantum-badge {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            color: var(--quantum-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--quantum-light);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--quantum-primary);
+            box-shadow: var(--quantum-glow);
+            color: var(--quantum-primary);
+        }
+
+        /* Main Content */
+        .app-container {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .view-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .view-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .view-header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Cards */
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--quantum-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--quantum-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--quantum-primary);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--quantum-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--quantum-glow);
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--quantum-primary);
+            font-family: 'JetBrains Mono', monospace;
+            text-shadow: var(--quantum-glow);
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--quantum-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--quantum-primary);
+            box-shadow: var(--quantum-glow);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .team-matchup {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--quantum-light);
+        }
+
+        .game-status {
+            background: var(--quantum-primary);
+            color: var(--quantum-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .game-status.live {
+            background: var(--quantum-accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Betting Odds */
+        .odds-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .odds-item {
+            background: rgba(0, 102, 255, 0.1);
+            border: 1px solid var(--quantum-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .odds-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .odds-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--quantum-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Loading States */
+        .loading-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--quantum-border);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 255, 136, 0.3);
+            border-top: 3px solid var(--quantum-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+            color: var(--quantum-dark);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--quantum-glow);
+        }
+
+        .btn-refresh {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--quantum-primary);
+            color: var(--quantum-primary);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-refresh:hover {
+            background: var(--quantum-primary);
+            color: var(--quantum-dark);
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--quantum-primary);
+        }
+
+        .status-indicator.connected {
+            color: var(--quantum-primary);
+        }
+
+        .status-indicator.disconnected {
+            color: var(--quantum-accent);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .view-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-bolt"></i>
+                <span>Sunday Edge Pro</span>
+                <span class="quantum-badge">QUANTUM</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#live" class="nav-link" data-view="live">
+                    <i class="fas fa-broadcast-tower"></i> Live Games
+                </a>
+                <a href="#predictions" class="nav-link" data-view="predictions">
+                    <i class="fas fa-brain"></i> AI Predictions
+                </a>
+                <a href="#betting" class="nav-link" data-view="betting">
+                    <i class="fas fa-coins"></i> Betting Edge
+                </a>
+                <a href="#analytics" class="nav-link" data-view="analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a href="#fantasy" class="nav-link" data-view="fantasy">
+                    <i class="fas fa-trophy"></i> Fantasy
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="btn-refresh" onclick="refreshAllData()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <div class="status-indicator connected" id="connectionStatus">
+                    <i class="fas fa-circle"></i>
+                    <span>LIVE</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <div class="view-header">
+                <h1><i class="fas fa-bolt"></i> Sunday Edge Pro Quantum</h1>
+                <p>Elite NFL Analytics & Betting Intelligence Platform</p>
+            </div>
+            
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-games">--</div>
+                    <div class="metric-label">Total Games Today</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="live-games">--</div>
+                    <div class="metric-label">Live Games</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="prediction-accuracy">--</div>
+                    <div class="metric-label">AI Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="edge-opportunities">--</div>
+                    <div class="metric-label">Edge Opportunities</div>
+                </div>
+            </div>
+            
+            <!-- Live Games Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-broadcast-tower"></i> Live Games</h2>
+                    <button class="btn-refresh" onclick="refreshLiveGames()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="live-games-container" class="games-grid">
+                    <div class="loading-card">
+                        <div class="loading-spinner"></div>
+                        <p>Loading live games...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Games Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Upcoming Games</h2>
+                    <button class="btn-refresh" onclick="refreshUpcomingGames()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="upcoming-games-container" class="games-grid">
+                    <div class="loading-card">
+                        <div class="loading-spinner"></div>
+                        <p>Loading upcoming games...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Games View -->
+        <div id="live" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-broadcast-tower"></i> Live NFL Games</h1>
+                <p>Real-time scores, stats, and live betting opportunities</p>
+            </div>
+            
+            <div id="all-live-games-container" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p>Loading all live games...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Predictions View -->
+        <div id="predictions" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-brain"></i> AI Predictions</h1>
+                <p>Advanced machine learning predictions and analysis</p>
+            </div>
+            
+            <div id="predictions-container" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p>Loading AI predictions...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Betting Edge View -->
+        <div id="betting" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-coins"></i> Betting Edge</h1>
+                <p>Live odds, line movements, and betting opportunities</p>
+            </div>
+            
+            <div id="betting-container" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p>Loading betting data...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics View -->
+        <div id="analytics" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-chart-line"></i> Advanced Analytics</h1>
+                <p>Deep statistical analysis and performance metrics</p>
+            </div>
+            
+            <div id="analytics-container" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p>Loading analytics...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fantasy View -->
+        <div id="fantasy" class="view">
+            <div class="view-header">
+                <h1><i class="fas fa-trophy"></i> Fantasy Edge</h1>
+                <p>Fantasy football insights and optimization</p>
+            </div>
+            
+            <div id="fantasy-container" class="games-grid">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p>Loading fantasy data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sunday Edge Pro Quantum JavaScript -->
+    <script src="sunday-edge-pro-quantum.js"></script>
+</body>
+</html>
