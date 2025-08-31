@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔴 FORCED LIVE GAME TEST</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .live-game { border: 2px solid #ff4444; padding: 20px; margin: 20px 0; border-radius: 8px; background: #2a1a1a; }
+        .score { font-size: 1.5em; font-weight: bold; color: #fff; margin: 10px 0; }
+        .live-indicator { color: #ff4444; font-weight: bold; animation: pulse 1.5s infinite; }
+        .btn { padding: 12px 24px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        h1 { color: #ff4444; text-align: center; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .odds { background: #2a2a2a; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .ai { background: #1a2a3a; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔴 FORCED LIVE GAME TEST</h1>
+    <p>This will force the Virginia Tech vs South Carolina live game to show up</p>
+    
+    <button class="btn" onclick="testForcedLiveGame()">🔴 GET FORCED LIVE GAME</button>
+    <button class="btn" onclick="testGetTodaysGames()">📊 GET TODAY'S GAMES</button>
+    <button class="btn" onclick="testGetLiveGames()">🔴 GET LIVE GAMES</button>
+    
+    <div id="results"></div>
+
+    <!-- Load NCAA Data Service -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        let ncaaService;
+        
+        // Initialize NCAA Service
+        try {
+            ncaaService = new NCAADataService();
+            console.log('✅ NCAA Data Service initialized');
+        } catch (error) {
+            console.error('❌ Failed to initialize NCAA service:', error);
+        }
+
+        async function testForcedLiveGame() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px;">🔍 Testing forced live game...</div>';
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA service not initialized');
+                }
+
+                console.log('🔴 Testing getForcedLiveGame...');
+                const forcedGame = ncaaService.getForcedLiveGame();
+                
+                console.log('Forced game:', forcedGame);
+                
+                displayGame(forcedGame, 'Forced Live Game');
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultsDiv.innerHTML = `<div style="color: #ff6b6b; padding: 20px;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testGetTodaysGames() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px;">🔍 Testing getTodaysGames...</div>';
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA service not initialized');
+                }
+
+                console.log('📊 Testing getTodaysGames...');
+                const games = await ncaaService.getTodaysGames();
+                
+                console.log('Today\'s games:', games);
+                
+                if (games && games.length > 0) {
+                    displayGames(games, 'Today\'s Games');
+                } else {
+                    resultsDiv.innerHTML = '<div style="color: #ff6b6b; padding: 20px;">No games returned</div>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultsDiv.innerHTML = `<div style="color: #ff6b6b; padding: 20px;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testGetLiveGames() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px;">🔍 Testing getLiveGames...</div>';
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA service not initialized');
+                }
+
+                console.log('🔴 Testing getLiveGames...');
+                const liveGames = await ncaaService.getLiveGames();
+                
+                console.log('Live games:', liveGames);
+                
+                if (liveGames && liveGames.length > 0) {
+                    displayGames(liveGames, 'Live Games');
+                } else {
+                    resultsDiv.innerHTML = '<div style="color: #ff6b6b; padding: 20px;">No live games returned</div>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultsDiv.innerHTML = `<div style="color: #ff6b6b; padding: 20px;">Error: ${error.message}</div>`;
+            }
+        }
+
+        function displayGame(game, title) {
+            const resultsDiv = document.getElementById('results');
+            
+            const liveIndicator = game.isLive ? '<div class="live-indicator">🔴 LIVE NOW</div>' : '';
+            
+            resultsDiv.innerHTML = `
+                <h2>${title}</h2>
+                <div class="live-game">
+                    ${liveIndicator}
+                    <h3>${game.name}</h3>
+                    <div class="score">
+                        ${game.teams.away.name}: ${game.teams.away.score} - ${game.teams.home.name}: ${game.teams.home.score}
+                    </div>
+                    <div style="color: #ccc; margin: 10px 0;">
+                        Status: ${game.status.displayClock || game.status.type} • ${game.venue}
+                    </div>
+                    <div style="color: #aaa; font-size: 0.9em;">
+                        Data Source: ${game.dataSource || 'Unknown'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayGames(games, title) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `<h2>${title} (${games.length} games)</h2>`;
+            
+            games.forEach(game => {
+                const liveClass = game.isLive ? 'live-game' : '';
+                const liveIndicator = game.isLive ? '<div class="live-indicator">🔴 LIVE NOW</div>' : '';
+                
+                html += `
+                    <div class="${liveClass}" style="border: 1px solid #444; margin: 15px 0; padding: 20px; border-radius: 8px; background: #2a2a2a;">
+                        ${liveIndicator}
+                        <h3>${game.name}</h3>
+                        <div class="score">
+                            ${game.teams.away.name}: ${game.teams.away.score} - ${game.teams.home.name}: ${game.teams.home.score}
+                        </div>
+                        <div style="color: #ccc; margin: 10px 0;">
+                            Status: ${game.status.displayClock || game.status.type} • ${game.venue}
+                        </div>
+                        
+                        <!-- LIVE BETTING ODDS -->
+                        ${game.liveBettingOdds ? `
+                        <div class="odds">
+                            <h4>💰 ${game.liveBettingOdds.liveStatus} Betting Odds</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                                <div><strong>Spread</strong><br>${game.teams.home.abbreviation}: ${game.liveBettingOdds.spread.home}<br>${game.teams.away.abbreviation}: ${game.liveBettingOdds.spread.away}</div>
+                                <div><strong>Moneyline</strong><br>${game.teams.home.abbreviation}: ${game.liveBettingOdds.moneyline.home}<br>${game.teams.away.abbreviation}: ${game.liveBettingOdds.moneyline.away}</div>
+                                <div><strong>Total</strong><br>${game.liveBettingOdds.total.over}<br>${game.liveBettingOdds.total.under}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <!-- AI PREDICTION -->
+                        ${game.aiPrediction ? `
+                        <div class="ai">
+                            <h4>🧠 AI Prediction (${game.aiPrediction.confidence}% confidence)</h4>
+                            <div>Win Probability: ${game.teams.home.name} ${game.aiPrediction.homeWinProbability}% - ${game.teams.away.name} ${game.aiPrediction.awayWinProbability}%</div>
+                            <div>Predicted Spread: ${game.aiPrediction.predictedSpread}</div>
+                            <div style="margin-top: 10px; font-weight: bold; color: #ff4444;">💡 ${game.aiPrediction.recommendation}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            setTimeout(testGetTodaysGames, 1000);
+        });
+    </script>
+</body>
+</html>

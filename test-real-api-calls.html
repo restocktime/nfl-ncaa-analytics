@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 REAL API CALLS TEST</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 20px; background: #2a2a2a; border-radius: 8px; }
+        .live-game { border: 2px solid #ff4444; padding: 20px; margin: 20px 0; border-radius: 8px; background: #2a1a1a; }
+        .score { font-size: 1.5em; font-weight: bold; color: #fff; margin: 10px 0; }
+        .live-indicator { color: #ff4444; font-weight: bold; animation: pulse 1.5s infinite; }
+        .btn { padding: 12px 24px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        .success { color: #51cf66; }
+        .error { color: #ff6b6b; }
+        .info { color: #74c0fc; }
+        h1 { color: #ff4444; text-align: center; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .log { background: #1a1a1a; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 REAL API CALLS TEST</h1>
+        <p>Testing actual ESPN and NCAA API calls (no forced data)</p>
+        
+        <div class="test-section">
+            <h2>API Tests</h2>
+            <button class="btn" onclick="testDirectESPNAPI()">📡 Test Direct ESPN API</button>
+            <button class="btn" onclick="testProxyESPNAPI()">🔄 Test ESPN via Proxy</button>
+            <button class="btn" onclick="testNCAAAPI()">🏈 Test NCAA API</button>
+            <button class="btn" onclick="testGetLiveESPNData()">🔴 Test getLiveESPNData</button>
+            <button class="btn" onclick="testGetTodaysGames()">📊 Test getTodaysGames</button>
+        </div>
+        
+        <div id="logs" class="test-section">
+            <h3>📋 API Call Logs</h3>
+            <div id="log-content"></div>
+        </div>
+        
+        <div id="results" class="test-section">
+            <h3>🎯 Results</h3>
+            <div id="results-content"></div>
+        </div>
+    </div>
+
+    <!-- Load NCAA Data Service -->
+    <script src="public/error-handler.js"></script>
+    <script src="public/cache-manager.js"></script>
+    <script src="public/data-validator.js"></script>
+    <script src="public/loading-state-manager.js"></script>
+    <script src="public/ncaa-data-service.js"></script>
+
+    <script>
+        let ncaaService;
+        
+        // Initialize NCAA Service
+        try {
+            ncaaService = new NCAADataService();
+            addLog('✅ NCAA Data Service initialized', 'success');
+        } catch (error) {
+            addLog(`❌ Failed to initialize NCAA service: ${error.message}`, 'error');
+        }
+
+        function addLog(message, type = 'info') {
+            const logContent = document.getElementById('log-content');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log ${type}`;
+            logDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContent.appendChild(logDiv);
+            logDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setResults(content) {
+            document.getElementById('results-content').innerHTML = content;
+        }
+
+        async function testDirectESPNAPI() {
+            addLog('🔍 Testing direct ESPN API call...', 'info');
+            
+            try {
+                const espnUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard';
+                addLog(`📡 Calling: ${espnUrl}`, 'info');
+                
+                const response = await fetch(espnUrl);
+                addLog(`📊 Response status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addLog(`📊 Response data: ${data.events ? data.events.length : 0} events`, 'success');
+                    
+                    if (data.events && data.events.length > 0) {
+                        const firstEvent = data.events[0];
+                        addLog(`🏈 First game: ${firstEvent.name}`, 'info');
+                        addLog(`📍 Status: ${firstEvent.status?.type?.description}`, 'info');
+                        
+                        setResults(`
+                            <h4>Direct ESPN API Success</h4>
+                            <p>Found ${data.events.length} games</p>
+                            <p>First game: ${firstEvent.name}</p>
+                            <p>Status: ${firstEvent.status?.type?.description}</p>
+                        `);
+                    }
+                } else {
+                    const errorText = await response.text();
+                    addLog(`❌ Error response: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Direct ESPN API failed: ${error.message}`, 'error');
+                setResults(`<h4>Direct ESPN API Failed</h4><p>${error.message}</p>`);
+            }
+        }
+
+        async function testProxyESPNAPI() {
+            addLog('🔍 Testing ESPN API via proxy...', 'info');
+            
+            try {
+                const espnUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard';
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(espnUrl)}`;
+                
+                addLog(`📡 Calling proxy: ${proxyUrl}`, 'info');
+                
+                const response = await fetch(proxyUrl);
+                addLog(`📊 Proxy response status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addLog(`📊 Proxy response data: ${data.events ? data.events.length : 0} events`, 'success');
+                    
+                    if (data.events && data.events.length > 0) {
+                        const liveGames = data.events.filter(e => e.status?.type?.name === 'STATUS_IN_PROGRESS');
+                        addLog(`🔴 Live games found: ${liveGames.length}`, liveGames.length > 0 ? 'success' : 'info');
+                        
+                        setResults(`
+                            <h4>Proxy ESPN API Success</h4>
+                            <p>Total games: ${data.events.length}</p>
+                            <p>Live games: ${liveGames.length}</p>
+                            ${liveGames.map(game => `
+                                <div style="border: 1px solid #ff4444; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                                    <strong>🔴 LIVE: ${game.name}</strong><br>
+                                    Status: ${game.status?.type?.description}<br>
+                                    Clock: ${game.status?.displayClock || 'N/A'}
+                                </div>
+                            `).join('')}
+                        `);
+                    }
+                } else {
+                    const errorText = await response.text();
+                    addLog(`❌ Proxy error response: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Proxy ESPN API failed: ${error.message}`, 'error');
+                setResults(`<h4>Proxy ESPN API Failed</h4><p>${error.message}</p>`);
+            }
+        }
+
+        async function testNCAAAPI() {
+            addLog('🔍 Testing NCAA API...', 'info');
+            
+            try {
+                const ncaaUrl = 'https://ncaa-api.henrygd.me/scoreboard/football/fbs/2024/1/all-conf';
+                const proxyUrl = `/api/proxy?url=${encodeURIComponent(ncaaUrl)}`;
+                
+                addLog(`📡 Calling NCAA API via proxy: ${proxyUrl}`, 'info');
+                
+                const response = await fetch(proxyUrl);
+                addLog(`📊 NCAA API response status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addLog(`📊 NCAA API response data: ${data.games ? data.games.length : 0} games`, 'success');
+                    
+                    if (data.games && data.games.length > 0) {
+                        const liveGames = data.games.filter(g => g.status === 'live');
+                        addLog(`🔴 Live NCAA games found: ${liveGames.length}`, liveGames.length > 0 ? 'success' : 'info');
+                        
+                        setResults(`
+                            <h4>NCAA API Success</h4>
+                            <p>Total games: ${data.games.length}</p>
+                            <p>Live games: ${liveGames.length}</p>
+                        `);
+                    }
+                } else {
+                    const errorText = await response.text();
+                    addLog(`❌ NCAA API error response: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                addLog(`❌ NCAA API failed: ${error.message}`, 'error');
+                setResults(`<h4>NCAA API Failed</h4><p>${error.message}</p>`);
+            }
+        }
+
+        async function testGetLiveESPNData() {
+            addLog('🔍 Testing getLiveESPNData method...', 'info');
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA service not initialized');
+                }
+
+                const liveData = await ncaaService.getLiveESPNData();
+                addLog(`📊 getLiveESPNData returned: ${liveData ? liveData.length : 0} games`, 'success');
+                
+                if (liveData && liveData.length > 0) {
+                    const liveGames = liveData.filter(g => g.isLive);
+                    addLog(`🔴 Live games in result: ${liveGames.length}`, liveGames.length > 0 ? 'success' : 'info');
+                    
+                    setResults(`
+                        <h4>getLiveESPNData Success</h4>
+                        <p>Total games: ${liveData.length}</p>
+                        <p>Live games: ${liveGames.length}</p>
+                        ${liveGames.map(game => `
+                            <div style="border: 1px solid #ff4444; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                                <strong>🔴 LIVE: ${game.name}</strong><br>
+                                Score: ${game.teams.away.name} ${game.teams.away.score} - ${game.teams.home.score} ${game.teams.home.name}<br>
+                                Status: ${game.status.displayClock}<br>
+                                Venue: ${game.venue}<br>
+                                Data Source: ${game.dataSource}
+                            </div>
+                        `).join('')}
+                    `);
+                } else {
+                    setResults(`<h4>getLiveESPNData - No Games</h4><p>Method returned no games</p>`);
+                }
+                
+            } catch (error) {
+                addLog(`❌ getLiveESPNData failed: ${error.message}`, 'error');
+                setResults(`<h4>getLiveESPNData Failed</h4><p>${error.message}</p>`);
+            }
+        }
+
+        async function testGetTodaysGames() {
+            addLog('🔍 Testing getTodaysGames method...', 'info');
+            
+            try {
+                if (!ncaaService) {
+                    throw new Error('NCAA service not initialized');
+                }
+
+                const games = await ncaaService.getTodaysGames();
+                addLog(`📊 getTodaysGames returned: ${games ? games.length : 0} games`, 'success');
+                
+                if (games && games.length > 0) {
+                    const liveGames = games.filter(g => g.isLive);
+                    addLog(`🔴 Live games in result: ${liveGames.length}`, liveGames.length > 0 ? 'success' : 'info');
+                    
+                    setResults(`
+                        <h4>getTodaysGames Success</h4>
+                        <p>Total games: ${games.length}</p>
+                        <p>Live games: ${liveGames.length}</p>
+                        ${games.slice(0, 3).map(game => `
+                            <div style="border: 1px solid ${game.isLive ? '#ff4444' : '#666'}; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                                <strong>${game.isLive ? '🔴 LIVE: ' : '📅 '}${game.name}</strong><br>
+                                Score: ${game.teams.away.name} ${game.teams.away.score} - ${game.teams.home.score} ${game.teams.home.name}<br>
+                                Status: ${game.status.displayClock || game.status.type}<br>
+                                Venue: ${game.venue}<br>
+                                Data Source: ${game.dataSource}<br>
+                                ${game.aiPrediction ? `AI: ${game.aiPrediction.recommendation}` : 'No AI prediction'}
+                            </div>
+                        `).join('')}
+                    `);
+                } else {
+                    setResults(`<h4>getTodaysGames - No Games</h4><p>Method returned no games</p>`);
+                }
+                
+            } catch (error) {
+                addLog(`❌ getTodaysGames failed: ${error.message}`, 'error');
+                setResults(`<h4>getTodaysGames Failed</h4><p>${error.message}</p>`);
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                addLog('🚀 Starting automatic API tests...', 'info');
+                testProxyESPNAPI();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
