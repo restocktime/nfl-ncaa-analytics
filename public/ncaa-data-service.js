@@ -2321,37 +2321,110 @@ class NCAADataService {
         
         console.log(`🏈 Generating games for day ${dayOfWeek}, hour ${hour}, week ${currentWeek}`);
         
-        // Top college football matchups for current season
+        // Comprehensive college football matchups for current season
         const topMatchups = [
+            // SEC Powerhouses
             {
                 home: { name: 'Georgia Bulldogs', abbreviation: 'UGA', record: '2-0' },
                 away: { name: 'Alabama Crimson Tide', abbreviation: 'ALA', record: '2-0' },
                 venue: 'Sanford Stadium (Athens, GA)'
             },
             {
+                home: { name: 'LSU Tigers', abbreviation: 'LSU', record: '2-0' },
+                away: { name: 'Auburn Tigers', abbreviation: 'AUB', record: '1-1' },
+                venue: 'Tiger Stadium (Baton Rouge, LA)'
+            },
+            {
+                home: { name: 'Florida Gators', abbreviation: 'UF', record: '1-1' },
+                away: { name: 'Tennessee Volunteers', abbreviation: 'TENN', record: '2-0' },
+                venue: 'Ben Hill Griffin Stadium (Gainesville, FL)'
+            },
+            
+            // Big Ten Rivalries
+            {
                 home: { name: 'Ohio State Buckeyes', abbreviation: 'OSU', record: '2-0' },
                 away: { name: 'Michigan Wolverines', abbreviation: 'MICH', record: '1-1' },
                 venue: 'Ohio Stadium (Columbus, OH)'
             },
+            {
+                home: { name: 'Penn State Nittany Lions', abbreviation: 'PSU', record: '2-0' },
+                away: { name: 'Wisconsin Badgers', abbreviation: 'WISC', record: '1-1' },
+                venue: 'Beaver Stadium (University Park, PA)'
+            },
+            {
+                home: { name: 'Iowa Hawkeyes', abbreviation: 'IOWA', record: '1-1' },
+                away: { name: 'Nebraska Cornhuskers', abbreviation: 'NEB', record: '1-1' },
+                venue: 'Kinnick Stadium (Iowa City, IA)'
+            },
+            
+            // Big 12 Action
             {
                 home: { name: 'Texas Longhorns', abbreviation: 'TEX', record: '2-0' },
                 away: { name: 'Oklahoma Sooners', abbreviation: 'OU', record: '1-1' },
                 venue: 'Cotton Bowl (Dallas, TX)'
             },
             {
-                home: { name: 'USC Trojans', abbreviation: 'USC', record: '2-0' },
-                away: { name: 'Notre Dame Fighting Irish', abbreviation: 'ND', record: '2-0' },
-                venue: 'Los Angeles Memorial Coliseum'
+                home: { name: 'Oklahoma State Cowboys', abbreviation: 'OKST', record: '2-0' },
+                away: { name: 'Baylor Bears', abbreviation: 'BAY', record: '1-1' },
+                venue: 'Boone Pickens Stadium (Stillwater, OK)'
             },
+            
+            // ACC Matchups
             {
                 home: { name: 'Clemson Tigers', abbreviation: 'CLEM', record: '1-1' },
                 away: { name: 'Florida State Seminoles', abbreviation: 'FSU', record: '1-1' },
                 venue: 'Memorial Stadium (Clemson, SC)'
             },
             {
-                home: { name: 'Penn State Nittany Lions', abbreviation: 'PSU', record: '2-0' },
-                away: { name: 'Wisconsin Badgers', abbreviation: 'WISC', record: '1-1' },
-                venue: 'Beaver Stadium (University Park, PA)'
+                home: { name: 'Miami Hurricanes', abbreviation: 'MIA', record: '2-0' },
+                away: { name: 'Virginia Tech Hokies', abbreviation: 'VT', record: '1-1' },
+                venue: 'Hard Rock Stadium (Miami Gardens, FL)'
+            },
+            {
+                home: { name: 'North Carolina Tar Heels', abbreviation: 'UNC', record: '1-1' },
+                away: { name: 'Duke Blue Devils', abbreviation: 'DUKE', record: '1-1' },
+                venue: 'Kenan Memorial Stadium (Chapel Hill, NC)'
+            },
+            
+            // Pac-12 West Coast
+            {
+                home: { name: 'USC Trojans', abbreviation: 'USC', record: '2-0' },
+                away: { name: 'UCLA Bruins', abbreviation: 'UCLA', record: '1-1' },
+                venue: 'Los Angeles Memorial Coliseum'
+            },
+            {
+                home: { name: 'Oregon Ducks', abbreviation: 'ORE', record: '2-0' },
+                away: { name: 'Washington Huskies', abbreviation: 'WASH', record: '1-1' },
+                venue: 'Autzen Stadium (Eugene, OR)'
+            },
+            {
+                home: { name: 'Stanford Cardinal', abbreviation: 'STAN', record: '1-1' },
+                away: { name: 'California Golden Bears', abbreviation: 'CAL', record: '0-2' },
+                venue: 'Stanford Stadium (Stanford, CA)'
+            },
+            
+            // Independent & Other Conferences
+            {
+                home: { name: 'Notre Dame Fighting Irish', abbreviation: 'ND', record: '2-0' },
+                away: { name: 'Navy Midshipmen', abbreviation: 'NAVY', record: '1-1' },
+                venue: 'Notre Dame Stadium (South Bend, IN)'
+            },
+            {
+                home: { name: 'Cincinnati Bearcats', abbreviation: 'CIN', record: '2-0' },
+                away: { name: 'UCF Knights', abbreviation: 'UCF', record: '1-1' },
+                venue: 'Nippert Stadium (Cincinnati, OH)'
+            },
+            
+            // Mountain West & Sun Belt
+            {
+                home: { name: 'Boise State Broncos', abbreviation: 'BSU', record: '2-0' },
+                away: { name: 'Fresno State Bulldogs', abbreviation: 'FRES', record: '1-1' },
+                venue: 'Albertsons Stadium (Boise, ID)'
+            },
+            {
+                home: { name: 'App State Mountaineers', abbreviation: 'APP', record: '2-0' },
+                away: { name: 'Coastal Carolina Chanticleers', abbreviation: 'CCU', record: '1-1' },
+                venue: 'Kidd Brewer Stadium (Boone, NC)'
             }
         ];
         
@@ -2362,29 +2435,53 @@ class NCAADataService {
             topMatchups.forEach((matchup, index) => {
                 let status, isLive = false, homeScore = 0, awayScore = 0;
                 
-                // Determine game status based on time of day
-                if (hour >= 12 && hour < 16 && index < 2) {
-                    // Noon games (12-4 PM)
-                    isLive = true;
-                    status = {
-                        type: 'STATUS_IN_PROGRESS',
-                        displayClock: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} - ${Math.floor(Math.random() * 2) + 1}${['st', 'nd'][Math.floor(Math.random() * 2)]}`,
-                        period: Math.floor(Math.random() * 2) + 1
-                    };
-                    homeScore = Math.floor(Math.random() * 21) + 7;
-                    awayScore = Math.floor(Math.random() * 21) + 3;
-                } else if (hour >= 15 && hour < 19 && index >= 2 && index < 4) {
-                    // Afternoon games (3-7 PM)
-                    isLive = true;
-                    status = {
-                        type: 'STATUS_IN_PROGRESS',
-                        displayClock: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} - ${Math.floor(Math.random() * 2) + 2}${['nd', 'rd'][Math.floor(Math.random() * 2)]}`,
-                        period: Math.floor(Math.random() * 2) + 2
-                    };
-                    homeScore = Math.floor(Math.random() * 28) + 10;
-                    awayScore = Math.floor(Math.random() * 28) + 7;
-                } else if (hour >= 19 && index >= 4) {
-                    // Night games (7+ PM)
+                // Distribute games across different time slots
+                const timeSlot = index % 4; // 0=noon, 1=afternoon, 2=evening, 3=night
+                
+                if (timeSlot === 0 && hour >= 12) {
+                    // Noon games (12:00 PM ET) - SEC and Big Ten
+                    isLive = hour < 16;
+                    if (isLive) {
+                        status = {
+                            type: 'STATUS_IN_PROGRESS',
+                            displayClock: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} - ${Math.floor(Math.random() * 4) + 1}${['st', 'nd', 'rd', 'th'][Math.floor(Math.random() * 4)]}`,
+                            period: Math.floor(Math.random() * 4) + 1
+                        };
+                        homeScore = Math.floor(Math.random() * 28) + 7;
+                        awayScore = Math.floor(Math.random() * 28) + 3;
+                    } else {
+                        status = { type: 'STATUS_SCHEDULED', displayClock: 'Today 12:00 PM ET' };
+                    }
+                } else if (timeSlot === 1 && hour >= 15) {
+                    // Afternoon games (3:30 PM ET) - Big 12 and ACC
+                    isLive = hour < 19;
+                    if (isLive) {
+                        status = {
+                            type: 'STATUS_IN_PROGRESS',
+                            displayClock: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} - ${Math.floor(Math.random() * 4) + 1}${['st', 'nd', 'rd', 'th'][Math.floor(Math.random() * 4)]}`,
+                            period: Math.floor(Math.random() * 4) + 1
+                        };
+                        homeScore = Math.floor(Math.random() * 35) + 10;
+                        awayScore = Math.floor(Math.random() * 35) + 7;
+                    } else {
+                        status = { type: 'STATUS_SCHEDULED', displayClock: 'Today 3:30 PM ET' };
+                    }
+                } else if (timeSlot === 2 && hour >= 19) {
+                    // Evening games (7:00 PM ET) - Pac-12 and others
+                    isLive = hour < 23;
+                    if (isLive) {
+                        status = {
+                            type: 'STATUS_IN_PROGRESS',
+                            displayClock: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} - ${Math.floor(Math.random() * 4) + 1}${['st', 'nd', 'rd', 'th'][Math.floor(Math.random() * 4)]}`,
+                            period: Math.floor(Math.random() * 4) + 1
+                        };
+                        homeScore = Math.floor(Math.random() * 42) + 14;
+                        awayScore = Math.floor(Math.random() * 42) + 10;
+                    } else {
+                        status = { type: 'STATUS_SCHEDULED', displayClock: 'Today 7:00 PM ET' };
+                    }
+                } else if (timeSlot === 3 && hour >= 22) {
+                    // Late night games (10:30 PM ET) - West Coast
                     isLive = true;
                     status = {
                         type: 'STATUS_IN_PROGRESS',
@@ -2394,11 +2491,11 @@ class NCAADataService {
                     homeScore = Math.floor(Math.random() * 35) + 14;
                     awayScore = Math.floor(Math.random() * 35) + 10;
                 } else {
-                    // Upcoming games
-                    const gameHour = index < 2 ? 12 : index < 4 ? 15 : 19;
+                    // Upcoming games - show all scheduled games
+                    const gameTime = timeSlot === 0 ? '12:00 PM' : timeSlot === 1 ? '3:30 PM' : timeSlot === 2 ? '7:00 PM' : '10:30 PM';
                     status = {
                         type: 'STATUS_SCHEDULED',
-                        displayClock: `Today ${gameHour === 12 ? '12:00' : gameHour === 15 ? '3:30' : '7:30'} PM ET`
+                        displayClock: `Today ${gameTime} ET`
                     };
                 }
                 
@@ -2431,14 +2528,22 @@ class NCAADataService {
                 games.push(game);
             });
         } else {
-            // Non-Saturday: Show upcoming Saturday games
+            // Non-Saturday: Show upcoming Saturday games and some weekday games
             const daysUntilSaturday = (6 - dayOfWeek) % 7 || 7;
             const nextSaturday = daysUntilSaturday === 0 ? 'Today' : 
                                daysUntilSaturday === 1 ? 'Tomorrow' : 
                                `In ${daysUntilSaturday} days (Saturday)`;
             
-            topMatchups.slice(0, 3).forEach((matchup, index) => {
-                const gameHour = index === 0 ? '12:00' : index === 1 ? '3:30' : '7:30';
+            // Show more upcoming games (8-10 instead of just 3)
+            topMatchups.slice(0, 10).forEach((matchup, index) => {
+                const timeSlot = index % 4;
+                const gameHour = timeSlot === 0 ? '12:00' : timeSlot === 1 ? '3:30' : timeSlot === 2 ? '7:00' : '10:30';
+                
+                // Add some weekday games (Thursday/Friday night)
+                let gameDay = nextSaturday;
+                if (index >= 8 && dayOfWeek < 5) {
+                    gameDay = dayOfWeek < 4 ? 'Thursday 8:00' : 'Friday 8:00';
+                }
                 
                 const game = {
                     id: `upcoming-${index}`,
@@ -2450,7 +2555,7 @@ class NCAADataService {
                     },
                     status: {
                         type: 'STATUS_SCHEDULED',
-                        displayClock: `${nextSaturday} - ${gameHour} PM ET`
+                        displayClock: index >= 8 ? `${gameDay} PM ET` : `${gameDay} - ${gameHour} PM ET`
                     },
                     venue: matchup.venue,
                     isLive: false,
@@ -2468,66 +2573,6 @@ class NCAADataService {
         }
         
         console.log(`✅ Generated ${games.length} games (${games.filter(g => g.isLive).length} live)`);
-        return games;
-                    }),
-                    period: 0,
-                    completed: false
-                };
-            } else if (hoursFromNow > -4 && hoursFromNow <= 1) {
-                // Live or recently started game
-                isLive = true;
-                const quarter = Math.min(4, Math.max(1, Math.floor((1 - hoursFromNow) / 1) + 1));
-                status = {
-                    type: 'STATUS_IN_PROGRESS',
-                    displayClock: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${quarter}Q`,
-                    period: quarter,
-                    completed: false
-                };
-                
-                // Add live scores
-                matchup.home.score = Math.floor(Math.random() * 35) + 7;
-                matchup.away.score = Math.floor(Math.random() * 35) + 7;
-            } else {
-                // Completed game
-                status = {
-                    type: 'STATUS_FINAL',
-                    displayClock: 'FINAL',
-                    period: 4,
-                    completed: true
-                };
-                
-                // Add final scores
-                matchup.home.score = Math.floor(Math.random() * 35) + 14;
-                matchup.away.score = Math.floor(Math.random() * 35) + 14;
-            }
-            
-            games.push({
-                id: `week${currentWeek}-${index + 1}`,
-                name: `${matchup.away.name} vs ${matchup.home.name}`,
-                shortName: `${matchup.away.abbreviation} @ ${matchup.home.abbreviation}`,
-                date: gameTime,
-                status: status,
-                teams: {
-                    home: {
-                        name: matchup.home.name,
-                        abbreviation: matchup.home.abbreviation,
-                        score: matchup.home.score || 0,
-                        record: matchup.home.record
-                    },
-                    away: {
-                        name: matchup.away.name,
-                        abbreviation: matchup.away.abbreviation,
-                        score: matchup.away.score || 0,
-                        record: matchup.away.record
-                    }
-                },
-                venue: matchup.venue,
-                isLive: isLive,
-                week: parseInt(currentWeek),
-                season: year
-            });
-        });
-        
         return games;
     }
     
