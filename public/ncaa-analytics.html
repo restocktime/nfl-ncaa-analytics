@@ -28,6 +28,7 @@
                 <i class="fas fa-university"></i>
                 <span>NCAA Analytics</span>
                 <span class="quantum-badge ncaa">WEEK 1 LIVE</span>
+                <span id="last-updated" style="font-size: 10px; color: #666; margin-left: 10px;">Loading...</span>
             </div>
             
             <div class="nav-menu">
@@ -335,19 +336,87 @@
         
         // NCAA-specific initialization
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏈 NCAA Analytics Platform Loaded');
+            console.log('🔥 NCAA Analytics Platform Loading - FORCE REFRESH MODE');
+            console.log('📅 Page Load Time:', new Date().toLocaleString());
+            
+            // FORCE RELOAD NCAA DATA SERVICE
+            if (window.ncaaDataService) {
+                console.log('🔄 Reinitializing NCAA Data Service...');
+                window.ncaaDataService = new NCAADataService();
+            }
             
             // Initialize navigation
             initializeNavigation();
             
-            // Initialize NCAA data
+            // Initialize NCAA data with force refresh
             initializeNCAAData();
+            
+            // Add force refresh button
+            addForceRefreshButton();
             
             // Set up auto-refresh for live data
             setInterval(() => {
                 refreshNCAALiveData();
             }, 30000); // Refresh every 30 seconds
         });
+        
+        // Add force refresh button
+        function addForceRefreshButton() {
+            const navbar = document.querySelector('.nav-menu');
+            if (navbar) {
+                const refreshBtn = document.createElement('button');
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Force Refresh';
+                refreshBtn.className = 'force-refresh-btn';
+                refreshBtn.style.cssText = `
+                    background: #ff4444;
+                    color: white;
+                    border: none;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    margin-left: 10px;
+                `;
+                refreshBtn.onclick = forceRefreshAll;
+                navbar.appendChild(refreshBtn);
+            }
+        }
+        
+        // Force refresh everything
+        async function forceRefreshAll() {
+            console.log('🔥 FORCE REFRESH TRIGGERED');
+            
+            // Show loading indicator
+            const refreshBtn = document.querySelector('.force-refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                refreshBtn.disabled = true;
+            }
+            
+            try {
+                // Reinitialize service
+                window.ncaaDataService = new NCAADataService();
+                
+                // Force reload data
+                await loadNCAAData();
+                
+                console.log('✅ Force refresh completed');
+                
+                if (refreshBtn) {
+                    refreshBtn.innerHTML = '<i class="fas fa-check"></i> Refreshed!';
+                    setTimeout(() => {
+                        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Force Refresh';
+                        refreshBtn.disabled = false;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('❌ Force refresh failed:', error);
+                if (refreshBtn) {
+                    refreshBtn.innerHTML = '<i class="fas fa-exclamation"></i> Failed';
+                    refreshBtn.disabled = false;
+                }
+            }
+        }
         
         // Navigation functionality
         function initializeNavigation() {
@@ -403,11 +472,30 @@
         
         // Load NCAA Data
         async function loadNCAAData() {
-            console.log('📊 Loading NCAA data...');
+            console.log('🔥 FORCE LOADING CURRENT NCAA DATA...');
+            console.log('📅 Current Date:', new Date().toLocaleString());
             console.log('NCAA Data Service:', window.ncaaDataService);
             console.log('NCAA Data Service Type:', window.ncaaDataService?.constructor?.name);
             
+            // FORCE CLEAR ALL CACHES
+            if (window.ncaaDataService && window.ncaaDataService.clearCache) {
+                console.log('🗑️ Clearing NCAA service cache...');
+                window.ncaaDataService.clearCache();
+            }
+            
+            // FORCE CACHE CLEAR IN BROWSER
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                    console.log('🗑️ Cleared browser caches');
+                } catch (e) {
+                    console.log('⚠️ Could not clear browser caches:', e.message);
+                }
+            }
+            
             try {
+                console.log('📡 Fetching fresh NCAA data...');
                 const [allGames, liveGames, rankings, bettingLines] = await Promise.all([
                     window.ncaaDataService.getTodaysGames(),
                     window.ncaaDataService.getLiveGames(),
@@ -486,8 +574,23 @@
                     bettingContainer.innerHTML = renderBettingLines(bettingLines);
                 }
                 
+                // Update timestamp
+                const timestampEl = document.getElementById('last-updated');
+                if (timestampEl) {
+                    timestampEl.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+                }
+                
+                console.log('✅ NCAA data loading completed successfully');
+                
             } catch (error) {
                 console.error('❌ Error loading NCAA data:', error);
+                
+                // Update timestamp with error
+                const timestampEl = document.getElementById('last-updated');
+                if (timestampEl) {
+                    timestampEl.textContent = `Error: ${new Date().toLocaleTimeString()}`;
+                    timestampEl.style.color = '#ff4444';
+                }
             }
         }
         
