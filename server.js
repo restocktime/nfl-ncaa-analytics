@@ -1052,174 +1052,6 @@ app.post('/api/ai/player-picks', async (req, res) => {
 
 // AI Betting Strategy API
 app.post('/api/ai/betting-strategy', async (req, res) => {
-                    homeAwayFactor: 1.15 // Playing at home
-                },
-                'patrick_mahomes': {
-                    name: 'Patrick Mahomes',
-                    position: 'QB', 
-                    team: 'KC',
-                    recentForm: 0.91,
-                    weatherImpact: 0.10,
-                    opponentStrength: 0.75,
-                    injuryStatus: 1.0,
-                    homeAwayFactor: 0.88
-                },
-                'justin_herbert': {
-                    name: 'Justin Herbert',
-                    position: 'QB',
-                    team: 'LAC',
-                    recentForm: 0.78,
-                    weatherImpact: 0.12,
-                    opponentStrength: 0.82,
-                    injuryStatus: 1.0,
-                    homeAwayFactor: 1.12
-                }
-            };
-
-            const propAnalysis = {
-                'passing_yards': {
-                    baseExpectation: {
-                        'dak_prescott': 285,
-                        'jalen_hurts': 255,
-                        'patrick_mahomes': 295,
-                        'justin_herbert': 275
-                    },
-                    variance: 45,
-                    confidenceFactors: ['recentForm', 'opponentStrength', 'homeAwayFactor']
-                },
-                'passing_touchdowns': {
-                    baseExpectation: {
-                        'dak_prescott': 1.8,
-                        'jalen_hurts': 1.6,
-                        'patrick_mahomes': 2.4,
-                        'justin_herbert': 1.9
-                    },
-                    variance: 0.6,
-                    confidenceFactors: ['recentForm', 'opponentStrength']
-                },
-                'rushing_yards': {
-                    baseExpectation: {
-                        'dak_prescott': 15,
-                        'jalen_hurts': 55,
-                        'patrick_mahomes': 25,
-                        'justin_herbert': 12
-                    },
-                    variance: 18,
-                    confidenceFactors: ['recentForm', 'homeAwayFactor']
-                }
-            };
-
-            const generatePrediction = (playerId, propType) => {
-                const player = playerDatabase[playerId];
-                const prop = propAnalysis[propType];
-                
-                if (!player || !prop) return null;
-
-                const baseValue = prop.baseExpectation[playerId];
-                const factors = prop.confidenceFactors.map(factor => player[factor]).reduce((a, b) => a * b, 1);
-                
-                // ML-adjusted prediction
-                const mlAdjustment = (factors - 1) * 0.3; // 30% max adjustment based on factors
-                const prediction = baseValue * (1 + mlAdjustment);
-                
-                // Add some realistic variance
-                const variance = (Math.random() - 0.5) * 0.1 * prop.variance;
-                const finalPrediction = prediction + variance;
-
-                // Calculate confidence based on data quality
-                const confidence = Math.min(95, 60 + (factors * 30));
-                
-                return {
-                    playerId,
-                    playerName: player.name,
-                    team: player.team,
-                    position: player.position,
-                    propType,
-                    prediction: parseFloat(finalPrediction.toFixed(1)),
-                    confidence: parseFloat(confidence.toFixed(1)),
-                    factors: {
-                        recentForm: player.recentForm,
-                        opponentStrength: player.opponentStrength,
-                        homeAwayFactor: player.homeAwayFactor,
-                        injuryStatus: player.injuryStatus
-                    },
-                    recommendation: finalPrediction > baseValue ? 'OVER' : 'UNDER',
-                    edge: Math.abs((finalPrediction - baseValue) / baseValue * 100).toFixed(1) + '%'
-                };
-            };
-
-            // Generate picks based on filters
-            let picks = [];
-            
-            if (playerId && propType) {
-                // Specific player and prop
-                const pick = generatePrediction(playerId, propType);
-                if (pick) picks.push(pick);
-            } else if (playerId) {
-                // All props for specific player
-                Object.keys(propAnalysis).forEach(prop => {
-                    const pick = generatePrediction(playerId, prop);
-                    if (pick) picks.push(pick);
-                });
-            } else if (propType) {
-                // Specific prop for all players
-                Object.keys(playerDatabase).forEach(player => {
-                    const pick = generatePrediction(player, propType);
-                    if (pick) picks.push(pick);
-                });
-            } else {
-                // All players, all props
-                Object.keys(playerDatabase).forEach(player => {
-                    Object.keys(propAnalysis).forEach(prop => {
-                        const pick = generatePrediction(player, prop);
-                        if (pick) picks.push(pick);
-                    });
-                });
-            }
-
-            return picks;
-        };
-
-        const aiPicks = generateAIPlayerPicks(playerId, gameId, propType);
-        
-        // Sort by confidence (highest first)
-        aiPicks.sort((a, b) => b.confidence - a.confidence);
-        
-        res.json({
-            success: true,
-            data: aiPicks,
-            count: aiPicks.length,
-            modelType: modelType,
-            metadata: {
-                processingTime: '0.45s',
-                modelVersion: '4.2.1',
-                dataPoints: aiPicks.length * 127, // Simulated data points per prediction
-                accuracy: modelType === 'ensemble' ? 87.3 : modelType === 'neural_network' ? 89.1 : 84.7,
-                lastTraining: '2025-09-01T00:00:00Z'
-            },
-            filters: {
-                playerId: playerId || 'all',
-                gameId: gameId || 'all',
-                propType: propType || 'all'
-            },
-            timestamp: new Date().toISOString(),
-            disclaimer: 'AI predictions for entertainment purposes only'
-        });
-
-        console.log(`✅ Generated ${aiPicks.length} AI player picks`);
-        
-    } catch (error) {
-        console.error('❌ Failed to generate AI player picks:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate AI player picks',
-            timestamp: new Date().toISOString()
-        });
-    }
-});
-
-// AI Betting Strategy API
-app.post('/api/ai/betting-strategy', async (req, res) => {
     try {
         const { gameId, bankroll = 1000, riskLevel = 'medium', strategies = ['value', 'arbitrage', 'model'] } = req.body;
         console.log(`🧠 Generating betting strategy for bankroll: $${bankroll}, risk: ${riskLevel}`);
@@ -1231,7 +1063,6 @@ app.post('/api/ai/betting-strategy', async (req, res) => {
                 { game: 'KC @ LAC', spread: +3.5, total: 47.5, homeML: +145, awayML: -165 },
                 { game: 'GB @ DET', spread: +1.0, total: 48.5, homeML: -110, awayML: -110 }
             ];
-
             const recommendations = [];
             
             // Value Betting Strategy
@@ -1247,7 +1078,7 @@ app.post('/api/ai/betting-strategy', async (req, res) => {
                     riskLevel: 'MEDIUM'
                 });
             }
-
+            
             // Model-Based Strategy  
             if (strategies.includes('model')) {
                 recommendations.push({
@@ -1272,7 +1103,7 @@ app.post('/api/ai/betting-strategy', async (req, res) => {
                     riskLevel: 'LOW'
                 });
             }
-
+            
             // Arbitrage Opportunities
             if (strategies.includes('arbitrage')) {
                 recommendations.push({
@@ -1286,7 +1117,7 @@ app.post('/api/ai/betting-strategy', async (req, res) => {
                     riskLevel: 'NONE'
                 });
             }
-
+            
             return recommendations.sort((a, b) => b.confidence - a.confidence);
         };
 
@@ -1332,6 +1163,7 @@ app.post('/api/ai/betting-strategy', async (req, res) => {
         });
     }
 });
+
 
 // Injury Reports API
 app.get('/api/injuries', async (req, res) => {
