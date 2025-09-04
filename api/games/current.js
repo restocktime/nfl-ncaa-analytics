@@ -42,9 +42,11 @@ export default async function handler(req, res) {
             nflGames = getFallbackNFLGames();
         }
         
-        // Return the games data
+        // Return the games data in consistent format
         res.status(200).json({
-            games: nflGames,
+            success: true,
+            data: nflGames,
+            count: nflGames.length,
             lastUpdated: new Date().toISOString(),
             source: nflGames.length > 0 ? 'api' : 'fallback'
         });
@@ -52,9 +54,12 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('Games API error:', error);
         
-        // Return fallback data even on error
+        // Return fallback data even on error in consistent format
+        const fallbackGames = getFallbackNFLGames();
         res.status(200).json({
-            games: getFallbackNFLGames(),
+            success: false,
+            data: fallbackGames,
+            count: fallbackGames.length,
             lastUpdated: new Date().toISOString(),
             source: 'fallback',
             error: error.message

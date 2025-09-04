@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Response Format Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>API Response Format Test</h1>
+    <div id="test-results"></div>
+
+    <script src="public/js/api-client.js"></script>
+    <script>
+        async function runTests() {
+            const results = document.getElementById('test-results');
+            
+            function addResult(message, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `test-result ${type}`;
+                div.innerHTML = message;
+                results.appendChild(div);
+            }
+
+            addResult('🧪 Starting API Response Format Tests...', 'info');
+
+            try {
+                // Test 1: Check if API client is loaded
+                if (window.sundayEdgeAPI) {
+                    addResult('✅ API Client loaded successfully', 'success');
+                } else {
+                    addResult('❌ API Client not loaded', 'error');
+                    return;
+                }
+
+                // Test 2: Test server response format
+                addResult('📡 Testing server API response format...', 'info');
+                const serverResponse = await window.sundayEdgeAPI.fetchWithCache('/api/games?sport=nfl');
+                
+                addResult(`<strong>Server Response Structure:</strong><br>
+                    - Has .games property: ${!!serverResponse.games}<br>
+                    - Has .success property: ${serverResponse.success !== undefined}<br>
+                    - Games count: ${serverResponse.games ? serverResponse.games.length : 'N/A'}<br>
+                    - Total games: ${serverResponse.totalGames || 'N/A'}`, 'info');
+
+                if (serverResponse.games && Array.isArray(serverResponse.games)) {
+                    addResult('✅ Server response normalized correctly - .games property available', 'success');
+                } else {
+                    addResult('❌ Server response not normalized correctly', 'error');
+                }
+
+                // Test 3: Test individual API methods
+                addResult('🎯 Testing individual API methods...', 'info');
+                
+                const todaysGames = await window.sundayEdgeAPI.getTodaysGames();
+                if (todaysGames.games) {
+                    addResult(`✅ getTodaysGames() returns .games property (${todaysGames.games.length} games)`, 'success');
+                } else {
+                    addResult('❌ getTodaysGames() missing .games property', 'error');
+                }
+
+                const allGames = await window.sundayEdgeAPI.getAllNFLGames();
+                if (allGames.games) {
+                    addResult(`✅ getAllNFLGames() returns .games property (${allGames.games.length} games)`, 'success');
+                } else {
+                    addResult('❌ getAllNFLGames() missing .games property', 'error');
+                }
+
+                // Test 4: Show sample game data
+                if (serverResponse.games && serverResponse.games.length > 0) {
+                    const sampleGame = serverResponse.games[0];
+                    addResult(`<strong>Sample Game Data:</strong><pre>${JSON.stringify(sampleGame, null, 2)}</pre>`, 'info');
+                }
+
+                addResult('🎉 All tests completed!', 'success');
+
+            } catch (error) {
+                addResult(`❌ Test failed: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

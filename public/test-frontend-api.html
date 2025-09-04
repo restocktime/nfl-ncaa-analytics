@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend API Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+        .status { margin: 10px 0; padding: 10px; border: 1px solid #333; }
+        .success { border-color: #0f0; color: #0f0; }
+        .error { border-color: #f00; color: #f00; }
+        .loading { border-color: #ff0; color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Frontend API Connection Test</h1>
+    <div id="status"></div>
+    <div id="results"></div>
+
+    <script>
+        async function testAPIs() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+
+            function log(message, type = 'loading') {
+                const div = document.createElement('div');
+                div.className = `status ${type}`;
+                div.textContent = message;
+                statusDiv.appendChild(div);
+                console.log(message);
+            }
+
+            log('🚀 Starting API tests...');
+
+            // Test 1: Health Check
+            try {
+                log('🔍 Testing /api/health...');
+                const healthResponse = await fetch('/api/health');
+                if (healthResponse.ok) {
+                    const healthData = await healthResponse.json();
+                    log(`✅ Health Check: ${healthData.status}`, 'success');
+                } else {
+                    log(`❌ Health Check Failed: ${healthResponse.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Health Check Error: ${error.message}`, 'error');
+            }
+
+            // Test 2: Games API
+            try {
+                log('🏈 Testing /api/games?sport=nfl...');
+                const gamesResponse = await fetch('/api/games?sport=nfl');
+                if (gamesResponse.ok) {
+                    const gamesData = await gamesResponse.json();
+                    log(`✅ Games API: ${gamesData.count} games loaded`, 'success');
+                    
+                    if (gamesData.data && gamesData.data.length > 0) {
+                        const firstGame = gamesData.data[0];
+                        log(`📊 Sample Game: ${firstGame.name}`, 'success');
+                    }
+                } else {
+                    log(`❌ Games API Failed: ${gamesResponse.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Games API Error: ${error.message}`, 'error');
+            }
+
+            // Test 3: AI Betting Strategy
+            try {
+                log('🧠 Testing AI Betting Strategy...');
+                const aiResponse = await fetch('/api/ai/betting-strategy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bankroll: 1000,
+                        riskLevel: 'medium'
+                    })
+                });
+                
+                if (aiResponse.ok) {
+                    const aiData = await aiResponse.json();
+                    log(`✅ AI Strategy: ${aiData.count} recommendations`, 'success');
+                } else {
+                    log(`❌ AI Strategy Failed: ${aiResponse.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ AI Strategy Error: ${error.message}`, 'error');
+            }
+
+            log('🎯 API tests completed!', 'success');
+        }
+
+        // Start tests when page loads
+        document.addEventListener('DOMContentLoaded', testAPIs);
+    </script>
+</body>
+</html>

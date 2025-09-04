@@ -211,17 +211,19 @@ class SundayEdgeProQuantum {
         console.log('🏈 Loading current NFL games...');
         
         try {
-            const response = await fetch('/api/games/current');
+            const response = await fetch('/api/games?sport=nfl');
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);
             }
             
-            const games = await response.json();
+            const apiResponse = await response.json();
+            const games = apiResponse.success ? apiResponse.data : [];
             
             if (games && games.length > 0) {
                 this.processGameData(games);
                 this.displayGames(games);
+                console.log(`✅ Loaded ${games.length} NFL games`);
             } else {
                 console.log('ℹ️ No games found for today');
                 this.showNoGamesMessage();
@@ -714,16 +716,22 @@ class SundayEdgeProQuantum {
                 await this.loadLiveViewData();
                 break;
             case 'predictions':
-                await this.loadPredictionsViewData();
+                await this.loadPredictions();
                 break;
             case 'betting':
-                await this.loadBettingViewData();
+                await this.loadBettingLines();
                 break;
             case 'analytics':
-                await this.loadAnalyticsViewData();
+                await this.loadAnalytics();
                 break;
             case 'fantasy':
-                await this.loadFantasyViewData();
+                await this.loadFantasyData();
+                break;
+            case 'upcoming':
+                await this.loadUpcomingGames();
+                break;
+            case 'news':
+                await this.loadNews();
                 break;
         }
     }
@@ -937,6 +945,241 @@ class SundayEdgeProQuantum {
             this.showErrorMessage('Unable to load game data. Please try again later.');
         }
     }
+    
+    /**
+     * Load live games data
+     */
+    async loadLiveGames() {
+        console.log('📺 Loading live NFL games...');
+        const container = document.getElementById('nfl-live-games');
+        if (!container) return;
+        
+        try {
+            const response = await fetch('/api/games?sport=nfl');
+            const apiResponse = await response.json();
+            const games = apiResponse.success ? apiResponse.data.filter(game => game.isLive) : [];
+            
+            if (games.length === 0) {
+                container.innerHTML = `
+                    <div class="no-games-card">
+                        <div class="no-games-icon"><i class="fas fa-tv"></i></div>
+                        <h3>No Live NFL Games</h3>
+                        <p>Check back during game time for live updates</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = games.map(game => `
+                <div class="game-card live">
+                    <div class="game-header">
+                        <div class="team-matchup">${game.awayTeam.name} @ ${game.homeTeam.name}</div>
+                        <div class="live-badge">LIVE</div>
+                    </div>
+                    <div class="game-score">
+                        <div class="team-score">
+                            <span class="team">${game.awayTeam.abbreviation}</span>
+                            <span class="score">${game.awayTeam.score}</span>
+                        </div>
+                        <div class="game-clock">${game.clock}</div>
+                        <div class="team-score">
+                            <span class="team">${game.homeTeam.abbreviation}</span>
+                            <span class="score">${game.homeTeam.score}</span>
+                        </div>
+                    </div>
+                    <div class="game-details">
+                        <div class="quarter">Q${game.period}</div>
+                        <div class="venue">${game.venue}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            console.log(`✅ Loaded ${games.length} live NFL games`);
+        } catch (error) {
+            console.error('❌ Error loading live games:', error);
+            container.innerHTML = `<div class="error-card"><h3>Error Loading Live Games</h3><p>Please try refreshing the page</p></div>`;
+        }
+    }
+    
+    /**
+     * Load AI predictions data
+     */
+    async loadPredictions() {
+        console.log('🧠 Loading AI predictions...');
+        const container = document.getElementById('nfl-predictions');
+        if (!container) return;
+        
+        try {
+            const response = await fetch('/api/ai/player-picks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sport: 'nfl' })
+            });
+            const apiResponse = await response.json();
+            const predictions = apiResponse.success ? apiResponse.data : [];
+            
+            container.innerHTML = predictions.slice(0, 6).map(pred => `
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <div class="player-info">
+                            <div class="player-name">${pred.playerName}</div>
+                            <div class="player-team">${pred.team} ${pred.position}</div>
+                        </div>
+                        <div class="confidence-badge ${pred.confidence >= 80 ? 'high' : pred.confidence >= 60 ? 'medium' : 'low'}">
+                            ${pred.confidence}%
+                        </div>
+                    </div>
+                    <div class="prediction-details">
+                        <div class="prop-type">${pred.propType.replace('_', ' ').toUpperCase()}</div>
+                        <div class="prediction-value">${pred.prediction}</div>
+                        <div class="recommendation ${pred.recommendation.toLowerCase()}">${pred.recommendation}</div>
+                    </div>
+                    ${pred.injuryReport ? `
+                        <div class="injury-alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            ${pred.injuryReport.status}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            console.log(`✅ Loaded ${predictions.length} AI predictions`);
+        } catch (error) {
+            console.error('❌ Error loading predictions:', error);
+            container.innerHTML = `<div class="error-card"><h3>Error Loading Predictions</h3><p>Please try refreshing the page</p></div>`;
+        }
+    }
+    
+    /**
+     * Load betting lines data
+     */
+    async loadBettingLines() {
+        console.log('💰 Loading betting lines...');
+        const container = document.getElementById('nfl-betting-lines');
+        if (!container) return;
+        
+        try {
+            const response = await fetch('/api/betting/odds');
+            const apiResponse = await response.json();
+            const odds = apiResponse.success ? apiResponse.data : [];
+            
+            container.innerHTML = odds.map(game => `
+                <div class="betting-card">
+                    <div class="game-header">
+                        <div class="team-matchup">${game.awayTeam} @ ${game.homeTeam}</div>
+                        <div class="last-updated">Updated: ${new Date(game.lastUpdated).toLocaleTimeString()}</div>
+                    </div>
+                    <div class="betting-lines">
+                        <div class="line-item">
+                            <div class="line-type">Spread</div>
+                            <div class="line-value">${game.spread > 0 ? '+' : ''}${game.spread.toFixed(1)}</div>
+                        </div>
+                        <div class="line-item">
+                            <div class="line-type">Total</div>
+                            <div class="line-value">${game.total.toFixed(1)}</div>
+                        </div>
+                        <div class="line-item">
+                            <div class="line-type">Moneyline</div>
+                            <div class="line-value">${game.homeML > 0 ? '+' : ''}${game.homeML}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            console.log(`✅ Loaded ${odds.length} betting lines`);
+        } catch (error) {
+            console.error('❌ Error loading betting lines:', error);
+            container.innerHTML = `<div class="error-card"><h3>Error Loading Betting Lines</h3><p>Please try refreshing the page</p></div>`;
+        }
+    }
+    
+    /**
+     * Load upcoming games data
+     */
+    async loadUpcomingGames() {
+        console.log('📅 Loading upcoming games...');
+        const container = document.getElementById('nfl-upcoming-games');
+        if (!container) return;
+        
+        try {
+            const response = await fetch('/api/games?sport=nfl');
+            const apiResponse = await response.json();
+            const games = apiResponse.success ? apiResponse.data.filter(game => !game.isLive && game.status === 'STATUS_SCHEDULED') : [];
+            
+            container.innerHTML = games.slice(0, 8).map(game => `
+                <div class="game-card upcoming">
+                    <div class="game-header">
+                        <div class="team-matchup">${game.awayTeam.name} @ ${game.homeTeam.name}</div>
+                        <div class="game-time">${new Date(game.scheduledTime).toLocaleDateString()}</div>
+                    </div>
+                    <div class="game-details">
+                        <div class="game-time">${game.statusDetail}</div>
+                        <div class="venue">${game.venue}</div>
+                        <div class="week">Week ${game.week}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            console.log(`✅ Loaded ${games.length} upcoming games`);
+        } catch (error) {
+            console.error('❌ Error loading upcoming games:', error);
+            container.innerHTML = `<div class="error-card"><h3>Error Loading Upcoming Games</h3><p>Please try refreshing the page</p></div>`;
+        }
+    }
+    
+    /**
+     * Load fantasy data
+     */
+    async loadFantasyData() {
+        console.log('🏆 Loading fantasy data...');
+        const container = document.getElementById('nfl-fantasy-data');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="fantasy-card">
+                <div class="fantasy-header">
+                    <h3>Fantasy Features Coming Soon</h3>
+                    <p>Advanced fantasy analytics and lineup optimization</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Load analytics data
+     */
+    async loadAnalytics() {
+        console.log('📊 Loading analytics...');
+        const container = document.getElementById('nfl-analytics-data');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h3>Advanced Analytics Coming Soon</h3>
+                    <p>Deep statistical analysis and performance metrics</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Load news data
+     */
+    async loadNews() {
+        console.log('📰 Loading news...');
+        const container = document.getElementById('nfl-news-feed');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="news-card">
+                <div class="news-header">
+                    <h3>NFL News Coming Soon</h3>
+                    <p>Latest NFL news and injury reports</p>
+                </div>
+            </div>
+        `;
+    }
 }
 
 /**
@@ -985,6 +1228,56 @@ window.refreshLiveGames = function() {
 window.refreshUpcomingGames = function() {
     if (window.sundayEdgePro) {
         window.sundayEdgePro.loadCurrentGames();
+    }
+};
+
+// Global functions for loading specific data types
+window.loadLiveGames = function() {
+    console.log('🔄 Loading live games...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadLiveGames();
+    }
+};
+
+window.loadPredictions = function() {
+    console.log('🔄 Loading predictions...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadPredictions();
+    }
+};
+
+window.loadBettingLines = function() {
+    console.log('🔄 Loading betting lines...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadBettingLines();
+    }
+};
+
+window.loadUpcomingGames = function() {
+    console.log('🔄 Loading upcoming games...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadUpcomingGames();
+    }
+};
+
+window.loadFantasyData = function() {
+    console.log('🔄 Loading fantasy data...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadFantasyData();
+    }
+};
+
+window.loadAnalytics = function() {
+    console.log('🔄 Loading analytics...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadAnalytics();
+    }
+};
+
+window.loadNews = function() {
+    console.log('🔄 Loading news...');
+    if (window.sundayEdgePro) {
+        window.sundayEdgePro.loadNews();
     }
 };
 

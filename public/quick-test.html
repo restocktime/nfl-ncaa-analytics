@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Integration Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #333; }
+        .loading { color: #ff0; }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Quick Integration Test</h1>
+    
+    <div id="games-section" class="section">
+        <h2>🏈 NFL Games</h2>
+        <div id="games-result" class="loading">Loading...</div>
+    </div>
+
+    <div id="predictions-section" class="section">
+        <h2>🧠 AI Predictions</h2>
+        <div id="predictions-result" class="loading">Loading...</div>
+    </div>
+
+    <div id="odds-section" class="section">
+        <h2>💰 Betting Odds</h2>
+        <div id="odds-result" class="loading">Loading...</div>
+    </div>
+
+    <script>
+        async function testIntegration() {
+            console.log('🧪 Starting integration test...');
+
+            // Test 1: NFL Games
+            try {
+                const gamesResponse = await fetch('/api/games?sport=nfl');
+                const gamesData = await gamesResponse.json();
+                
+                const gamesDiv = document.getElementById('games-result');
+                if (gamesData.success) {
+                    gamesDiv.className = 'success';
+                    gamesDiv.innerHTML = `✅ Loaded ${gamesData.count} NFL games<br>Sample: ${gamesData.data[0]?.name}`;
+                } else {
+                    gamesDiv.className = 'error';
+                    gamesDiv.innerHTML = '❌ Failed to load games';
+                }
+            } catch (error) {
+                document.getElementById('games-result').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('games-result').className = 'error';
+            }
+
+            // Test 2: AI Predictions  
+            try {
+                const predResponse = await fetch('/api/ai/player-picks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sport: 'nfl' })
+                });
+                const predData = await predResponse.json();
+                
+                const predDiv = document.getElementById('predictions-result');
+                if (predData.success) {
+                    predDiv.className = 'success';
+                    predDiv.innerHTML = `✅ Generated ${predData.count} AI predictions<br>Sample: ${predData.data[0]?.playerName} - ${predData.data[0]?.propType}`;
+                } else {
+                    predDiv.className = 'error';
+                    predDiv.innerHTML = '❌ Failed to load predictions';
+                }
+            } catch (error) {
+                document.getElementById('predictions-result').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('predictions-result').className = 'error';
+            }
+
+            // Test 3: Betting Odds
+            try {
+                const oddsResponse = await fetch('/api/betting/odds');
+                const oddsData = await oddsResponse.json();
+                
+                const oddsDiv = document.getElementById('odds-result');
+                if (oddsData.success) {
+                    oddsDiv.className = 'success';
+                    oddsDiv.innerHTML = `✅ Loaded ${oddsData.count} betting lines<br>Sample: ${oddsData.data[0]?.homeTeam} vs ${oddsData.data[0]?.awayTeam}`;
+                } else {
+                    oddsDiv.className = 'error';
+                    oddsDiv.innerHTML = '❌ Failed to load odds';
+                }
+            } catch (error) {
+                document.getElementById('odds-result').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('odds-result').className = 'error';
+            }
+
+            console.log('✅ Integration test completed');
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', testIntegration);
+    </script>
+</body>
+</html>

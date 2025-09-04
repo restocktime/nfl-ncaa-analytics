@@ -45,10 +45,16 @@ app.use(helmet({
             fontSrc: [
                 "'self'", 
                 "https://fonts.gstatic.com",
-                "https://cdnjs.cloudflare.com"
+                "https://cdnjs.cloudflare.com",
+                "https://r2cdn.perplexity.ai"
             ],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'"]
+            connectSrc: [
+                "'self'", 
+                "https://site.api.espn.com",
+                "https://sports.core.api.espn.com",
+                "https://ncaa-api.henrygd.me"
+            ]
         }
     }
 }));

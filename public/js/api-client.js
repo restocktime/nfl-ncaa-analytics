@@ -56,7 +56,10 @@ class SundayEdgeAPIClient {
                 throw new Error(`API Error: ${response.status} ${response.statusText}`);
             }
 
-            const data = await response.json();
+            const rawData = await response.json();
+            
+            // Normalize response format for backward compatibility
+            const data = this.normalizeResponse(rawData);
             
             // Cache successful responses
             this.cache.set(cacheKey, {
@@ -72,6 +75,39 @@ class SundayEdgeAPIClient {
         }
     }
 
+    // Normalize different API response formats
+    normalizeResponse(rawData) {
+        // If it's already in the expected format with .games, return as-is
+        if (rawData.games) {
+            return rawData;
+        }
+        
+        // If it's in {success, data, count} format, convert to legacy format
+        if (rawData.success !== undefined && rawData.data) {
+            return {
+                success: rawData.success,
+                games: rawData.data,
+                totalGames: rawData.count || rawData.data.length,
+                lastUpdate: rawData.timestamp || rawData.lastUpdated,
+                source: rawData.source || 'API'
+            };
+        }
+        
+        // If it's direct array, wrap it
+        if (Array.isArray(rawData)) {
+            return {
+                success: true,
+                games: rawData,
+                totalGames: rawData.length,
+                lastUpdate: new Date().toISOString(),
+                source: 'API'
+            };
+        }
+        
+        // Return as-is for other formats
+        return rawData;
+    }
+
     // Check API service status
     async getStatus() {
         return await this.fetchWithCache('/api/status');
@@ -85,22 +121,22 @@ class SundayEdgeAPIClient {
 
     // Get ESPN live scores
     async getLiveScores(forceRefresh = false) {
-        return await this.fetchWithCache('/api/nfl/scores', { forceRefresh });
+        return await this.fetchWithCache('/api/games?sport=nfl', { forceRefresh });
     }
 
     // Get comprehensive NFL data (odds + scores)
     async getComprehensiveNFLData(forceRefresh = false) {
-        return await this.fetchWithCache('/api/nfl/comprehensive', { forceRefresh });
+        return await this.fetchWithCache('/api/games?sport=nfl', { forceRefresh });
     }
 
     // Get today's games (includes preseason) - uses dedicated endpoint
     async getTodaysGames(forceRefresh = false) {
-        return await this.fetchWithCache('/api/nfl/today', { forceRefresh });
+        return await this.fetchWithCache('/api/games?sport=nfl', { forceRefresh });
     }
 
     // Get all NFL games (regular season + preseason)
     async getAllNFLGames(forceRefresh = false) {
-        return await this.fetchWithCache('/api/nfl/all-games', { forceRefresh });
+        return await this.fetchWithCache('/api/games?sport=nfl', { forceRefresh });
     }
 
     // Get best betting recommendations
@@ -226,7 +262,7 @@ class SundayEdgeAPIClient {
                 games,
                 totalGames: games.length,
                 lastUpdate: new Date().toISOString(),
-                provider: 'ESPN Direct'
+                source: 'ESPN Direct'
             };
         } catch (error) {
             console.error('❌ ESPN fallback failed:', error);
