@@ -187,10 +187,8 @@ class CacheBuster {
         this.clearBrowserCache();
         this.refreshAllData();
         
-        // Reload page if needed
-        if (confirm('Force reload the page to ensure fresh content?')) {
-            window.location.reload(true);
-        }
+        // Page reload disabled to prevent navigation disruption
+        console.log('✅ Data refreshed - page reload disabled to maintain user navigation');
     }
 
     // Cleanup intervals

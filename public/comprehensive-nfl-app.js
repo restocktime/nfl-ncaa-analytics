@@ -36,8 +36,8 @@ class ErrorRecoveryManager {
         
         this.recoveryStrategies.set('CRITICAL_NAVIGATION_FAILURE', {
             attempts: ['dashboard', 'home', 'main'],
-            fallback: 'reload',
-            userMessage: 'Critical navigation error. The page will reload to restore functionality.',
+            fallback: 'dashboard',
+            userMessage: 'Navigation issue detected. Redirecting to dashboard...',
             severity: 'high',
             autoRecover: true,
             retryable: false
@@ -1504,12 +1504,16 @@ class ErrorRecoveryManager {
     }
     
     async fallbackToReload() {
-        // Page reload fallback
+        // Page reload disabled to prevent navigation disruption
+        console.log('⚠️ Page reload requested but disabled to maintain user navigation state');
+        // Instead of reloading, just refresh data
         try {
-            window.location.reload();
+            if (window.sundayEdgePro && typeof window.sundayEdgePro.refreshData === 'function') {
+                window.sundayEdgePro.refreshData();
+            }
             return true;
         } catch (error) {
-            console.error('Failed to reload page:', error);
+            console.error('Failed to refresh data:', error);
             return false;
         }
     }

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Stability Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+        .status { margin: 10px 0; padding: 10px; border: 1px solid #333; }
+        .success { border-color: #0f0; color: #0f0; }
+        .warning { border-color: #ff0; color: #ff0; }
+        .error { border-color: #f00; color: #f00; }
+        .counter { font-size: 24px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Navigation Stability Test</h1>
+    
+    <div class="counter" id="uptime-counter">Uptime: 0 seconds</div>
+    
+    <div id="stability-status" class="status success">
+        ✅ Page loaded successfully - monitoring for unwanted redirects
+    </div>
+
+    <div id="activity-log" class="status">
+        <h3>Activity Log:</h3>
+        <div id="log-entries"></div>
+    </div>
+
+    <script>
+        let startTime = Date.now();
+        let logEntries = document.getElementById('log-entries');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            entry.style.color = type === 'error' ? '#f00' : type === 'warning' ? '#ff0' : '#0f0';
+            logEntries.appendChild(entry);
+            logEntries.scrollTop = logEntries.scrollHeight;
+            console.log(`[STABILITY] ${message}`);
+        }
+
+        // Update uptime counter
+        setInterval(() => {
+            const uptime = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('uptime-counter').textContent = `Uptime: ${uptime} seconds`;
+            
+            // Log every 30 seconds if stable
+            if (uptime % 30 === 0 && uptime > 0) {
+                log(`✅ Still stable after ${uptime} seconds`);
+            }
+        }, 1000);
+
+        // Monitor for page unload events
+        window.addEventListener('beforeunload', (event) => {
+            log('⚠️ Page attempting to unload!', 'warning');
+        });
+
+        // Monitor for navigation events
+        window.addEventListener('popstate', (event) => {
+            log('⚠️ Navigation event detected!', 'warning');
+        });
+
+        // Test API calls periodically
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    log('📡 API health check passed');
+                } else {
+                    log('❌ API health check failed', 'error');
+                }
+            } catch (error) {
+                log(`❌ API error: ${error.message}`, 'error');
+            }
+        }, 60000); // Every minute
+
+        log('🚀 Stability monitoring started');
+        
+        // Test for 5 minutes
+        setTimeout(() => {
+            log('🎯 5-minute stability test completed successfully!', 'success');
+            document.getElementById('stability-status').innerHTML = '🎯 5-minute stability test PASSED - no unwanted redirects detected';
+            document.getElementById('stability-status').className = 'status success';
+        }, 300000);
+    </script>
+</body>
+</html>

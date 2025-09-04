@@ -24,6 +24,7 @@ class SundayEdgeProQuantum {
         this.gameData = new Map();
         this.predictionModels = new Map();
         this.bettingData = new Map();
+        this.lastUserActivity = Date.now();
         
         this.initializeApp();
     }
@@ -40,6 +41,9 @@ class SundayEdgeProQuantum {
             
             // Initialize error recovery
             this.initializeErrorRecovery();
+            
+            // Track user activity
+            this.initializeUserActivityTracking();
             
             // Load initial data
             await this.loadInitialData();
@@ -652,10 +656,13 @@ class SundayEdgeProQuantum {
     startRealTimeUpdates() {
         console.log('🔄 Starting real-time updates...');
         
-        // Update every 30 seconds
+        // Update every 2 minutes (less disruptive)
         this.refreshInterval = setInterval(() => {
-            this.refreshData();
-        }, 30000);
+            // Only refresh if user hasn't been active recently
+            if (document.visibilityState === 'visible' && !this.isUserInteracting()) {
+                this.refreshData();
+            }
+        }, 120000);
         
         // Update connection status
         this.updateConnectionStatus();
@@ -860,7 +867,7 @@ class SundayEdgeProQuantum {
                 break;
             default:
                 // Generic recovery
-                setTimeout(() => window.location.reload(), 10000);
+                console.log('⚠️ Generic error detected, but auto-reload disabled to prevent navigation disruption');
         }
     }
 
@@ -1179,6 +1186,25 @@ class SundayEdgeProQuantum {
                 </div>
             </div>
         `;
+    }
+    
+    /**
+     * Initialize user activity tracking
+     */
+    initializeUserActivityTracking() {
+        const events = ['click', 'keydown', 'scroll', 'mousemove', 'touchstart'];
+        events.forEach(event => {
+            document.addEventListener(event, () => {
+                this.lastUserActivity = Date.now();
+            }, { passive: true });
+        });
+    }
+    
+    /**
+     * Check if user has been active recently (within last 10 seconds)
+     */
+    isUserInteracting() {
+        return (Date.now() - this.lastUserActivity) < 10000;
     }
 }
 
