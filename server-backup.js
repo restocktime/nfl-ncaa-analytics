@@ -1011,47 +1011,21 @@ app.post('/api/ai/player-picks', async (req, res) => {
         };
 
         const aiPicks = await generateAIPlayerPicks(playerId, gameId, propType, sport);
-        
-        // Sort by confidence (highest first)
-        aiPicks.sort((a, b) => b.confidence - a.confidence);
-        
-        res.json({
-            success: true,
-            data: aiPicks,
-            count: aiPicks.length,
-            modelType: modelType,
-            sport: sport,
-            metadata: {
-                processingTime: '0.45s',
-                modelVersion: '4.2.1',
-                dataPoints: aiPicks.length * 127,
-                accuracy: modelType === 'ensemble' ? 87.3 : modelType === 'neural_network' ? 89.1 : 84.7,
-                lastTraining: '2025-09-01T00:00:00Z'
-            },
-            filters: {
-                playerId: playerId || 'all',
-                gameId: gameId || 'all',
-                propType: propType || 'all',
-                sport: sport
-            },
-            timestamp: new Date().toISOString(),
-            disclaimer: 'AI predictions for entertainment purposes only'
-        });
-
-        console.log(`✅ Generated ${aiPicks.length} AI player picks for ${sport.toUpperCase()}`);
-        
-    } catch (error) {
-        console.error('❌ Failed to generate AI player picks:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate AI player picks',
-            timestamp: new Date().toISOString()
-        });
-    }
-});
-
-// AI Betting Strategy API
-app.post('/api/ai/betting-strategy', async (req, res) => {
+                    team: 'DAL',
+                    recentForm: 0.72, // 72% of expectations met recently
+                    weatherImpact: 0.15, // Low weather sensitivity
+                    opponentStrength: 0.68, // vs PHI defense
+                    injuryStatus: 1.0, // Fully healthy
+                    homeAwayFactor: 0.85 // Playing away
+                },
+                'jalen_hurts': {
+                    name: 'Jalen Hurts',
+                    position: 'QB',
+                    team: 'PHI',
+                    recentForm: 0.84,
+                    weatherImpact: 0.20,
+                    opponentStrength: 0.72,
+                    injuryStatus: 1.0,
                     homeAwayFactor: 1.15 // Playing at home
                 },
                 'patrick_mahomes': {

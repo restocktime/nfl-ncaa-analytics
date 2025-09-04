@@ -1,12 +1,12 @@
 [build]
-cmd = "npm install --prefix server"
+cmd = "npm install"
 
 [deploy]
-healthcheckPath = "/health"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-startCommand = "node api-service.js"
+startCommand = "node server.js"
 
 [env]
 NODE_ENV = "production"
