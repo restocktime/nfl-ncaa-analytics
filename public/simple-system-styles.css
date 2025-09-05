@@ -1,0 +1,227 @@
+/* Simple System Styles - Clean and Working */
+
+.game-info-display {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    padding: 15px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.live-game {
+    animation: pulse 2s infinite;
+    border-color: #ff4444 !important;
+    background: rgba(255, 68, 68, 0.1) !important;
+}
+
+.live-game .game-info-display {
+    color: #ff4444;
+    border-color: #ff4444;
+    background: rgba(255, 68, 68, 0.2);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+}
+
+.props-btn:hover {
+    background: #00cc6a !important;
+    transform: translateY(-2px);
+}
+
+/* AI Predictions Styling */
+.ai-predictions h3 {
+    color: #00ff88;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.prediction-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.prediction-card .matchup {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.prediction-card .prediction {
+    color: #00ff88;
+    font-size: 14px;
+}
+
+.prediction-card .prediction strong {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Mobile Menu Fixes */
+.mobile-menu-toggle {
+    display: none;
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-size: 24px !important;
+    padding: 10px !important;
+    cursor: pointer !important;
+    border-radius: 5px !important;
+    transition: all 0.3s ease !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(0, 255, 136, 0.2) !important;
+    color: #00ff88 !important;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .nav-menu {
+        display: none !important;
+    }
+}
+
+.mobile-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: #1a1a1a;
+    border-left: 2px solid #00ff88;
+    z-index: 1001;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.mobile-nav-menu.active {
+    right: 0;
+}
+
+.mobile-nav-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 255, 136, 0.1);
+}
+
+.mobile-nav-brand {
+    color: #00ff88;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-nav-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ff6b6b;
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+}
+
+.mobile-nav-link.active {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+    border-left: 3px solid #00ff88;
+}
+
+.mobile-nav-link i {
+    margin-right: 10px;
+    width: 20px;
+}
+
+/* Game cards styling */
+.game-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.game-card:hover {
+    border-color: rgba(0, 255, 136, 0.5);
+    transform: translateY(-2px);
+}
+
+.game-card .teams {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.game-card .status {
+    color: #00ff88;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.game-card .network {
+    color: #ccc;
+    font-size: 12px;
+}
