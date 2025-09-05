@@ -14,6 +14,21 @@ class MasterController {
         
         console.log('👑 Master Controller initializing...');
         
+        // Wait for production fallback to be ready
+        if (!window.productionFallback) {
+            console.log('👑 Waiting for production fallback...');
+            await new Promise(resolve => {
+                const checkFallback = () => {
+                    if (window.productionFallback) {
+                        resolve();
+                    } else {
+                        setTimeout(checkFallback, 100);
+                    }
+                };
+                checkFallback();
+            });
+        }
+        
         // Disable all other auto-initializers
         this.disableOtherScripts();
         
@@ -78,8 +93,11 @@ class MasterController {
         try {
             console.log('👑 Loading master game data...');
             
-            const response = await fetch('/api/games?sport=nfl&master=true&_t=' + Date.now());
-            const apiData = await response.json();
+            // Use production fallback system
+            const apiData = await window.productionFallback.fetchWithFallback(
+                '/api/games?sport=nfl&master=true&_t=' + Date.now(),
+                'games'
+            );
             
             if (apiData.success && apiData.data) {
                 this.gameData = apiData.data.map((game, index) => ({
@@ -236,8 +254,10 @@ class MasterController {
             console.log('👑 Initializing player props...');
             
             // Fetch props data
-            const response = await fetch('/api/betting/enhanced-props?_t=' + Date.now());
-            const propsData = await response.json();
+            const propsData = await window.productionFallback.fetchWithFallback(
+                '/api/betting/enhanced-props?_t=' + Date.now(),
+                'props'
+            );
             
             if (propsData.success) {
                 this.propsData = propsData.data;
@@ -362,8 +382,10 @@ class MasterController {
         if (!bettingContainer) return;
 
         try {
-            const response = await fetch('/api/betting/odds?live=true&_t=' + Date.now());
-            const oddsData = await response.json();
+            const oddsData = await window.productionFallback.fetchWithFallback(
+                '/api/betting/odds?live=true&_t=' + Date.now(),
+                'odds'
+            );
             
             if (oddsData.success) {
                 bettingContainer.innerHTML = this.renderOdds(oddsData.data);
@@ -463,8 +485,10 @@ class MasterController {
                 </div>
             `;
             
-            const response = await fetch('/api/ai/predictions?sport=nfl&_t=' + Date.now());
-            const data = await response.json();
+            const data = await window.productionFallback.fetchWithFallback(
+                '/api/ai/predictions?sport=nfl&_t=' + Date.now(),
+                'predictions'
+            );
             
             if (data.success && data.data) {
                 console.log(`👑 Loaded ${data.data.length} AI predictions`);

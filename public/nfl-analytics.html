@@ -34,6 +34,9 @@
     <!-- Mobile Navigation Fix -->
     <link rel="stylesheet" href="mobile-nav-fix.css">
     
+    <!-- Production API Fallback -->
+    <script src="production-api-fallback.js"></script>
+    
     <!-- Cache Buster for Fresh Data -->
     <script src="cache-buster.js"></script>
     
@@ -1180,8 +1183,6 @@
                 default: return 'medium-edge';
             }
         }
-                        </div>
-                    `).join('');
                 } else {
                     container.innerHTML = `
                         <div class="loading-card">
