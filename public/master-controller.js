@@ -560,21 +560,6 @@ class MasterController {
         }
     }
     
-    testMobileMenu() {
-        console.log('📱 TEST MOBILE MENU');
-        const toggleBtn = document.querySelector('.mobile-menu-toggle');
-        const menu = document.getElementById('mobileNavMenu');
-        const overlay = document.getElementById('mobileNavOverlay');
-        
-        console.log('Toggle button:', toggleBtn);
-        console.log('Menu element:', menu);
-        console.log('Overlay element:', overlay);
-        
-        if (toggleBtn) {
-            console.log('Triggering mobile menu toggle...');
-            this.toggleMobileMenu();
-        }
-    }
 
     setupNavigation() {
         console.log('👑 Setting up navigation...');

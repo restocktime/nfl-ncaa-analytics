@@ -1,9 +1,53 @@
 /* Mobile Navigation Fixes */
 
-/* Ensure mobile menu toggle is visible */
+/* Ensure mobile menu toggle is visible and properly positioned */
 .mobile-menu-toggle {
     z-index: 1005 !important;
     position: relative !important;
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-size: 20px !important;
+    padding: 10px !important;
+    cursor: pointer !important;
+    border-radius: 5px !important;
+    transition: all 0.3s ease !important;
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(0, 255, 136, 0.2) !important;
+    color: #00ff88 !important;
+}
+
+/* Fix nav actions positioning on mobile */
+@media (max-width: 768px) {
+    .nav-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important; /* Reduced gap for mobile */
+        margin-left: auto !important; /* Push to right side */
+    }
+    
+    .btn-back {
+        display: none !important; /* Hide back button on mobile to save space */
+    }
+    
+    .status-indicator {
+        display: none !important; /* Hide status on mobile to save space */
+    }
+    
+    .btn-refresh {
+        display: none !important; /* Hide refresh on mobile to save space */
+    }
+    
+    /* Make mobile menu button more prominent */
+    .mobile-menu-toggle {
+        min-width: 44px !important; /* Touch target size */
+        min-height: 44px !important; /* Touch target size */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
 }
 
 /* Fix mobile menu positioning and visibility */
@@ -104,7 +148,7 @@
     color: #ff6b6b !important;
 }
 
-/* Responsive visibility */
+/* Enhanced responsive design */
 @media (min-width: 769px) {
     .mobile-menu-toggle {
         display: none !important;
@@ -113,6 +157,12 @@
     .mobile-nav-overlay,
     .mobile-nav-menu {
         display: none !important;
+    }
+    
+    .nav-actions .btn-back,
+    .nav-actions .status-indicator,
+    .nav-actions .btn-refresh {
+        display: flex !important;
     }
 }
 
@@ -123,6 +173,35 @@
     
     .nav-menu {
         display: none !important;
+    }
+    
+    /* Ensure proper spacing and alignment on mobile */
+    .nav-container {
+        padding: 10px 15px !important;
+    }
+    
+    .nav-brand {
+        font-size: 16px !important;
+    }
+    
+    .nav-brand i {
+        font-size: 18px !important;
+    }
+}
+
+/* Fix for very small screens */
+@media (max-width: 480px) {
+    .nav-container {
+        padding: 8px 10px !important;
+    }
+    
+    .nav-brand span {
+        display: none !important; /* Hide brand text on very small screens */
+    }
+    
+    .mobile-menu-toggle {
+        padding: 8px !important;
+        font-size: 18px !important;
     }
 }
 
