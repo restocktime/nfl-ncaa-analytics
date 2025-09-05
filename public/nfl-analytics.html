@@ -19,14 +19,58 @@
     <!-- Sunday Edge Pro Styles -->
     <link rel="stylesheet" href="sunday-edge-pro-styles.css">
     
+    <!-- Quick Game Card Fix -->
+    <link rel="stylesheet" href="quick-game-card-fix.css">
+    
+    <!-- Improved Appearance -->
+    <link rel="stylesheet" href="improved-appearance.css">
+    
+    <!-- Player Props Styles -->
+    <link rel="stylesheet" href="player-props-styles.css">
+    
+    <!-- Dashboard Styles -->
+    <link rel="stylesheet" href="dashboard-styles.css">
+    
+    <!-- Mobile Navigation Fix -->
+    <link rel="stylesheet" href="mobile-nav-fix.css">
+    
     <!-- Cache Buster for Fresh Data -->
     <script src="cache-buster.js"></script>
     
     <!-- API Fixes for CORS and errors -->
     <script src="api-fix.js"></script>
     
-    <!-- Quantum JavaScript -->
-    <script src="sunday-edge-pro-quantum.js" defer></script>
+    <!-- DOM Safety utilities -->
+    <script src="dom-safety.js"></script>
+    
+    <!-- Event Handlers (CSP compliant) -->
+    <script src="event-handlers.js"></script>
+    
+    <!-- Debug Games Loading -->
+    <script src="debug-games-loading.js"></script>
+    
+    <!-- Data Structure Fix -->
+    <script src="data-structure-fix.js"></script>
+    
+    <!-- Fix for comprehensive app -->
+    <script src="fix-comprehensive-app.js" defer></script>
+    
+    <!-- Immediate Fix for [object Object] -->
+    <script src="immediate-fix.js"></script>
+    
+    <!-- Force Fresh Load -->
+    <script src="force-fresh-load.js"></script>
+    
+    <!-- Master Controller (replaces all other scripts) -->
+    <script src="master-controller.js"></script>
+    
+    <!-- ALL OTHER SCRIPTS DISABLED TO PREVENT CONFLICTS -->
+    <!-- <script src="simple-game-display.js"></script> -->
+    <!-- <script src="live-odds-fix.js"></script> -->
+    
+    <!-- ALL OTHER SCRIPTS DISABLED TO PREVENT CONFLICTS -->
+    <!-- <script src="enhanced-player-props.js"></script> -->
+    <!-- <script src="sunday-edge-pro-quantum.js" defer></script> -->
 </head>
 
 <body>
@@ -67,7 +111,7 @@
             </div>
             
             <div class="nav-actions">
-                <button class="btn-refresh" onclick="refreshAllData()">
+                <button class="btn-refresh">
                     <i class="fas fa-sync-alt"></i>
                 </button>
                 <div class="status-indicator connected" id="connectionStatus">
@@ -77,15 +121,16 @@
                 <a href="index.html" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <button class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
+                <button onclick="window.masterController.testMobileMenu()" style="background: red; color: white; padding: 5px; margin-left: 5px; border: none; border-radius: 3px; font-size: 10px;">TEST</button>
             </div>
         </div>
     </nav>
 
     <!-- Mobile Navigation Overlay -->
-    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     
     <!-- Mobile Navigation Menu -->
     <div class="mobile-nav-menu" id="mobileNavMenu">
@@ -94,48 +139,48 @@
                 <i class="fas fa-bolt"></i>
                 <span>NFL Quantum</span>
             </div>
-            <button class="mobile-nav-close" onclick="closeMobileMenu()">
+            <button class="mobile-nav-close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         
         <div class="mobile-nav-links">
-            <a href="#dashboard" class="mobile-nav-link active" data-view="dashboard" onclick="showViewMobile('dashboard')">
+            <a href="#dashboard" class="mobile-nav-link active" data-view="dashboard" >
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#live" class="mobile-nav-link" data-view="live" onclick="showViewMobile('live')">
+            <a href="#live" class="mobile-nav-link" data-view="live" >
                 <i class="fas fa-broadcast-tower"></i>
                 <span>Live Games</span>
             </a>
-            <a href="#upcoming" class="mobile-nav-link" data-view="upcoming" onclick="showViewMobile('upcoming')">
+            <a href="#upcoming" class="mobile-nav-link" data-view="upcoming" >
                 <i class="fas fa-calendar-alt"></i>
                 <span>Upcoming</span>
             </a>
-            <a href="#predictions" class="mobile-nav-link" data-view="predictions" onclick="showViewMobile('predictions')">
+            <a href="#predictions" class="mobile-nav-link" data-view="predictions" >
                 <i class="fas fa-brain"></i>
                 <span>AI Predictions</span>
             </a>
-            <a href="#betting" class="mobile-nav-link" data-view="betting" onclick="showViewMobile('betting')">
+            <a href="#betting" class="mobile-nav-link" data-view="betting" >
                 <i class="fas fa-coins"></i>
                 <span>Betting Edge</span>
             </a>
-            <a href="#fantasy" class="mobile-nav-link" data-view="fantasy" onclick="showViewMobile('fantasy')">
+            <a href="#fantasy" class="mobile-nav-link" data-view="fantasy" >
                 <i class="fas fa-trophy"></i>
                 <span>NFL Fantasy</span>
             </a>
-            <a href="#analytics" class="mobile-nav-link" data-view="analytics" onclick="showViewMobile('analytics')">
+            <a href="#analytics" class="mobile-nav-link" data-view="analytics" >
                 <i class="fas fa-chart-line"></i>
                 <span>Analytics</span>
             </a>
-            <a href="#news" class="mobile-nav-link" data-view="news" onclick="showViewMobile('news')">
+            <a href="#news" class="mobile-nav-link" data-view="news" >
                 <i class="fas fa-newspaper"></i>
                 <span>News</span>
             </a>
         </div>
         
         <div class="mobile-nav-actions">
-            <a href="#" class="mobile-nav-action" onclick="refreshAllData(); closeMobileMenu();">
+            <a href="#" class="mobile-nav-action" >
                 <i class="fas fa-sync-alt"></i>
                 <span>Refresh Data</span>
             </a>
@@ -189,22 +234,22 @@
                     <h2><i class="fas fa-rocket"></i> Quantum Quick Actions</h2>
                 </div>
                 <div class="quick-actions-grid">
-                    <button class="action-card" onclick="showView('live')">
+                    <button class="action-card" >
                         <i class="fas fa-broadcast-tower"></i>
                         <span>Live Games</span>
                         <div class="action-badge" id="live-count">--</div>
                     </button>
-                    <button class="action-card" onclick="showView('predictions')">
+                    <button class="action-card" >
                         <i class="fas fa-brain"></i>
                         <span>AI Predictions</span>
                         <div class="action-badge quantum">AI</div>
                     </button>
-                    <button class="action-card" onclick="showView('betting')">
+                    <button class="action-card" >
                         <i class="fas fa-coins"></i>
                         <span>Betting Edge</span>
                         <div class="action-badge" id="edge-count">--</div>
                     </button>
-                    <button class="action-card" onclick="showView('fantasy')">
+                    <button class="action-card" >
                         <i class="fas fa-trophy"></i>
                         <span>NFL Fantasy</span>
                         <div class="action-badge fantasy">LIVE</div>
@@ -216,7 +261,7 @@
             <div class="section-card">
                 <div class="section-header">
                     <h2><i class="fas fa-fire"></i> Today's Top NFL Games</h2>
-                    <button class="btn-refresh" onclick="refreshTopGames()">
+                    <button class="btn-refresh" >
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
@@ -401,16 +446,16 @@
     <script src="loading-state-manager.js"></script>
     
     <!-- Real Sports Data Integration -->
-    <script src="real-sports-data.js"></script>
-    <script src="nfl-data-service.js"></script>
-    <script src="comprehensive-nfl-app.js"></script>
-    <script src="sunday-edge-pro-quantum.js"></script>
+    <!-- <script src="real-sports-data.js"></script> DISABLED - conflicts with master controller -->
+    <!-- <script src="nfl-data-service.js"></script> DISABLED - conflicts with master controller -->
+    <!-- <script src="comprehensive-nfl-app.js"></script> DISABLED due to syntax errors -->
+    <!-- <script src="sunday-edge-pro-quantum.js"></script> DISABLED - conflicts with master controller -->
     
     <!-- Robust Integration -->
-    <script src="robust-integration.js"></script>
+    <!-- <script src="robust-integration.js"></script> DISABLED - conflicts with master controller -->
     
     <!-- Mobile Navigation Functions -->
-    <script src="app.js"></script>
+    <!-- <script src="app.js"></script> DISABLED - conflicts with master controller -->
     
     <script>
         // NFL Quantum Analytics Platform
@@ -726,7 +771,7 @@
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>${message}</span>
                 </div>
-                <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+                <button class="alert-close" >×</button>
             `;
             
             document.body.appendChild(alert);
@@ -1117,179 +1162,6 @@
                     <p>Computing advanced analytics and betting insights...</p>
                 </div>
             `;
-        }
-                            <div class="ai-icon">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <h3>AI Models Ready</h3>
-                            <p>Predictions will appear when NFL games are scheduled</p>
-                            <div class="model-status-grid">
-                                <div class="model-status">
-                                    <div class="model-name">Neural Network</div>
-                                    <div class="model-accuracy">94.2% Ready</div>
-                                </div>
-                                <div class="model-status">
-                                    <div class="model-name">XGBoost</div>
-                                    <div class="model-accuracy">91.8% Ready</div>
-                                </div>
-                                <div class="model-status">
-                                    <div class="model-name">Ensemble</div>
-                                    <div class="model-accuracy">93.5% Ready</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = gamesWithPredictions.map(game => `
-                    <div class="prediction-card">
-                        <div class="prediction-header">
-                            <h3>${game.shortName}</h3>
-                            <div class="confidence-badge ${getConfidenceBadgeClass(game.aiPrediction.confidence)}">
-                                ${game.aiPrediction.confidence}% Confidence
-                            </div>
-                        </div>
-                        
-                        <!-- AI Prediction Section -->
-                        <div class="ai-prediction-section">
-                            <div class="section-title">
-                                <i class="fas fa-brain"></i> AI Prediction
-                            </div>
-                            <div class="prediction-details">
-                                <div class="predicted-winner">
-                                    🏆 ${game.aiPrediction.predictedSpread}
-                                </div>
-                                <div class="predicted-score">
-                                    Score: ${game.aiPrediction.predictedScore.home}-${game.aiPrediction.predictedScore.away}
-                                </div>
-                                <div class="win-probabilities">
-                                    <div class="prob-item">
-                                        <span>${game.teams.home.abbreviation}:</span>
-                                        <span>${game.aiPrediction.homeWinProbability}%</span>
-                                    </div>
-                                    <div class="prob-item">
-                                        <span>${game.teams.away.abbreviation}:</span>
-                                        <span>${game.aiPrediction.awayWinProbability}%</span>
-                                    </div>
-                                </div>
-                                <div class="betting-rec">
-                                    <strong>Recommendation:</strong> ${game.aiPrediction.recommendation}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ML Algorithms Section -->
-                        <div class="ml-algorithms-section">
-                            <div class="section-title">
-                                <i class="fas fa-microchip"></i> ML Algorithm Predictions
-                            </div>
-                            <div class="algorithms-grid">
-                                <div class="algorithm-card neural-network">
-                                    <div class="algorithm-header">
-                                        <div class="algorithm-name">Neural Network</div>
-                                        <div class="algorithm-accuracy">${game.mlAlgorithms.neuralNetwork.accuracy}</div>
-                                    </div>
-                                    <div class="algorithm-prediction">
-                                        <div class="prediction-winner">${game.mlAlgorithms.neuralNetwork.prediction}</div>
-                                        <div class="prediction-confidence">${game.mlAlgorithms.neuralNetwork.confidence}%</div>
-                                        <div class="prediction-spread">${game.mlAlgorithms.neuralNetwork.spread}</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="algorithm-card xgboost">
-                                    <div class="algorithm-header">
-                                        <div class="algorithm-name">XGBoost</div>
-                                        <div class="algorithm-accuracy">${game.mlAlgorithms.xgboost.accuracy}</div>
-                                    </div>
-                                    <div class="algorithm-prediction">
-                                        <div class="prediction-winner">${game.mlAlgorithms.xgboost.prediction}</div>
-                                        <div class="prediction-confidence">${game.mlAlgorithms.xgboost.confidence}%</div>
-                                        <div class="prediction-spread">${game.mlAlgorithms.xgboost.spread}</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="algorithm-card ensemble">
-                                    <div class="algorithm-header">
-                                        <div class="algorithm-name">Ensemble</div>
-                                        <div class="algorithm-accuracy">${game.mlAlgorithms.ensemble.accuracy}</div>
-                                    </div>
-                                    <div class="algorithm-prediction">
-                                        <div class="prediction-winner">${game.mlAlgorithms.ensemble.prediction}</div>
-                                        <div class="prediction-confidence">${game.mlAlgorithms.ensemble.confidence}%</div>
-                                        <div class="prediction-spread">${game.mlAlgorithms.ensemble.spread}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Consensus Section -->
-                            <div class="consensus-section">
-                                <div class="consensus-header">
-                                    <div class="consensus-title">
-                                        <i class="fas fa-balance-scale"></i> Consensus Prediction
-                                    </div>
-                                    <div class="edge-indicator ${getEdgeClass(game.mlAlgorithms.consensus.edge)}">
-                                        ${game.mlAlgorithms.consensus.edge} EDGE
-                                    </div>
-                                </div>
-                                <div class="consensus-details">
-                                    <div class="consensus-prediction">
-                                        <strong>${game.mlAlgorithms.consensus.prediction}</strong> 
-                                        (${game.mlAlgorithms.consensus.confidence}% confidence)
-                                    </div>
-                                    <div class="model-agreement">
-                                        Model Agreement: ${game.mlAlgorithms.consensus.modelAgreement}%
-                                    </div>
-                                    <div class="consensus-recommendation">
-                                        ${game.mlAlgorithms.consensus.recommendation}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Betting Lines Section -->
-                        ${game.bettingLines ? `
-                        <div class="betting-lines-section">
-                            <div class="section-title">
-                                <i class="fas fa-coins"></i> Betting Lines
-                            </div>
-                            <div class="betting-lines-grid">
-                                <div class="line-item">
-                                    <span class="line-label">Spread:</span>
-                                    <span class="line-value">${game.bettingLines.spread.home} / ${game.bettingLines.spread.away}</span>
-                                </div>
-                                <div class="line-item">
-                                    <span class="line-label">Moneyline:</span>
-                                    <span class="line-value">${game.bettingLines.moneyline.home} / ${game.bettingLines.moneyline.away}</span>
-                                </div>
-                                <div class="line-item">
-                                    <span class="line-label">Total:</span>
-                                    <span class="line-value">${game.bettingLines.total.over} / ${game.bettingLines.total.under}</span>
-                                </div>
-                            </div>
-                            <div class="sportsbooks">
-                                Available at: ${game.bettingLines.sportsbooks.slice(0, 3).join(', ')}
-                            </div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('❌ Error loading predictions:', error);
-                container.innerHTML = `
-                    <div class="error-card">
-                        <div class="error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <h3>Prediction Error</h3>
-                        <p>Unable to load AI predictions. Please try again.</p>
-                        <button onclick="loadPredictions()" class="retry-btn">
-                            <i class="fas fa-redo"></i> Retry
-                        </button>
-                    </div>
-                `;
-            }
         }
 
         // Helper function to get confidence badge CSS class

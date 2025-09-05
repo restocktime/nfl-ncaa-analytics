@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Navigation Issues</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            padding: 20px; 
+            background: #111; 
+            color: #0f0; 
+            line-height: 1.6;
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #333;
+            background: #1a1a1a;
+        }
+        .test-button { 
+            display: inline-block;
+            margin: 5px; 
+            padding: 10px 15px; 
+            background: #333; 
+            color: #0f0; 
+            text-decoration: none; 
+            border: 1px solid #0f0;
+            cursor: pointer;
+        }
+        .test-button:hover { background: #555; }
+        .result { margin-top: 10px; padding: 10px; background: #333; }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Navigation Debug Tool</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Page Navigation</h2>
+        <p>Click these to test if navigation works:</p>
+        <button class="test-button" onclick="testNavigation('/nfl-analytics.html')">🏈 Test NFL Analytics</button>
+        <button class="test-button" onclick="testNavigation('/ncaa-analytics.html')">🏫 Test NCAA Analytics</button>
+        <button class="test-button" onclick="testNavigation('/betting-odds-dashboard.html')">💰 Test Betting Dashboard</button>
+        <div id="nav-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test API Endpoints</h2>
+        <p>Check if backend APIs are responding:</p>
+        <button class="test-button" onclick="testAPI('/api/health')">🏥 Test Health</button>
+        <button class="test-button" onclick="testAPI('/api/games?sport=nfl')">🏈 Test NFL Games</button>
+        <button class="test-button" onclick="testAPI('/api/betting/odds')">💰 Test Betting Odds</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. JavaScript Errors</h2>
+        <div id="js-errors" class="result">Monitoring for JavaScript errors...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Current Page Info</h2>
+        <div id="page-info" class="result"></div>
+    </div>
+
+    <script>
+        // Display current page info
+        document.getElementById('page-info').innerHTML = `
+            <strong>Current URL:</strong> ${window.location.href}<br>
+            <strong>User Agent:</strong> ${navigator.userAgent}<br>
+            <strong>Viewport:</strong> ${window.innerWidth}x${window.innerHeight}<br>
+            <strong>Page Load Time:</strong> ${Date.now()}<br>
+        `;
+
+        // Capture JavaScript errors
+        let errorCount = 0;
+        window.onerror = function(msg, url, line, col, error) {
+            errorCount++;
+            const errorDiv = document.getElementById('js-errors');
+            errorDiv.innerHTML = `
+                <div class="error">❌ JavaScript Error #${errorCount}:</div>
+                <div><strong>Message:</strong> ${msg}</div>
+                <div><strong>File:</strong> ${url}:${line}:${col}</div>
+                <div><strong>Error:</strong> ${error}</div>
+            `;
+            return false;
+        };
+
+        // Test navigation
+        function testNavigation(url) {
+            const resultDiv = document.getElementById('nav-result');
+            resultDiv.innerHTML = `<div class="warning">⏳ Testing navigation to ${url}...</div>`;
+            
+            // Test if page exists
+            fetch(url, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        resultDiv.innerHTML = `
+                            <div class="success">✅ Page ${url} exists and is accessible</div>
+                            <div><button class="test-button" onclick="window.location.href='${url}'">🚀 Navigate Now</button></div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<div class="error">❌ Page ${url} returned status: ${response.status}</div>`;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="error">❌ Navigation test failed: ${error.message}</div>`;
+                });
+        }
+
+        // Test API endpoints
+        function testAPI(endpoint) {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = `<div class="warning">⏳ Testing API endpoint ${endpoint}...</div>`;
+            
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ API ${endpoint} responded successfully</div>
+                        <div><strong>Response:</strong> <pre>${JSON.stringify(data, null, 2).substring(0, 500)}...</pre></div>
+                    `;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="error">❌ API test failed: ${error.message}</div>`;
+                });
+        }
+
+        // Test the main index.html selectSport function
+        function testSelectSport() {
+            if (typeof selectSport === 'function') {
+                document.getElementById('nav-result').innerHTML = `
+                    <div class="success">✅ selectSport function is available</div>
+                    <button class="test-button" onclick="selectSport('nfl')">🏈 Test selectSport('nfl')</button>
+                    <button class="test-button" onclick="selectSport('ncaa')">🏫 Test selectSport('ncaa')</button>
+                `;
+            } else {
+                document.getElementById('nav-result').innerHTML = `
+                    <div class="error">❌ selectSport function is not defined (you're not on the main page)</div>
+                `;
+            }
+        }
+
+        // Auto-run basic tests
+        setTimeout(() => {
+            testAPI('/api/health');
+        }, 1000);
+
+        console.log('🔧 Debug navigation tool loaded');
+    </script>
+</body>
+</html>

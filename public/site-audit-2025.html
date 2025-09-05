@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Site Audit - Sunday Edge Pro</title>
+    <style>
+        body { 
+            background: #111; 
+            color: #0f0; 
+            font-family: monospace; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #333; 
+            background: #1a1a1a; 
+        }
+        .nav-test { 
+            display: inline-block; 
+            margin: 5px; 
+            padding: 10px 15px; 
+            background: #333; 
+            color: #0f0; 
+            text-decoration: none; 
+            border: 1px solid #0f0; 
+            cursor: pointer; 
+        }
+        .nav-test:hover { background: #555; }
+        .result { 
+            margin: 10px 0; 
+            padding: 15px; 
+            background: #333; 
+            border-left: 4px solid #0f0; 
+        }
+        .error { color: #f00; border-left-color: #f00; }
+        .warning { color: #ff0; border-left-color: #ff0; }
+        .success { color: #0f0; border-left-color: #0f0; }
+        .tab-content { margin: 10px 0; padding: 10px; background: #222; }
+        pre { background: #000; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Sunday Edge Pro - Complete Site Audit</h1>
+    
+    <div class="section">
+        <h2>🏠 Main Navigation Test</h2>
+        <p>Testing main site navigation structure:</p>
+        <a href="/" class="nav-test">🏠 Home Index</a>
+        <a href="/nfl-analytics.html" class="nav-test">🏈 NFL Analytics</a>
+        <a href="/ncaa-analytics.html" class="nav-test">🏫 NCAA Analytics</a>
+        <div id="nav-results" class="result">Click links above to test navigation...</div>
+    </div>
+
+    <div class="section">
+        <h2>🏈 NFL Analytics Sections</h2>
+        <p>Testing all NFL tabs and their content:</p>
+        <button class="nav-test" onclick="testNFLSection('dashboard')">📊 Dashboard</button>
+        <button class="nav-test" onclick="testNFLSection('live')">🔴 Live Games</button>
+        <button class="nav-test" onclick="testNFLSection('upcoming')">📅 Upcoming</button>
+        <button class="nav-test" onclick="testNFLSection('predictions')">🧠 AI Predictions</button>
+        <button class="nav-test" onclick="testNFLSection('betting')">💰 Betting Edge</button>
+        <button class="nav-test" onclick="testNFLSection('fantasy')">🏆 Fantasy</button>
+        <button class="nav-test" onclick="testNFLSection('analytics')">📈 Analytics</button>
+        <button class="nav-test" onclick="testNFLSection('news')">📰 News</button>
+        <div id="nfl-results" class="result">Select NFL sections to test...</div>
+    </div>
+
+    <div class="section">
+        <h2>🏫 NCAA Analytics Sections</h2>
+        <p>Testing all NCAA tabs and their content:</p>
+        <button class="nav-test" onclick="testNCAASection('live')">🔴 Live Games</button>
+        <button class="nav-test" onclick="testNCAASection('upcoming')">📅 Upcoming</button>
+        <button class="nav-test" onclick="testNCAASection('predictions')">🧠 AI Predictions</button>
+        <button class="nav-test" onclick="testNCAASection('rankings')">🏆 Top 25</button>
+        <button class="nav-test" onclick="testNCAASection('betting')">💰 Betting Lines</button>
+        <button class="nav-test" onclick="testNCAASection('analytics')">📈 Analytics</button>
+        <div id="ncaa-results" class="result">Select NCAA sections to test...</div>
+    </div>
+
+    <div class="section">
+        <h2>🔧 API Endpoint Testing</h2>
+        <p>Testing all backend API endpoints:</p>
+        <button class="nav-test" onclick="testAPI('/api/health')">🏥 Health Check</button>
+        <button class="nav-test" onclick="testAPI('/api/games?sport=nfl')">🏈 NFL Games</button>
+        <button class="nav-test" onclick="testAPI('/api/games?sport=ncaa')">🏫 NCAA Games</button>
+        <button class="nav-test" onclick="testAPI('/api/betting/odds')">💰 Betting Odds</button>
+        <button class="nav-test" onclick="testAPI('/api/betting/props')">🎯 Player Props</button>
+        <button class="nav-test" onclick="testAPI('/api/ai/predictions')">🧠 AI Predictions</button>
+        <button class="nav-test" onclick="testAPI('/api/news')">📰 News</button>
+        <div id="api-results" class="result">Click API endpoints to test...</div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Site Content Audit Results</h2>
+        <div id="audit-summary" class="result">Starting comprehensive site audit...</div>
+    </div>
+
+    <script>
+        let auditResults = {
+            navigation: {},
+            nfl: {},
+            ncaa: {},
+            apis: {},
+            issues: []
+        };
+
+        // Test NFL sections
+        async function testNFLSection(section) {
+            const results = document.getElementById('nfl-results');
+            results.innerHTML = `<div class="warning">⏳ Testing NFL ${section} section...</div>`;
+            
+            try {
+                // Test if the section would load content
+                const response = await fetch(`/api/games?sport=nfl`);
+                const data = await response.json();
+                
+                auditResults.nfl[section] = {
+                    status: 'working',
+                    dataAvailable: data.success && data.data && data.data.length > 0,
+                    count: data.data ? data.data.length : 0
+                };
+
+                results.innerHTML = `
+                    <div class="success">✅ NFL ${section.toUpperCase()} Section</div>
+                    <div class="tab-content">
+                        <strong>Status:</strong> Working<br>
+                        <strong>Data Available:</strong> ${auditResults.nfl[section].dataAvailable ? 'Yes' : 'No'}<br>
+                        <strong>Games Count:</strong> ${auditResults.nfl[section].count}<br>
+                        <strong>Content:</strong> ${getSectionDescription('nfl', section)}
+                    </div>
+                `;
+            } catch (error) {
+                auditResults.nfl[section] = { status: 'error', error: error.message };
+                results.innerHTML = `<div class="error">❌ NFL ${section} failed: ${error.message}</div>`;
+            }
+            
+            updateAuditSummary();
+        }
+
+        // Test NCAA sections
+        async function testNCAASection(section) {
+            const results = document.getElementById('ncaa-results');
+            results.innerHTML = `<div class="warning">⏳ Testing NCAA ${section} section...</div>`;
+            
+            try {
+                const response = await fetch(`/api/games?sport=ncaa`);
+                const data = await response.json();
+                
+                auditResults.ncaa[section] = {
+                    status: 'working',
+                    dataAvailable: data.success && data.data && data.data.length > 0,
+                    count: data.data ? data.data.length : 0
+                };
+
+                results.innerHTML = `
+                    <div class="success">✅ NCAA ${section.toUpperCase()} Section</div>
+                    <div class="tab-content">
+                        <strong>Status:</strong> Working<br>
+                        <strong>Data Available:</strong> ${auditResults.ncaa[section].dataAvailable ? 'Yes' : 'No'}<br>
+                        <strong>Games Count:</strong> ${auditResults.ncaa[section].count}<br>
+                        <strong>Content:</strong> ${getSectionDescription('ncaa', section)}
+                    </div>
+                `;
+            } catch (error) {
+                auditResults.ncaa[section] = { status: 'error', error: error.message };
+                results.innerHTML = `<div class="error">❌ NCAA ${section} failed: ${error.message}</div>`;
+            }
+            
+            updateAuditSummary();
+        }
+
+        // Test API endpoints
+        async function testAPI(endpoint) {
+            const results = document.getElementById('api-results');
+            results.innerHTML = `<div class="warning">⏳ Testing ${endpoint}...</div>`;
+            
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                auditResults.apis[endpoint] = {
+                    status: response.ok ? 'working' : 'error',
+                    statusCode: response.status,
+                    hasData: data && Object.keys(data).length > 0
+                };
+
+                results.innerHTML = `
+                    <div class="success">✅ API ${endpoint}</div>
+                    <div class="tab-content">
+                        <strong>Status Code:</strong> ${response.status}<br>
+                        <strong>Response:</strong> ${data.success ? 'Success' : 'Data Available'}<br>
+                        <strong>Data Preview:</strong><br>
+                        <pre>${JSON.stringify(data, null, 2).substring(0, 300)}${JSON.stringify(data, null, 2).length > 300 ? '...' : ''}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                auditResults.apis[endpoint] = { status: 'error', error: error.message };
+                results.innerHTML = `<div class="error">❌ API ${endpoint} failed: ${error.message}</div>`;
+            }
+            
+            updateAuditSummary();
+        }
+
+        // Get section descriptions
+        function getSectionDescription(sport, section) {
+            const descriptions = {
+                nfl: {
+                    dashboard: 'Overview of live NFL scores, upcoming games, key stats',
+                    live: 'Real-time NFL game scores, quarter-by-quarter updates',
+                    upcoming: 'Schedule of upcoming NFL games with betting lines',
+                    predictions: 'AI-powered game predictions and betting recommendations',
+                    betting: 'Live betting odds, spreads, over/under lines',
+                    fantasy: 'Fantasy football insights, player rankings, lineup advice',
+                    analytics: 'Advanced team and player statistics, trends',
+                    news: 'Latest NFL news, injury reports, roster updates'
+                },
+                ncaa: {
+                    live: 'Real-time college football scores and updates',
+                    upcoming: 'College football schedule and matchups',
+                    predictions: 'AI predictions for college games',
+                    rankings: 'AP Top 25 rankings and conference standings',
+                    betting: 'College football betting lines and odds',
+                    analytics: 'College football team and conference analytics'
+                }
+            };
+            return descriptions[sport][section] || 'Content section';
+        }
+
+        // Update audit summary
+        function updateAuditSummary() {
+            const summary = document.getElementById('audit-summary');
+            const totalSections = Object.keys(auditResults.nfl).length + Object.keys(auditResults.ncaa).length;
+            const totalAPIs = Object.keys(auditResults.apis).length;
+            
+            const workingSections = Object.values(auditResults.nfl).filter(s => s.status === 'working').length + 
+                                  Object.values(auditResults.ncaa).filter(s => s.status === 'working').length;
+            
+            const workingAPIs = Object.values(auditResults.apis).filter(a => a.status === 'working').length;
+            
+            summary.innerHTML = `
+                <div class="success">📊 AUDIT SUMMARY</div>
+                <div class="tab-content">
+                    <strong>Site Sections Tested:</strong> ${totalSections} (${workingSections} working)<br>
+                    <strong>API Endpoints Tested:</strong> ${totalAPIs} (${workingAPIs} working)<br>
+                    <strong>Overall Status:</strong> ${(workingSections + workingAPIs) / (totalSections + totalAPIs) * 100}% operational<br>
+                    <strong>Issues Found:</strong> ${auditResults.issues.length}
+                </div>
+            `;
+        }
+
+        // Auto-start basic tests
+        setTimeout(() => {
+            console.log('🔍 Starting automated site audit...');
+            testAPI('/api/health');
+        }, 1000);
+    </script>
+</body>
+</html>

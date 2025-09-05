@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+        .nav-button { 
+            display: block; 
+            margin: 10px 0; 
+            padding: 15px; 
+            background: #333; 
+            color: #0f0; 
+            text-decoration: none; 
+            border: 1px solid #0f0;
+            text-align: center;
+        }
+        .nav-button:hover { background: #555; }
+    </style>
+</head>
+<body>
+    <h1>🧭 Navigation Test Page</h1>
+    <p>Test these links to verify navigation is working:</p>
+    
+    <a href="/" class="nav-button">🏠 Home Page</a>
+    <a href="/nfl-analytics.html" class="nav-button">🏈 NFL Analytics</a>
+    <a href="/ncaa-analytics.html" class="nav-button">🏫 NCAA Analytics</a>
+    <a href="/betting-odds-dashboard.html" class="nav-button">💰 Betting Dashboard</a>
+    <a href="/sunday-edge-pro.html" class="nav-button">⚡ Sunday Edge Pro</a>
+    
+    <script>
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('nav-button')) {
+                console.log('🔗 Navigating to:', e.target.href);
+            }
+        });
+        
+        console.log('🧭 Navigation test page loaded');
+        console.log('Current URL:', window.location.href);
+    </script>
+</body>
+</html>

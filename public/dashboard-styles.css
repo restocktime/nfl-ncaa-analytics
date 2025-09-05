@@ -1,0 +1,218 @@
+/* Dashboard Game Format Styling */
+.dashboard-game-format {
+    padding: 15px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    position: relative;
+}
+
+.game-full-info {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.click-hint {
+    font-size: 12px;
+    color: rgba(0, 255, 136, 0.8);
+    text-align: right;
+    font-style: italic;
+}
+
+.test-props-btn {
+    background: rgba(255, 107, 53, 0.3);
+    border: 1px solid #ff6b35;
+    color: #ff6b35;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 10px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: all 0.2s ease;
+}
+
+.test-props-btn:hover {
+    background: rgba(255, 107, 53, 0.5);
+    transform: scale(1.05);
+}
+
+/* AI Predictions Styling */
+.predictions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.predictions-header h3 {
+    margin: 0;
+    color: #00ff88;
+    font-size: 18px;
+}
+
+.model-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+}
+
+.accuracy {
+    color: #00ff88;
+    font-weight: bold;
+}
+
+.count {
+    color: #ccc;
+}
+
+.predictions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 15px;
+}
+
+.prediction-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.prediction-card:hover {
+    border-color: rgba(0, 255, 136, 0.5);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.game-matchup {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.away-team, .home-team {
+    color: white;
+}
+
+.vs {
+    color: #ccc;
+    margin: 0 10px;
+}
+
+.prediction-result {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.winner {
+    font-size: 16px;
+    font-weight: bold;
+    color: #00ff88;
+    margin-bottom: 5px;
+}
+
+.confidence {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.prediction-lines {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.spread, .total {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 15px;
+    color: white;
+}
+
+.ai-analysis {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #ccc;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.factors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.factor {
+    background: rgba(0, 102, 255, 0.2);
+    color: #66ccff;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+}
+
+/* Loading and Error States */
+.loading-state, .error-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #ccc;
+}
+
+.loading-state h3 {
+    color: #00ff88;
+    margin-bottom: 10px;
+}
+
+.error-state h3 {
+    color: #ff6b6b;
+    margin-bottom: 10px;
+}
+
+.retry-btn {
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid rgba(0, 255, 136, 0.5);
+    color: #00ff88;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: rgba(0, 255, 136, 0.3);
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .predictions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .predictions-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .model-stats {
+        justify-content: center;
+    }
+    
+    .prediction-lines {
+        flex-direction: column;
+        gap: 5px;
+    }
+}

@@ -1,0 +1,207 @@
+/* Improved Appearance for NFL Analytics */
+
+/* Better game cards with modern styling */
+.game-card {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px;
+    color: white;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 255, 136, 0.2);
+    border-color: #00ff88;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.05), transparent);
+    transform: rotate(45deg);
+    transition: transform 0.5s ease;
+    opacity: 0;
+}
+
+.game-card:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translate(50%, 50%);
+}
+
+/* Improved game header */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.game-status {
+    background: linear-gradient(45deg, #00ff88, #00cc6a);
+    color: #000;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.game-time {
+    color: #ccc;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Better team display */
+.game-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.team {
+    flex: 1;
+    text-align: center;
+}
+
+.team-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.team-score {
+    font-size: 24px;
+    font-weight: 900;
+    color: #00ff88;
+}
+
+.vs, .away, .home {
+    color: #00ff88;
+    font-weight: bold;
+    margin: 0 15px;
+    font-size: 14px;
+}
+
+/* Game info styling */
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #999;
+    position: relative;
+    z-index: 1;
+}
+
+.network, .week {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Better predictions section */
+#predictions {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px 0;
+}
+
+/* Improved betting section */
+#betting {
+    background: linear-gradient(135deg, #2a1a1a, #3a2a2a);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+/* Live indicator */
+.live-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ff0000;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Responsive grid improvements */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 25px;
+}
+
+/* Loading states */
+.loading-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px dashed rgba(0, 255, 136, 0.5);
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    color: #ccc;
+}
+
+.loading-card i {
+    font-size: 24px;
+    color: #00ff88;
+    margin-bottom: 10px;
+}
+
+/* Error states */
+.error-card {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    color: #ff6b6b;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+        padding: 15px;
+    }
+    
+    .game-card {
+        margin: 10px 0;
+        padding: 15px;
+    }
+    
+    .game-teams {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .vs {
+        transform: rotate(90deg);
+        margin: 10px 0;
+    }
+}

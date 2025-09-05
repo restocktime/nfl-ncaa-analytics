@@ -299,7 +299,12 @@ class SundayEdgeProQuantum {
      * Display live games
      */
     displayLiveGames(liveGames) {
-        const container = document.getElementById('live-games-container');
+        const container = document.getElementById('nfl-live-games');
+        
+        if (!container) {
+            console.error('🚨 Container nfl-live-games not found for displayLiveGames');
+            return;
+        }
         
         if (liveGames.length === 0) {
             container.innerHTML = `
@@ -319,7 +324,7 @@ class SundayEdgeProQuantum {
      * Display upcoming games
      */
     displayUpcomingGames(upcomingGames) {
-        const container = document.getElementById('upcoming-games-container');
+        const container = document.getElementById('nfl-upcoming-games');
         
         if (upcomingGames.length === 0) {
             container.innerHTML = `
@@ -622,7 +627,7 @@ class SundayEdgeProQuantum {
         );
         
         // Update total games
-        const totalGamesEl = document.getElementById('total-games');
+        const totalGamesEl = document.getElementById('total-nfl-games');
         if (totalGamesEl) {
             totalGamesEl.textContent = games.length;
         }
@@ -747,7 +752,14 @@ class SundayEdgeProQuantum {
      * Load live view data
      */
     async loadLiveViewData() {
-        const container = document.getElementById('all-live-games-container');
+        const container = document.getElementById('nfl-live-games');
+        
+        // Check if container exists
+        if (!container) {
+            console.error('🚨 Container nfl-live-games not found in DOM');
+            return;
+        }
+        
         const games = Array.from(this.gameData.values());
         const liveGames = games.filter(game => 
             game.status === 'STATUS_IN_PROGRESS' || 
@@ -959,7 +971,10 @@ class SundayEdgeProQuantum {
     async loadLiveGames() {
         console.log('📺 Loading live NFL games...');
         const container = document.getElementById('nfl-live-games');
-        if (!container) return;
+        if (!container) {
+            console.error('🚨 Container nfl-live-games not found for displayLiveGames');
+            return;
+        }
         
         try {
             const response = await fetch('/api/games?sport=nfl');
@@ -1106,7 +1121,10 @@ class SundayEdgeProQuantum {
     async loadUpcomingGames() {
         console.log('📅 Loading upcoming games...');
         const container = document.getElementById('nfl-upcoming-games');
-        if (!container) return;
+        if (!container) {
+            console.error('🚨 Container nfl-upcoming-games not found');
+            return;
+        }
         
         try {
             const response = await fetch('/api/games?sport=nfl');

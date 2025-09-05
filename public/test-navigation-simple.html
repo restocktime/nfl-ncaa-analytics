@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Navigation Test</title>
+    <style>
+        body { 
+            background: #111; 
+            color: #0f0; 
+            font-family: monospace; 
+            padding: 20px; 
+        }
+        .test-btn { 
+            display: block; 
+            margin: 10px 0; 
+            padding: 15px; 
+            background: #333; 
+            color: #0f0; 
+            border: 1px solid #0f0; 
+            cursor: pointer; 
+            text-decoration: none;
+        }
+        .test-btn:hover { background: #555; }
+        .result { margin: 10px 0; padding: 10px; background: #333; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Simple Navigation Test</h1>
+    
+    <h2>Direct Navigation Links:</h2>
+    <a href="/nfl-analytics.html" class="test-btn">🏈 NFL Analytics (Direct Link)</a>
+    <a href="/ncaa-analytics.html" class="test-btn">🏫 NCAA Analytics (Direct Link)</a>
+    <a href="/index.html" class="test-btn">🏠 Back to Index (Direct Link)</a>
+    
+    <h2>JavaScript Navigation Test:</h2>
+    <button class="test-btn" onclick="testSelectSport('nfl')">🏈 Test NFL selectSport()</button>
+    <button class="test-btn" onclick="testSelectSport('ncaa')">🏫 Test NCAA selectSport()</button>
+    
+    <h2>Results:</h2>
+    <div id="results" class="result">Click buttons above to test navigation...</div>
+
+    <script>
+        function testSelectSport(sport) {
+            const results = document.getElementById('results');
+            results.innerHTML = `<div style="color: yellow;">⏳ Testing ${sport} navigation...</div>`;
+            
+            // Simulate the same logic as index.html
+            console.log(`🏈 Navigating to ${sport.toUpperCase()} analytics...`);
+            
+            setTimeout(() => {
+                if (sport === 'nfl') {
+                    results.innerHTML += `<div style="color: #0f0;">✅ Redirecting to nfl-analytics.html</div>`;
+                    window.location.href = 'nfl-analytics.html';
+                } else if (sport === 'ncaa') {
+                    results.innerHTML += `<div style="color: #0f0;">✅ Redirecting to ncaa-analytics.html</div>`;
+                    window.location.href = 'ncaa-analytics.html';
+                }
+            }, 200);
+        }
+
+        // Test if pages exist
+        function checkPageExists(url) {
+            return fetch(url, { method: 'HEAD' })
+                .then(response => response.ok)
+                .catch(() => false);
+        }
+
+        // Auto-check page existence
+        window.addEventListener('load', async () => {
+            const results = document.getElementById('results');
+            
+            const nflExists = await checkPageExists('/nfl-analytics.html');
+            const ncaaExists = await checkPageExists('/ncaa-analytics.html');
+            
+            results.innerHTML = `
+                <div>📋 Page Status Check:</div>
+                <div style="color: ${nflExists ? '#0f0' : '#f00'};">🏈 NFL Analytics: ${nflExists ? 'EXISTS' : 'MISSING'}</div>
+                <div style="color: ${ncaaExists ? '#0f0' : '#f00'};">🏫 NCAA Analytics: ${ncaaExists ? 'EXISTS' : 'MISSING'}</div>
+                <div>Current URL: ${window.location.href}</div>
+                <div>Server Status: ${window.location.protocol === 'http:' ? 'Local Development' : 'Unknown'}</div>
+            `;
+        });
+    </script>
+</body>
+</html>
