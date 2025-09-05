@@ -1,5 +1,6 @@
 // Production API Fallback System
 console.log('🚀 Production API Fallback loading...');
+console.log('🚀 Fallback system timestamp:', new Date().toISOString());
 
 class ProductionAPIFallback {
     constructor() {
@@ -13,7 +14,7 @@ class ProductionAPIFallback {
 
     async fetchWithFallback(url, fallbackType) {
         try {
-            console.log(`🚀 Attempting to fetch: ${url}`);
+            console.log(`🚀 Production Fallback: Attempting to fetch: ${url}`);
             const response = await fetch(url);
             
             if (!response.ok) {
@@ -21,12 +22,15 @@ class ProductionAPIFallback {
             }
             
             const data = await response.json();
-            console.log(`✅ Successfully fetched from: ${url}`);
+            console.log(`✅ Production Fallback: Successfully fetched from: ${url}`);
             return data;
             
         } catch (error) {
-            console.warn(`⚠️ API failed, using fallback for ${fallbackType}:`, error.message);
-            return this.fallbackData[fallbackType];
+            console.warn(`⚠️ Production Fallback: API failed, using fallback for ${fallbackType}:`, error.message);
+            console.log(`🔄 Production Fallback: Returning fallback data for ${fallbackType}`);
+            const fallbackData = this.fallbackData[fallbackType];
+            console.log(`📊 Fallback data:`, fallbackData);
+            return fallbackData;
         }
     }
 

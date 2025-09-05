@@ -33,9 +33,11 @@
     
     <!-- Mobile Navigation Fix -->
     <link rel="stylesheet" href="mobile-nav-fix.css">
-    
-    <!-- Production API Fallback -->
-    <script src="production-api-fallback.js"></script>
+</head>
+
+<body>
+    <!-- Production API Fallback - Load First -->
+    <script src="production-api-fallback.js?v=2"></script>
     
     <!-- Cache Buster for Fresh Data -->
     <script src="cache-buster.js"></script>
@@ -1182,7 +1184,16 @@
                 default: return 'medium-edge';
             }
         }
-                } else {
+        
+        // Load betting lines with comprehensive display
+        async function loadBettingLines() {
+            const container = document.getElementById('nfl-betting-lines');
+            if (!container) return;
+            
+            try {
+                console.log('💰 Fetching live NFL betting odds...');
+                
+                if (!gamesData || gamesData.length === 0) {
                     container.innerHTML = `
                         <div class="loading-card">
                             <div class="loading-spinner"></div>
