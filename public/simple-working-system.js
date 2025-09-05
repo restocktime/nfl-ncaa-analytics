@@ -1,9 +1,49 @@
 // Simple Working System - No conflicts, just works
 console.log('🔥 SIMPLE WORKING SYSTEM LOADING...');
 
-// Live NFL Games Data - Eagles game is LIVE NOW
-const LIVE_NFL_DATA = {
-    games: [
+// Real ESPN API integration for live scores
+async function fetchRealNFLData() {
+    try {
+        console.log('🏈 Fetching real ESPN NFL data...');
+        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+        const data = await response.json();
+        
+        if (data.events && data.events.length > 0) {
+            const games = data.events.map(event => {
+                const competition = event.competitions[0];
+                const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
+                const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
+                
+                return {
+                    id: event.id,
+                    homeTeam: { 
+                        displayName: homeTeam.team.displayName,
+                        name: homeTeam.team.name 
+                    },
+                    awayTeam: { 
+                        displayName: awayTeam.team.displayName,
+                        name: awayTeam.team.name 
+                    },
+                    homeScore: parseInt(homeTeam.score) || 0,
+                    awayScore: parseInt(awayTeam.score) || 0,
+                    status: competition.status.type.name,
+                    quarter: competition.status.type.shortDetail,
+                    date: event.date,
+                    network: event.competitions[0].broadcasts?.[0]?.names?.[0] || 'TBD',
+                    week: event.week?.number || 1,
+                    isLive: competition.status.type.name === 'STATUS_IN_PROGRESS'
+                };
+            });
+            
+            console.log(`✅ Loaded ${games.length} real NFL games from ESPN`);
+            return games;
+        }
+    } catch (error) {
+        console.warn('⚠️ ESPN API failed, using fallback data:', error.message);
+    }
+    
+    // Fallback data if ESPN fails
+    return [
         {
             id: 'dal_phi',
             homeTeam: { displayName: 'Philadelphia Eagles', name: 'Eagles' },
@@ -26,24 +66,14 @@ const LIVE_NFL_DATA = {
             network: 'CBS',
             week: 1,
             kickoff: '8:20 PM ET'
-        },
-        {
-            id: 'buf_ari',
-            homeTeam: { displayName: 'Arizona Cardinals', name: 'Cardinals' },
-            awayTeam: { displayName: 'Buffalo Bills', name: 'Bills' },
-            status: 'STATUS_SCHEDULED',
-            date: new Date().toISOString(),
-            network: 'FOX',
-            week: 1,
-            kickoff: '4:25 PM ET'
         }
-    ]
-};
+    ];
+}
 
 class SimpleWorkingSystem {
     constructor() {
         this.isInitialized = false;
-        this.games = LIVE_NFL_DATA.games;
+        this.games = [];
     }
 
     init() {
@@ -59,23 +89,29 @@ class SimpleWorkingSystem {
         }
     }
 
-    start() {
+    async start() {
         console.log('🔥 Starting simple system...');
         
-        // 1. Fix mobile menu first
+        // 1. Load real NFL data first
+        this.games = await fetchRealNFLData();
+        
+        // 2. Fix mobile menu
         this.setupMobileMenu();
         
-        // 2. Display games
+        // 3. Display games
         this.displayGames();
         
-        // 3. Setup AI predictions
+        // 4. Setup AI predictions
         this.setupAIPredictions();
         
-        // 4. Setup player props
+        // 5. Setup player props
         this.setupPlayerProps();
         
+        // 6. Set up auto-refresh for live scores
+        this.setupAutoRefresh();
+        
         this.isInitialized = true;
-        console.log('✅ Simple working system ready!');
+        console.log('✅ Simple working system ready with real ESPN data!');
     }
 
     setupMobileMenu() {
@@ -321,6 +357,21 @@ class SimpleWorkingSystem {
         document.querySelectorAll(`[data-view="${viewName}"]`).forEach(link => {
             link.classList.add('active');
         });
+    }
+    
+    setupAutoRefresh() {
+        console.log('🔄 Setting up auto-refresh for live scores...');
+        
+        // Refresh every 30 seconds for live games
+        setInterval(async () => {
+            const hasLiveGames = this.games.some(game => game.isLive);
+            if (hasLiveGames) {
+                console.log('🔄 Refreshing live scores...');
+                this.games = await fetchRealNFLData();
+                this.displayGames();
+                this.setupAIPredictions();
+            }
+        }, 30000);
     }
 }
 
