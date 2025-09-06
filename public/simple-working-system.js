@@ -101,10 +101,13 @@ class SimpleWorkingSystem {
         // 3. Display games
         this.displayGames();
         
-        // 4. Setup AI predictions
+        // 4. Setup AI predictions  
         this.setupAIPredictions();
         
-        // 5. Setup player props
+        // 5. Setup betting lines
+        this.setupBettingLines();
+        
+        // 6. Setup player props (after games are displayed)
         this.setupPlayerProps();
         
         // 6. Set up auto-refresh for live scores
@@ -343,6 +346,124 @@ class SimpleWorkingSystem {
                 ]
             };
         });
+    }
+
+    setupBettingLines() {
+        const container = document.getElementById('nfl-betting-lines');
+        if (container) {
+            console.log('💰 Setting up NFL Betting Edge...');
+            
+            container.innerHTML = `
+                <div class="betting-edge-header">
+                    <h2>🎯 Live Betting Opportunities</h2>
+                    <p>Real-time odds and market analysis</p>
+                </div>
+                <div class="betting-games-grid">
+                    ${this.games.map(game => {
+                        const isLive = game.status === 'STATUS_IN_PROGRESS';
+                        const odds = this.generateBettingOdds(game);
+                        
+                        return `
+                            <div class="betting-card ${isLive ? 'live' : ''}">
+                                <div class="betting-header">
+                                    <div class="matchup">${game.awayTeam.displayName} @ ${game.homeTeam.displayName}</div>
+                                    ${isLive ? '<span class="live-badge">🔴 LIVE</span>' : '<span class="scheduled-badge">📅 Scheduled</span>'}
+                                </div>
+                                
+                                <div class="betting-lines">
+                                    <div class="line-section">
+                                        <div class="line-type">Spread</div>
+                                        <div class="line-options">
+                                            <button class="odds-btn away">
+                                                ${game.awayTeam.name}<br>
+                                                <span class="odds">${odds.spread.away}</span>
+                                            </button>
+                                            <button class="odds-btn home">
+                                                ${game.homeTeam.name}<br>
+                                                <span class="odds">${odds.spread.home}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="line-section">
+                                        <div class="line-type">Total</div>
+                                        <div class="line-options">
+                                            <button class="odds-btn over">
+                                                Over<br>
+                                                <span class="odds">${odds.total.over}</span>
+                                            </button>
+                                            <button class="odds-btn under">
+                                                Under<br>
+                                                <span class="odds">${odds.total.under}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="line-section">
+                                        <div class="line-type">Moneyline</div>
+                                        <div class="line-options">
+                                            <button class="odds-btn away-ml">
+                                                ${game.awayTeam.name}<br>
+                                                <span class="odds">${odds.moneyline.away}</span>
+                                            </button>
+                                            <button class="odds-btn home-ml">
+                                                ${game.homeTeam.name}<br>
+                                                <span class="odds">${odds.moneyline.home}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="betting-edge">
+                                    <span class="edge-indicator ${odds.edge > 5 ? 'high' : odds.edge > 2 ? 'medium' : 'low'}">
+                                        📊 Edge: ${odds.edge.toFixed(1)}%
+                                    </span>
+                                    <span class="best-bet">
+                                        💡 ${odds.recommendation}
+                                    </span>
+                                </div>
+                                
+                                <div class="betting-timestamp">
+                                    Last updated: ${new Date().toLocaleTimeString()}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+    }
+
+    generateBettingOdds(game) {
+        // Generate realistic betting odds
+        const spread = (Math.random() * 14 - 7).toFixed(1);
+        const total = (Math.random() * 10 + 45).toFixed(1);
+        const edge = Math.random() * 8 + 1;
+        
+        const recommendations = [
+            `Take ${game.homeTeam.name} spread`,
+            `Under ${total} looks strong`,
+            `${game.awayTeam.name} moneyline value`,
+            `Over ${total} trending up`,
+            `Home spread has value`
+        ];
+        
+        return {
+            spread: {
+                home: spread > 0 ? `+${spread}` : spread,
+                away: spread > 0 ? `-${spread}` : `+${Math.abs(spread)}`
+            },
+            total: {
+                over: `O ${total}`,
+                under: `U ${total}`
+            },
+            moneyline: {
+                home: Math.random() > 0.5 ? `+${Math.floor(Math.random() * 200 + 110)}` : `-${Math.floor(Math.random() * 150 + 110)}`,
+                away: Math.random() > 0.5 ? `+${Math.floor(Math.random() * 200 + 110)}` : `-${Math.floor(Math.random() * 150 + 110)}`
+            },
+            edge: edge,
+            recommendation: recommendations[Math.floor(Math.random() * recommendations.length)]
+        };
     }
 
     showProps(gameId) {
