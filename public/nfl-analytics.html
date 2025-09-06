@@ -512,8 +512,8 @@
             // Load fantasy data
             loadFantasyData();
             
-            // Set up fantasy alerts
-            setupFantasyAlerts();
+            // Fantasy alerts disabled - too annoying
+            // setupFantasyAlerts();
         }
         
         // Navigation functionality
@@ -709,35 +709,40 @@
             document.getElementById('sleeper-pick').textContent = 'J. Waddle';
         }
         
-        // Setup fantasy alerts
+        // Setup fantasy alerts - DISABLED (too annoying)
         function setupFantasyAlerts() {
-            // Mock fantasy alerts
-            setTimeout(() => {
-                showFantasyAlert('🚨 Injury Alert: Player X questionable for Sunday');
-            }, 5000);
+            // Disabled - popup was annoying users
+            console.log('🚫 Fantasy alerts disabled');
+            // setTimeout(() => {
+            //     showFantasyAlert('🚨 Injury Alert: Player X questionable for Sunday');
+            // }, 5000);
         }
         
-        // Show fantasy alert
+        // Show fantasy alert - DISABLED (too annoying)
         function showFantasyAlert(message) {
-            // Create alert notification
-            const alert = document.createElement('div');
-            alert.className = 'fantasy-alert';
-            alert.innerHTML = `
-                <div class="alert-content">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>${message}</span>
-                </div>
-                <button class="alert-close" >×</button>
-            `;
+            // Disabled - popup was annoying users
+            console.log('🚫 Fantasy alert blocked:', message);
+            return; // Exit early - no popup
             
-            document.body.appendChild(alert);
+            // // Create alert notification
+            // const alert = document.createElement('div');
+            // alert.className = 'fantasy-alert';
+            // alert.innerHTML = `
+            //     <div class="alert-content">
+            //         <i class="fas fa-exclamation-triangle"></i>
+            //         <span>${message}</span>
+            //     </div>
+            //     <button class="alert-close" >×</button>
+            // `;
             
-            // Auto-remove after 10 seconds
-            setTimeout(() => {
-                if (alert.parentElement) {
-                    alert.remove();
-                }
-            }, 10000);
+            // document.body.appendChild(alert);
+            
+            // // Auto-remove after 10 seconds
+            // setTimeout(() => {
+            //     if (alert.parentElement) {
+            //         alert.remove();
+            //     }
+            // }, 10000);
         }
         
         // Load live games with real data
