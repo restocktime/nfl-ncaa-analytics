@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test NCAA Fixes</title>
+</head>
+<body style="background: #000; color: white; font-family: Arial, sans-serif; padding: 20px;">
+    <h1>NCAA System Error Fixes Test</h1>
+    
+    <div style="margin-bottom: 30px; background: rgba(0, 255, 136, 0.1); padding: 15px; border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 8px;">
+        <h2>🛠️ Issues Fixed:</h2>
+        <ul style="line-height: 1.8;">
+            <li>✅ <strong>CORS Issues:</strong> Fixed NCAA ranking API calls with better error handling</li>
+            <li>✅ <strong>Missing Functions:</strong> Added loadNCAAPredictions() and calculateModelAgreement()</li>
+            <li>✅ <strong>Error Handling:</strong> Improved fallback data handling for failed API calls</li>
+            <li>✅ <strong>Robust Loading:</strong> Games and rankings load independently with individual error handling</li>
+            <li>✅ <strong>Fallback Data:</strong> Intelligent fallback games and rankings when APIs fail</li>
+        </ul>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+        <h2>🔧 Technical Improvements:</h2>
+        <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px;">
+            <h3>Error Handling Strategy:</h3>
+            <ul style="line-height: 1.6;">
+                <li><strong>Individual API Calls:</strong> Games and rankings load separately</li>
+                <li><strong>Graceful Degradation:</strong> If one API fails, the other continues to work</li>
+                <li><strong>Smart Fallbacks:</strong> Realistic fallback data based on current week/season</li>
+                <li><strong>Console Logging:</strong> Clear success/failure messages for debugging</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+        <h2>📊 API Status:</h2>
+        <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px;">
+            <ul style="line-height: 1.6;">
+                <li><strong>ESPN Games API:</strong> ✅ Working (CORS-friendly)</li>
+                <li><strong>ESPN Rankings API:</strong> ✅ Primary attempt (with fallback)</li>
+                <li><strong>NCAA API:</strong> ❌ CORS blocked (handled gracefully)</li>
+                <li><strong>College Football Data API:</strong> ❌ Requires auth (handled gracefully)</li>
+                <li><strong>Fallback Data:</strong> ✅ Always available</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+        <h2>🎯 Expected Behavior Now:</h2>
+        <div style="background: rgba(0, 102, 255, 0.1); padding: 15px; border: 1px solid rgba(0, 102, 255, 0.3); border-radius: 8px;">
+            <ul style="line-height: 1.6;">
+                <li>✅ <strong>No Console Errors:</strong> Functions are properly defined</li>
+                <li>✅ <strong>Graceful API Failures:</strong> Fallback data loads when APIs fail</li>
+                <li>✅ <strong>Working Predictions:</strong> AI predictions section loads without errors</li>
+                <li>✅ <strong>Rankings Display:</strong> AP Top 25 shows even if API fails</li>
+                <li>✅ <strong>Games Display:</strong> College football games load from ESPN or fallback</li>
+                <li>✅ <strong>Week 2 Display:</strong> Shows correct 2025 Season, Week 2 info</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="background: rgba(255, 68, 68, 0.1); padding: 15px; border: 1px solid rgba(255, 68, 68, 0.3); border-radius: 8px;">
+        <h3>⚠️ Known Limitations:</h3>
+        <p style="line-height: 1.6;">
+            Due to CORS restrictions in browser environments, some NCAA APIs cannot be accessed directly. 
+            The system now handles this gracefully by:
+        </p>
+        <ul style="line-height: 1.6;">
+            <li>Using CORS-friendly ESPN APIs when possible</li>
+            <li>Providing realistic fallback data when APIs are blocked</li>
+            <li>Continuing to function even when external APIs fail</li>
+            <li>Logging clear messages about what's working and what's not</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <h2>🧪 Test the Fixed NCAA Section:</h2>
+        <p><a href="public/ncaa-analytics.html" target="_blank" style="color: #00ff88; font-size: 1.2em;">Open NCAA Analytics (Fixed)</a></p>
+        <p>The page should now load without console errors and display college football data.</p>
+    </div>
+</body>
+</html>
