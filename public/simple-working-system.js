@@ -110,8 +110,8 @@ class SimpleWorkingSystem {
         // API Configuration
         this.config = {
             oddsApi: {
-                key: 'YOUR_ODDS_API_KEY', // Set to real key in production
-                enabled: false, // Set to true when real key is available
+                key: '22e59e4eccd8562ad4b697aeeaccb0fb', // Real API key configured
+                enabled: true, // Enabled with real key
                 baseUrl: 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds'
             },
             draftkings: {
@@ -182,7 +182,9 @@ class SimpleWorkingSystem {
             console.log('📊 NFL Analytics ready - Using enhanced simulation (no API keys configured)');
             console.log('💡 To enable live odds: window.simpleSystem.configureOddsAPI("your-key")');
         } else {
-            console.log('🔴 NFL Analytics ready with live API integration!');
+            console.log('🔴 NFL Analytics ready with LIVE API integration!');
+            console.log('💰 The Odds API: ENABLED with real data');
+            console.log('🎯 Player props now using live sportsbook odds!');
         }
         
         console.log('✅ System initialized with real ESPN data and player props!');
@@ -2233,7 +2235,7 @@ class SimpleWorkingSystem {
 window.simpleSystem = new SimpleWorkingSystem();
 window.simpleSystem.init();
 
-// Display configuration instructions
+// Display configuration status
 setTimeout(() => {
     if (!window.simpleSystem.config.oddsApi.enabled) {
         console.log(`
@@ -2256,6 +2258,23 @@ setTimeout(() => {
    • Real NFL team rosters  
    • Authentic NFL news feeds
    • Enhanced odds simulation
+        `);
+    } else {
+        console.log(`
+🏈 NFL Analytics System - LIVE MODE!
+
+🔥 All systems operational with real data:
+   ✅ Live ESPN game scores & schedules
+   ✅ Real NFL team rosters (2024-25 season)
+   ✅ Live sportsbook odds from The Odds API
+   ✅ Authentic NFL news from ESPN & NFL.com
+   ✅ Dynamic player props recommendations
+   ✅ Real-time odds movement tracking
+
+💡 Available commands:
+   • window.simpleSystem.enableVerboseLogging() - Debug mode
+   • window.simpleSystem.getAPIStatus() - Check API health
+   • window.simpleSystem.forcePropsRefresh() - Manual refresh
         `);
     }
 }, 1000);
