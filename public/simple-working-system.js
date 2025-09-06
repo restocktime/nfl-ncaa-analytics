@@ -859,8 +859,38 @@ class SimpleWorkingSystem {
                     <h2>🎯 Live Betting Opportunities</h2>
                     <p>Real-time odds and market analysis</p>
                 </div>
-                <div class="betting-games-grid">
-                    ${this.games.filter(game => !game.isFinal && game.status !== 'STATUS_FINAL').map(game => {
+                
+                <!-- HardRock Live Odds Widget -->
+                <div class="live-odds-section">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2><i class="fas fa-chart-line"></i> Live NFL Odds - HardRock</h2>
+                            <span class="live-indicator">
+                                <div class="live-dot"></div>
+                                LIVE ODDS
+                            </span>
+                        </div>
+                        <div class="odds-widget-container">
+                            <iframe
+                                title="NFL Sports Odds Widget - HardRock"
+                                class="odds-widget nfl-widget"
+                                src="https://widget.the-odds-api.com/v1/sports/americanfootball_nfl/events/?accessKey=wk_c1f30f86cb719d970238ce3e1583d7c3&bookmakerKeys=hardrockbet&oddsFormat=american&markets=h2h%2Cspreads%2Ctotals&marketNames=h2h%3AMoneyline%2Cspreads%3ASpreads%2Ctotals%3AOver%2FUnder"
+                            ></iframe>
+                        </div>
+                        <div class="widget-info">
+                            <p><strong>🏈 Live NFL Odds</strong></p>
+                            <p>Real-time odds from HardRock Sportsbook including moneylines, spreads, and over/under totals</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Enhanced Betting Analysis -->
+                <div class="ai-betting-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-brain"></i> AI Enhanced Betting Analysis</h2>
+                    </div>
+                    <div class="betting-games-grid">
+                        ${this.games.filter(game => !game.isFinal && game.status !== 'STATUS_FINAL').map(game => {
                         const isLive = game.status === 'STATUS_IN_PROGRESS';
                         const odds = this.generateBettingOdds(game);
                         
@@ -929,7 +959,8 @@ class SimpleWorkingSystem {
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+                        }).join('')}
+                    </div>
                 </div>
             `;
         }
