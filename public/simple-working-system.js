@@ -99,7 +99,7 @@ class SimpleWorkingSystem {
         this.setupMobileMenu();
         
         // 3. Display games
-        this.displayGames();
+        await this.displayGames();
         
         // 4. Setup AI predictions  
         this.setupAIPredictions();
@@ -186,7 +186,7 @@ class SimpleWorkingSystem {
         console.log('✅ Mobile menu setup complete');
     }
 
-    displayGames() {
+    async displayGames() {
         console.log('🏈 Displaying games...');
         
         // Dashboard - only today's games
@@ -662,7 +662,7 @@ class SimpleWorkingSystem {
             if (hasLiveGames) {
                 console.log('🔄 Refreshing live scores...');
                 this.games = await fetchRealNFLData();
-                this.displayGames();
+                await this.displayGames();
                 this.setupAIPredictions();
             }
         }, 30000);
