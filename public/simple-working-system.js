@@ -551,10 +551,10 @@ class SimpleWorkingSystem {
         console.log('🎰 Fetching Hard Rock odds for live games...');
         
         // Generate Hard Rock style odds for live games
-        const liveGamesWithOdds = await Promise.all(liveGames.map(async (game) => {
-            const odds = await this.generateHardRockOdds(game);
+        const liveGamesWithOdds = liveGames.map(game => {
+            const odds = this.generateHardRockOdds(game);
             return { ...game, odds };
-        }));
+        });
 
         return liveGamesWithOdds.map(game => `
             <div class="live-game-card" data-game-id="${game.id}">
@@ -615,21 +615,9 @@ class SimpleWorkingSystem {
         `).join('');
     }
 
-    async generateHardRockOdds(game) {
-        try {
-            // Try our odds API first
-            const response = await fetch(`/api/betting/odds?gameId=${game.id}&live=true&sportsbook=hardrock`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.odds) {
-                    return data.odds;
-                }
-            }
-        } catch (error) {
-            console.log('📊 Using generated Hard Rock odds (API fallback)');
-        }
-
+    generateHardRockOdds(game) {
         // Generate realistic Hard Rock odds based on current score
+        // Note: API endpoints disabled to prevent 404 errors
         const scoreDiff = Math.abs(game.homeScore - game.awayScore);
         const isHomeWinning = game.homeScore > game.awayScore;
         
