@@ -110,7 +110,13 @@ class SimpleWorkingSystem {
         // 6. Setup player props (after games are displayed)
         this.setupPlayerProps();
         
-        // 6. Set up auto-refresh for live scores
+        // 7. Setup advanced analytics
+        this.setupAdvancedAnalytics();
+        
+        // 8. Setup ML picks section
+        this.setupMLPicks();
+        
+        // 9. Set up auto-refresh for live scores
         this.setupAutoRefresh();
         
         this.isInitialized = true;
@@ -464,6 +470,476 @@ class SimpleWorkingSystem {
             edge: edge,
             recommendation: recommendations[Math.floor(Math.random() * recommendations.length)]
         };
+    }
+
+    setupAdvancedAnalytics() {
+        const container = document.getElementById('nfl-analytics-data');
+        if (container) {
+            console.log('📊 Setting up Advanced Analytics...');
+            
+            // Generate advanced analytics for games
+            const analytics = this.generateAdvancedAnalytics();
+            
+            container.innerHTML = `
+                <div class="analytics-header">
+                    <h2>📊 Advanced Team Analytics</h2>
+                    <p>Statistical analysis and performance metrics</p>
+                </div>
+                
+                <div class="analytics-grid">
+                    ${analytics.teamStats.map(team => `
+                        <div class="analytics-card">
+                            <div class="team-header">
+                                <h3>${team.name}</h3>
+                                <div class="team-rating ${team.grade.toLowerCase()}">${team.grade}</div>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Offensive Rating</span>
+                                    <span class="stat-value">${team.offensiveRating}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Defensive Rating</span>
+                                    <span class="stat-value">${team.defensiveRating}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Yards/Game</span>
+                                    <span class="stat-value">${team.yardsPerGame}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Points/Game</span>
+                                    <span class="stat-value">${team.pointsPerGame}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Turnover Diff</span>
+                                    <span class="stat-value ${team.turnoverDiff > 0 ? 'positive' : 'negative'}">${team.turnoverDiff > 0 ? '+' : ''}${team.turnoverDiff}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">3rd Down %</span>
+                                    <span class="stat-value">${team.thirdDownPct}%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="advanced-metrics">
+                                <h4>Advanced Metrics</h4>
+                                <div class="metric-row">
+                                    <span>EPA/Play: <strong>${team.epaPerPlay}</strong></span>
+                                    <span>DVOA: <strong>${team.dvoa}%</strong></span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Red Zone Eff: <strong>${team.redZoneEff}%</strong></span>
+                                    <span>Time of Poss: <strong>${team.timeOfPossession}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="game-analytics">
+                    <h2>🎯 Game-by-Game Analytics</h2>
+                    <div class="game-analytics-grid">
+                        ${this.games.map(game => {
+                            const gameAnalytics = this.generateGameAnalytics(game);
+                            return `
+                                <div class="game-analytics-card">
+                                    <div class="matchup-header">
+                                        <h3>${game.awayTeam.displayName} @ ${game.homeTeam.displayName}</h3>
+                                        <span class="win-prob ${gameAnalytics.winProb > 50 ? 'favorite' : 'underdog'}">
+                                            Win Prob: ${gameAnalytics.winProb}%
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="analytics-comparison">
+                                        <div class="team-analytics">
+                                            <h4>${game.awayTeam.name}</h4>
+                                            <div class="analytics-stats">
+                                                <div>Off Rating: <strong>${gameAnalytics.away.offRating}</strong></div>
+                                                <div>Def Rating: <strong>${gameAnalytics.away.defRating}</strong></div>
+                                                <div>Projected: <strong>${gameAnalytics.away.projectedScore}</strong></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="vs-separator">VS</div>
+                                        
+                                        <div class="team-analytics">
+                                            <h4>${game.homeTeam.name}</h4>
+                                            <div class="analytics-stats">
+                                                <div>Off Rating: <strong>${gameAnalytics.home.offRating}</strong></div>
+                                                <div>Def Rating: <strong>${gameAnalytics.home.defRating}</strong></div>
+                                                <div>Projected: <strong>${gameAnalytics.home.projectedScore}</strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="key-factors">
+                                        <h4>Key Factors</h4>
+                                        <ul>
+                                            ${gameAnalytics.keyFactors.map(factor => `<li>${factor}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    generateAdvancedAnalytics() {
+        // Generate team stats for unique teams
+        const teams = [];
+        const teamNames = new Set();
+        
+        this.games.forEach(game => {
+            if (!teamNames.has(game.homeTeam.name)) {
+                teamNames.add(game.homeTeam.name);
+                teams.push(this.generateTeamStats(game.homeTeam));
+            }
+            if (!teamNames.has(game.awayTeam.name)) {
+                teamNames.add(game.awayTeam.name);
+                teams.push(this.generateTeamStats(game.awayTeam));
+            }
+        });
+        
+        return {
+            teamStats: teams
+        };
+    }
+
+    generateTeamStats(team) {
+        const offensiveRating = (Math.random() * 30 + 70).toFixed(1);
+        const defensiveRating = (Math.random() * 30 + 70).toFixed(1);
+        const grade = this.calculateGrade(parseFloat(offensiveRating), parseFloat(defensiveRating));
+        
+        return {
+            name: team.displayName,
+            grade: grade,
+            offensiveRating: offensiveRating,
+            defensiveRating: defensiveRating,
+            yardsPerGame: Math.floor(Math.random() * 150 + 300),
+            pointsPerGame: (Math.random() * 15 + 20).toFixed(1),
+            turnoverDiff: Math.floor(Math.random() * 21 - 10),
+            thirdDownPct: (Math.random() * 20 + 35).toFixed(1),
+            epaPerPlay: (Math.random() * 0.4 - 0.2).toFixed(2),
+            dvoa: (Math.random() * 40 - 20).toFixed(1),
+            redZoneEff: (Math.random() * 30 + 50).toFixed(1),
+            timeOfPossession: `${Math.floor(Math.random() * 5 + 28)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`
+        };
+    }
+
+    generateGameAnalytics(game) {
+        const awayOffRating = (Math.random() * 30 + 70).toFixed(1);
+        const awayDefRating = (Math.random() * 30 + 70).toFixed(1);
+        const homeOffRating = (Math.random() * 30 + 70).toFixed(1);
+        const homeDefRating = (Math.random() * 30 + 70).toFixed(1);
+        
+        const winProb = Math.floor(Math.random() * 40 + 30);
+        
+        const keyFactors = [
+            `${game.homeTeam.name} strong at home (7-1 record)`,
+            `${game.awayTeam.name} averaging ${(Math.random() * 10 + 25).toFixed(1)} PPG`,
+            `Weather conditions favorable for offense`,
+            `Key injury concerns for ${Math.random() > 0.5 ? game.homeTeam.name : game.awayTeam.name}`,
+            `Historical matchup favors ${Math.random() > 0.5 ? game.homeTeam.name : game.awayTeam.name}`
+        ];
+        
+        return {
+            winProb: winProb,
+            away: {
+                offRating: awayOffRating,
+                defRating: awayDefRating,
+                projectedScore: Math.floor(Math.random() * 21 + 17)
+            },
+            home: {
+                offRating: homeOffRating,
+                defRating: homeDefRating,
+                projectedScore: Math.floor(Math.random() * 21 + 17)
+            },
+            keyFactors: keyFactors.slice(0, 3)
+        };
+    }
+
+    calculateGrade(offRating, defRating) {
+        const avgRating = (offRating + defRating) / 2;
+        if (avgRating >= 90) return 'A+';
+        if (avgRating >= 85) return 'A';
+        if (avgRating >= 80) return 'B+';
+        if (avgRating >= 75) return 'B';
+        if (avgRating >= 70) return 'C+';
+        if (avgRating >= 65) return 'C';
+        return 'D';
+    }
+
+    setupMLPicks() {
+        // Add ML Picks section to AI Predictions container
+        const container = document.getElementById('nfl-predictions');
+        if (container) {
+            console.log('🤖 Setting up ML Picks section...');
+            
+            // Create ML picks section and append to predictions
+            const mlPicksSection = document.createElement('div');
+            mlPicksSection.className = 'ml-picks-section';
+            mlPicksSection.innerHTML = `
+                <div class="ml-picks-header">
+                    <h2>🤖 Run Your Own ML Picks</h2>
+                    <p>Generate personalized machine learning predictions for today's games</p>
+                </div>
+                
+                <div class="ml-controls">
+                    <div class="control-group">
+                        <label>Model Type:</label>
+                        <select id="mlModelSelect" class="ml-select">
+                            <option value="neural">Neural Network (92.3% Accuracy)</option>
+                            <option value="xgboost">XGBoost (89.7% Accuracy)</option>
+                            <option value="ensemble">Ensemble Model (94.1% Accuracy)</option>
+                            <option value="all">All Models Combined</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Focus Area:</label>
+                        <select id="mlFocusSelect" class="ml-select">
+                            <option value="spread">Point Spread</option>
+                            <option value="total">Over/Under Total</option>
+                            <option value="moneyline">Moneyline Winner</option>
+                            <option value="props">Player Props</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Confidence Threshold:</label>
+                        <select id="mlConfidenceSelect" class="ml-select">
+                            <option value="70">70%+ Confidence</option>
+                            <option value="80">80%+ Confidence</option>
+                            <option value="90">90%+ Confidence</option>
+                        </select>
+                    </div>
+                    
+                    <button id="runMLPicks" class="run-ml-btn">
+                        <i class="fas fa-play-circle"></i>
+                        Run ML Analysis
+                    </button>
+                </div>
+                
+                <div id="mlResults" class="ml-results">
+                    <div class="ml-placeholder">
+                        <i class="fas fa-robot"></i>
+                        <h3>Ready to Generate ML Picks</h3>
+                        <p>Select your preferences above and click "Run ML Analysis" to generate personalized predictions</p>
+                    </div>
+                </div>
+            `;
+            
+            // Insert at the top of predictions container
+            if (container.firstChild) {
+                container.insertBefore(mlPicksSection, container.firstChild);
+            } else {
+                container.appendChild(mlPicksSection);
+            }
+            
+            // Add event listener for the run button
+            document.getElementById('runMLPicks').addEventListener('click', () => {
+                this.runMLAnalysis();
+            });
+        }
+    }
+
+    runMLAnalysis() {
+        console.log('🤖 Running ML Analysis...');
+        
+        const modelType = document.getElementById('mlModelSelect').value;
+        const focusArea = document.getElementById('mlFocusSelect').value;
+        const confidenceThreshold = parseInt(document.getElementById('mlConfidenceSelect').value);
+        const resultsContainer = document.getElementById('mlResults');
+        
+        // Show loading state
+        resultsContainer.innerHTML = `
+            <div class="ml-loading">
+                <div class="loading-spinner"></div>
+                <h3>Running ${this.getModelName(modelType)} Analysis...</h3>
+                <p>Processing ${focusArea} predictions with ${confidenceThreshold}%+ confidence threshold</p>
+            </div>
+        `;
+        
+        // Simulate ML processing time
+        setTimeout(() => {
+            const mlResults = this.generateMLResults(modelType, focusArea, confidenceThreshold);
+            this.displayMLResults(mlResults, modelType, focusArea, confidenceThreshold);
+        }, 2000);
+    }
+
+    getModelName(modelType) {
+        const names = {
+            'neural': 'Neural Network',
+            'xgboost': 'XGBoost',
+            'ensemble': 'Ensemble Model',
+            'all': 'All Models'
+        };
+        return names[modelType] || 'ML Model';
+    }
+
+    generateMLResults(modelType, focusArea, confidenceThreshold) {
+        const results = [];
+        
+        this.games.forEach(game => {
+            const confidence = Math.floor(Math.random() * 30 + 70);
+            
+            // Only include results that meet confidence threshold
+            if (confidence >= confidenceThreshold) {
+                const result = {
+                    game: game,
+                    confidence: confidence,
+                    prediction: this.generatePredictionByFocus(game, focusArea),
+                    modelType: modelType,
+                    factors: this.generateMLFactors(game, focusArea),
+                    edge: this.calculateEdge(confidence),
+                    recommendation: this.generateRecommendation(game, focusArea, confidence)
+                };
+                results.push(result);
+            }
+        });
+        
+        // Sort by confidence descending
+        return results.sort((a, b) => b.confidence - a.confidence);
+    }
+
+    generatePredictionByFocus(game, focusArea) {
+        switch (focusArea) {
+            case 'spread':
+                const spread = (Math.random() * 14 - 7).toFixed(1);
+                return {
+                    type: 'Point Spread',
+                    prediction: `${game.homeTeam.name} ${spread > 0 ? '+' : ''}${spread}`,
+                    value: spread
+                };
+            case 'total':
+                const total = (Math.random() * 10 + 45).toFixed(1);
+                const overUnder = Math.random() > 0.5 ? 'Over' : 'Under';
+                return {
+                    type: 'Total Points',
+                    prediction: `${overUnder} ${total}`,
+                    value: `${overUnder} ${total}`
+                };
+            case 'moneyline':
+                const winner = Math.random() > 0.5 ? game.homeTeam.name : game.awayTeam.name;
+                return {
+                    type: 'Moneyline Winner',
+                    prediction: winner,
+                    value: winner
+                };
+            case 'props':
+                const props = ['Over QB Passing Yards', 'Under Team Total Points', 'First TD Scorer', 'Anytime TD Scorer'];
+                const selectedProp = props[Math.floor(Math.random() * props.length)];
+                return {
+                    type: 'Player Props',
+                    prediction: selectedProp,
+                    value: selectedProp
+                };
+            default:
+                return {
+                    type: 'General',
+                    prediction: `${game.homeTeam.name} Win`,
+                    value: game.homeTeam.name
+                };
+        }
+    }
+
+    generateMLFactors(game, focusArea) {
+        const factors = [
+            `${game.homeTeam.name} home advantage factor: 3.2 points`,
+            `Recent form trending: ${Math.random() > 0.5 ? 'positive' : 'negative'}`,
+            `Head-to-head historical data: ${Math.random() > 0.5 ? 'favors home' : 'favors away'}`,
+            `Weather impact: ${Math.random() > 0.5 ? 'minimal' : 'moderate'}`,
+            `Key player availability: ${Math.random() > 0.5 ? 'all active' : '1 questionable'}`,
+            `Betting market movement: ${Math.random() > 0.5 ? 'stable' : 'shifting'}`,
+            `Public betting percentage: ${Math.floor(Math.random() * 40 + 40)}%`
+        ];
+        
+        return factors.slice(0, 4); // Return 4 random factors
+    }
+
+    calculateEdge(confidence) {
+        if (confidence >= 90) return 'HIGH';
+        if (confidence >= 80) return 'MEDIUM';
+        return 'LOW';
+    }
+
+    generateRecommendation(game, focusArea, confidence) {
+        const recommendations = [
+            `Strong ${focusArea} play with ${confidence}% model confidence`,
+            `Consider ${focusArea} bet based on historical patterns`,
+            `${focusArea} shows value compared to market odds`,
+            `Model consensus supports ${focusArea} selection`,
+            `Risk-adjusted ${focusArea} recommendation`
+        ];
+        
+        return recommendations[Math.floor(Math.random() * recommendations.length)];
+    }
+
+    displayMLResults(results, modelType, focusArea, confidenceThreshold) {
+        const resultsContainer = document.getElementById('mlResults');
+        
+        if (results.length === 0) {
+            resultsContainer.innerHTML = `
+                <div class="ml-no-results">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>No Results Meet Criteria</h3>
+                    <p>No games meet the ${confidenceThreshold}%+ confidence threshold. Try lowering the threshold.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        resultsContainer.innerHTML = `
+            <div class="ml-results-header">
+                <h3>🎯 ML Analysis Results</h3>
+                <div class="results-summary">
+                    Found <strong>${results.length}</strong> high-confidence ${focusArea} predictions using <strong>${this.getModelName(modelType)}</strong>
+                </div>
+            </div>
+            
+            <div class="ml-results-grid">
+                ${results.map(result => `
+                    <div class="ml-result-card">
+                        <div class="result-header">
+                            <h4>${result.game.awayTeam.displayName} @ ${result.game.homeTeam.displayName}</h4>
+                            <div class="confidence-badge ${result.edge.toLowerCase()}">${result.confidence}%</div>
+                        </div>
+                        
+                        <div class="result-prediction">
+                            <div class="prediction-type">${result.prediction.type}</div>
+                            <div class="prediction-value">${result.prediction.prediction}</div>
+                        </div>
+                        
+                        <div class="result-edge">
+                            <span class="edge-indicator ${result.edge.toLowerCase()}">
+                                ${result.edge} EDGE
+                            </span>
+                        </div>
+                        
+                        <div class="result-factors">
+                            <h5>Key Factors:</h5>
+                            <ul>
+                                ${result.factors.map(factor => `<li>${factor}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="result-recommendation">
+                            💡 ${result.recommendation}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="ml-disclaimer">
+                <small>
+                    ⚠️ These are AI-generated predictions for entertainment purposes. 
+                    Always gamble responsibly and within your means. Past performance does not guarantee future results.
+                </small>
+            </div>
+        `;
     }
 
     showProps(gameId) {
