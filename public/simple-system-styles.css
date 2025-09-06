@@ -225,3 +225,209 @@
     color: #ccc;
     font-size: 12px;
 }
+
+/* Live Games with Hard Rock Odds */
+.live-game-card {
+    background: rgba(255, 68, 68, 0.1);
+    border: 2px solid #ff4444;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    animation: pulse-border 3s infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% { border-color: #ff4444; }
+    50% { border-color: #ff6666; }
+}
+
+.live-game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.live-indicator {
+    background: #ff4444;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.7; }
+}
+
+.game-clock {
+    color: #ff4444;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.live-score {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.team-score {
+    text-align: center;
+    flex: 1;
+}
+
+.team-score .team-name {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.team-score .score {
+    color: #00ff88;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.vs {
+    color: #ccc;
+    font-size: 16px;
+    margin: 0 15px;
+}
+
+/* Hard Rock Odds Styling */
+.hard-rock-odds {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+    border: 1px solid #ff6b35;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.odds-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.sportsbook-name {
+    color: #ff6b35;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.live-betting-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.betting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.line-type {
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    min-width: 70px;
+}
+
+.line-options {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.bet-btn {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #ff6b35;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 70px;
+}
+
+.bet-btn:hover {
+    background: rgba(255, 107, 53, 0.3);
+    border-color: #ff8c66;
+    transform: translateY(-1px);
+}
+
+.odds-disclaimer {
+    margin-top: 12px;
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.odds-disclaimer small {
+    color: #ccc;
+    font-size: 10px;
+}
+
+/* No Live Games Message */
+.no-live-games {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-live-games h3 {
+    color: #ccc;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.no-live-games p {
+    color: #999;
+    font-size: 14px;
+}
+
+/* Responsive Design for Live Games */
+@media (max-width: 768px) {
+    .live-score {
+        flex-direction: column;
+        gap: 15px;
+        padding: 12px;
+    }
+    
+    .team-score .score {
+        font-size: 24px;
+    }
+    
+    .betting-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .line-options {
+        justify-content: stretch;
+    }
+    
+    .bet-btn {
+        flex: 1;
+        min-width: auto;
+    }
+}
