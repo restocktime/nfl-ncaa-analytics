@@ -1417,17 +1417,18 @@
     }
 }
 
-/* HardRock Odds Widget Styling */
+/* HardRock Odds Widget Styling - Enhanced Visibility */
 .live-odds-section {
     margin: 2rem 0;
 }
 
 .section-card {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(0, 255, 136, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(0, 255, 136, 0.6);
     border-radius: 12px;
     padding: 1.5rem;
     backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .section-header {
@@ -1435,17 +1436,18 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+    border-bottom: 2px solid rgba(0, 255, 136, 0.4);
     padding-bottom: 1rem;
 }
 
 .section-header h2 {
     color: #00ff88;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
 
 .live-indicator {
@@ -1454,72 +1456,86 @@
     gap: 0.5rem;
     background: linear-gradient(45deg, #ff4444, #ff6666);
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
     font-weight: bold;
     animation: pulse 2s infinite;
+    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .live-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     background: white;
     border-radius: 50%;
     animation: blink 1s infinite;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
 }
 
 @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
+    0%, 50% { opacity: 1; transform: scale(1); }
+    51%, 100% { opacity: 0.4; transform: scale(0.8); }
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255, 68, 68, 0.5); }
 }
 
 .odds-widget-container {
     display: flex;
     justify-content: center;
-    margin: 1rem 0;
-    border-radius: 8px;
+    margin: 1.5rem 0;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .odds-widget {
     width: 100%;
-    max-width: 500px;
-    height: 400px;
+    max-width: 600px;
+    height: 450px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    filter: brightness(1.1) contrast(1.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .odds-widget.ncaa-widget {
-    border: 2px solid rgba(0, 102, 255, 0.5);
+    border: 3px solid rgba(0, 102, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 102, 255, 0.4);
 }
 
 .odds-widget.nfl-widget {
-    border: 2px solid rgba(0, 255, 136, 0.5);
+    border: 3px solid rgba(0, 255, 136, 0.8);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
 }
 
 .widget-info {
-    background: rgba(0, 255, 136, 0.1);
-    border: 1px solid rgba(0, 255, 136, 0.2);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
+    background: rgba(0, 255, 136, 0.15);
+    border: 2px solid rgba(0, 255, 136, 0.4);
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-top: 1.5rem;
+    backdrop-filter: blur(5px);
 }
 
 .widget-info p {
-    margin: 0.5rem 0;
+    margin: 0.6rem 0;
     color: #ffffff;
-    line-height: 1.4;
+    line-height: 1.5;
+    font-weight: 500;
 }
 
 .widget-info strong {
     color: #00ff88;
+    text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
 }
 
 /* AI Betting Section */
@@ -1535,6 +1551,418 @@
 
 .ai-betting-section .section-header h2 {
     color: #8A2BE2;
+}
+
+/* Live AI/ML Picks Styling */
+.live-picks-section {
+    margin-top: 1.5rem;
+    background: rgba(138, 43, 226, 0.1);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.live-picks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+.live-picks-header h4 {
+    color: #8A2BE2;
+    margin: 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.picks-timestamp {
+    color: #ccc;
+    font-size: 0.8rem;
+}
+
+.live-picks-grid {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.live-pick-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    border-radius: 8px;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.live-pick-card:hover {
+    border-color: #8A2BE2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(138, 43, 226, 0.2);
+}
+
+.pick-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.pick-type {
+    color: #8A2BE2;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.confidence-badge {
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.confidence-badge.high {
+    background: #00ff88;
+    color: black;
+}
+
+.confidence-badge.medium {
+    background: #ffcc00;
+    color: black;
+}
+
+.confidence-badge.low {
+    background: #ff6666;
+    color: white;
+}
+
+.pick-recommendation {
+    margin-bottom: 0.5rem;
+}
+
+.pick-selection {
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.pick-line {
+    color: #8A2BE2;
+    font-size: 0.9rem;
+    margin-left: 0.3rem;
+}
+
+.pick-projection {
+    color: #ccc;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+.pick-reasoning {
+    color: #ccc;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+}
+
+.pick-reasoning i {
+    color: #8A2BE2;
+    margin-top: 0.1rem;
+}
+
+.pick-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+}
+
+.value-indicator {
+    padding: 1px 4px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.value-indicator.high-value {
+    background: #00ff88;
+    color: black;
+}
+
+.value-indicator.medium-value {
+    background: #ffcc00;
+    color: black;
+}
+
+.value-indicator.low-value {
+    background: #ff6666;
+    color: white;
+}
+
+.pick-time {
+    color: #888;
+}
+
+.picks-disclaimer {
+    margin-top: 0.8rem;
+    text-align: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.picks-disclaimer small {
+    color: #aaa;
+    font-size: 0.7rem;
+}
+
+/* Game Analysis Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    border: 2px solid #00ff88;
+    border-radius: 15px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.modal-title {
+    color: #00ff88;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ff6b6b;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: white;
+}
+
+.game-analysis-content {
+    max-width: 600px;
+}
+
+.analysis-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.analysis-header h3 {
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+}
+
+.current-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.game-status {
+    color: #ff4444;
+    font-size: 1rem;
+    margin-left: 1rem;
+}
+
+.game-state-analysis, .momentum-analysis, .current-picks {
+    margin-bottom: 2rem;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.game-state-analysis h4, .momentum-analysis h4, .current-picks h4 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.state-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+}
+
+.metric label {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.metric .value {
+    color: white;
+    font-weight: bold;
+}
+
+.value.critical { color: #ff4444; }
+.value.late { color: #ffcc00; }
+.value.mid { color: #00ff88; }
+.value.early { color: #66ccff; }
+.value.yes { color: #00ff88; }
+.value.no { color: #ff6666; }
+
+.momentum-indicator {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.momentum-indicator.home {
+    border-left: 4px solid #00ff88;
+}
+
+.momentum-indicator.away {
+    border-left: 4px solid #0066ff;
+}
+
+.momentum-indicator .direction {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.momentum-indicator .strength, .momentum-indicator .confidence {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.picks-list {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Game Action Buttons */
+.game-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-analysis, .btn-betting {
+    flex: 1;
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.btn-analysis:hover, .btn-betting:hover {
+    background: rgba(0, 255, 136, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-betting {
+    background: rgba(138, 43, 226, 0.2);
+    border-color: #8A2BE2;
+    color: #8A2BE2;
+}
+
+.btn-betting:hover {
+    background: rgba(138, 43, 226, 0.3);
+}
+
+/* Mobile Responsiveness for Live Picks */
+@media (max-width: 768px) {
+    .live-picks-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .pick-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    
+    .pick-value {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    
+    .state-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        max-width: 95%;
+        max-height: 95%;
+        margin: 1rem;
+    }
+    
+    .modal-header, .modal-body {
+        padding: 1rem;
+    }
+    
+    .game-actions {
+        flex-direction: column;
+    }
 }
 
 /* Mobile Responsiveness for Odds Widgets */
