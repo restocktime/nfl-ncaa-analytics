@@ -197,9 +197,19 @@ class SimpleWorkingSystem {
 
             dashboard.innerHTML = todaysGames.map(game => {
                 const isLive = game.status === 'STATUS_IN_PROGRESS';
-                const displayText = isLive 
-                    ? `🔴 LIVE - ${game.quarter} ${game.awayTeam.displayName} ${game.awayScore || 0} @ ${game.homeTeam.displayName} ${game.homeScore || 0}`
-                    : `STATUS_SCHEDULED Sep 5, ${game.kickoff || '8:20 PM'} ${game.awayTeam.displayName} @ ${game.homeTeam.displayName}`;
+                let displayText;
+                
+                if (isLive) {
+                    displayText = `🔴 LIVE - ${game.quarter || 'In Progress'} | ${game.awayTeam.displayName} ${game.awayScore || 0} @ ${game.homeTeam.displayName} ${game.homeScore || 0}`;
+                } else {
+                    const gameDate = new Date(game.date);
+                    const timeStr = gameDate.toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit', 
+                        hour12: true 
+                    });
+                    displayText = `📅 Today ${timeStr} | ${game.awayTeam.displayName} @ ${game.homeTeam.displayName}`;
+                }
                 
                 return `
                     <div class="game-card ${isLive ? 'live-game' : ''}" data-game-id="${game.id}">
@@ -242,13 +252,37 @@ class SimpleWorkingSystem {
         const upcomingContainer = document.getElementById('nfl-upcoming-games');
         if (upcomingContainer) {
             const upcomingGames = this.games.filter(game => game.status === 'STATUS_SCHEDULED' || !game.isLive);
-            upcomingContainer.innerHTML = upcomingGames.map(game => `
-                <div class="game-card" data-game-id="${game.id}">
-                    <div class="teams">${game.awayTeam.displayName} @ ${game.homeTeam.displayName}</div>
-                    <div class="status">📅 ${game.kickoff || 'Scheduled'}</div>
-                    <div class="network">${game.network}</div>
-                </div>
-            `).join('');
+            upcomingContainer.innerHTML = upcomingGames.map(game => {
+                const gameDate = new Date(game.date);
+                const timeStr = gameDate.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit', 
+                    hour12: true 
+                });
+                const dateStr = gameDate.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                return `
+                    <div class="game-card" data-game-id="${game.id}">
+                        <div class="teams">${game.awayTeam.displayName} @ ${game.homeTeam.displayName}</div>
+                        <div class="status">📅 ${dateStr} ${timeStr}</div>
+                        <div class="network">${game.network}</div>
+                        <button class="props-btn" onclick="window.simpleSystem.showProps('${game.id}')" style="
+                            background: #00ff88; 
+                            border: none; 
+                            color: black; 
+                            padding: 6px 12px; 
+                            border-radius: 5px; 
+                            cursor: pointer; 
+                            margin-top: 8px;
+                            font-weight: bold;
+                            font-size: 12px;
+                        ">🎯 Props</button>
+                    </div>
+                `;
+            }).join('');
         }
     }
 
@@ -274,37 +308,55 @@ class SimpleWorkingSystem {
     }
 
     setupPlayerProps() {
-        // Player props data will be shown when button is clicked
-        this.playerPropsData = {
-            'dal_phi': {
+        // Generate player props data for all games including ESPN IDs
+        this.playerPropsData = {};
+        
+        // Add props for all games
+        this.games.forEach(game => {
+            this.playerPropsData[game.id] = {
                 players: [
                     {
-                        name: 'Jalen Hurts',
+                        name: `${game.homeTeam.name} QB`,
                         position: 'QB',
                         props: [
-                            { type: 'Passing Yards', line: 225, over: -110, under: -110 },
-                            { type: 'Rushing Yards', line: 45, over: -115, under: -105 }
+                            { type: 'Passing Yards', line: Math.floor(Math.random() * 50 + 250), over: -110, under: -110 },
+                            { type: 'Passing TDs', line: 2.5, over: +120, under: -150 },
+                            { type: 'Completions', line: Math.floor(Math.random() * 5 + 20), over: -105, under: -115 }
                         ]
                     },
                     {
-                        name: 'Dak Prescott',
-                        position: 'QB', 
+                        name: `${game.awayTeam.name} QB`,
+                        position: 'QB',
                         props: [
-                            { type: 'Passing Yards', line: 275, over: -110, under: -110 },
-                            { type: 'Passing TDs', line: 2.5, over: +120, under: -150 }
+                            { type: 'Passing Yards', line: Math.floor(Math.random() * 50 + 260), over: -110, under: -110 },
+                            { type: 'Passing TDs', line: 2.5, over: +115, under: -140 }
+                        ]
+                    },
+                    {
+                        name: `${game.homeTeam.name} RB`,
+                        position: 'RB',
+                        props: [
+                            { type: 'Rushing Yards', line: Math.floor(Math.random() * 30 + 65), over: -110, under: -110 },
+                            { type: 'Rushing TDs', line: 0.5, over: +150, under: -190 }
                         ]
                     }
                 ]
-            }
-        };
+            };
+        });
     }
 
     showProps(gameId) {
         console.log('🎯 Showing props for:', gameId);
         
+        // Make sure player props are set up
+        if (!this.playerPropsData || Object.keys(this.playerPropsData).length === 0) {
+            this.setupPlayerProps();
+        }
+        
         const props = this.playerPropsData[gameId];
         if (!props) {
-            alert('Player props loading...');
+            console.error('❌ No props found for game:', gameId);
+            alert('Player props not available for this game. Try refreshing the page.');
             return;
         }
 
