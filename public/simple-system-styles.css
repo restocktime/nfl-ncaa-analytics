@@ -1331,6 +1331,64 @@
     border-radius: 6px;
 }
 
+/* Desktop Layout Fixes */
+@media (min-width: 769px) {
+    .app-container {
+        padding: 40px !important;
+        margin-top: 100px !important;
+        max-width: 1400px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .view {
+        padding: 20px 0 !important;
+    }
+    
+    .view-header {
+        margin-bottom: 30px !important;
+        padding-bottom: 20px !important;
+        border-bottom: 1px solid rgba(0, 255, 136, 0.2) !important;
+    }
+    
+    .section-card {
+        margin-bottom: 30px !important;
+        padding: 30px !important;
+    }
+    
+    .metrics-grid {
+        margin-bottom: 40px !important;
+    }
+    
+    /* Better navigation styling on desktop */
+    .nav-link {
+        transition: all 0.3s ease !important;
+        border-radius: 8px !important;
+        padding: 8px 16px !important;
+        cursor: pointer !important;
+    }
+    
+    .nav-link:hover {
+        background: rgba(0, 255, 136, 0.1) !important;
+        color: #00ff88 !important;
+    }
+    
+    .nav-link.active {
+        background: rgba(0, 255, 136, 0.2) !important;
+        color: #00ff88 !important;
+    }
+    
+    /* Better spacing for game cards */
+    .games-grid {
+        gap: 25px !important;
+        padding: 20px 0 !important;
+    }
+    
+    .game-card {
+        padding: 25px !important;
+    }
+}
+
 /* Mobile responsive for news and fantasy */
 @media (max-width: 768px) {
     .news-header {

@@ -242,7 +242,7 @@ class SimpleWorkingSystem {
             document.body.style.overflow = '';
         });
 
-        // Nav links
+        // Mobile nav links
         document.querySelectorAll('.mobile-nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -256,7 +256,17 @@ class SimpleWorkingSystem {
             });
         });
 
-        console.log('✅ Mobile menu setup complete');
+        // Desktop nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const view = link.dataset.view;
+                console.log(`🖥️ Desktop nav clicked: ${view}`);
+                this.switchView(view);
+            });
+        });
+
+        console.log('✅ Navigation setup complete (mobile + desktop)');
     }
 
     async displayGames() {
