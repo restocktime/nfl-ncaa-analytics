@@ -1,5 +1,12 @@
-// Simple Working System - No conflicts, just works
-console.log('🔥 SIMPLE WORKING SYSTEM LOADING...');
+// Simple Working System - Real NFL Analytics with Live Odds & News
+// 
+// API Configuration Instructions:
+// 1. To enable The Odds API: window.simpleSystem.configureOddsAPI('your-api-key-here')
+// 2. To enable verbose logging: window.simpleSystem.enableVerboseLogging()
+// 3. Check API status: window.simpleSystem.getAPIStatus()
+//
+// Current Status: Using enhanced simulation (no API keys configured)
+console.log('🔥 NFL Analytics System Loading...');
 
 // Real ESPN API integration for live scores
 async function fetchRealNFLData() {
@@ -99,6 +106,20 @@ class SimpleWorkingSystem {
         this.propsRefreshInterval = null;
         this.lastPropsUpdate = null;
         this.propsUpdateFrequency = 30000; // Update props every 30 seconds
+        
+        // API Configuration
+        this.config = {
+            oddsApi: {
+                key: 'YOUR_ODDS_API_KEY', // Set to real key in production
+                enabled: false, // Set to true when real key is available
+                baseUrl: 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds'
+            },
+            draftkings: {
+                enabled: false, // DraftKings API requires special authentication
+                baseUrl: 'https://api.draftkings.com/nfl/props'
+            },
+            verboseLogging: false // Set to true for debugging
+        };
     }
 
     init() {
@@ -154,7 +175,17 @@ class SimpleWorkingSystem {
         this.setupAutoRefresh();
         
         this.isInitialized = true;
-        console.log('✅ Simple working system ready with real ESPN data!');
+        
+        // Show API configuration status
+        const apiStatus = this.getAPIStatus();
+        if (apiStatus.simulation.active) {
+            console.log('📊 NFL Analytics ready - Using enhanced simulation (no API keys configured)');
+            console.log('💡 To enable live odds: window.simpleSystem.configureOddsAPI("your-key")');
+        } else {
+            console.log('🔴 NFL Analytics ready with live API integration!');
+        }
+        
+        console.log('✅ System initialized with real ESPN data and player props!');
     }
 
     setupMobileMenu() {
@@ -430,33 +461,46 @@ class SimpleWorkingSystem {
     }
 
     async fetchRealPlayerProps(playerName, game, position) {
-        // Try multiple real odds APIs for live data
-        const apiEndpoints = [
-            // The Odds API
-            {
+        // Skip API calls if not properly configured to reduce console spam
+        if (!this.config.oddsApi.enabled && !this.config.draftkings.enabled) {
+            if (this.config.verboseLogging) {
+                console.log(`📊 Using simulation for ${playerName} (APIs not configured)`);
+            }
+            return this.generateRealisticPlayerProps(playerName, game, position);
+        }
+
+        // Try enabled APIs only
+        const apiEndpoints = [];
+        
+        if (this.config.oddsApi.enabled && this.config.oddsApi.key !== 'YOUR_ODDS_API_KEY') {
+            apiEndpoints.push({
                 name: 'The Odds API',
-                url: `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds`,
+                url: this.config.oddsApi.baseUrl,
                 params: {
-                    apiKey: 'YOUR_ODDS_API_KEY',
+                    apiKey: this.config.oddsApi.key,
                     regions: 'us',
                     markets: 'player_props',
                     oddsFormat: 'american'
                 }
-            },
-            // DraftKings API (if available)
-            {
+            });
+        }
+        
+        if (this.config.draftkings.enabled) {
+            apiEndpoints.push({
                 name: 'DraftKings',
-                url: `https://api.draftkings.com/nfl/props/${encodeURIComponent(playerName)}`,
+                url: `${this.config.draftkings.baseUrl}/${encodeURIComponent(playerName)}`,
                 headers: {
                     'User-Agent': 'NFLAnalytics/1.0'
                 }
-            }
-        ];
+            });
+        }
         
-        // Try each API endpoint
+        // Try each configured API endpoint
         for (const api of apiEndpoints) {
             try {
-                console.log(`🔍 Attempting to fetch live odds for ${playerName} from ${api.name}`);
+                if (this.config.verboseLogging) {
+                    console.log(`🔍 Fetching live odds for ${playerName} from ${api.name}`);
+                }
                 
                 let url = api.url;
                 if (api.params) {
@@ -466,23 +510,26 @@ class SimpleWorkingSystem {
                 
                 const response = await fetch(url, {
                     headers: api.headers || {},
-                    timeout: 5000
+                    signal: AbortSignal.timeout(5000)
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(`✅ Successfully fetched live odds for ${playerName} from ${api.name}`);
+                    if (this.config.verboseLogging) {
+                        console.log(`✅ Got live odds for ${playerName} from ${api.name}`);
+                    }
                     return this.parseRealOddsData(data, playerName, position, api.name);
                 }
                 
             } catch (error) {
-                console.log(`⚠️ ${api.name} API failed for ${playerName}: ${error.message}`);
+                if (this.config.verboseLogging) {
+                    console.log(`⚠️ ${api.name} failed for ${playerName}: ${error.message}`);
+                }
                 continue;
             }
         }
         
-        // All APIs failed, use enhanced simulation with real-time updates
-        console.log(`📊 Using enhanced live simulation for ${playerName} (all APIs unavailable)`);
+        // Fall back to enhanced simulation
         return this.generateRealisticPlayerProps(playerName, game, position);
     }
 
@@ -2072,8 +2119,6 @@ class SimpleWorkingSystem {
 
     async refreshPlayerProps() {
         try {
-            console.log('🔄 Refreshing player props with live odds...');
-            
             // Only refresh for games that are live or starting soon
             const activeGames = this.games.filter(game => 
                 game.status === 'STATUS_IN_PROGRESS' || 
@@ -2082,14 +2127,22 @@ class SimpleWorkingSystem {
             );
             
             if (activeGames.length === 0) {
-                console.log('📊 No active games requiring props refresh');
+                if (this.config.verboseLogging) {
+                    console.log('📊 No active games requiring props refresh');
+                }
                 return;
+            }
+            
+            if (this.config.verboseLogging) {
+                console.log(`🔄 Refreshing props for ${activeGames.length} active games...`);
             }
             
             // Update props for active games
             for (const game of activeGames) {
                 if (this.playerPropsData[game.id]) {
-                    console.log(`🎯 Refreshing props for ${game.awayTeam.name} @ ${game.homeTeam.name}`);
+                    if (this.config.verboseLogging) {
+                        console.log(`🎯 Refreshing ${game.awayTeam.name} @ ${game.homeTeam.name}`);
+                    }
                     
                     // Update each player's props
                     for (let i = 0; i < this.playerPropsData[game.id].players.length; i++) {
@@ -2109,7 +2162,9 @@ class SimpleWorkingSystem {
             }
             
             this.lastPropsUpdate = new Date();
-            console.log(`✅ Player props refreshed at ${this.lastPropsUpdate.toLocaleTimeString()}`);
+            if (this.config.verboseLogging) {
+                console.log(`✅ Props refreshed at ${this.lastPropsUpdate.toLocaleTimeString()}`);
+            }
             
         } catch (error) {
             console.error('❌ Error refreshing player props:', error);
@@ -2135,10 +2190,72 @@ class SimpleWorkingSystem {
     getPropsLastUpdate() {
         return this.lastPropsUpdate ? this.lastPropsUpdate.toLocaleTimeString() : 'Never';
     }
+
+    // Configuration methods for production setup
+    configureOddsAPI(apiKey) {
+        this.config.oddsApi.key = apiKey;
+        this.config.oddsApi.enabled = true;
+        console.log('✅ The Odds API configured and enabled');
+    }
+
+    enableDraftKings() {
+        this.config.draftkings.enabled = true;
+        console.log('✅ DraftKings API enabled (requires CORS proxy in production)');
+    }
+
+    enableVerboseLogging() {
+        this.config.verboseLogging = true;
+        console.log('🔊 Verbose API logging enabled');
+    }
+
+    disableVerboseLogging() {
+        this.config.verboseLogging = false;
+        console.log('🔇 Verbose API logging disabled');
+    }
+
+    getAPIStatus() {
+        return {
+            oddsApi: {
+                enabled: this.config.oddsApi.enabled,
+                hasValidKey: this.config.oddsApi.key !== 'YOUR_ODDS_API_KEY'
+            },
+            draftkings: {
+                enabled: this.config.draftkings.enabled
+            },
+            simulation: {
+                active: !this.config.oddsApi.enabled && !this.config.draftkings.enabled
+            }
+        };
+    }
 }
 
 // Initialize immediately
 window.simpleSystem = new SimpleWorkingSystem();
 window.simpleSystem.init();
 
-console.log('✅ Simple working system loaded!');
+// Display configuration instructions
+setTimeout(() => {
+    if (!window.simpleSystem.config.oddsApi.enabled) {
+        console.log(`
+🏈 NFL Analytics System Ready!
+
+📊 Currently using enhanced simulation for player props
+🔧 To enable live odds APIs:
+
+   // Configure The Odds API (get key from https://the-odds-api.com)
+   window.simpleSystem.configureOddsAPI('your-api-key-here');
+   
+   // Enable verbose logging for debugging
+   window.simpleSystem.enableVerboseLogging();
+   
+   // Check current API status
+   window.simpleSystem.getAPIStatus();
+
+✅ Real Features Already Working:
+   • Live ESPN game data
+   • Real NFL team rosters  
+   • Authentic NFL news feeds
+   • Enhanced odds simulation
+        `);
+    }
+}, 1000);
