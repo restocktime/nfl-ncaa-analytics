@@ -19,11 +19,11 @@
     <!-- Sunday Edge Pro Styles -->
     <link rel="stylesheet" href="sunday-edge-pro-styles.css">
     
-    <!-- Cache Buster for Fresh Data -->
-    <script src="cache-buster.js"></script>
+    <!-- Simple System Styles (matching NFL) -->
+    <link rel="stylesheet" href="simple-system-styles.css">
     
-    <!-- API Fixes for CORS and errors -->
-    <script src="api-fix.js"></script>
+    <!-- SIMPLE NCAA SYSTEM - REPLACES ALL OTHER SCRIPTS -->
+    <script src="simple-ncaa-system.js?v=1"></script>
 </head>
 
 <body>
@@ -271,40 +271,18 @@
         </div>
     </div>
 
-    <!-- Error Handling and Robust Systems -->
-    <link rel="stylesheet" href="error-handling-styles.css">
-    <script src="error-handler.js"></script>
-    <script src="cache-manager.js"></script>
-    <script src="data-validator.js"></script>
-    <script src="loading-state-manager.js"></script>
+    <!-- ALL OTHER SCRIPTS DISABLED TO PREVENT CONFLICTS -->
+    <!-- <link rel="stylesheet" href="error-handling-styles.css"> -->
+    <!-- <script src="error-handler.js"></script> -->
+    <!-- <script src="cache-manager.js"></script> -->
+    <!-- <script src="data-validator.js"></script> -->
+    <!-- <script src="loading-state-manager.js"></script> -->
+    <!-- <script src="ncaa-data-service.js"></script> -->
+    <!-- <script src="robust-integration.js"></script> -->
+    <!-- <script src="app.js"></script> -->
     
-    <!-- NCAA Data Service (Load First) -->
-    <script src="ncaa-data-service.js"></script>
-    
-    <!-- Ensure NCAA Data Service is Protected -->
-    <script>
-        // Protect NCAA Data Service from being overridden
-        if (window.ncaaDataService) {
-            window.protectedNCAAService = window.ncaaDataService;
-            console.log('🛡️ NCAA Data Service protected');
-        }
-    </script>
-    
-    <!-- Robust Integration -->
-    <script src="robust-integration.js"></script>
-    
-    <!-- Restore NCAA Data Service if overridden -->
-    <script>
-        if (window.protectedNCAAService && (!window.ncaaDataService || window.ncaaDataService.constructor.name === 'EmergencyService')) {
-            window.ncaaDataService = window.protectedNCAAService;
-            console.log('🔄 NCAA Data Service restored');
-        }
-    </script>
-    
-    <!-- Mobile Navigation Functions -->
-    <script src="app.js"></script>
-    
-    <script>
+    <!-- ALL INLINE SCRIPTS DISABLED - USING SIMPLE NCAA SYSTEM INSTEAD -->
+    <!-- <script>
         // Global showView function for mobile navigation
         window.showView = function(viewName) {
             console.log('🧭 NCAA showView called for:', viewName);
@@ -1190,8 +1168,8 @@
             if (window.innerWidth > 768) {
                 closeMobileMenu();
             }
-        });
-    </script>
+        }); 
+    </script> -->
     
     <style>
         .btn-back {
