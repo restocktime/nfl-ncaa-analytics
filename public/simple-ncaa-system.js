@@ -53,9 +53,51 @@ function getCurrentCollegeFootballInfo() {
 // Real ESPN API integration for live college football scores
 async function fetchRealNCAAData() {
     const cfbInfo = getCurrentCollegeFootballInfo();
+    
+    // Enhanced team location mapping
+    const teamLocations = {
+        'Georgia': { location: 'Athens, GA', abbreviation: 'UGA' },
+        'Alabama': { location: 'Tuscaloosa, AL', abbreviation: 'ALA' },
+        'Texas': { location: 'Austin, TX', abbreviation: 'TEX' },
+        'Oklahoma': { location: 'Norman, OK', abbreviation: 'OU' },
+        'Ohio State': { location: 'Columbus, OH', abbreviation: 'OSU' },
+        'Michigan': { location: 'Ann Arbor, MI', abbreviation: 'MICH' },
+        'USC': { location: 'Los Angeles, CA', abbreviation: 'USC' },
+        'Notre Dame': { location: 'South Bend, IN', abbreviation: 'ND' },
+        'LSU': { location: 'Baton Rouge, LA', abbreviation: 'LSU' },
+        'Florida': { location: 'Gainesville, FL', abbreviation: 'FLA' },
+        'Penn State': { location: 'University Park, PA', abbreviation: 'PSU' },
+        'Oregon': { location: 'Eugene, OR', abbreviation: 'ORE' },
+        'Tennessee': { location: 'Knoxville, TN', abbreviation: 'TENN' },
+        'Clemson': { location: 'Clemson, SC', abbreviation: 'CLEM' },
+        'Miami': { location: 'Coral Gables, FL', abbreviation: 'MIA' },
+        'Auburn': { location: 'Auburn, AL', abbreviation: 'AUB' },
+        'Wisconsin': { location: 'Madison, WI', abbreviation: 'WIS' },
+        'Washington': { location: 'Seattle, WA', abbreviation: 'WASH' },
+        'Stanford': { location: 'Stanford, CA', abbreviation: 'STAN' },
+        'UCLA': { location: 'Los Angeles, CA', abbreviation: 'UCLA' },
+        'Virginia Tech': { location: 'Blacksburg, VA', abbreviation: 'VT' },
+        'NC State': { location: 'Raleigh, NC', abbreviation: 'NCSU' },
+        'Duke': { location: 'Durham, NC', abbreviation: 'DUKE' },
+        'Wake Forest': { location: 'Winston-Salem, NC', abbreviation: 'WAKE' }
+    };
+    
     try {
-        console.log(`🏈 Fetching real ESPN NCAA data for ${cfbInfo.seasonYear} season, ${cfbInfo.displayText}...`);
-        const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${cfbInfo.seasonYear}`);
+        console.log(`🏈 Fetching LIVE NCAA games for today...`);
+        
+        // Get today's date for real live games
+        const today = new Date();
+        const dateString = today.toISOString().split('T')[0].replace(/-/g, '');
+        
+        // ESPN College Football Scoreboard API - today's games
+        const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${dateString}`;
+        console.log(`🔗 ESPN API URL: ${espnUrl}`);
+        
+        const response = await fetch(espnUrl);
+        if (!response.ok) {
+            throw new Error(`ESPN API error: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.events && data.events.length > 0) {
@@ -64,21 +106,28 @@ async function fetchRealNCAAData() {
                 const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
                 const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
                 
+                // Get location info for teams
+                const homeLocation = teamLocations[homeTeam.team.name] || { 
+                    location: homeTeam.team.location || 'Unknown', 
+                    abbreviation: homeTeam.team.abbreviation 
+                };
+                const awayLocation = teamLocations[awayTeam.team.name] || { 
+                    location: awayTeam.team.location || 'Unknown', 
+                    abbreviation: awayTeam.team.abbreviation 
+                };
+                
                 const gameDate = new Date(event.date);
                 const now = new Date();
-                const isGameInPast = gameDate < now;
                 const status = competition.status.type.name;
                 
                 // Determine if game is final, live, or scheduled
-                let gameStatus = status;
                 let isLive = false;
                 let isFinal = false;
                 
-                if (status === 'STATUS_IN_PROGRESS') {
+                if (status === 'STATUS_IN_PROGRESS' || competition.status.type.state === 'in') {
                     isLive = true;
-                } else if (status === 'STATUS_FINAL' || (isGameInPast && (parseInt(homeTeam.score) > 0 || parseInt(awayTeam.score) > 0))) {
+                } else if (status === 'STATUS_FINAL' || competition.status.type.state === 'post') {
                     isFinal = true;
-                    gameStatus = 'STATUS_FINAL';
                 }
                 
                 return {
@@ -86,32 +135,51 @@ async function fetchRealNCAAData() {
                     homeTeam: { 
                         displayName: homeTeam.team.displayName,
                         name: homeTeam.team.name,
+                        abbreviation: homeLocation.abbreviation,
+                        location: homeLocation.location,
+                        displayWithLocation: `${homeTeam.team.displayName} (${homeLocation.location})`,
                         logo: homeTeam.team.logo || ''
                     },
                     awayTeam: { 
                         displayName: awayTeam.team.displayName,
                         name: awayTeam.team.name,
+                        abbreviation: awayLocation.abbreviation,
+                        location: awayLocation.location,
+                        displayWithLocation: `${awayTeam.team.displayName} (${awayLocation.location})`,
                         logo: awayTeam.team.logo || ''
                     },
                     homeScore: parseInt(homeTeam.score) || 0,
                     awayScore: parseInt(awayTeam.score) || 0,
-                    status: gameStatus,
+                    status: status,
                     quarter: competition.status.type.shortDetail,
+                    clock: competition.status.displayClock || '',
                     date: event.date,
                     network: event.competitions[0].broadcasts?.[0]?.names?.[0] || 'TBD',
                     week: event.week?.number || cfbInfo.week,
                     isLive: isLive,
                     isFinal: isFinal,
                     venue: competition.venue?.fullName || 'TBD',
-                    conference: homeTeam.team.conferenceId || 'Other'
+                    conference: homeTeam.team.conferenceId || 'NCAA'
                 };
             });
+            
+            // Log live games specifically
+            const liveGames = games.filter(g => g.isLive);
+            if (liveGames.length > 0) {
+                console.log(`🔴 Found ${liveGames.length} LIVE NCAA games:`);
+                liveGames.forEach(game => {
+                    console.log(`  • ${game.awayTeam.displayWithLocation} @ ${game.homeTeam.displayWithLocation} - ${game.quarter} ${game.clock}`);
+                });
+            } else {
+                console.log('📅 No live games found, showing today\'s scheduled/completed games');
+            }
             
             console.log(`✅ Loaded ${games.length} real NCAA games from ESPN`);
             return games;
         }
     } catch (error) {
-        console.warn('⚠️ ESPN NCAA API failed, using fallback data:', error.message);
+        console.warn('⚠️ ESPN NCAA API failed, will use fallback:', error.message);
+        throw error;
     }
     
     // Fallback data if ESPN fails
@@ -505,9 +573,15 @@ class SimpleNCAASystem {
             
             try {
                 gamesData = await fetchRealNCAAData();
-                console.log(`✅ Games data: ${gamesData ? gamesData.length : 0} games loaded`);
+                console.log(`✅ Real games data: ${gamesData ? gamesData.length : 0} games loaded`);
+                
+                // Only use fallback if no real data was retrieved
+                if (!gamesData || gamesData.length === 0) {
+                    console.log('⚠️ No real games found, will use minimal fallback');
+                    gamesData = [];
+                }
             } catch (gameError) {
-                console.warn('⚠️ Games data failed, using fallback:', gameError.message);
+                console.warn('⚠️ Real games API failed, using fallback:', gameError.message);
                 gamesData = [];
             }
             
@@ -519,8 +593,15 @@ class SimpleNCAASystem {
                 rankingsData = [];
             }
             
-            // Ensure we have fallback data if APIs failed
-            this.games = gamesData && gamesData.length > 0 ? gamesData : this.generateFallbackGames();
+            // Use real data if available, minimal fallback only if necessary
+            if (gamesData && gamesData.length > 0) {
+                this.games = gamesData;
+                console.log(`🏈 Using ${gamesData.length} real NCAA games from ESPN API`);
+            } else {
+                console.warn('⚠️ No real games available - ESPN API may be down or no games scheduled today');
+                this.games = this.generateMinimalFallback();
+            }
+            
             this.rankings = rankingsData && rankingsData.length > 0 ? rankingsData : this.generateFallbackRankings();
             this.lastUpdated = new Date();
             
@@ -528,11 +609,47 @@ class SimpleNCAASystem {
             
         } catch (error) {
             console.error('❌ Failed to load NCAA data:', error);
-            // Ensure we have fallback data even in catastrophic failure
-            this.games = this.generateFallbackGames();
+            // Ensure we have minimal fallback data even in catastrophic failure
+            console.error('🚨 Catastrophic failure - using emergency fallback data');
+            this.games = this.generateMinimalFallback();
             this.rankings = this.generateFallbackRankings();
             this.lastUpdated = new Date();
         }
+    }
+    
+    generateMinimalFallback() {
+        console.log('📋 Generating minimal fallback notice (no real games available)');
+        return [
+            {
+                id: 'no_games_notice',
+                homeTeam: { 
+                    displayName: 'No Games Scheduled', 
+                    name: 'No Games',
+                    abbreviation: 'N/A',
+                    location: 'N/A',
+                    displayWithLocation: 'No Games Scheduled Today'
+                },
+                awayTeam: { 
+                    displayName: 'Check Back Later', 
+                    name: 'Check Later',
+                    abbreviation: 'N/A',
+                    location: 'N/A',
+                    displayWithLocation: 'Check Back Later for Live Games'
+                },
+                homeScore: 0,
+                awayScore: 0,
+                status: 'STATUS_SCHEDULED',
+                quarter: 'No games today',
+                clock: '',
+                date: new Date().toISOString(),
+                network: 'ESPN',
+                week: 'TBD',
+                isLive: false,
+                isFinal: false,
+                venue: 'Check ESPN for schedule',
+                conference: 'NCAA'
+            }
+        ];
     }
     
     generateFallbackGames() {
