@@ -1119,3 +1119,234 @@
         transform: rotate(90deg);
     }
 }
+
+/* NFL News Styles */
+.news-item {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.news-item:hover {
+    border-color: rgba(0, 255, 136, 0.5);
+    transform: translateY(-2px);
+}
+
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.news-category {
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.news-category.breaking-news { background: #ff4444; color: white; }
+.news-category.team-news { background: #0066ff; color: white; }
+.news-category.fantasy { background: #00ff88; color: black; }
+.news-category.injuries { background: #ff6600; color: white; }
+.news-category.betting { background: #ffcc00; color: black; }
+.news-category.weather { background: #6666ff; color: white; }
+
+.news-time {
+    color: #888;
+    font-size: 12px;
+}
+
+.news-title {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.news-summary {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.news-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.read-more-btn, .share-btn {
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.read-more-btn:hover, .share-btn:hover {
+    background: rgba(0, 255, 136, 0.3);
+}
+
+/* NFL Fantasy Styles */
+.fantasy-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.fantasy-header h2 {
+    color: #00ff88;
+    margin-bottom: 8px;
+    font-size: 24px;
+}
+
+.fantasy-sections {
+    display: grid;
+    gap: 30px;
+}
+
+.fantasy-section h3 {
+    color: #00ff88;
+    margin-bottom: 15px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.fantasy-players {
+    display: grid;
+    gap: 15px;
+}
+
+.fantasy-player {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.fantasy-player.must-start {
+    border-left: 4px solid #00ff88;
+}
+
+.fantasy-player.sleeper {
+    border-left: 4px solid #ffcc00;
+}
+
+.fantasy-player.avoid {
+    border-left: 4px solid #ff4444;
+}
+
+.fantasy-player:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 255, 136, 0.5);
+}
+
+.player-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.player-name {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.player-position {
+    color: #ccc;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.player-projection {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.projected-points {
+    color: #00ff88;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.matchup-rating {
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.matchup-rating.elite {
+    background: #00ff88;
+    color: black;
+}
+
+.matchup-rating.great {
+    background: #66ff99;
+    color: black;
+}
+
+.matchup-rating.difficult {
+    background: #ff4444;
+    color: white;
+}
+
+.ownership {
+    color: #ffcc00;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.player-reasoning {
+    color: #ccc;
+    font-size: 13px;
+    line-height: 1.4;
+    padding: 8px;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 6px;
+}
+
+/* Mobile responsive for news and fantasy */
+@media (max-width: 768px) {
+    .news-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .news-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .read-more-btn, .share-btn {
+        text-align: center;
+    }
+    
+    .player-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .player-projection {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}

@@ -14,6 +14,23 @@ async function fetchRealNFLData() {
                 const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
                 const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
                 
+                const gameDate = new Date(event.date);
+                const now = new Date();
+                const isGameInPast = gameDate < now;
+                const status = competition.status.type.name;
+                
+                // Determine if game is final, live, or scheduled
+                let gameStatus = status;
+                let isLive = false;
+                let isFinal = false;
+                
+                if (status === 'STATUS_IN_PROGRESS') {
+                    isLive = true;
+                } else if (status === 'STATUS_FINAL' || (isGameInPast && (parseInt(homeTeam.score) > 0 || parseInt(awayTeam.score) > 0))) {
+                    isFinal = true;
+                    gameStatus = 'STATUS_FINAL';
+                }
+                
                 return {
                     id: event.id,
                     homeTeam: { 
@@ -26,12 +43,13 @@ async function fetchRealNFLData() {
                     },
                     homeScore: parseInt(homeTeam.score) || 0,
                     awayScore: parseInt(awayTeam.score) || 0,
-                    status: competition.status.type.name,
+                    status: gameStatus,
                     quarter: competition.status.type.shortDetail,
                     date: event.date,
                     network: event.competitions[0].broadcasts?.[0]?.names?.[0] || 'TBD',
                     week: event.week?.number || 1,
-                    isLive: competition.status.type.name === 'STATUS_IN_PROGRESS'
+                    isLive: isLive,
+                    isFinal: isFinal
                 };
             });
             
@@ -52,10 +70,11 @@ async function fetchRealNFLData() {
             awayScore: 10,
             status: 'STATUS_IN_PROGRESS',
             quarter: '2nd Quarter - 8:23',
-            date: new Date().toISOString(),
+            date: new Date(Date.now() - 24*60*60*1000).toISOString(), // Yesterday
             network: 'NBC',
             week: 1,
-            isLive: true
+            isLive: false,
+            isFinal: true
         },
         {
             id: 'kc_det',
@@ -65,7 +84,9 @@ async function fetchRealNFLData() {
             date: new Date().toISOString(),
             network: 'CBS',
             week: 1,
-            kickoff: '8:20 PM ET'
+            kickoff: '8:20 PM ET',
+            isLive: false,
+            isFinal: false
         }
     ];
 }
@@ -116,7 +137,13 @@ class SimpleWorkingSystem {
         // 8. Setup ML picks section
         this.setupMLPicks();
         
-        // 9. Set up auto-refresh for live scores
+        // 9. Setup NFL News & Updates
+        this.setupNFLNews();
+        
+        // 10. Setup NFL Fantasy Hub  
+        this.setupNFLFantasy();
+        
+        // 11. Set up auto-refresh for live scores
         this.setupAutoRefresh();
         
         this.isInitialized = true;
@@ -206,9 +233,12 @@ class SimpleWorkingSystem {
 
             dashboard.innerHTML = todaysGames.map(game => {
                 const isLive = game.status === 'STATUS_IN_PROGRESS';
+                const isFinal = game.status === 'STATUS_FINAL' || game.isFinal;
                 let displayText;
                 
-                if (isLive) {
+                if (isFinal) {
+                    displayText = `✅ FINAL | ${game.awayTeam.displayName} ${game.awayScore} @ ${game.homeTeam.displayName} ${game.homeScore}`;
+                } else if (isLive) {
                     displayText = `🔴 LIVE - ${game.quarter || 'In Progress'} | ${game.awayTeam.displayName} ${game.awayScore || 0} @ ${game.homeTeam.displayName} ${game.homeScore || 0}`;
                 } else {
                     const gameDate = new Date(game.date);
@@ -322,10 +352,12 @@ class SimpleWorkingSystem {
         
         // Add props for all games
         this.games.forEach(game => {
+            const playerNames = this.generatePlayerNames(game);
+            
             this.playerPropsData[game.id] = {
                 players: [
                     {
-                        name: `${game.homeTeam.name} QB`,
+                        name: playerNames.homeQB,
                         position: 'QB',
                         props: [
                             { 
@@ -358,7 +390,7 @@ class SimpleWorkingSystem {
                         ]
                     },
                     {
-                        name: `${game.awayTeam.name} QB`,
+                        name: playerNames.awayQB,
                         position: 'QB',
                         props: [
                             { 
@@ -382,7 +414,7 @@ class SimpleWorkingSystem {
                         ]
                     },
                     {
-                        name: `${game.homeTeam.name} RB`,
+                        name: playerNames.homeRB,
                         position: 'RB',
                         props: [
                             { 
@@ -406,7 +438,7 @@ class SimpleWorkingSystem {
                         ]
                     },
                     {
-                        name: `${game.awayTeam.name} WR1`,
+                        name: playerNames.awayWR,
                         position: 'WR',
                         props: [
                             { 
@@ -439,7 +471,7 @@ class SimpleWorkingSystem {
                         ]
                     },
                     {
-                        name: `${game.homeTeam.name} TE`,
+                        name: playerNames.homeTE,
                         position: 'TE',
                         props: [
                             { 
@@ -469,7 +501,7 @@ class SimpleWorkingSystem {
                     <p>Real-time odds and market analysis</p>
                 </div>
                 <div class="betting-games-grid">
-                    ${this.games.map(game => {
+                    ${this.games.filter(game => !game.isFinal && game.status !== 'STATUS_FINAL').map(game => {
                         const isLive = game.status === 'STATUS_IN_PROGRESS';
                         const odds = this.generateBettingOdds(game);
                         
@@ -887,7 +919,8 @@ class SimpleWorkingSystem {
     generateMLResults(modelType, focusArea, confidenceThreshold) {
         const results = [];
         
-        this.games.forEach(game => {
+        // Only include games that aren't final
+        this.games.filter(game => !game.isFinal && game.status !== 'STATUS_FINAL').forEach(game => {
             const confidence = Math.floor(Math.random() * 30 + 70);
             
             // Only include results that meet confidence threshold
@@ -1044,6 +1077,22 @@ class SimpleWorkingSystem {
                 </small>
             </div>
         `;
+    }
+
+    generatePlayerNames(game) {
+        // Common NFL player names by position
+        const qbNames = ['Josh Allen', 'Patrick Mahomes', 'Joe Burrow', 'Lamar Jackson', 'Dak Prescott', 'Justin Herbert', 'Tua Tagovailoa', 'Jalen Hurts', 'Aaron Rodgers', 'Russell Wilson', 'Kirk Cousins', 'Derek Carr'];
+        const rbNames = ['Christian McCaffrey', 'Austin Ekeler', 'Derrick Henry', 'Jonathan Taylor', 'Saquon Barkley', 'Nick Chubb', 'Dalvin Cook', 'Aaron Jones', 'Joe Mixon', 'Alvin Kamara', 'Ezekiel Elliott', 'Josh Jacobs'];
+        const wrNames = ['Cooper Kupp', 'Davante Adams', 'Tyreek Hill', 'Stefon Diggs', 'DeAndre Hopkins', 'Mike Evans', 'Keenan Allen', 'DK Metcalf', 'Calvin Ridley', 'A.J. Brown', 'CeeDee Lamb', 'Ja\'Marr Chase'];
+        const teNames = ['Travis Kelce', 'Mark Andrews', 'George Kittle', 'Darren Waller', 'T.J. Hockenson', 'Kyle Pitts', 'Dallas Goedert', 'Pat Freiermuth', 'David Njoku', 'Evan Engram', 'Tyler Higbee', 'Gerald Everett'];
+        
+        return {
+            homeQB: qbNames[Math.floor(Math.random() * qbNames.length)],
+            awayQB: qbNames[Math.floor(Math.random() * qbNames.length)],
+            homeRB: rbNames[Math.floor(Math.random() * rbNames.length)],
+            awayWR: wrNames[Math.floor(Math.random() * wrNames.length)],
+            homeTE: teNames[Math.floor(Math.random() * teNames.length)]
+        };
     }
 
     showProps(gameId) {
@@ -1254,6 +1303,178 @@ class SimpleWorkingSystem {
                 this.setupAIPredictions();
             }
         }, 30000);
+    }
+
+    setupNFLNews() {
+        const container = document.getElementById('nfl-news-feed');
+        if (container) {
+            console.log('📰 Setting up NFL News & Updates...');
+            
+            const newsItems = [
+                {
+                    title: 'Chiefs QB Patrick Mahomes Set for Big Sunday Showdown',
+                    summary: 'Mahomes leads Kansas City into crucial divisional matchup with MVP-level performance.',
+                    time: '2 hours ago',
+                    category: 'Breaking News'
+                },
+                {
+                    title: 'Eagles Defense Shows Elite Form in Recent Practices',
+                    summary: 'Philadelphia\'s defense has been dominant, allowing just 16.2 points per game.',
+                    time: '4 hours ago',
+                    category: 'Team News'
+                },
+                {
+                    title: 'Fantasy Impact: Top RB Matchups This Week',
+                    summary: 'Several running backs face favorable matchups with high scoring potential.',
+                    time: '6 hours ago',
+                    category: 'Fantasy'
+                },
+                {
+                    title: 'Injury Report: Key Players Questionable for Sunday',
+                    summary: 'Multiple star players dealing with injuries ahead of crucial games.',
+                    time: '8 hours ago',
+                    category: 'Injuries'
+                },
+                {
+                    title: 'Betting Lines Move Ahead of Prime Time Games',
+                    summary: 'Sharp action causing significant line movement on tonight\'s games.',
+                    time: '10 hours ago',
+                    category: 'Betting'
+                },
+                {
+                    title: 'Weather Could Impact Several Games This Sunday',
+                    summary: 'Cold and windy conditions expected in multiple NFL cities.',
+                    time: '12 hours ago',
+                    category: 'Weather'
+                }
+            ];
+            
+            container.innerHTML = newsItems.map(item => `
+                <div class="news-item">
+                    <div class="news-header">
+                        <div class="news-category ${item.category.toLowerCase().replace(' ', '-')}">${item.category}</div>
+                        <div class="news-time">${item.time}</div>
+                    </div>
+                    <h3 class="news-title">${item.title}</h3>
+                    <p class="news-summary">${item.summary}</p>
+                    <div class="news-actions">
+                        <button class="read-more-btn">Read More</button>
+                        <button class="share-btn">📤 Share</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    setupNFLFantasy() {
+        const container = document.getElementById('nfl-fantasy-data');
+        if (container) {
+            console.log('🏆 Setting up NFL Fantasy Hub...');
+            
+            // Generate fantasy recommendations based on games
+            const fantasyPlayers = this.generateFantasyPlayers();
+            
+            container.innerHTML = `
+                <div class="fantasy-header">
+                    <h2>🏆 Week ${this.games[0]?.week || 1} Fantasy Recommendations</h2>
+                    <p>Optimal lineup suggestions and player analysis</p>
+                </div>
+                
+                <div class="fantasy-sections">
+                    <div class="fantasy-section">
+                        <h3>🔥 Must-Start Players</h3>
+                        <div class="fantasy-players">
+                            ${fantasyPlayers.mustStart.map(player => `
+                                <div class="fantasy-player must-start">
+                                    <div class="player-info">
+                                        <div class="player-name">${player.name}</div>
+                                        <div class="player-position">${player.position} - ${player.team}</div>
+                                    </div>
+                                    <div class="player-projection">
+                                        <div class="projected-points">${player.projectedPoints} pts</div>
+                                        <div class="matchup-rating ${player.matchupRating.toLowerCase()}">${player.matchupRating}</div>
+                                    </div>
+                                    <div class="player-reasoning">${player.reasoning}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="fantasy-section">
+                        <h3>💎 Sleeper Picks</h3>
+                        <div class="fantasy-players">
+                            ${fantasyPlayers.sleepers.map(player => `
+                                <div class="fantasy-player sleeper">
+                                    <div class="player-info">
+                                        <div class="player-name">${player.name}</div>
+                                        <div class="player-position">${player.position} - ${player.team}</div>
+                                    </div>
+                                    <div class="player-projection">
+                                        <div class="projected-points">${player.projectedPoints} pts</div>
+                                        <div class="ownership">Own: ${player.ownership}%</div>
+                                    </div>
+                                    <div class="player-reasoning">${player.reasoning}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="fantasy-section">
+                        <h3>⚠️ Avoid This Week</h3>
+                        <div class="fantasy-players">
+                            ${fantasyPlayers.avoid.map(player => `
+                                <div class="fantasy-player avoid">
+                                    <div class="player-info">
+                                        <div class="player-name">${player.name}</div>
+                                        <div class="player-position">${player.position} - ${player.team}</div>
+                                    </div>
+                                    <div class="player-projection">
+                                        <div class="projected-points">${player.projectedPoints} pts</div>
+                                        <div class="matchup-rating difficult">TOUGH</div>
+                                    </div>
+                                    <div class="player-reasoning">${player.reasoning}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    generateFantasyPlayers() {
+        const playerNames = [
+            { name: 'Josh Allen', position: 'QB', team: 'BUF' },
+            { name: 'Christian McCaffrey', position: 'RB', team: 'SF' },
+            { name: 'Cooper Kupp', position: 'WR', team: 'LAR' },
+            { name: 'Travis Kelce', position: 'TE', team: 'KC' },
+            { name: 'Derrick Henry', position: 'RB', team: 'TEN' },
+            { name: 'Davante Adams', position: 'WR', team: 'LV' },
+            { name: 'Patrick Mahomes', position: 'QB', team: 'KC' },
+            { name: 'Austin Ekeler', position: 'RB', team: 'LAC' }
+        ];
+        
+        const mustStart = playerNames.slice(0, 3).map(player => ({
+            ...player,
+            projectedPoints: (Math.random() * 10 + 20).toFixed(1),
+            matchupRating: Math.random() > 0.7 ? 'ELITE' : 'GREAT',
+            reasoning: `Great matchup vs bottom-ranked defense. Expected high volume with ${Math.floor(Math.random() * 8 + 15)} touches.`
+        }));
+        
+        const sleepers = playerNames.slice(3, 5).map(player => ({
+            ...player,
+            projectedPoints: (Math.random() * 8 + 15).toFixed(1),
+            ownership: Math.floor(Math.random() * 20 + 5),
+            reasoning: `Low ownership sleeper with upside. Favorable game script expected.`
+        }));
+        
+        const avoid = playerNames.slice(5, 7).map(player => ({
+            ...player,
+            projectedPoints: (Math.random() * 5 + 8).toFixed(1),
+            reasoning: `Tough matchup vs elite defense. Limited upside this week.`
+        }));
+        
+        return { mustStart, sleepers, avoid };
     }
 }
 
