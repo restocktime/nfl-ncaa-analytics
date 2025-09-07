@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Quick API Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .test-result {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #666;
+        }
+        
+        .success { border-left-color: #00ff88; background: rgba(0, 255, 136, 0.1); }
+        .error { border-left-color: #ff6666; background: rgba(255, 102, 102, 0.1); }
+        .loading { border-left-color: #ffcc00; background: rgba(255, 204, 0, 0.1); }
+    </style>
+</head>
+
+<body>
+    <h1>⚡ Quick API Connection Test</h1>
+    
+    <div id="nfl-api-test" class="test-result loading">
+        <strong>NFL ESPN API:</strong> Testing...
+    </div>
+    
+    <div id="ncaa-api-test" class="test-result loading">
+        <strong>NCAA ESPN API:</strong> Testing...
+    </div>
+    
+    <div id="systems-test" class="test-result loading">
+        <strong>JavaScript Systems:</strong> Testing...
+    </div>
+
+    <script src="simple-working-system.js"></script>
+    <script src="simple-ncaa-system.js"></script>
+    <script>
+        async function testAPIs() {
+            // Test NFL API
+            try {
+                const nflResponse = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+                const nflData = await nflResponse.json();
+                const nflGames = nflData.events ? nflData.events.length : 0;
+                
+                document.getElementById('nfl-api-test').className = 'test-result success';
+                document.getElementById('nfl-api-test').innerHTML = `
+                    <strong>NFL ESPN API:</strong> ✅ Connected - Found ${nflGames} games
+                `;
+            } catch (error) {
+                document.getElementById('nfl-api-test').className = 'test-result error';
+                document.getElementById('nfl-api-test').innerHTML = `
+                    <strong>NFL ESPN API:</strong> ❌ Failed - ${error.message}
+                `;
+            }
+            
+            // Test NCAA API
+            try {
+                const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                const ncaaResponse = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${today}`);
+                const ncaaData = await ncaaResponse.json();
+                const ncaaGames = ncaaData.events ? ncaaData.events.length : 0;
+                
+                document.getElementById('ncaa-api-test').className = 'test-result success';
+                document.getElementById('ncaa-api-test').innerHTML = `
+                    <strong>NCAA ESPN API:</strong> ✅ Connected - Found ${ncaaGames} games
+                `;
+            } catch (error) {
+                document.getElementById('ncaa-api-test').className = 'test-result error';
+                document.getElementById('ncaa-api-test').innerHTML = `
+                    <strong>NCAA ESPN API:</strong> ❌ Failed - ${error.message}
+                `;
+            }
+            
+            // Test JavaScript Systems
+            try {
+                const hasNFL = typeof SimpleWorkingSystem !== 'undefined';
+                const hasNCAA = typeof SimpleNCAASystem !== 'undefined';
+                
+                let status = '';
+                let className = 'success';
+                
+                if (hasNFL && hasNCAA) {
+                    // Test initialization
+                    const nflSystem = new SimpleWorkingSystem();
+                    const ncaaSystem = new SimpleNCAASystem();
+                    
+                    await nflSystem.initialize();
+                    await ncaaSystem.initialize();
+                    
+                    status = '✅ Both NFL & NCAA systems loaded and initialized';
+                } else {
+                    className = 'error';
+                    status = `❌ Missing systems: NFL(${hasNFL}), NCAA(${hasNCAA})`;
+                }
+                
+                document.getElementById('systems-test').className = `test-result ${className}`;
+                document.getElementById('systems-test').innerHTML = `
+                    <strong>JavaScript Systems:</strong> ${status}
+                `;
+            } catch (error) {
+                document.getElementById('systems-test').className = 'test-result error';
+                document.getElementById('systems-test').innerHTML = `
+                    <strong>JavaScript Systems:</strong> ❌ Error - ${error.message}
+                `;
+            }
+        }
+        
+        // Run tests on page load
+        document.addEventListener('DOMContentLoaded', testAPIs);
+    </script>
+</body>
+</html>

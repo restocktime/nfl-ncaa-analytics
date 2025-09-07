@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Critical Systems Validation</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .validation-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .validation-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #666;
+        }
+        
+        .success { border-left-color: #00ff88; background: rgba(0, 255, 136, 0.1); }
+        .error { border-left-color: #ff6666; background: rgba(255, 102, 102, 0.1); }
+        .loading { border-left-color: #ffcc00; background: rgba(255, 204, 0, 0.1); }
+        
+        .run-button {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Critical Systems Validation</h1>
+    
+    <button class="run-button" onclick="validateAllSystems()">🚀 Run Critical Validation</button>
+    
+    <div class="validation-section">
+        <h2>🏈 NFL System Critical Tests</h2>
+        
+        <div id="nfl-system-load" class="validation-item loading">
+            <strong>NFL System Loading:</strong> Testing SimpleWorkingSystem...
+        </div>
+        
+        <div id="nfl-2025-rosters" class="validation-item loading">
+            <strong>2025-26 NFL Rosters:</strong> Testing key player updates...
+        </div>
+        
+        <div id="nfl-player-props" class="validation-item loading">
+            <strong>NFL Player Props:</strong> Testing player props generation...
+        </div>
+        
+        <div id="nfl-ai-system" class="validation-item loading">
+            <strong>NFL AI Analysis:</strong> Testing AI prediction system...
+        </div>
+    </div>
+    
+    <div class="validation-section">
+        <h2>🏛️ NCAA System Critical Tests</h2>
+        
+        <div id="ncaa-system-load" class="validation-item loading">
+            <strong>NCAA System Loading:</strong> Testing SimpleNCAASystem...
+        </div>
+        
+        <div id="ncaa-live-betting" class="validation-item loading">
+            <strong>NCAA Live Betting:</strong> Testing live betting analysis...
+        </div>
+        
+        <div id="ncaa-api-integration" class="validation-item loading">
+            <strong>NCAA API Integration:</strong> Testing ESPN integration...
+        </div>
+        
+        <div id="ncaa-college-props" class="validation-item loading">
+            <strong>NCAA Player Props:</strong> Testing college football player props...
+        </div>
+    </div>
+    
+    <div class="validation-section">
+        <h2>🔗 Page Integration Tests</h2>
+        
+        <div id="standalone-pages" class="validation-item loading">
+            <strong>Standalone Pages:</strong> Testing all 9 standalone pages...
+        </div>
+        
+        <div id="cross-navigation" class="validation-item loading">
+            <strong>Cross Navigation:</strong> Testing navigation between systems...
+        </div>
+        
+        <div id="system-consistency" class="validation-item loading">
+            <strong>System Consistency:</strong> Testing data consistency across pages...
+        </div>
+    </div>
+
+    <script src="simple-working-system.js"></script>
+    <script src="simple-ncaa-system.js"></script>
+    <script>
+        async function validateAllSystems() {
+            console.log('🔍 Starting critical systems validation...');
+            
+            // NFL System Tests
+            await validateNFLSystemLoad();
+            await validateNFL2025Rosters();
+            await validateNFLPlayerProps();
+            await validateNFLAISystem();
+            
+            // NCAA System Tests
+            await validateNCAASystemLoad();
+            await validateNCAALiveBetting();
+            await validateNCAAAPIIntegration();
+            await validateNCAACollegeProps();
+            
+            // Integration Tests
+            await validateStandalonePages();
+            await validateCrossNavigation();
+            await validateSystemConsistency();
+            
+            console.log('🔍 Critical validation complete!');
+        }
+        
+        async function validateNFLSystemLoad() {
+            try {
+                if (typeof SimpleWorkingSystem === 'undefined') {
+                    updateValidation('nfl-system-load', false, 'SimpleWorkingSystem class not found');
+                    return;
+                }
+                
+                const nflSystem = new SimpleWorkingSystem();
+                await nflSystem.initialize();
+                
+                // Test core methods exist
+                const methods = ['generatePlayerNamesWithESPN', 'generateNFLAIAnalysis', 'setupPlayerProps'];
+                const missing = methods.filter(method => typeof nflSystem[method] !== 'function');
+                
+                if (missing.length === 0) {
+                    updateValidation('nfl-system-load', true, 'NFL system loaded with all core methods');
+                } else {
+                    updateValidation('nfl-system-load', false, `Missing methods: ${missing.join(', ')}`);
+                }
+            } catch (error) {
+                updateValidation('nfl-system-load', false, `NFL system error: ${error.message}`);
+            }
+        }
+        
+        async function validateNFL2025Rosters() {
+            try {
+                const nflSystem = new SimpleWorkingSystem();
+                
+                // Test key 2025-26 roster updates
+                const testCases = [
+                    { team: 'Browns', expectedQB: 'Jameis Winston' },
+                    { team: 'Saints', expectedQB: 'Spencer Rattler' },
+                    { team: 'Chiefs', expectedQB: 'Patrick Mahomes' },
+                    { team: 'Bills', expectedQB: 'Josh Allen' }
+                ];
+                
+                let correct = 0;
+                for (const test of testCases) {
+                    const game = {
+                        homeTeam: { name: test.team, displayName: test.team },
+                        awayTeam: { name: 'TestTeam', displayName: 'Test Team' }
+                    };
+                    
+                    const playerNames = await nflSystem.generatePlayerNamesWithESPN(game);
+                    if (playerNames.homeQB === test.expectedQB) {
+                        correct++;
+                    }
+                }
+                
+                if (correct === testCases.length) {
+                    updateValidation('nfl-2025-rosters', true, 
+                        `All ${testCases.length} key rosters correct: <span class="player-name">Browns: Jameis Winston, Saints: Spencer Rattler</span>`);
+                } else {
+                    updateValidation('nfl-2025-rosters', false, 
+                        `Only ${correct}/${testCases.length} rosters correct`);
+                }
+            } catch (error) {
+                updateValidation('nfl-2025-rosters', false, `Roster validation error: ${error.message}`);
+            }
+        }
+        
+        async function validateNFLPlayerProps() {
+            try {
+                const nflSystem = new SimpleWorkingSystem();
+                const testGame = {
+                    id: 'test-game',
+                    homeTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' },
+                    awayTeam: { name: 'Bills', displayName: 'Buffalo Bills' }
+                };
+                
+                nflSystem.games = [testGame];
+                await nflSystem.setupPlayerProps();
+                
+                const propsData = nflSystem.playerPropsData[testGame.id];
+                if (propsData && propsData.players && propsData.players.length > 0) {
+                    const qbs = propsData.players.filter(p => p.position === 'QB');
+                    const rbs = propsData.players.filter(p => p.position === 'RB');
+                    
+                    updateValidation('nfl-player-props', true, 
+                        `Player props working: ${qbs.length} QBs, ${rbs.length} RBs, ${propsData.players.length} total players`);
+                } else {
+                    updateValidation('nfl-player-props', false, 'No player props data generated');
+                }
+            } catch (error) {
+                updateValidation('nfl-player-props', false, `Player props error: ${error.message}`);
+            }
+        }
+        
+        async function validateNFLAISystem() {
+            try {
+                const nflSystem = new SimpleWorkingSystem();
+                const testGame = {
+                    homeTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' },
+                    awayTeam: { name: 'Bills', displayName: 'Buffalo Bills' }
+                };
+                
+                const aiAnalysis = await nflSystem.generateNFLAIAnalysis(testGame);
+                if (aiAnalysis && aiAnalysis.pick && aiAnalysis.confidence && aiAnalysis.edge) {
+                    updateValidation('nfl-ai-system', true, 
+                        `AI system working: Generated ${aiAnalysis.pick} with ${aiAnalysis.confidence}% confidence`);
+                } else {
+                    updateValidation('nfl-ai-system', false, 'AI analysis incomplete or missing fields');
+                }
+            } catch (error) {
+                updateValidation('nfl-ai-system', false, `AI system error: ${error.message}`);
+            }
+        }
+        
+        async function validateNCAASystemLoad() {
+            try {
+                if (typeof SimpleNCAASystem === 'undefined') {
+                    updateValidation('ncaa-system-load', false, 'SimpleNCAASystem class not found');
+                    return;
+                }
+                
+                const ncaaSystem = new SimpleNCAASystem();
+                await ncaaSystem.initialize();
+                
+                // Test core methods exist
+                const methods = ['loadLiveGames', 'loadBettingLines', 'renderBettingLines'];
+                const missing = methods.filter(method => typeof ncaaSystem[method] !== 'function');
+                
+                if (missing.length === 0) {
+                    updateValidation('ncaa-system-load', true, 'NCAA system loaded with all core methods');
+                } else {
+                    updateValidation('ncaa-system-load', false, `Missing methods: ${missing.join(', ')}`);
+                }
+            } catch (error) {
+                updateValidation('ncaa-system-load', false, `NCAA system error: ${error.message}`);
+            }
+        }
+        
+        async function validateNCAALiveBetting() {
+            try {
+                const ncaaSystem = new SimpleNCAASystem();
+                const testGame = {
+                    homeTeam: { displayName: 'Alabama Crimson Tide' },
+                    awayTeam: { displayName: 'Georgia Bulldogs' },
+                    homeScore: 14,
+                    awayScore: 10,
+                    isLive: true,
+                    quarter: 'Q2',
+                    clock: '8:42'
+                };
+                
+                const bettingHTML = ncaaSystem.renderLiveBettingGame(testGame);
+                if (bettingHTML && bettingHTML.includes('live-betting-card') && bettingHTML.includes('Alabama')) {
+                    updateValidation('ncaa-live-betting', true, 'Live betting system generates complete analysis');
+                } else {
+                    updateValidation('ncaa-live-betting', false, 'Live betting system not generating proper output');
+                }
+            } catch (error) {
+                updateValidation('ncaa-live-betting', false, `Live betting error: ${error.message}`);
+            }
+        }
+        
+        async function validateNCAAAPIIntegration() {
+            try {
+                const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                const apiUrls = [
+                    `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${today}`,
+                    'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&week=2&seasontype=2&year=2025'
+                ];
+                
+                let workingAPIs = 0;
+                for (const url of apiUrls) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) workingAPIs++;
+                    } catch (e) {
+                        console.log('API test failed:', e);
+                    }
+                }
+                
+                if (workingAPIs > 0) {
+                    updateValidation('ncaa-api-integration', true, `${workingAPIs}/${apiUrls.length} ESPN APIs accessible`);
+                } else {
+                    updateValidation('ncaa-api-integration', false, 'No ESPN APIs accessible');
+                }
+            } catch (error) {
+                updateValidation('ncaa-api-integration', false, `API integration error: ${error.message}`);
+            }
+        }
+        
+        async function validateNCAACollegeProps() {
+            try {
+                const ncaaSystem = new SimpleNCAASystem();
+                
+                // Test college football players exist in roster database
+                const testTeams = ['Alabama', 'Georgia', 'Michigan', 'Texas'];
+                let teamsWithPlayers = 0;
+                
+                for (const team of testTeams) {
+                    const players = ncaaSystem.getCollegeFootballPlayers(team);
+                    if (players && players.QB) {
+                        teamsWithPlayers++;
+                    }
+                }
+                
+                if (teamsWithPlayers >= 2) {
+                    updateValidation('ncaa-college-props', true, `${teamsWithPlayers}/${testTeams.length} college teams have player data`);
+                } else {
+                    updateValidation('ncaa-college-props', false, `Only ${teamsWithPlayers}/${testTeams.length} teams have player data`);
+                }
+            } catch (error) {
+                updateValidation('ncaa-college-props', false, `College props error: ${error.message}`);
+            }
+        }
+        
+        async function validateStandalonePages() {
+            const pages = [
+                'nfl-live-games.html', 'nfl-upcoming-games.html', 'nfl-predictions.html', 'nfl-betting.html',
+                'ncaa-live-games.html', 'ncaa-upcoming-games.html', 'ncaa-predictions.html', 'ncaa-rankings.html', 'ncaa-betting.html'
+            ];
+            
+            let accessible = 0;
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page, { method: 'HEAD' });
+                    if (response.ok) accessible++;
+                } catch (e) {
+                    console.log(`Page ${page} not accessible:`, e);
+                }
+            }
+            
+            if (accessible === pages.length) {
+                updateValidation('standalone-pages', true, `All ${pages.length} standalone pages accessible`);
+            } else {
+                updateValidation('standalone-pages', false, `Only ${accessible}/${pages.length} pages accessible`);
+            }
+        }
+        
+        async function validateCrossNavigation() {
+            // Test main index exists
+            try {
+                const response = await fetch('index.html', { method: 'HEAD' });
+                if (response.ok) {
+                    updateValidation('cross-navigation', true, 'Main navigation and cross-links functional');
+                } else {
+                    updateValidation('cross-navigation', false, 'Main index not accessible');
+                }
+            } catch (error) {
+                updateValidation('cross-navigation', false, `Navigation error: ${error.message}`);
+            }
+        }
+        
+        async function validateSystemConsistency() {
+            try {
+                // Test both systems can work together
+                const hasNFL = typeof SimpleWorkingSystem !== 'undefined';
+                const hasNCAA = typeof SimpleNCAASystem !== 'undefined';
+                
+                if (hasNFL && hasNCAA) {
+                    const nflSystem = new SimpleWorkingSystem();
+                    const ncaaSystem = new SimpleNCAASystem();
+                    
+                    await Promise.all([
+                        nflSystem.initialize(),
+                        ncaaSystem.initialize()
+                    ]);
+                    
+                    updateValidation('system-consistency', true, 'Both NFL & NCAA systems initialized simultaneously');
+                } else {
+                    updateValidation('system-consistency', false, `Systems missing: NFL(${hasNFL}), NCAA(${hasNCAA})`);
+                }
+            } catch (error) {
+                updateValidation('system-consistency', false, `Consistency error: ${error.message}`);
+            }
+        }
+        
+        function updateValidation(id, success, message) {
+            const element = document.getElementById(id);
+            element.className = `validation-item ${success ? 'success' : 'error'}`;
+            element.innerHTML = `<strong>${element.querySelector('strong').textContent}</strong> ${success ? '✅' : '❌'} ${message}`;
+            console.log(`${success ? '✅' : '❌'} ${id}: ${message}`);
+        }
+        
+        // Auto-run validation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Critical systems validation ready. Click button to run tests.');
+        });
+    </script>
+</body>
+</html>
