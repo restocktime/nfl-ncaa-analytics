@@ -1104,7 +1104,6 @@ class SimpleNCAASystem {
                     
                     <div class="game-details">
                         ${this.formatGameTime(game)}
-                        ${game.quarter ? `<br>${game.quarter}` : ''}
                         ${game.venue ? `<br>${game.venue}` : ''}
                     </div>
                     
@@ -1651,20 +1650,26 @@ class SimpleNCAASystem {
             const keyStats = this.generateRealKeyStats(game);
             
             return `
-                <div class="game-card live" style="max-width: none; border: 2px solid #ff4444;">
-                    <div class="game-status live">
-                        🔴 LIVE BETTING • ${game.network} • ${game.quarter} ${game.clock || ''}
+                <div class="game-card live" style="max-width: none; border: 2px solid #ff4444; background: linear-gradient(135deg, rgba(255,68,68,0.1), rgba(0,0,0,0.8)); border-radius: 12px; padding: 20px;">
+                    <div class="game-status live" style="text-align: center; color: #ff4444; font-weight: bold; font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <div class="live-pulse" style="width: 8px; height: 8px; background: #ff4444; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                        🔴 LIVE • ${game.quarter} ${game.clock || ''} • ${game.network || 'TV'}
                     </div>
                     
-                    <div class="teams">
-                        ${game.awayTeam.displayWithLocation || game.awayTeam.displayName}
-                        <br><strong style="font-size: 24px; color: #00ff88;">${game.awayScore || 0} - ${game.homeScore || 0}</strong><br>
-                        ${game.homeTeam.displayWithLocation || game.homeTeam.displayName}
+                    <div class="teams" style="text-align: center; margin-bottom: 20px;">
+                        <div style="color: #0066ff; font-weight: bold; font-size: 16px; margin-bottom: 8px;">
+                            ${game.awayTeam.displayWithLocation || game.awayTeam.displayName}
+                        </div>
+                        <div style="font-size: 32px; color: #00ff88; font-weight: bold; margin: 15px 0; text-shadow: 0 0 10px rgba(0,255,136,0.5);">
+                            ${game.awayScore || 0} - ${game.homeScore || 0}
+                        </div>
+                        <div style="color: #00ff88; font-weight: bold; font-size: 16px; margin-top: 8px;">
+                            ${game.homeTeam.displayWithLocation || game.homeTeam.displayName}
+                        </div>
                     </div>
                     
-                    <div class="game-details">
-                        <strong>${game.quarter} ${game.clock || ''}</strong><br>
-                        ${game.venue || 'Unknown Venue'}
+                    <div class="game-details" style="text-align: center; color: #ccc; font-size: 14px; margin-bottom: 15px;">
+                        📍 ${game.venue || 'Stadium TBD'}
                     </div>
                     
                     <!-- LIVE GAME ANALYSIS using our Pick Engine -->
@@ -1866,44 +1871,73 @@ class SimpleNCAASystem {
     
     // NEW: Generate realistic plays based on actual game state
     generateRealisticPlaysFromGameState(game) {
-        if (!game.isLive) return [];
-        
         const plays = [];
         const scoreDiff = Math.abs((game.homeScore || 0) - (game.awayScore || 0));
         const quarter = game.quarter || '1st';
         const clock = game.clock || '15:00';
+        
+        // Always generate plays for live games to ensure display
+        const isLiveGame = game.isLive || (game.quarter && !game.isFinal);
+        
+        if (!isLiveGame) {
+            // Return some default plays for display
+            return [
+                { description: "Game completed", team: 'both', context: "Final score" },
+                { description: "Post-game analysis", team: 'both', context: "Stats reviewed" }
+            ];
+        }
         
         // Generate plays based on actual score progression
         if (scoreDiff > 14) {
             // Blowout scenario
             plays.push({ 
                 description: "3 & out - Quick defensive stop", 
-                team: scoreDiff === (game.homeScore - game.awayScore) ? 'home' : 'away',
-                context: `${quarter} - Controlling the game`
+                team: (game.homeScore > game.awayScore) ? 'home' : 'away',
+                context: `${quarter} ${clock} - Controlling the game`
             });
             plays.push({ 
                 description: "Short gain on 1st down", 
                 team: Math.random() > 0.5 ? 'home' : 'away',
                 context: "Running clock strategy"
             });
+            plays.push({ 
+                description: "Incomplete pass - Clock stops", 
+                team: (game.homeScore < game.awayScore) ? 'home' : 'away',
+                context: "Fighting back attempt"
+            });
         } else if (scoreDiff <= 3) {
-            // Close game
+            // Close game - most exciting
             plays.push({ 
                 description: "Completed pass for 1st down", 
                 team: Math.random() > 0.5 ? 'home' : 'away',
                 context: `${quarter} ${clock} - Crucial drive`
             });
             plays.push({ 
-                description: "Timeout called", 
+                description: "Timeout called - Strategy discussion", 
                 team: 'both',
-                context: "Strategic timeout"
+                context: "Critical moment timeout"
+            });
+            plays.push({ 
+                description: "QB scramble for 8 yards", 
+                team: Math.random() > 0.5 ? 'home' : 'away',
+                context: "Extending the drive"
             });
         } else {
-            // Moderate lead
+            // Moderate lead (4-13 points)
             plays.push({ 
                 description: "Running play gains 4 yards", 
                 team: (game.homeScore > game.awayScore) ? 'home' : 'away',
-                context: `${quarter} - Maintaining lead`
+                context: `${quarter} ${clock} - Maintaining possession`
+            });
+            plays.push({ 
+                description: "Defensive pressure forces punt", 
+                team: (game.homeScore < game.awayScore) ? 'home' : 'away',
+                context: "Good defensive stop"
+            });
+            plays.push({ 
+                description: "Field position change", 
+                team: 'both',
+                context: "Setting up next drive"
             });
         }
         
@@ -2631,7 +2665,7 @@ class SimpleNCAASystem {
                 const liveGames = this.games.filter(game => game.isLive);
                 
                 if (liveGames.length > 0) {
-                    container.innerHTML = this.renderGames(liveGames, 'live');
+                    container.innerHTML = this.generateGamesHTML(liveGames, 'live');
                 } else {
                     container.innerHTML = `
                         <div class="no-games-card">
@@ -2660,7 +2694,7 @@ class SimpleNCAASystem {
                 const upcomingGames = this.games.filter(game => !game.isLive);
                 
                 if (upcomingGames.length > 0) {
-                    container.innerHTML = this.renderGames(upcomingGames, 'upcoming');
+                    container.innerHTML = this.generateGamesHTML(upcomingGames, 'upcoming');
                 } else {
                     container.innerHTML = `
                         <div class="no-games-card">
@@ -2812,7 +2846,14 @@ class SimpleNCAASystem {
                         </div>
                     </div>
                     
-                    ${liveGames.map(game => this.renderLiveBettingGame(game)).join('')}
+                    ${liveGames.map(game => {
+                        try {
+                            return this.renderLiveBettingGame(game);
+                        } catch (error) {
+                            console.warn('⚠️ Error rendering betting game:', error);
+                            return `<div class="error-card">Error loading ${game.awayTeam?.displayName} @ ${game.homeTeam?.displayName}</div>`;
+                        }
+                    }).join('')}
                 </div>
             `;
         } else {
@@ -2879,7 +2920,19 @@ class SimpleNCAASystem {
     // Render comprehensive live betting game with full analysis
     renderLiveBettingGame(game) {
         const currentScores = { home: game.homeScore || 0, away: game.awayScore || 0 };
-        const gameAnalysis = this.pickEngine.analyzeGame(game, currentScores);
+        
+        // Safety check for pickEngine
+        let gameAnalysis;
+        if (!this.pickEngine || typeof this.pickEngine.analyzeGameState !== 'function') {
+            console.warn('⚠️ pickEngine not available, using fallback analysis');
+            gameAnalysis = {
+                momentum: true,
+                phase: 'live',
+                situation: 'competitive'
+            };
+        } else {
+            gameAnalysis = this.pickEngine.analyzeGameState(game, currentScores);
+        }
         const recentPlays = this.generateRealisticPlaysFromGameState(game);
         const momentum = this.getRealGameMomentum(game, currentScores);
         const keyStats = this.generateRealKeyStats(game);
@@ -2897,7 +2950,7 @@ class SimpleNCAASystem {
                         <div class="live-score">${game.awayScore || 0} - ${game.homeScore || 0}</div>
                     </div>
                     <div class="game-status live">
-                        <i class="fas fa-circle"></i> LIVE • ${game.quarter} ${game.clock || ''}
+                        <i class="fas fa-circle"></i> LIVE
                     </div>
                 </div>
                 
@@ -2917,11 +2970,11 @@ class SimpleNCAASystem {
                                     <div class="team-indicator away">AWAY</div>
                                     <div class="strength-bar">
                                         <div class="strength-fill ${this.getMomentumClass(momentum.strength)}" 
-                                             style="width: ${momentum.strength}%; margin-left: ${momentum.direction === 'away' ? '0' : 'auto'}"></div>
+                                             style="width: ${momentum.strength}%; margin-left: ${momentum.direction === 'away' ? '0' : 'auto'}; background: ${this.getMomentumColor(momentum.strength)};"></div>
                                     </div>
                                     <div class="team-indicator home">HOME</div>
                                 </div>
-                                <div class="momentum-percentage">${momentum.strength}%</div>
+                                <div class="momentum-percentage" style="color: ${this.getMomentumColor(momentum.strength)}">${momentum.strength}%</div>
                             </div>
                             
                             <div class="momentum-details">
@@ -3055,6 +3108,12 @@ class SimpleNCAASystem {
         if (strength >= 70) return 'high';
         if (strength >= 40) return 'medium';
         return 'low';
+    }
+    
+    getMomentumColor(strength) {
+        if (strength >= 70) return '#00ff88'; // Green for high
+        if (strength >= 40) return '#ffcc00'; // Yellow for medium  
+        return '#ff6666'; // Red for low
     }
     
     getPlayClass(play) {
