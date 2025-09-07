@@ -50,6 +50,37 @@ function getCurrentCollegeFootballInfo() {
     };
 }
 
+// Helper function to extract recent plays from ESPN drive data
+function extractRecentPlays(drives) {
+    if (!drives || drives.length === 0) return [];
+    
+    try {
+        const recentDrives = drives.slice(-3); // Last 3 drives
+        const plays = [];
+        
+        recentDrives.forEach(drive => {
+            if (drive.plays && drive.plays.length > 0) {
+                // Get the last play from each recent drive
+                const lastPlay = drive.plays[drive.plays.length - 1];
+                if (lastPlay && lastPlay.text) {
+                    plays.push({
+                        description: lastPlay.text,
+                        team: lastPlay.start?.team?.abbreviation || 'Unknown',
+                        yards: lastPlay.statYardage || 0,
+                        down: lastPlay.start?.down || null,
+                        result: lastPlay.type?.text || 'Play'
+                    });
+                }
+            }
+        });
+        
+        return plays.slice(0, 5); // Return up to 5 recent plays
+    } catch (error) {
+        console.warn('Error extracting recent plays:', error);
+        return [];
+    }
+}
+
 // Real ESPN API integration for live college football scores
 async function fetchRealNCAAData() {
     const cfbInfo = getCurrentCollegeFootballInfo();
@@ -83,25 +114,69 @@ async function fetchRealNCAAData() {
     };
     
     try {
-        console.log(`🏈 Fetching LIVE NCAA games for today...`);
+        console.log(`🏈 Fetching NCAA games for this weekend...`);
         
-        // Get today's date for real live games
+        // Get a wider date range to capture all weekend games
         const today = new Date();
-        const dateString = today.toISOString().split('T')[0].replace(/-/g, '');
+        const todayString = today.toISOString().split('T')[0].replace(/-/g, '');
         
-        // ESPN College Football Scoreboard API - today's games
-        const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${dateString}`;
-        console.log(`🔗 ESPN API URL: ${espnUrl}`);
+        // Also get tomorrow and day after for weekend games
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const tomorrowString = tomorrow.toISOString().split('T')[0].replace(/-/g, '');
         
-        const response = await fetch(espnUrl);
-        if (!response.ok) {
-            throw new Error(`ESPN API error: ${response.status}`);
+        const dayAfter = new Date(today);
+        dayAfter.setDate(today.getDate() + 2);
+        const dayAfterString = dayAfter.toISOString().split('T')[0].replace(/-/g, '');
+        
+        // Try multiple ESPN APIs to get more comprehensive game data
+        const apiUrls = [
+            // Today's games
+            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${todayString}`,
+            // Tomorrow's games  
+            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${tomorrowString}`,
+            // Day after games
+            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=${dayAfterString}`,
+            // Current week games (broader)
+            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&week=${cfbInfo.week}&seasontype=2&year=${cfbInfo.seasonYear}`,
+            // All current games regardless of date
+            `https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80`
+        ];
+        
+        console.log(`🔗 Trying ${apiUrls.length} ESPN API endpoints for comprehensive game data...`);
+        let allGames = [];
+        let successfulUrls = 0;
+        
+        // Try each API URL to get comprehensive game data
+        for (const url of apiUrls) {
+            try {
+                console.log(`📡 Fetching: ${url.includes('dates=') ? `Games for ${url.match(/dates=(\d+)/)?.[1]}` : 'Week/Season games'}`);
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`⚠️ API failed: ${response.status} for ${url}`);
+                    continue;
+                }
+                
+                const data = await response.json();
+                if (data.events && data.events.length > 0) {
+                    allGames.push(...data.events);
+                    successfulUrls++;
+                    console.log(`✅ Got ${data.events.length} games from API ${successfulUrls}`);
+                }
+            } catch (error) {
+                console.warn(`⚠️ API error for ${url}:`, error.message);
+            }
         }
         
-        const data = await response.json();
+        // Remove duplicates based on game ID
+        const uniqueGames = allGames.filter((game, index, self) => 
+            index === self.findIndex(g => g.id === game.id)
+        );
         
-        if (data.events && data.events.length > 0) {
-            const games = data.events.map(event => {
+        console.log(`📊 Total unique games found: ${uniqueGames.length} from ${successfulUrls}/${apiUrls.length} APIs`);
+        
+        if (uniqueGames.length > 0) {
+            const games = uniqueGames.map(event => {
                 const competition = event.competitions[0];
                 const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
                 const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
@@ -129,6 +204,11 @@ async function fetchRealNCAAData() {
                 } else if (status === 'STATUS_FINAL' || competition.status.type.state === 'post') {
                     isFinal = true;
                 }
+                
+                // Enhanced game data with live details for momentum analysis
+                const liveDetails = competition.situation || {};
+                const drives = event.drives || [];
+                const playByPlay = event.playByPlay || {};
                 
                 return {
                     id: event.id,
@@ -159,7 +239,22 @@ async function fetchRealNCAAData() {
                     isLive: isLive,
                     isFinal: isFinal,
                     venue: competition.venue?.fullName || 'TBD',
-                    conference: homeTeam.team.conferenceId || 'NCAA'
+                    conference: homeTeam.team.conferenceId || 'NCAA',
+                    
+                    // Enhanced live data for momentum analysis
+                    liveData: {
+                        situation: liveDetails,
+                        drives: drives,
+                        playByPlay: playByPlay,
+                        recentPlays: drives.length > 0 ? this.extractRecentPlays(drives) : [],
+                        possession: liveDetails.possession || null,
+                        down: liveDetails.down || null,
+                        yardLine: liveDetails.yardLine || null,
+                        timeouts: {
+                            home: competition.competitors.find(c => c.homeAway === 'home')?.timeouts || 3,
+                            away: competition.competitors.find(c => c.homeAway === 'away')?.timeouts || 3
+                        }
+                    }
                 };
             });
             
@@ -1815,19 +1910,84 @@ class SimpleNCAASystem {
         return plays.slice(0, 3);
     }
     
-    // NEW: Get real momentum using our existing pick engine
+    // Enhanced momentum analysis using real ESPN live data
     getRealGameMomentum(game, currentScores) {
         const gameState = this.pickEngine.analyzeGameState(game, currentScores);
         const momentum = this.pickEngine.calculateMomentum(game, currentScores);
         
+        // Use real live data if available to enhance momentum calculation
+        let enhancedMomentum = momentum;
+        if (game.liveData && game.liveData.recentPlays && game.liveData.recentPlays.length > 0) {
+            enhancedMomentum = this.calculateRealMomentumFromPlays(game, gameState);
+        }
+        
         return {
-            direction: momentum.direction,
-            strength: Math.round(momentum.strength * 100),
-            reason: this.getMomentumReason(game, gameState)
+            direction: enhancedMomentum.direction,
+            strength: Math.round(enhancedMomentum.strength * 100),
+            reason: this.getMomentumReason(game, gameState, game.liveData)
         };
     }
     
-    getMomentumReason(game, gameState) {
+    // Calculate momentum from actual ESPN play data
+    calculateRealMomentumFromPlays(game, gameState) {
+        const recentPlays = game.liveData.recentPlays || [];
+        let homePositive = 0;
+        let awayPositive = 0;
+        
+        recentPlays.forEach(play => {
+            const isHomeTeam = play.team === game.homeTeam.abbreviation;
+            const playValue = this.evaluatePlayMomentum(play);
+            
+            if (isHomeTeam) {
+                homePositive += playValue;
+            } else {
+                awayPositive += playValue;
+            }
+        });
+        
+        const totalMomentum = homePositive + Math.abs(awayPositive);
+        const homeStrength = totalMomentum > 0 ? homePositive / totalMomentum : 0.5;
+        
+        return {
+            direction: homeStrength > 0.5 ? 'home' : 'away',
+            strength: Math.max(0.1, Math.abs(homeStrength - 0.5) * 2), // 0.1 to 1.0
+            confidence: Math.min(0.95, totalMomentum * 0.1 + 0.6)
+        };
+    }
+    
+    // Evaluate individual play momentum value
+    evaluatePlayMomentum(play) {
+        let value = 0;
+        const desc = play.description.toLowerCase();
+        
+        // Positive momentum plays
+        if (desc.includes('touchdown')) value += 0.8;
+        else if (desc.includes('interception')) value += 0.6;
+        else if (desc.includes('sack')) value += 0.4;
+        else if (desc.includes('fumble')) value += 0.5;
+        else if (play.yards > 15) value += 0.3;
+        else if (play.yards > 8) value += 0.1;
+        else if (play.yards < -5) value -= 0.2;
+        
+        // First down conversions
+        if (desc.includes('1st down') || desc.includes('first down')) value += 0.2;
+        
+        return value;
+    }
+    
+    getMomentumReason(game, gameState, liveData = null) {
+        // Use real live data to generate more specific reasons
+        if (liveData && liveData.recentPlays && liveData.recentPlays.length > 0) {
+            const lastPlay = liveData.recentPlays[liveData.recentPlays.length - 1];
+            const desc = lastPlay.description.toLowerCase();
+            
+            if (desc.includes('touchdown')) return `Recent touchdown drive building momentum`;
+            if (desc.includes('interception')) return `Turnover creates momentum shift`;
+            if (desc.includes('fumble')) return `Fumble recovery changes game flow`;
+            if (desc.includes('sack')) return `Defensive pressure affecting rhythm`;
+            if (lastPlay.yards > 15) return `Big plays generating momentum`;
+        }
+        
         if (gameState.gamePhase === 'critical') {
             return 'Critical game phase - every play matters';
         } else if (gameState.isCloseGame) {
