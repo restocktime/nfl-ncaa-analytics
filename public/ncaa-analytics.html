@@ -247,6 +247,67 @@
             font-style: italic;
         }
 
+        /* Betting Lines Styles */
+        .game-card.betting {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .betting-lines {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .line-group h4 {
+            color: #00ff88;
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .line-options {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .line-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .line-option .team {
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .line-option .number {
+            color: #ffcc00;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        .line-option .odds {
+            color: #00ff88;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .venue {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             body {

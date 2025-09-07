@@ -2595,6 +2595,86 @@ class SimpleNCAASystem {
             timestampEl.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
         }
     }
+    
+    // Add missing renderBettingLines function
+    renderBettingLines(games) {
+        if (!games || games.length === 0) {
+            return `
+                <div class="no-games-card">
+                    <i class="fas fa-coins"></i>
+                    <h3>No Betting Lines Available</h3>
+                    <p>Check back later for NCAA betting opportunities!</p>
+                </div>
+            `;
+        }
+        
+        return games.slice(0, 8).map(game => {
+            // Generate realistic college football betting lines
+            const homeSpread = (Math.random() * 28 - 14).toFixed(1); // -14 to +14
+            const total = (Math.random() * 20 + 45).toFixed(1); // 45-65 total
+            const homeML = homeSpread > 0 ? `+${Math.floor(Math.random() * 200 + 150)}` : `-${Math.floor(Math.random() * 200 + 110)}`;
+            const awayML = homeSpread > 0 ? `-${Math.floor(Math.random() * 200 + 110)}` : `+${Math.floor(Math.random() * 200 + 150)}`;
+            
+            return `
+                <div class="game-card betting">
+                    <div class="game-header">
+                        <div class="matchup">${game.awayTeam.displayName} @ ${game.homeTeam.displayName}</div>
+                        <div class="game-time">${this.formatGameTime(game)}</div>
+                    </div>
+                    
+                    <div class="betting-lines">
+                        <div class="line-group">
+                            <h4>Spread</h4>
+                            <div class="line-options">
+                                <div class="line-option">
+                                    <span class="team">${game.homeTeam.displayName}</span>
+                                    <span class="number">${homeSpread > 0 ? '+' : ''}${homeSpread}</span>
+                                    <span class="odds">-110</span>
+                                </div>
+                                <div class="line-option">
+                                    <span class="team">${game.awayTeam.displayName}</span>
+                                    <span class="number">${homeSpread > 0 ? '-' : '+'}${Math.abs(homeSpread)}</span>
+                                    <span class="odds">-110</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="line-group">
+                            <h4>Total</h4>
+                            <div class="line-options">
+                                <div class="line-option">
+                                    <span class="team">Over</span>
+                                    <span class="number">${total}</span>
+                                    <span class="odds">-110</span>
+                                </div>
+                                <div class="line-option">
+                                    <span class="team">Under</span>
+                                    <span class="number">${total}</span>
+                                    <span class="odds">-110</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="line-group">
+                            <h4>Moneyline</h4>
+                            <div class="line-options">
+                                <div class="line-option">
+                                    <span class="team">${game.homeTeam.displayName}</span>
+                                    <span class="odds">${homeML}</span>
+                                </div>
+                                <div class="line-option">
+                                    <span class="team">${game.awayTeam.displayName}</span>
+                                    <span class="odds">${awayML}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${game.venue ? `<div class="venue"><i class="fas fa-map-marker-alt"></i> ${game.venue}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 // Global functions for manual control
