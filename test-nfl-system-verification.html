@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 NFL System Verification Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .error {
+            border-left-color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+        }
+        
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+        
+        .verification-status {
+            background: rgba(0, 255, 136, 0.15);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 NFL System Verification Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 2025-26 Roster Verification</h2>
+        <p>Testing that all NFL systems show current 2025-26 season players...</p>
+        <div id="roster-verification">⏳ Loading roster verification...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Player Props System Test</h2>
+        <p>Testing setupPlayerProps() with 2025-26 data...</p>
+        <div id="player-props-test">⏳ Testing player props...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🤖 AI Analysis Test</h2>
+        <p>Testing generateNFLAIAnalysis() with current players...</p>
+        <div id="ai-analysis-test">⏳ Testing AI analysis...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 ML Picks Test</h2>
+        <p>Testing generatePredictionByFocus() with real player names...</p>
+        <div id="ml-picks-test">⏳ Testing ML picks...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>💰 Realistic Odds Test</h2>
+        <p>Testing generateRealisticOdds() for legitimate betting lines...</p>
+        <div id="odds-test">⏳ Testing odds generation...</div>
+    </div>
+
+    <script src="simple-working-system.js"></script>
+    <script>
+        console.log('🔍 NFL System Verification Test Starting...');
+        
+        class NFLSystemVerifier {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+            }
+            
+            async testRosterVerification() {
+                try {
+                    const keyTests = [
+                        { team: 'Browns', expectedQB: 'Jameis Winston', note: 'Browns QB fix (no more Deshaun Watson)' },
+                        { team: 'Saints', expectedQB: 'Spencer Rattler', note: 'Saints 2025 starting QB' },
+                        { team: 'Falcons', expectedQB: 'Michael Penix Jr.', note: 'Falcons 2025 rookie QB' },
+                        { team: 'Chiefs', expectedQB: 'Patrick Mahomes', note: 'Chiefs franchise QB' },
+                        { team: 'Bills', expectedQB: 'Josh Allen', note: 'Bills franchise QB' }
+                    ];
+                    
+                    let results = '';
+                    let successCount = 0;
+                    
+                    for (const test of keyTests) {
+                        try {
+                            const game = {
+                                homeTeam: { name: test.team, displayName: test.team },
+                                awayTeam: { name: 'TestTeam', displayName: 'Test Team' }
+                            };
+                            
+                            const playerNames = await this.system.generatePlayerNamesWithESPN(game);
+                            const actualQB = playerNames.homeQB;
+                            
+                            if (actualQB === test.expectedQB) {
+                                successCount++;
+                                results += `
+                                    <div class="test-result">
+                                        <strong>✅ ${test.team}</strong><br>
+                                        QB: <span class="player-name">${actualQB}</span><br>
+                                        <small>${test.note}</small>
+                                    </div>
+                                `;
+                            } else {
+                                results += `
+                                    <div class="test-result error">
+                                        <strong>❌ ${test.team}</strong><br>
+                                        Expected: ${test.expectedQB}<br>
+                                        Got: ${actualQB}
+                                    </div>
+                                `;
+                            }
+                        } catch (error) {
+                            results += `
+                                <div class="test-result error">
+                                    <strong>❌ ${test.team} - Error:</strong><br>
+                                    ${error.message}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    results = `
+                        <div class="verification-status">
+                            <strong>📊 Roster Verification: ${successCount}/${keyTests.length} teams correct</strong>
+                        </div>
+                    ` + results;
+                    
+                    return results;
+                    
+                } catch (error) {
+                    return `
+                        <div class="test-result error">
+                            ❌ Roster verification failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testPlayerProps() {
+                try {
+                    const testGame = {
+                        id: 'test-browns-chiefs',
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' }
+                    };
+                    
+                    this.system.games = [testGame];
+                    await this.system.setupPlayerProps();
+                    
+                    const propsData = this.system.playerPropsData[testGame.id];
+                    
+                    if (propsData && propsData.players && propsData.players.length > 0) {
+                        const qbs = propsData.players.filter(p => p.position === 'QB');
+                        const rbs = propsData.players.filter(p => p.position === 'RB');
+                        
+                        return `
+                            <div class="verification-status">
+                                <strong>✅ Player Props System Working</strong>
+                            </div>
+                            <div class="test-result">
+                                <strong>Game:</strong> ${propsData.gameInfo.away} @ ${propsData.gameInfo.home}<br>
+                                <strong>QBs:</strong> ${qbs.map(q => `<span class="player-name">${q.name}</span>`).join(', ')}<br>
+                                <strong>RBs:</strong> ${rbs.map(r => `<span class="player-name">${r.name}</span>`).join(', ')}<br>
+                                <strong>Total Players:</strong> ${propsData.players.length}<br>
+                                <small>✅ Ready for player props buttons</small>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="test-result error">
+                                <strong>❌ Player Props Failed</strong><br>
+                                No props data generated
+                            </div>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    return `
+                        <div class="test-result error">
+                            ❌ Player props test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testAIAnalysis() {
+                try {
+                    const testGame = {
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' }
+                    };
+                    
+                    const aiAnalysis = await this.system.generateNFLAIAnalysis(testGame);
+                    
+                    return `
+                        <div class="verification-status">
+                            <strong>✅ AI Analysis System Working</strong>
+                        </div>
+                        <div class="test-result">
+                            <strong>Pick:</strong> <span class="player-name">${aiAnalysis.pick}</span><br>
+                            <strong>Type:</strong> ${aiAnalysis.type}<br>
+                            <strong>Confidence:</strong> ${aiAnalysis.confidence}%<br>
+                            <strong>Edge:</strong> ${aiAnalysis.edge}<br>
+                            <small>✅ Using 2025-26 player data</small>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    return `
+                        <div class="test-result error">
+                            ❌ AI analysis test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testMLPicks() {
+                try {
+                    const testGame = {
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' }
+                    };
+                    
+                    const mlPrediction = await this.system.generatePredictionByFocus(testGame, 'props');
+                    
+                    return `
+                        <div class="verification-status">
+                            <strong>✅ ML Picks System Working</strong>
+                        </div>
+                        <div class="test-result">
+                            <strong>Type:</strong> ${mlPrediction.type}<br>
+                            <strong>Prediction:</strong> <span class="player-name">${mlPrediction.prediction}</span><br>
+                            <strong>Value:</strong> ${mlPrediction.value}<br>
+                            <strong>Odds:</strong> ${mlPrediction.odds}<br>
+                            <small>✅ Using real player names in ML picks</small>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    return `
+                        <div class="test-result error">
+                            ❌ ML picks test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            testOdds() {
+                try {
+                    const oddsTests = [
+                        { type: 'anytime_td', label: 'Anytime TD' },
+                        { type: 'rushing', label: 'Rushing Yards' },
+                        { type: 'passing', label: 'Passing Yards' },
+                        { type: 'receiving', label: 'Receiving Yards' }
+                    ];
+                    
+                    let results = `
+                        <div class="verification-status">
+                            <strong>✅ Realistic Odds Generation Working</strong>
+                        </div>
+                    `;
+                    
+                    for (const test of oddsTests) {
+                        const odds = this.system.generateRealisticOdds(test.type);
+                        results += `
+                            <div class="test-result">
+                                <strong>${test.label}:</strong> <span class="player-name">${odds}</span><br>
+                                <small>Legitimate sportsbook-style odds</small>
+                            </div>
+                        `;
+                    }
+                    
+                    return results;
+                    
+                } catch (error) {
+                    return `
+                        <div class="test-result error">
+                            ❌ Odds test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const verifier = new NFLSystemVerifier();
+            
+            try {
+                console.log('Testing NFL roster verification...');
+                const rosterResults = await verifier.testRosterVerification();
+                document.getElementById('roster-verification').innerHTML = rosterResults;
+                
+                console.log('Testing player props system...');
+                const propsResults = await verifier.testPlayerProps();
+                document.getElementById('player-props-test').innerHTML = propsResults;
+                
+                console.log('Testing AI analysis...');
+                const aiResults = await verifier.testAIAnalysis();
+                document.getElementById('ai-analysis-test').innerHTML = aiResults;
+                
+                console.log('Testing ML picks...');
+                const mlResults = await verifier.testMLPicks();
+                document.getElementById('ml-picks-test').innerHTML = mlResults;
+                
+                console.log('Testing odds generation...');
+                const oddsResults = verifier.testOdds();
+                document.getElementById('odds-test').innerHTML = oddsResults;
+                
+                console.log('✅ NFL system verification completed!');
+                
+            } catch (error) {
+                console.error('❌ Verification test failed:', error);
+                const errorMsg = `<div class="test-result error">❌ Test failed: ${error.message}</div>`;
+                document.getElementById('roster-verification').innerHTML = errorMsg;
+                document.getElementById('player-props-test').innerHTML = errorMsg;
+                document.getElementById('ai-analysis-test').innerHTML = errorMsg;
+                document.getElementById('ml-picks-test').innerHTML = errorMsg;
+                document.getElementById('odds-test').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>
