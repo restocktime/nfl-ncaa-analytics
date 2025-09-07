@@ -1912,19 +1912,37 @@ class SimpleNCAASystem {
     
     // Enhanced momentum analysis using real ESPN live data
     getRealGameMomentum(game, currentScores) {
-        const gameState = this.pickEngine.analyzeGameState(game, currentScores);
-        const momentum = this.pickEngine.calculateMomentum(game, currentScores);
-        
-        // Use real live data if available to enhance momentum calculation
-        let enhancedMomentum = momentum;
-        if (game.liveData && game.liveData.recentPlays && game.liveData.recentPlays.length > 0) {
-            enhancedMomentum = this.calculateRealMomentumFromPlays(game, gameState);
+        try {
+            // Ensure we have all required data
+            if (!game || !this.pickEngine) {
+                return this.getDefaultMomentum();
+            }
+            
+            const gameState = this.pickEngine.analyzeGameState(game, currentScores);
+            const momentum = this.pickEngine.calculateMomentum(game, currentScores);
+            
+            // Use real live data if available to enhance momentum calculation
+            let enhancedMomentum = momentum;
+            if (game.liveData && game.liveData.recentPlays && game.liveData.recentPlays.length > 0) {
+                enhancedMomentum = this.calculateRealMomentumFromPlays(game, gameState);
+            }
+            
+            return {
+                direction: enhancedMomentum?.direction || 'home',
+                strength: Math.round((enhancedMomentum?.strength || 0.5) * 100),
+                reason: this.getMomentumReason(game, gameState, game.liveData)
+            };
+        } catch (error) {
+            console.error('❌ Error calculating momentum:', error);
+            return this.getDefaultMomentum();
         }
-        
+    }
+    
+    getDefaultMomentum() {
         return {
-            direction: enhancedMomentum.direction,
-            strength: Math.round(enhancedMomentum.strength * 100),
-            reason: this.getMomentumReason(game, gameState, game.liveData)
+            direction: 'home',
+            strength: 50,
+            reason: 'Game momentum unavailable'
         };
     }
     
@@ -1976,26 +1994,34 @@ class SimpleNCAASystem {
     }
     
     getMomentumReason(game, gameState, liveData = null) {
-        // Use real live data to generate more specific reasons
-        if (liveData && liveData.recentPlays && liveData.recentPlays.length > 0) {
-            const lastPlay = liveData.recentPlays[liveData.recentPlays.length - 1];
-            const desc = lastPlay.description.toLowerCase();
+        try {
+            // Use real live data to generate more specific reasons
+            if (liveData && liveData.recentPlays && liveData.recentPlays.length > 0) {
+                const lastPlay = liveData.recentPlays[liveData.recentPlays.length - 1];
+                if (lastPlay && lastPlay.description) {
+                    const desc = lastPlay.description.toLowerCase();
+                    
+                    if (desc.includes('touchdown')) return `Recent touchdown drive building momentum`;
+                    if (desc.includes('interception')) return `Turnover creates momentum shift`;
+                    if (desc.includes('fumble')) return `Fumble recovery changes game flow`;
+                    if (desc.includes('sack')) return `Defensive pressure affecting rhythm`;
+                    if (lastPlay.yards && lastPlay.yards > 15) return `Big plays generating momentum`;
+                }
+            }
             
-            if (desc.includes('touchdown')) return `Recent touchdown drive building momentum`;
-            if (desc.includes('interception')) return `Turnover creates momentum shift`;
-            if (desc.includes('fumble')) return `Fumble recovery changes game flow`;
-            if (desc.includes('sack')) return `Defensive pressure affecting rhythm`;
-            if (lastPlay.yards > 15) return `Big plays generating momentum`;
+            if (gameState && gameState.gamePhase === 'critical') {
+                return 'Critical game phase - every play matters';
+            } else if (gameState && gameState.isCloseGame) {
+                return 'Close game - momentum swings are key';
+            } else if (gameState && gameState.isHighScoring) {
+                return 'High-scoring pace favors offense';
+            }
+            
+            return 'Game flow analysis';
+        } catch (error) {
+            console.error('❌ Error generating momentum reason:', error);
+            return 'Analyzing game momentum';
         }
-        
-        if (gameState.gamePhase === 'critical') {
-            return 'Critical game phase - every play matters';
-        } else if (gameState.isCloseGame) {
-            return 'Close game - momentum swings are key';
-        } else if (gameState.isHighScoring) {
-            return 'High-scoring pace favors offense';
-        }
-        return 'Game flow analysis';
     }
     
     // NEW: Generate real key stats
@@ -2876,20 +2902,42 @@ class SimpleNCAASystem {
                 </div>
                 
                 <div class="live-analysis-grid">
-                    <!-- Live Momentum -->
+                    <!-- Enhanced Live Momentum -->
                     <div class="analysis-section momentum">
                         <h4><i class="fas fa-tachometer-alt"></i> Live Momentum</h4>
                         <div class="momentum-display">
-                            <div class="momentum-team ${momentum.direction}">
-                                ${momentum.direction === 'home' ? game.homeTeam.displayName : game.awayTeam.displayName}
+                            <div class="momentum-header">
+                                <div class="momentum-team away">${game.awayTeam.displayName}</div>
+                                <div class="momentum-vs">VS</div>
+                                <div class="momentum-team home">${game.homeTeam.displayName}</div>
                             </div>
-                            <div class="momentum-strength">
-                                <div class="strength-bar">
-                                    <div class="strength-fill" style="width: ${momentum.strength}%"></div>
+                            
+                            <div class="momentum-visual">
+                                <div class="strength-container">
+                                    <div class="team-indicator away">AWAY</div>
+                                    <div class="strength-bar">
+                                        <div class="strength-fill ${this.getMomentumClass(momentum.strength)}" 
+                                             style="width: ${momentum.strength}%; margin-left: ${momentum.direction === 'away' ? '0' : 'auto'}"></div>
+                                    </div>
+                                    <div class="team-indicator home">HOME</div>
                                 </div>
-                                <span>${momentum.strength}% strength</span>
+                                <div class="momentum-percentage">${momentum.strength}%</div>
                             </div>
-                            <div class="momentum-reason">${momentum.reason}</div>
+                            
+                            <div class="momentum-details">
+                                <div class="momentum-stat">
+                                    <div class="stat-label">Favoring</div>
+                                    <div class="stat-value">${momentum.direction === 'home' ? 'HOME' : 'AWAY'}</div>
+                                </div>
+                                <div class="momentum-stat">
+                                    <div class="stat-label">Confidence</div>
+                                    <div class="stat-value">${momentum.strength > 70 ? 'HIGH' : momentum.strength > 40 ? 'MED' : 'LOW'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="momentum-reason">
+                                <i class="fas fa-info-circle"></i> ${momentum.reason}
+                            </div>
                         </div>
                     </div>
                     
@@ -2898,9 +2946,10 @@ class SimpleNCAASystem {
                         <h4><i class="fas fa-play"></i> Recent Plays</h4>
                         <div class="plays-list">
                             ${recentPlays.slice(0, 3).map(play => `
-                                <div class="play-item">
-                                    <span class="play-team">${play.team}</span>
-                                    <span class="play-desc">${play.description}</span>
+                                <div class="play-item ${this.getPlayClass(play)}">
+                                    <span class="play-team">${play.team || 'TEAM'}</span>
+                                    <span class="play-desc">${play.description || 'Play in progress'}</span>
+                                    <span class="play-yards ${this.getPlayClass(play)}">${this.formatPlayYards(play)}</span>
                                 </div>
                             `).join('')}
                         </div>
@@ -3002,31 +3051,70 @@ class SimpleNCAASystem {
         `;
     }
     
+    getMomentumClass(strength) {
+        if (strength >= 70) return 'high';
+        if (strength >= 40) return 'medium';
+        return 'low';
+    }
+    
+    getPlayClass(play) {
+        if (!play || !play.yards) return 'neutral';
+        const yards = parseInt(play.yards) || 0;
+        if (yards > 10) return 'positive';
+        if (yards < 0) return 'negative';
+        return 'neutral';
+    }
+    
+    formatPlayYards(play) {
+        if (!play || typeof play.yards === 'undefined') return '0';
+        const yards = parseInt(play.yards) || 0;
+        return yards > 0 ? `+${yards}` : `${yards}`;
+    }
+    
     // Helper functions for live betting calculations
     calculateLiveSpread(game, momentum) {
-        const baseSpread = Math.random() * 14 - 7;
-        const momentumAdjustment = momentum.direction === 'home' ? -momentum.strength * 0.1 : momentum.strength * 0.1;
-        const adjustedSpread = (baseSpread + momentumAdjustment).toFixed(1);
-        
-        return {
-            line: adjustedSpread > 0 ? `+${adjustedSpread}` : adjustedSpread,
-            odds: Math.random() > 0.5 ? '-110' : '+100',
-            value: Math.abs(momentumAdjustment) > 0.3
-        };
+        try {
+            if (!game || !momentum) {
+                return { line: '+3.5', odds: '-110', value: false };
+            }
+            
+            const baseSpread = Math.random() * 14 - 7;
+            const strengthValue = momentum.strength || 50;
+            const momentumAdjustment = momentum.direction === 'home' ? -strengthValue * 0.01 : strengthValue * 0.01;
+            const adjustedSpread = (baseSpread + momentumAdjustment).toFixed(1);
+            
+            return {
+                line: adjustedSpread > 0 ? `+${adjustedSpread}` : adjustedSpread,
+                odds: Math.random() > 0.5 ? '-110' : '+100',
+                value: Math.abs(momentumAdjustment) > 0.3
+            };
+        } catch (error) {
+            console.error('❌ Error calculating live spread:', error);
+            return { line: '+3.5', odds: '-110', value: false };
+        }
     }
     
     calculateLiveTotal(game, gameAnalysis) {
-        const currentTotal = (game.homeScore || 0) + (game.awayScore || 0);
-        const projectedTotal = currentTotal + Math.random() * 20 + 15;
-        const line = projectedTotal.toFixed(1);
-        const recommendation = Math.random() > 0.5 ? 'Over' : 'Under';
-        
-        return {
-            line: line,
-            recommendation: recommendation,
-            odds: '-110',
-            value: Math.random() > 0.7
-        };
+        try {
+            if (!game) {
+                return { line: '47.5', recommendation: 'Over', odds: '-110', value: false };
+            }
+            
+            const currentTotal = (game.homeScore || 0) + (game.awayScore || 0);
+            const projectedTotal = currentTotal + Math.random() * 20 + 15;
+            const line = projectedTotal.toFixed(1);
+            const recommendation = Math.random() > 0.5 ? 'Over' : 'Under';
+            
+            return {
+                line: line,
+                recommendation: recommendation,
+                odds: '-110',
+                value: Math.random() > 0.7
+            };
+        } catch (error) {
+            console.error('❌ Error calculating live total:', error);
+            return { line: '47.5', recommendation: 'Over', odds: '-110', value: false };
+        }
     }
     
     calculateLiveMoneyline(game, momentum) {
