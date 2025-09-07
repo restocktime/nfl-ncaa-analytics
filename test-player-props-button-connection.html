@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Player Props Button Connection Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .connection-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .button-test {
+            background: #00ff88;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        .button-test:hover {
+            background: #00dd77;
+        }
+        .error {
+            border-left-color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+        }
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+        .flow-diagram {
+            background: rgba(0, 255, 136, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px dashed rgba(0, 255, 136, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Player Props Button Connection Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Connection Flow</h2>
+        <div class="flow-diagram">
+            <strong>Button Click → showProps(gameId) → playerPropsData[gameId] → 2025-26 Players</strong>
+            <br><br>
+            1. User clicks "🎯 Player Props" button<br>
+            2. Calls window.simpleSystem.showProps(gameId)<br>
+            3. Looks up this.playerPropsData[gameId]<br>
+            4. Shows 2025-26 season players for that specific game<br>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 Setup Test</h2>
+        <p>Testing that setupPlayerProps creates correct data for each game...</p>
+        <div id="setup-test-results">⏳ Testing player props setup...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Button Simulation Test</h2>
+        <p>Simulating actual button clicks to verify correct 2025-26 players show...</p>
+        <div id="button-simulation">⏳ Loading button tests...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Manual Test Buttons</h2>
+        <p>Click these buttons to test the actual showProps functionality:</p>
+        <div id="manual-test-buttons">⏳ Creating test buttons...</div>
+    </div>
+
+    <script src="public/simple-working-system.js"></script>
+    <script>
+        console.log('🎯 Player Props Button Connection Test Starting...');
+        
+        class PlayerPropsButtonTest {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+            }
+            
+            async testSetupPlayerProps() {
+                try {
+                    // Create test games like the real system
+                    const testGames = [
+                        {
+                            id: 'browns-bengals-test',
+                            homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                            awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' },
+                            date: new Date().toISOString()
+                        },
+                        {
+                            id: 'chiefs-bills-test', 
+                            homeTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' },
+                            awayTeam: { name: 'Bills', displayName: 'Buffalo Bills' },
+                            date: new Date().toISOString()
+                        },
+                        {
+                            id: 'saints-falcons-test',
+                            homeTeam: { name: 'Saints', displayName: 'New Orleans Saints' },
+                            awayTeam: { name: 'Falcons', displayName: 'Atlanta Falcons' },
+                            date: new Date().toISOString()
+                        }
+                    ];
+                    
+                    // Set games in system
+                    this.system.games = testGames;
+                    
+                    // Run setupPlayerProps
+                    console.log('🔧 Running setupPlayerProps...');
+                    await this.system.setupPlayerProps();
+                    
+                    let results = '';
+                    let successCount = 0;
+                    
+                    for (const game of testGames) {
+                        const propsData = this.system.playerPropsData[game.id];
+                        
+                        if (propsData && propsData.players && propsData.players.length > 0) {
+                            const homeQB = propsData.players.find(p => p.position === 'QB' && p.team === game.homeTeam.name);
+                            const awayQB = propsData.players.find(p => p.position === 'QB' && p.team === game.awayTeam.name);
+                            
+                            if (homeQB && awayQB) {
+                                successCount++;
+                                results += `
+                                    <div class="connection-result">
+                                        <strong>✅ ${game.awayTeam.name} @ ${game.homeTeam.name}</strong><br>
+                                        Game ID: ${game.id}<br>
+                                        QBs: <span class="player-name">${awayQB.name}</span> vs <span class="player-name">${homeQB.name}</span><br>
+                                        Players: ${propsData.players.length} total<br>
+                                        <small>✅ Data ready for showProps()</small>
+                                    </div>
+                                `;
+                            } else {
+                                results += `
+                                    <div class="connection-result error">
+                                        <strong>❌ ${game.awayTeam.name} @ ${game.homeTeam.name}</strong><br>
+                                        Missing QB data: Home=${homeQB?.name}, Away=${awayQB?.name}
+                                    </div>
+                                `;
+                            }
+                        } else {
+                            results += `
+                                <div class="connection-result error">
+                                    <strong>❌ ${game.awayTeam.name} @ ${game.homeTeam.name}</strong><br>
+                                    No props data created for gameId: ${game.id}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    results = `
+                        <div style="background: rgba(0, 255, 136, 0.15); padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                            <strong>📊 Setup Results: ${successCount}/${testGames.length} games ready</strong>
+                        </div>
+                    ` + results;
+                    
+                    return results;
+                    
+                } catch (error) {
+                    return `
+                        <div class="connection-result error">
+                            <strong>❌ Setup Test Failed:</strong><br>
+                            ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testButtonSimulation() {
+                let results = '';
+                
+                try {
+                    const testGameIds = ['browns-bengals-test', 'chiefs-bills-test', 'saints-falcons-test'];
+                    
+                    for (const gameId of testGameIds) {
+                        const propsData = this.system.playerPropsData[gameId];
+                        
+                        if (propsData) {
+                            // Simulate what showProps() would do
+                            const gameInfo = propsData.gameInfo;
+                            const players = propsData.players;
+                            
+                            results += `
+                                <div class="connection-result">
+                                    <strong>🎯 Button Click Simulation: ${gameId}</strong><br>
+                                    Game: ${gameInfo.away} @ ${gameInfo.home}<br>
+                                    Would show modal with:<br>
+                                    ${players.map(p => `• <span class="player-name">${p.name}</span> (${p.position}) - ${p.team}`).join('<br>')}
+                                </div>
+                            `;
+                        } else {
+                            results += `
+                                <div class="connection-result error">
+                                    <strong>❌ Button would fail for: ${gameId}</strong><br>
+                                    No props data found
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    return results;
+                    
+                } catch (error) {
+                    return `
+                        <div class="connection-result error">
+                            ❌ Button simulation failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            createManualTestButtons() {
+                let buttons = '';
+                
+                const testGameIds = ['browns-bengals-test', 'chiefs-bills-test', 'saints-falcons-test'];
+                
+                testGameIds.forEach(gameId => {
+                    const propsData = this.system.playerPropsData[gameId];
+                    if (propsData) {
+                        const gameInfo = propsData.gameInfo;
+                        buttons += `
+                            <button class="button-test" onclick="window.simpleSystem.showProps('${gameId}')">
+                                🎯 ${gameInfo.away} @ ${gameInfo.home}
+                            </button>
+                        `;
+                    }
+                });
+                
+                if (buttons === '') {
+                    buttons = '<div class="error">No test buttons available - setup may have failed</div>';
+                } else {
+                    buttons = '<p><strong>Click these buttons to test the real showProps() function:</strong></p>' + buttons;
+                }
+                
+                return buttons;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const tester = new PlayerPropsButtonTest();
+            
+            try {
+                console.log('Testing setupPlayerProps...');
+                const setupResults = await tester.testSetupPlayerProps();
+                document.getElementById('setup-test-results').innerHTML = setupResults;
+                
+                console.log('Testing button simulation...');
+                const buttonResults = await tester.testButtonSimulation();
+                document.getElementById('button-simulation').innerHTML = buttonResults;
+                
+                console.log('Creating manual test buttons...');
+                const manualButtons = tester.createManualTestButtons();
+                document.getElementById('manual-test-buttons').innerHTML = manualButtons;
+                
+                console.log('✅ Player props button connection test completed!');
+                
+                // Make system available globally for manual button tests
+                window.simpleSystem = tester.system;
+                
+            } catch (error) {
+                console.error('❌ Button connection test failed:', error);
+                const errorMsg = `<div class="connection-result error">❌ Test failed: ${error.message}</div>`;
+                document.getElementById('setup-test-results').innerHTML = errorMsg;
+                document.getElementById('button-simulation').innerHTML = errorMsg;
+                document.getElementById('manual-test-buttons').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>

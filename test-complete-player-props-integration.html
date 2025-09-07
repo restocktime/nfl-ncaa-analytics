@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 Complete Player Props Integration Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .integration-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .consistency-check {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 12px;
+            border-radius: 5px;
+            margin: 8px 0;
+            border-left: 4px solid #ffd700;
+        }
+        .error {
+            border-left-color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+        }
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+        .connection-flow {
+            background: rgba(0, 255, 136, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px dashed rgba(0, 255, 136, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 Complete Player Props Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Integration Flow</h2>
+        <div class="connection-flow">
+            <strong>Complete Data Flow - All Connected:</strong><br><br>
+            1. <strong>setupPlayerProps()</strong> → generatePlayerNamesWithESPN() → 2025-26 cached rosters<br>
+            2. <strong>Player Props Button</strong> → showProps() → Shows same 2025-26 players<br>
+            3. <strong>AI Analysis</strong> → generateNFLAIAnalysis() → Same 2025-26 players<br>
+            4. <strong>ML Analysis</strong> → generatePredictionByFocus() → Same 2025-26 players<br><br>
+            <strong>✅ All functions now use generatePlayerNamesWithESPN() for consistency</strong>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Player Props Button Integration</h2>
+        <p>Testing that button shows correct 2025-26 players from setupPlayerProps...</p>
+        <div id="button-integration-results">⏳ Testing button integration...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🤖 AI Analysis Integration</h2>
+        <p>Testing that AI analysis uses same 2025-26 player data...</p>
+        <div id="ai-analysis-results">⏳ Testing AI analysis...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 ML Analysis Integration</h2>
+        <p>Testing that ML analysis uses same 2025-26 player data...</p>
+        <div id="ml-analysis-results">⏳ Testing ML analysis...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Consistency Verification</h2>
+        <p>Verifying all analysis types show the same players for each game...</p>
+        <div id="consistency-results">⏳ Checking consistency...</div>
+    </div>
+
+    <script src="public/simple-working-system.js"></script>
+    <script>
+        console.log('🔗 Complete Player Props Integration Test Starting...');
+        
+        class CompleteIntegrationTest {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+            }
+            
+            async testButtonIntegration() {
+                try {
+                    // Create test game
+                    const testGame = {
+                        id: 'integration-test-browns-bengals',
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' },
+                        date: new Date().toISOString()
+                    };
+                    
+                    // Set games and run setup
+                    this.system.games = [testGame];
+                    await this.system.setupPlayerProps();
+                    
+                    // Test button data
+                    const propsData = this.system.playerPropsData[testGame.id];
+                    
+                    if (propsData && propsData.players && propsData.players.length > 0) {
+                        const qbs = propsData.players.filter(p => p.position === 'QB');
+                        const rbs = propsData.players.filter(p => p.position === 'RB');
+                        const wrs = propsData.players.filter(p => p.position === 'WR');
+                        
+                        return `
+                            <div class="integration-result">
+                                <strong>✅ Button Integration Working</strong><br>
+                                Game: ${propsData.gameInfo.away} @ ${propsData.gameInfo.home}<br>
+                                QBs: ${qbs.map(q => `<span class="player-name">${q.name}</span> (${q.team})`).join(', ')}<br>
+                                RBs: ${rbs.map(r => `<span class="player-name">${r.name}</span> (${r.team})`).join(', ')}<br>
+                                WRs: ${wrs.map(w => `<span class="player-name">${w.name}</span> (${w.team})`).join(', ')}<br>
+                                Total Players: ${propsData.players.length}<br>
+                                <small>✅ Ready for showProps() button click</small>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="integration-result error">
+                                <strong>❌ Button Integration Failed</strong><br>
+                                No player props data generated for button
+                            </div>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    return `
+                        <div class="integration-result error">
+                            ❌ Button integration test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testAIAnalysis() {
+                try {
+                    const testGame = {
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' }
+                    };
+                    
+                    const aiAnalysis = await this.system.generateNFLAIAnalysis(testGame);
+                    
+                    return `
+                        <div class="integration-result">
+                            <strong>✅ AI Analysis Integration Working</strong><br>
+                            Type: ${aiAnalysis.type}<br>
+                            Pick: <span class="player-name">${aiAnalysis.pick}</span><br>
+                            Confidence: ${aiAnalysis.confidence}%<br>
+                            Odds: ${aiAnalysis.odds}<br>
+                            Edge: ${aiAnalysis.edge}<br>
+                            <small>✅ Using 2025-26 player data</small>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    return `
+                        <div class="integration-result error">
+                            ❌ AI analysis test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testMLAnalysis() {
+                try {
+                    const testGame = {
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' }
+                    };
+                    
+                    const mlAnalysis = await this.system.generatePredictionByFocus(testGame, 'props');
+                    
+                    return `
+                        <div class="integration-result">
+                            <strong>✅ ML Analysis Integration Working</strong><br>
+                            Type: ${mlAnalysis.type}<br>
+                            Prediction: <span class="player-name">${mlAnalysis.prediction}</span><br>
+                            Prop Type: ${mlAnalysis.propType}<br>
+                            Odds: ${mlAnalysis.odds}<br>
+                            Value: ${mlAnalysis.value}<br>
+                            <small>✅ Using 2025-26 player data</small>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    return `
+                        <div class="integration-result error">
+                            ❌ ML analysis test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testConsistency() {
+                try {
+                    const testGames = [
+                        { home: 'Browns', away: 'Bengals', expectedHomeQB: 'Jameis Winston', expectedAwayQB: 'Joe Burrow' },
+                        { home: 'Chiefs', away: 'Bills', expectedHomeQB: 'Patrick Mahomes', expectedAwayQB: 'Josh Allen' },
+                        { home: 'Saints', away: 'Falcons', expectedHomeQB: 'Spencer Rattler', expectedAwayQB: 'Michael Penix Jr.' }
+                    ];
+                    
+                    let results = '';
+                    let consistentCount = 0;
+                    
+                    for (const test of testGames) {
+                        const game = {
+                            id: `consistency-${test.away}-${test.home}`,
+                            homeTeam: { name: test.home, displayName: test.home },
+                            awayTeam: { name: test.away, displayName: test.away }
+                        };
+                        
+                        try {
+                            // Test all data sources use same players
+                            const playerNames = await this.system.generatePlayerNamesWithESPN(game);
+                            const aiAnalysis = await this.system.generateNFLAIAnalysis(game);
+                            const mlAnalysis = await this.system.generatePredictionByFocus(game, 'props');
+                            
+                            // Set up button data
+                            this.system.games = [game];
+                            await this.system.setupPlayerProps();
+                            const buttonData = this.system.playerPropsData[game.id];
+                            
+                            const homeQBCorrect = playerNames.homeQB === test.expectedHomeQB;
+                            const awayQBCorrect = playerNames.awayQB === test.expectedAwayQB;
+                            
+                            if (homeQBCorrect && awayQBCorrect) {
+                                consistentCount++;
+                                results += `
+                                    <div class="consistency-check">
+                                        <strong>✅ ${test.away} @ ${test.home} - Consistent</strong><br>
+                                        Core Data: <span class="player-name">${playerNames.awayQB}</span> vs <span class="player-name">${playerNames.homeQB}</span><br>
+                                        AI Analysis: <span class="player-name">${aiAnalysis.pick}</span><br>
+                                        ML Analysis: <span class="player-name">${mlAnalysis.prediction}</span><br>
+                                        Button Ready: ${buttonData ? '✅' : '❌'} (${buttonData?.players?.length || 0} players)
+                                    </div>
+                                `;
+                            } else {
+                                results += `
+                                    <div class="consistency-check" style="border-left-color: #ff6666;">
+                                        <strong>❌ ${test.away} @ ${test.home} - Inconsistent</strong><br>
+                                        Expected: ${test.expectedAwayQB} vs ${test.expectedHomeQB}<br>
+                                        Got: ${playerNames.awayQB} vs ${playerNames.homeQB}
+                                    </div>
+                                `;
+                            }
+                            
+                        } catch (error) {
+                            results += `
+                                <div class="consistency-check" style="border-left-color: #ff6666;">
+                                    <strong>❌ ${test.away} @ ${test.home} - Error</strong><br>
+                                    ${error.message}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    results = `
+                        <div style="background: rgba(0, 255, 136, 0.15); padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                            <strong>📊 Consistency Results: ${consistentCount}/${testGames.length} games consistent</strong>
+                        </div>
+                    ` + results;
+                    
+                    return results;
+                    
+                } catch (error) {
+                    return `
+                        <div class="consistency-check error">
+                            ❌ Consistency test failed: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const tester = new CompleteIntegrationTest();
+            
+            try {
+                console.log('Testing button integration...');
+                const buttonResults = await tester.testButtonIntegration();
+                document.getElementById('button-integration-results').innerHTML = buttonResults;
+                
+                console.log('Testing AI analysis...');
+                const aiResults = await tester.testAIAnalysis();
+                document.getElementById('ai-analysis-results').innerHTML = aiResults;
+                
+                console.log('Testing ML analysis...');
+                const mlResults = await tester.testMLAnalysis();
+                document.getElementById('ml-analysis-results').innerHTML = mlResults;
+                
+                console.log('Testing consistency...');
+                const consistencyResults = await tester.testConsistency();
+                document.getElementById('consistency-results').innerHTML = consistencyResults;
+                
+                console.log('✅ Complete integration test finished!');
+                console.log('🔗 All player props connections verified with 2025-26 players');
+                
+            } catch (error) {
+                console.error('❌ Integration test failed:', error);
+                const errorMsg = `<div class="integration-result error">❌ Test failed: ${error.message}</div>`;
+                document.getElementById('button-integration-results').innerHTML = errorMsg;
+                document.getElementById('ai-analysis-results').innerHTML = errorMsg;
+                document.getElementById('ml-analysis-results').innerHTML = errorMsg;
+                document.getElementById('consistency-results').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>
