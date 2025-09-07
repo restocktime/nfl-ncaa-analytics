@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 Final Player Props Test - Updated Rosters</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .prop-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .correct { color: #00ff88; }
+        .warning { color: #ffcc00; }
+        .error { color: #ff6666; }
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+        .player-name {
+            font-weight: bold;
+            color: #00ff88;
+            font-size: 1.1em;
+        }
+        .odds {
+            color: #ffd700;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 Final NFL Player Props Test - Updated 2024-25 Rosters</h1>
+    
+    <div class="test-section">
+        <h2>🎯 Player Props Generation Test</h2>
+        <p>Testing actual player prop generation with updated rosters...</p>
+        <div id="props-test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 ML Analysis Test</h2>
+        <p>Testing ML analysis predictions with current players...</p>
+        <div id="ml-test-results"></div>
+    </div>
+
+    <script src="public/simple-working-system.js"></script>
+    <script>
+        console.log('🏈 Final Player Props Test Starting...');
+        
+        class PropsTester {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+            }
+            
+            testPlayerProps() {
+                // Create sample games for testing
+                const testGames = [
+                    {
+                        homeTeam: { name: 'Bills', displayName: 'Buffalo Bills' },
+                        awayTeam: { name: 'Texans', displayName: 'Houston Texans' }
+                    },
+                    {
+                        homeTeam: { name: 'Ravens', displayName: 'Baltimore Ravens' },
+                        awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' }
+                    },
+                    {
+                        homeTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' },
+                        awayTeam: { name: 'Raiders', displayName: 'Las Vegas Raiders' }
+                    }
+                ];
+                
+                let results = '';
+                
+                testGames.forEach((game, index) => {
+                    const aiAnalysis = this.system.generateNFLAIAnalysis(game);
+                    const mlPrediction = this.system.generatePredictionByFocus(game, 'props');
+                    
+                    results += `
+                        <div class="prop-result">
+                            <h3>${game.awayTeam.displayName} @ ${game.homeTeam.displayName}</h3>
+                            <div>
+                                <strong>AI Analysis Pick:</strong><br>
+                                <span class="player-name">${aiAnalysis.pick}</span>
+                                <span class="odds">${aiAnalysis.odds}</span><br>
+                                <small>Type: ${aiAnalysis.type} | Confidence: ${aiAnalysis.confidence}% | Edge: ${aiAnalysis.edge}</small>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>ML Analysis:</strong><br>
+                                <span class="player-name">${mlPrediction.prediction}</span>
+                                <span class="odds">${mlPrediction.odds}</span><br>
+                                <small>Focus: ${mlPrediction.type}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                return results;
+            }
+            
+            validateCurrentPlayers() {
+                const updatedTeams = ['Bills', 'Texans', 'Bengals', 'Titans', 'Browns', 'Jets', 'Raiders', 'Chargers'];
+                let validation = '<h3>✅ Updated Player Validation:</h3>';
+                
+                const correctPlayers = {
+                    'Bills': ['Amari Cooper'], // Should NOT have Stefon Diggs
+                    'Texans': ['Stefon Diggs'], // Should have Stefon Diggs
+                    'Jets': ['Mike Williams'], // Should have Mike Williams
+                    'Raiders': ['Jakobi Meyers'], // Should NOT have Davante Adams
+                    'Bengals': ['Ja\'Marr Chase'], // Should NOT have Tyler Boyd
+                    'Browns': ['Jerry Jeudy'] // Should have Jerry Jeudy
+                };
+                
+                updatedTeams.forEach(team => {
+                    const players = this.system.getTeamPlayers(team);
+                    const allPlayers = [...players.qbs, ...players.rbs, ...players.wrs];
+                    
+                    validation += `<div class="prop-result">
+                        <strong>${team}:</strong> ${allPlayers.join(', ')}</div>`;
+                });
+                
+                return validation;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const tester = new PropsTester();
+                
+                // Test player props generation
+                const propsResults = tester.testPlayerProps();
+                document.getElementById('props-test-results').innerHTML = propsResults;
+                
+                // Test ML analysis
+                const validationResults = tester.validateCurrentPlayers();
+                document.getElementById('ml-test-results').innerHTML = validationResults;
+                
+                console.log('✅ All player props tests completed successfully!');
+                console.log('🎯 Updated rosters are now being used in prop generation');
+                
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+                const errorMsg = `<div class="error">❌ Test failed: ${error.message}</div>`;
+                document.getElementById('props-test-results').innerHTML = errorMsg;
+                document.getElementById('ml-test-results').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>

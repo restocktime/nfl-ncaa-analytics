@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 ESPN API Integration Test - 2025 Season</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .api-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .error {
+            color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+            border-left-color: #ff6666;
+        }
+        .success {
+            color: #00ff88;
+        }
+        .fallback {
+            color: #ffcc00;
+        }
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+        .loading {
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 ESPN API Integration Test - 2025 NFL Season</h1>
+    
+    <div class="test-section">
+        <h2>🔗 ESPN API Endpoints Testing</h2>
+        <p>Testing ESPN API with 2025 season parameters for current NFL players...</p>
+        <div id="api-test-results" class="loading">⏳ Loading ESPN API tests...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Player Props with Live Data</h2>
+        <p>Testing player prop generation using ESPN API integration...</p>
+        <div id="props-test-results" class="loading">⏳ Loading player props tests...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🤖 ML Analysis with Current Players</h2>
+        <p>Testing ML analysis with ESPN player data...</p>
+        <div id="ml-test-results" class="loading">⏳ Loading ML analysis tests...</div>
+    </div>
+
+    <script src="public/simple-working-system.js"></script>
+    <script>
+        console.log('🏈 ESPN API Integration Test Starting...');
+        
+        class ESPNAPITester {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+            }
+            
+            async testESPNAPI() {
+                const testTeams = ['Chiefs', 'Bills', 'Ravens', 'Bengals', 'Cowboys'];
+                let results = '';
+                
+                for (const team of testTeams) {
+                    try {
+                        console.log(`Testing ESPN API for ${team}...`);
+                        const players = await this.system.getESPNTeamPlayers(team);
+                        
+                        if (players && players.qbs && players.qbs.length > 0) {
+                            results += `
+                                <div class="api-result success">
+                                    <strong>✅ ${team} (ESPN API Success):</strong><br>
+                                    QBs: <span class="player-name">${players.qbs.join(', ')}</span><br>
+                                    RBs: <span class="player-name">${players.rbs.join(', ')}</span><br>
+                                    WRs: <span class="player-name">${players.wrs.join(', ')}</span>
+                                </div>
+                            `;
+                        } else {
+                            results += `
+                                <div class="api-result fallback">
+                                    <strong>⚠️ ${team} (Using Cached Roster):</strong><br>
+                                    ESPN API unavailable, using updated 2024-25 cached rosters
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        results += `
+                            <div class="api-result error">
+                                <strong>❌ ${team} (API Error):</strong><br>
+                                ${error.message}
+                            </div>
+                        `;
+                    }
+                    
+                    // Small delay to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                return results;
+            }
+            
+            async testPlayerPropsWithESPN() {
+                const testGame = {
+                    homeTeam: { name: 'Chiefs', displayName: 'Kansas City Chiefs' },
+                    awayTeam: { name: 'Bills', displayName: 'Buffalo Bills' }
+                };
+                
+                try {
+                    const playerProps = await this.system.generatePlayerPropsWithESPN(testGame);
+                    
+                    return `
+                        <div class="api-result success">
+                            <strong>✅ Player Props with ESPN Integration:</strong><br>
+                            Player: <span class="player-name">${playerProps.antytimeTD.player}</span><br>
+                            Type: ${playerProps.type}<br>
+                            Odds: ${playerProps.antytimeTD.odds}<br>
+                            Confidence: ${playerProps.antytimeTD.confidence}%<br>
+                            Edge: ${playerProps.antytimeTD.edge}
+                        </div>
+                    `;
+                } catch (error) {
+                    return `
+                        <div class="api-result error">
+                            <strong>❌ Player Props Test Failed:</strong><br>
+                            ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            async testMLAnalysisWithESPN() {
+                const testGame = {
+                    homeTeam: { name: 'Ravens', displayName: 'Baltimore Ravens' },
+                    awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' }
+                };
+                
+                try {
+                    const mlPrediction = await this.system.generatePredictionByFocus(testGame, 'props');
+                    
+                    return `
+                        <div class="api-result success">
+                            <strong>✅ ML Analysis with ESPN Players:</strong><br>
+                            Prediction: <span class="player-name">${mlPrediction.prediction}</span><br>
+                            Type: ${mlPrediction.propType}<br>
+                            Odds: ${mlPrediction.odds}<br>
+                            Value: ${mlPrediction.value}
+                        </div>
+                    `;
+                } catch (error) {
+                    return `
+                        <div class="api-result error">
+                            <strong>❌ ML Analysis Test Failed:</strong><br>
+                            ${error.message}
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const tester = new ESPNAPITester();
+            
+            try {
+                // Test ESPN API endpoints
+                console.log('Testing ESPN API endpoints...');
+                const apiResults = await tester.testESPNAPI();
+                document.getElementById('api-test-results').innerHTML = apiResults;
+                
+                // Test player props with ESPN integration
+                console.log('Testing player props with ESPN data...');
+                const propsResults = await tester.testPlayerPropsWithESPN();
+                document.getElementById('props-test-results').innerHTML = propsResults;
+                
+                // Test ML analysis with ESPN integration
+                console.log('Testing ML analysis with ESPN data...');
+                const mlResults = await tester.testMLAnalysisWithESPN();
+                document.getElementById('ml-test-results').innerHTML = mlResults;
+                
+                console.log('✅ All ESPN API integration tests completed!');
+                console.log('🎯 System now uses live ESPN player data when available');
+                console.log('📅 Updated for 2025 NFL season endpoints');
+                
+            } catch (error) {
+                console.error('❌ ESPN API test failed:', error);
+                const errorMsg = `<div class="api-result error">❌ Test failed: ${error.message}</div>`;
+                document.getElementById('api-test-results').innerHTML = errorMsg;
+                document.getElementById('props-test-results').innerHTML = errorMsg;
+                document.getElementById('ml-test-results').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>

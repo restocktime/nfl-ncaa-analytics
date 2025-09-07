@@ -209,6 +209,25 @@
             margin-right: 0.5rem;
         }
 
+        .quick-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-link:hover {
+            background: var(--quantum-primary);
+            color: var(--quantum-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--quantum-glow);
+        }
+
         @media (max-width: 768px) {
             .sport-selection {
                 flex-direction: column;
@@ -258,6 +277,12 @@
                     <li>AI-Powered Predictions</li>
                     <li>Advanced Team Stats</li>
                 </ul>
+                <div class="quick-links" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                    <a href="nfl-live-games.html" class="quick-link">Live</a>
+                    <a href="nfl-upcoming-games.html" class="quick-link">Upcoming</a>
+                    <a href="nfl-predictions.html" class="quick-link">AI</a>
+                    <a href="nfl-betting.html" class="quick-link">Betting</a>
+                </div>
             </div>
 
             <div class="sport-card ncaa" onclick="selectSport('ncaa')">
@@ -275,6 +300,13 @@
                     <li>Conference Analytics</li>
                     <li>Week 1 Live Data</li>
                 </ul>
+                <div class="quick-links" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                    <a href="ncaa-live-games.html" class="quick-link">Live</a>
+                    <a href="ncaa-upcoming-games.html" class="quick-link">Upcoming</a>
+                    <a href="ncaa-predictions.html" class="quick-link">AI</a>
+                    <a href="ncaa-rankings.html" class="quick-link">Rankings</a>
+                    <a href="ncaa-betting.html" class="quick-link">Betting</a>
+                </div>
             </div>
         </div>
     </div>

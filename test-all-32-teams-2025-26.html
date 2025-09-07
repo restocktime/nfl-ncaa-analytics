@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 ALL 32 NFL Teams 2025-26 Season Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .team-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 5px;
+            margin: 8px 0;
+            border-left: 4px solid #00ff88;
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+        .team-name {
+            font-weight: bold;
+            color: #00ff88;
+            font-size: 14px;
+        }
+        .player-list {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .division-header {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .error {
+            border-left-color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+        }
+        .error .team-name {
+            color: #ff6666;
+        }
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+        .summary {
+            background: rgba(0, 255, 136, 0.15);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 ALL 32 NFL Teams - 2025-26 Season Verification</h1>
+    
+    <div class="summary">
+        <h2>✅ 2025-26 Season Updates</h2>
+        <ul>
+            <li><strong>Browns:</strong> Jameis Winston (no more Deshaun Watson)</li>
+            <li><strong>Saints:</strong> Spencer Rattler starting</li>
+            <li><strong>Falcons:</strong> Michael Penix Jr. starting</li>
+            <li><strong>Giants:</strong> Drew Lock starting</li>
+            <li><strong>49ers:</strong> Christian McCaffrey back healthy</li>
+            <li><strong>All Teams:</strong> Current 2025-26 active rosters</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 Complete NFL Roster Test</h2>
+        <p>Testing ALL 32 teams with 2025-26 season player rosters and prop generation...</p>
+        <div id="all-teams-results">⏳ Loading all 32 NFL teams...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Player Props Test</h2>
+        <p>Testing actual player prop generation for multiple games...</p>
+        <div id="props-test-results">⏳ Loading props test...</div>
+    </div>
+
+    <script src="public/simple-working-system.js"></script>
+    <script>
+        console.log('🏈 ALL 32 NFL Teams 2025-26 Test Starting...');
+        
+        class All32TeamsTest {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+                
+                this.divisions = {
+                    'AFC EAST': ['Bills', 'Dolphins', 'Patriots', 'Jets'],
+                    'AFC NORTH': ['Ravens', 'Bengals', 'Browns', 'Steelers'],
+                    'AFC SOUTH': ['Titans', 'Colts', 'Jaguars', 'Texans'],
+                    'AFC WEST': ['Chiefs', 'Chargers', 'Broncos', 'Raiders'],
+                    'NFC EAST': ['Cowboys', 'Eagles', 'Giants', 'Commanders'],
+                    'NFC NORTH': ['Packers', 'Bears', 'Lions', 'Vikings'],
+                    'NFC SOUTH': ['Saints', 'Falcons', 'Panthers', 'Buccaneers'],
+                    'NFC WEST': ['49ers', 'Seahawks', 'Rams', 'Cardinals']
+                };
+            }
+            
+            async testAllTeams() {
+                let results = '';
+                let totalTeams = 0;
+                let validTeams = 0;
+                
+                for (const [division, teams] of Object.entries(this.divisions)) {
+                    results += `<div class="division-header">${division}</div>`;
+                    
+                    for (const team of teams) {
+                        totalTeams++;
+                        try {
+                            // Test both roster functions
+                            const cachedPlayers = this.system.getTeamPlayers(team);
+                            
+                            const mockGame = {
+                                homeTeam: { name: team, displayName: `${team} Team` },
+                                awayTeam: { name: 'Opponent', displayName: 'Opponent Team' }
+                            };
+                            
+                            const propPlayers = await this.system.generatePlayerNamesWithESPN(mockGame);
+                            
+                            // Verify we got real player names
+                            const hasRealQB = propPlayers.homeQB && 
+                                            !propPlayers.homeQB.includes('Starting') && 
+                                            !propPlayers.homeQB.includes('Home') &&
+                                            propPlayers.homeQB.split(' ').length >= 2;
+                            
+                            const hasMultiplePlayers = cachedPlayers.qbs.length > 1 && 
+                                                     cachedPlayers.rbs.length > 1 && 
+                                                     cachedPlayers.wrs.length > 1;
+                            
+                            if (hasRealQB && hasMultiplePlayers) {
+                                validTeams++;
+                                results += `
+                                    <div class="team-result">
+                                        <div class="team-name">✅ ${team}</div>
+                                        <div class="player-list">
+                                            <strong>QB:</strong> <span class="player-name">${propPlayers.homeQB}</span><br>
+                                            <strong>RB:</strong> <span class="player-name">${propPlayers.homeRB}</span><br>
+                                            <strong>WR:</strong> <span class="player-name">${propPlayers.homeWR}</span><br>
+                                            <strong>TE:</strong> <span class="player-name">${propPlayers.homeTE}</span><br>
+                                            <small>Roster: ${cachedPlayers.qbs.length} QBs, ${cachedPlayers.rbs.length} RBs, ${cachedPlayers.wrs.length} WRs</small>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                results += `
+                                    <div class="team-result error">
+                                        <div class="team-name">❌ ${team}</div>
+                                        <div class="player-list">
+                                            Issue: QB="${propPlayers.homeQB}", Real=${hasRealQB}, Multiple=${hasMultiplePlayers}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                            
+                        } catch (error) {
+                            results += `
+                                <div class="team-result error">
+                                    <div class="team-name">❌ ${team}</div>
+                                    <div class="player-list">Error: ${error.message}</div>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+                
+                results = `
+                    <div class="summary">
+                        <strong>📊 Results: ${validTeams}/${totalTeams} teams valid (${Math.round(validTeams/totalTeams*100)}%)</strong>
+                    </div>
+                ` + results;
+                
+                return results;
+            }
+            
+            async testPlayerProps() {
+                const testGames = [
+                    { home: 'Browns', away: 'Bengals', focus: 'Jameis Winston vs Joe Burrow' },
+                    { home: 'Chiefs', away: 'Bills', focus: 'Mahomes vs Josh Allen' },
+                    { home: 'Saints', away: 'Falcons', focus: 'Spencer Rattler vs Michael Penix Jr.' },
+                    { home: '49ers', away: 'Rams', focus: 'Brock Purdy vs Matthew Stafford' },
+                    { home: 'Lions', away: 'Packers', focus: 'Jared Goff vs Jordan Love' }
+                ];
+                
+                let results = '';
+                
+                for (const test of testGames) {
+                    try {
+                        const game = {
+                            id: `${test.away}-${test.home}`,
+                            homeTeam: { name: test.home, displayName: `${test.home} Team` },
+                            awayTeam: { name: test.away, displayName: `${test.away} Team` }
+                        };
+                        
+                        const players = await this.system.generatePlayerNamesWithESPN(game);
+                        
+                        results += `
+                            <div class="team-result">
+                                <div class="team-name">${test.away} @ ${test.home}</div>
+                                <div class="player-list">
+                                    <strong>Matchup:</strong> <span class="player-name">${players.awayQB}</span> vs <span class="player-name">${players.homeQB}</span><br>
+                                    <strong>RBs:</strong> ${players.awayRB} vs ${players.homeRB}<br>
+                                    <strong>WRs:</strong> ${players.awayWR} vs ${players.homeWR}<br>
+                                    <strong>Focus:</strong> ${test.focus} ✅
+                                </div>
+                            </div>
+                        `;
+                        
+                    } catch (error) {
+                        results += `
+                            <div class="team-result error">
+                                <div class="team-name">❌ ${test.away} @ ${test.home}</div>
+                                <div class="player-list">Error: ${error.message}</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                return results;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const tester = new All32TeamsTest();
+            
+            try {
+                console.log('Testing all 32 NFL teams...');
+                const allTeamsResults = await tester.testAllTeams();
+                document.getElementById('all-teams-results').innerHTML = allTeamsResults;
+                
+                console.log('Testing player props generation...');
+                const propsResults = await tester.testPlayerProps();
+                document.getElementById('props-test-results').innerHTML = propsResults;
+                
+                console.log('✅ All 32 teams 2025-26 test completed!');
+                console.log('🎯 All teams should show current 2025-26 season players');
+                
+            } catch (error) {
+                console.error('❌ All teams test failed:', error);
+                const errorMsg = `<div class="team-result error"><div class="team-name">❌ Test Failed</div><div class="player-list">${error.message}</div></div>`;
+                document.getElementById('all-teams-results').innerHTML = errorMsg;
+                document.getElementById('props-test-results').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>

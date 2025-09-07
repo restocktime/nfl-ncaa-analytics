@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 Cached Rosters Fix Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .player-result {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .player-name {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .error {
+            color: #ff6666;
+            border-left-color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+        }
+        h1 { color: #00ff88; }
+        h2 { color: #ffcc00; }
+    </style>
+</head>
+<body>
+    <h1>🏈 Cached Rosters Fix Verification Test</h1>
+    
+    <div class="test-section">
+        <h2>🎯 Direct Cached Roster Test</h2>
+        <p>Testing the generatePlayerNames function directly (bypassing ESPN API)...</p>
+        <div id="cached-test-results">⏳ Loading cached roster test...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Fixed Player Names Test</h2>
+        <p>Verifying specific player fixes that should show real names...</p>
+        <div id="fixed-names-results">⏳ Loading fixed names test...</div>
+    </div>
+
+    <script src="public/simple-working-system.js"></script>
+    <script>
+        console.log('🏈 Cached Rosters Fix Test Starting...');
+        
+        class CachedRostersTest {
+            constructor() {
+                this.system = new SimpleWorkingSystem();
+            }
+            
+            testCachedRosters() {
+                const testGames = [
+                    {
+                        homeTeam: { name: 'Browns', displayName: 'Cleveland Browns' },
+                        awayTeam: { name: 'Bengals', displayName: 'Cincinnati Bengals' }
+                    },
+                    {
+                        homeTeam: { name: 'Texans', displayName: 'Houston Texans' },
+                        awayTeam: { name: 'Bills', displayName: 'Buffalo Bills' }
+                    },
+                    {
+                        homeTeam: { name: 'Jets', displayName: 'New York Jets' },
+                        awayTeam: { name: 'Raiders', displayName: 'Las Vegas Raiders' }
+                    }
+                ];
+                
+                let results = '';
+                
+                testGames.forEach(game => {
+                    try {
+                        // Test the cached roster function directly
+                        const cachedPlayers = this.system.generatePlayerNames(game);
+                        
+                        const isValid = cachedPlayers.homeQB !== 'Home QB' && 
+                                       cachedPlayers.awayQB !== 'Away QB' && 
+                                       !cachedPlayers.homeQB.includes('Starting');
+                        
+                        if (isValid) {
+                            results += `
+                                <div class="player-result">
+                                    <strong>✅ ${game.awayTeam.name} @ ${game.homeTeam.name}</strong><br>
+                                    QBs: <span class="player-name">${cachedPlayers.awayQB}</span> vs <span class="player-name">${cachedPlayers.homeQB}</span><br>
+                                    RBs: <span class="player-name">${cachedPlayers.awayRB}</span> vs <span class="player-name">${cachedPlayers.homeRB}</span><br>
+                                    WRs: <span class="player-name">${cachedPlayers.awayWR}</span> vs <span class="player-name">${cachedPlayers.homeWR}</span><br>
+                                    TEs: <span class="player-name">${cachedPlayers.awayTE}</span> vs <span class="player-name">${cachedPlayers.homeTE}</span>
+                                </div>
+                            `;
+                        } else {
+                            results += `
+                                <div class="player-result error">
+                                    <strong>❌ ${game.awayTeam.name} @ ${game.homeTeam.name}</strong><br>
+                                    Still showing generic names: ${cachedPlayers.homeQB}, ${cachedPlayers.awayQB}
+                                </div>
+                            `;
+                        }
+                        
+                    } catch (error) {
+                        results += `
+                            <div class="player-result error">
+                                <strong>❌ ${game.awayTeam.name} @ ${game.homeTeam.name}</strong><br>
+                                Error: ${error.message}
+                            </div>
+                        `;
+                    }
+                });
+                
+                return results;
+            }
+            
+            testSpecificFixes() {
+                const specificTests = [
+                    { team: 'Browns', position: 'QB', expected: 'Jameis Winston', old: 'Deshaun Watson' },
+                    { team: 'Bills', position: 'WR', expected: 'Amari Cooper', old: 'Stefon Diggs' },
+                    { team: 'Texans', position: 'WR', expected: 'Stefon Diggs', old: 'Nico Collins' },
+                    { team: 'Jets', position: 'WR', expected: 'Mike Williams', old: 'Garrett Wilson' },
+                    { team: 'Raiders', position: 'WR', expected: 'Jakobi Meyers', old: 'Davante Adams' }
+                ];
+                
+                let results = '';
+                
+                specificTests.forEach(test => {
+                    try {
+                        const game = {
+                            homeTeam: { name: test.team },
+                            awayTeam: { name: 'Opponent' }
+                        };
+                        
+                        const players = this.system.generatePlayerNames(game);
+                        let actualPlayer;
+                        
+                        if (test.position === 'QB') actualPlayer = players.homeQB;
+                        else if (test.position === 'WR') actualPlayer = players.homeWR;
+                        else if (test.position === 'RB') actualPlayer = players.homeRB;
+                        
+                        if (actualPlayer === test.expected) {
+                            results += `
+                                <div class="player-result">
+                                    <strong>✅ ${test.team} ${test.position}:</strong><br>
+                                    ❌ Old: <s>${test.old}</s><br>
+                                    ✅ New: <span class="player-name">${actualPlayer}</span>
+                                </div>
+                            `;
+                        } else {
+                            results += `
+                                <div class="player-result error">
+                                    <strong>❌ ${test.team} ${test.position}:</strong><br>
+                                    Expected: ${test.expected}<br>
+                                    Got: ${actualPlayer}
+                                </div>
+                            `;
+                        }
+                        
+                    } catch (error) {
+                        results += `
+                            <div class="player-result error">
+                                <strong>❌ ${test.team} ${test.position}:</strong><br>
+                                Error: ${error.message}
+                            </div>
+                        `;
+                    }
+                });
+                
+                return results;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const tester = new CachedRostersTest();
+            
+            try {
+                console.log('Testing cached rosters directly...');
+                const cachedResults = tester.testCachedRosters();
+                document.getElementById('cached-test-results').innerHTML = cachedResults;
+                
+                console.log('Testing specific player fixes...');
+                const fixedResults = tester.testSpecificFixes();
+                document.getElementById('fixed-names-results').innerHTML = fixedResults;
+                
+                console.log('✅ Cached rosters test completed!');
+                
+            } catch (error) {
+                console.error('❌ Cached rosters test failed:', error);
+                const errorMsg = `<div class="player-result error">❌ Test failed: ${error.message}</div>`;
+                document.getElementById('cached-test-results').innerHTML = errorMsg;
+                document.getElementById('fixed-names-results').innerHTML = errorMsg;
+            }
+        });
+    </script>
+</body>
+</html>
