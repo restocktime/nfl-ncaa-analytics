@@ -186,6 +186,67 @@
             background: #ff6666;
         }
 
+        /* ML Prediction Section Styles */
+        .ml-prediction-section {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .pick-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .pick-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-prop {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #ffd700;
+        }
+
+        .confidence {
+            background: #00ff88;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .confidence.high {
+            background: #00ff88;
+        }
+
+        .confidence.medium {
+            background: #ffcc00;
+        }
+
+        .confidence.low {
+            background: #ff6666;
+            color: white;
+        }
+
+        .ml-reasoning {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            font-style: italic;
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             body {

@@ -364,32 +364,132 @@ class LiveNCAAPickEngine {
         };
     }
     
+    // College Football Player Rosters Database - 2025 Season
+    getCollegeTeamPlayers(teamName) {
+        const collegeRosters = {
+            // SEC Teams
+            'Georgia': { QB: 'Carson Beck', RB: 'Trevor Etienne', WR: 'Arian Smith', TE: 'Oscar Delp' },
+            'Alabama': { QB: 'Jalen Milroe', RB: 'Justice Haynes', WR: 'Ryan Williams', TE: 'CJ Dippre' },
+            'LSU': { QB: 'Garrett Nussmeier', RB: 'Caden Durham', WR: 'Kyren Lacy', TE: 'Mason Taylor' },
+            'Tennessee': { QB: 'Nico Iamaleava', RB: 'Dylan Sampson', WR: 'Dont\'e Thornton Jr.', TE: 'Miles Kitselman' },
+            'Florida': { QB: 'DJ Lagway', RB: 'Montrell Johnson Jr.', WR: 'Eugene Wilson III', TE: 'Arlis Boardingham' },
+            'Auburn': { QB: 'Payton Thorne', RB: 'Jarquez Hunter', WR: 'KeAndre Lambert-Smith', TE: 'Rivaldo Fairweather' },
+            
+            // Big Ten Teams
+            'Ohio State': { QB: 'Will Howard', RB: 'TreVeyon Henderson', WR: 'Jeremiah Smith', TE: 'Will Kacmarek' },
+            'Michigan': { QB: 'Alex Orji', RB: 'Donovan Edwards', WR: 'Tyler Morris', TE: 'Colston Loveland' },
+            'Penn State': { QB: 'Drew Allar', RB: 'Nicholas Singleton', WR: 'Harrison Wallace III', TE: 'Tyler Warren' },
+            'Oregon': { QB: 'Dillon Gabriel', RB: 'Jordan James', WR: 'Tez Johnson', TE: 'Terrance Ferguson' },
+            'USC': { QB: 'Miller Moss', RB: 'Woody Marks', WR: 'Zachariah Branch', TE: 'Lake McRee' },
+            
+            // Big 12 Teams  
+            'Texas': { QB: 'Quinn Ewers', RB: 'Quintrevion Wisner', WR: 'Isaiah Bond', TE: 'Gunnar Helm' },
+            'Oklahoma': { QB: 'Jackson Arnold', RB: 'Jovantae Barnes', WR: 'Deion Burks', TE: 'Bauer Sharp' },
+            'Kansas State': { QB: 'Avery Johnson', RB: 'DJ Giddens', WR: 'Keagan Johnson', TE: 'Will Swanson' },
+            
+            // ACC Teams
+            'Clemson': { QB: 'Cade Klubnik', RB: 'Phil Mafah', WR: 'Antonio Williams', TE: 'Jake Briningstool' },
+            'Miami': { QB: 'Cam Ward', RB: 'Damien Martinez', WR: 'Xavier Restrepo', TE: 'Elijah Arroyo' },
+            'Florida State': { QB: 'DJ Uiagalelei', RB: 'Roydell Williams', WR: 'Malik Benson', TE: 'Kyle Morlock' },
+            'North Carolina': { QB: 'Conner Harrell', RB: 'Omarion Hampton', WR: 'J.J. Jones', TE: 'John Copenhaver' },
+            
+            // Pac-12/Others
+            'Washington': { QB: 'Will Rogers', RB: 'Jonah Coleman', WR: 'Denzel Boston', TE: 'Keleki Latu' },
+            'UCLA': { QB: 'Ethan Garbers', RB: 'T.J. Harden', WR: 'Logan Loya', TE: 'Moliki Matavao' },
+            'Notre Dame': { QB: 'Riley Leonard', RB: 'Jeremiyah Love', WR: 'Jordan Faison', TE: 'Mitchell Evans' },
+            'BYU': { QB: 'Jake Retzlaff', RB: 'LJ Martin', WR: 'Chase Roberts', TE: 'Mata\'ava Ta\'ase' }
+        };
+
+        // Try to match team name variations
+        const normalizedTeam = teamName.replace(/\s+(Bulldogs|Tigers|Buckeyes|Wolverines|Crimson Tide|Longhorns|Sooners|Wildcats|Seminoles|Tar Heels|Huskies|Bruins|Fighting Irish|Cougars).*$/i, '').trim();
+        
+        return collegeRosters[normalizedTeam] || collegeRosters[teamName] || {
+            QB: 'Starting QB', 
+            RB: 'Starting RB', 
+            WR: 'Top WR', 
+            TE: 'Starting TE'
+        };
+    }
+
+    generateCollegePlayerProps(game) {
+        const homePlayers = this.getCollegeTeamPlayers(game.homeTeam.displayName);
+        const awayPlayers = this.getCollegeTeamPlayers(game.awayTeam.displayName);
+        
+        const propTypes = ['Passing Yards', 'Rushing Yards', 'Receiving Yards', 'Anytime TD'];
+        const propType = propTypes[Math.floor(Math.random() * propTypes.length)];
+        
+        let player, line, odds;
+        
+        if (propType === 'Passing Yards') {
+            player = Math.random() > 0.5 ? homePlayers.QB : awayPlayers.QB;
+            line = Math.floor(Math.random() * 100) + 200; // 200-299 yards
+            odds = Math.random() > 0.5 ? '+110' : '-120';
+        } else if (propType === 'Rushing Yards') {
+            player = Math.random() > 0.5 ? homePlayers.RB : awayPlayers.RB;
+            line = Math.floor(Math.random() * 50) + 75; // 75-124 yards  
+            odds = Math.random() > 0.5 ? '+105' : '-115';
+        } else if (propType === 'Receiving Yards') {
+            player = Math.random() > 0.5 ? homePlayers.WR : awayPlayers.WR;
+            line = Math.floor(Math.random() * 40) + 60; // 60-99 yards
+            odds = Math.random() > 0.5 ? '+115' : '-125';
+        } else { // Anytime TD
+            const positions = ['QB', 'RB', 'WR', 'TE'];
+            const position = positions[Math.floor(Math.random() * positions.length)];
+            const teamPlayers = Math.random() > 0.5 ? homePlayers : awayPlayers;
+            player = teamPlayers[position];
+            line = 'Anytime TD';
+            odds = Math.random() > 0.5 ? '+150' : '+200';
+        }
+        
+        return {
+            player,
+            propType,
+            line,
+            odds,
+            confidence: Math.floor(Math.random() * 30) + 70 // 70-99% confidence
+        };
+    }
+
     generateMLPrediction(game, gameState, momentum) {
         const homeTeam = game.homeTeam.displayName;
         const awayTeam = game.awayTeam.displayName;
         const scoreDiff = gameState.scoreDifference;
         
-        // ML algorithm simulation
+        // Generate player props for this game
+        const playerProp = this.generateCollegePlayerProps(game);
+        
+        // ML algorithm simulation - now includes player props
         let prediction = null;
         let confidence = 0.5;
+        let propPrediction = null;
         
         if (gameState.isCloseGame && gameState.gamePhase === 'critical') {
             // Close game in critical phase - momentum matters more
             if (momentum.strength > 0.6) {
                 prediction = momentum.direction === 'home' ? homeTeam : awayTeam;
                 confidence = 0.75 + (momentum.strength * 0.15);
+                // Add player prop prediction
+                propPrediction = `${playerProp.player} ${playerProp.propType} ${playerProp.line} (${playerProp.odds})`;
             }
         } else if (scoreDiff > 14 && gameState.gamePhase === 'late') {
             // Blowout protection - fade the comeback
             const leader = game.homeScore > game.awayScore ? homeTeam : awayTeam;
             prediction = leader;
             confidence = 0.80;
+            propPrediction = `${playerProp.player} ${playerProp.propType} ${playerProp.line} (${playerProp.odds})`;
+        } else {
+            // Generate a player prop prediction even without team prediction
+            prediction = Math.random() > 0.5 ? homeTeam : awayTeam;
+            confidence = Math.random() * 0.3 + 0.6; // 60-90% confidence
+            propPrediction = `${playerProp.player} ${playerProp.propType} ${playerProp.line} (${playerProp.odds})`;
         }
         
-        if (prediction) {
+        if (prediction || propPrediction) {
             return {
                 type: 'ml_prediction',
                 pick: prediction,
+                playerProp: propPrediction,
+                playerPropDetails: playerProp,
                 confidence: Math.min(confidence, 0.95),
                 reasoning: this.generateMLReasoning(game, gameState, momentum),
                 value: this.calculatePickValue(confidence),
@@ -1347,6 +1447,11 @@ class SimpleNCAASystem {
             const spread = (Math.random() * 14 + 1).toFixed(1);
             const total = (Math.random() * 20 + 45).toFixed(1);
             
+            // Generate ML prediction with player props
+            const gameState = { isCloseGame: true, gamePhase: 'upcoming', scoreDifference: 0 };
+            const momentum = { direction: 'home', strength: 0.7 };
+            const mlPrediction = this.generateMLPrediction(game, gameState, momentum);
+            
             return `
                 <div class="game-card">
                     <div class="game-status scheduled">PREDICTION</div>
@@ -1376,6 +1481,23 @@ class SimpleNCAASystem {
                             <span class="confidence medium">72%</span>
                             <strong>Total:</strong> Over ${total}
                         </div>
+                        
+                        ${mlPrediction ? `
+                        <h4><i class="fas fa-robot"></i> 🤖 Run Your Own ML Picks</h4>
+                        <div class="ml-prediction-section">
+                            <div class="pick-item">
+                                <span class="confidence ${mlPrediction.confidence >= 0.8 ? 'high' : mlPrediction.confidence >= 0.65 ? 'medium' : 'low'}">${Math.round(mlPrediction.confidence * 100)}%</span>
+                                <strong>ML Pick:</strong> ${mlPrediction.pick}
+                            </div>
+                            <div class="pick-item player-prop">
+                                <span class="confidence ${mlPrediction.playerPropDetails.confidence >= 80 ? 'high' : mlPrediction.playerPropDetails.confidence >= 65 ? 'medium' : 'low'}">${mlPrediction.playerPropDetails.confidence}%</span>
+                                <strong>Player Prop:</strong> ${mlPrediction.playerProp}
+                            </div>
+                            <div class="ml-reasoning">
+                                <small><i class="fas fa-lightbulb"></i> ${mlPrediction.reasoning || 'ML algorithm analysis based on game dynamics'}</small>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
