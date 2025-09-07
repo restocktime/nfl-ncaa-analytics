@@ -1507,6 +1507,46 @@ class SimpleNCAASystem {
         rankingsContainer.innerHTML = rankingsHTML;
     }
     
+    renderRankingsHTML(rankings) {
+        if (!rankings || rankings.length === 0) {
+            return `
+                <div class="no-games-card">
+                    <i class="fas fa-trophy"></i>
+                    <h3>No Rankings Available</h3>
+                    <p>AP Top 25 rankings will appear when available!</p>
+                </div>
+            `;
+        }
+        
+        const rankingsHTML = rankings.slice(0, 25).map(team => `
+            <div class="game-card" style="display: flex; align-items: center; gap: 20px; padding: 20px;">
+                <div style="font-size: 32px; font-weight: bold; color: #00ff88; min-width: 60px; text-align: center;">
+                    ${team.rank}
+                </div>
+                <div style="flex: 1;">
+                    <div style="color: #fff; font-weight: bold; font-size: 18px; margin-bottom: 5px;">
+                        ${team.team || team.name || 'Unknown Team'}
+                    </div>
+                    <div style="color: #ccc; font-size: 14px;">
+                        Record: ${team.record || 'N/A'} • Points: ${team.points || 'N/A'}
+                    </div>
+                    ${team.previousRank ? `
+                        <div style="color: ${team.previousRank > team.rank ? '#00ff88' : team.previousRank < team.rank ? '#ff6666' : '#ffcc00'}; font-size: 12px; margin-top: 3px;">
+                            ${team.previousRank > team.rank ? '↑' : team.previousRank < team.rank ? '↓' : '→'} 
+                            Last Week: #${team.previousRank}
+                        </div>
+                    ` : ''}
+                </div>
+                <div style="text-align: right; color: #666; font-size: 12px;">
+                    <div>${team.conference || ''}</div>
+                    <div>${team.nextOpponent ? `Next: vs ${team.nextOpponent}` : ''}</div>
+                </div>
+            </div>
+        `).join('');
+        
+        return rankingsHTML;
+    }
+    
     renderPredictions() {
         const predictionsContainer = document.getElementById('predictions-container');
         if (!predictionsContainer) return;
@@ -1521,84 +1561,89 @@ class SimpleNCAASystem {
             return;
         }
         
-        // Filter games that are scheduled (not live or final)
-        const upcomingGames = this.games.filter(g => !g.isLive && !g.isFinal);
-        
-        if (upcomingGames.length === 0) {
-            predictionsContainer.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-info-circle"></i><br>
-                    All games are currently live or completed
+        predictionsContainer.innerHTML = this.renderPredictionsHTML(this.games);
+    }
+    
+    renderPredictionsHTML(games) {
+        if (!games || games.length === 0) {
+            return `
+                <div class="no-games-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>No Games Available</h3>
+                    <p>AI predictions will appear when games are scheduled!</p>
                 </div>
             `;
-            return;
         }
         
-        const predictionsHTML = upcomingGames.slice(0, 10).map(game => {
-            // Generate realistic predictions based on team strength
-            const homeWinProb = Math.floor(Math.random() * 40) + 45; // 45-85%
+        // Filter games for predictions (upcoming games)
+        const upcomingGames = games.filter(g => !g.isLive && !g.isFinal);
+        
+        if (upcomingGames.length === 0) {
+            return `
+                <div class="no-games-card">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>All Games Live or Complete</h3>
+                    <p>Check back when new games are scheduled!</p>
+                </div>
+            `;
+        }
+        
+        const predictionsHTML = upcomingGames.slice(0, 8).map(game => {
+            // Generate realistic predictions 
+            const homeWinProb = Math.floor(Math.random() * 40) + 45;
             const awayWinProb = 100 - homeWinProb;
             const spread = (Math.random() * 14 + 1).toFixed(1);
             const total = (Math.random() * 20 + 45).toFixed(1);
             
-            // Generate ML prediction with player props
-            const gameState = { isCloseGame: true, gamePhase: 'upcoming', scoreDifference: 0 };
-            const momentum = { direction: 'home', strength: 0.7 };
-            const mlPrediction = this.generateMLPrediction(game, gameState, momentum);
-            
             return `
                 <div class="game-card">
-                    <div class="game-status scheduled">PREDICTION</div>
-                    
-                    <div class="teams">
-                        ${game.awayTeam.displayWithLocation || game.awayTeam.displayName}
-                        <br>vs<br>
-                        ${game.homeTeam.displayWithLocation || game.homeTeam.displayName}
+                    <div class="game-status scheduled">
+                        <i class="fas fa-brain"></i> AI PREDICTION
                     </div>
                     
-                    <div class="game-details">
-                        ${this.formatGameTime(game)}
-                        ${game.venue ? `<br>${game.venue}` : ''}
+                    <div class="teams" style="text-align: center;">
+                        <div style="color: #0066ff; margin-bottom: 8px;">
+                            ${game.awayTeam.displayName}
+                        </div>
+                        <div style="color: #ccc; margin: 8px 0;">vs</div>
+                        <div style="color: #00ff88; margin-top: 8px;">
+                            ${game.homeTeam.displayName}
+                        </div>
+                    </div>
+                    
+                    <div class="game-details" style="text-align: center; margin: 15px 0;">
+                        <div style="color: #ccc; font-size: 14px;">
+                            ${this.formatGameTime(game)}
+                        </div>
+                        ${game.venue ? `<div style="color: #999; font-size: 12px; margin-top: 5px;">${game.venue}</div>` : ''}
                     </div>
                     
                     <div class="live-picks">
-                        <h4><i class="fas fa-brain"></i> AI Prediction</h4>
+                        <h4 style="color: #00ff88; margin-bottom: 15px;">
+                            <i class="fas fa-robot"></i> AI Analysis
+                        </h4>
                         <div class="pick-item">
-                            <span class="confidence high">89%</span>
-                            <strong>Winner:</strong> ${homeWinProb > awayWinProb ? game.homeTeam.displayName : game.awayTeam.displayName}
-                        </div>
-                        <div class="pick-item">
-                            <span class="confidence medium">75%</span>
-                            <strong>Spread:</strong> ${game.homeTeam.displayName} -${spread}
+                            <span style="color: #fff; font-weight: bold;">Predicted Winner:</span>
+                            <span class="confidence ${homeWinProb > 65 ? 'high' : 'medium'}">${homeWinProb > awayWinProb ? game.homeTeam.displayName : game.awayTeam.displayName}</span>
                         </div>
                         <div class="pick-item">
-                            <span class="confidence medium">72%</span>
-                            <strong>Total:</strong> Over ${total}
+                            <span style="color: #fff;">Win Probability:</span>
+                            <span style="color: #00ff88; font-weight: bold;">${Math.max(homeWinProb, awayWinProb)}%</span>
                         </div>
-                        
-                        ${mlPrediction ? `
-                        <h4><i class="fas fa-robot"></i> 🤖 Run Your Own ML Picks</h4>
-                        <div class="ml-prediction-section">
-                            <div class="pick-item">
-                                <span class="confidence ${mlPrediction.confidence >= 0.8 ? 'high' : mlPrediction.confidence >= 0.65 ? 'medium' : 'low'}">${Math.round(mlPrediction.confidence * 100)}%</span>
-                                <strong>ML Pick:</strong> ${mlPrediction.pick}
-                            </div>
-                            <div class="pick-item player-prop">
-                                <span class="confidence ${mlPrediction.playerPropDetails.confidence >= 80 ? 'high' : mlPrediction.playerPropDetails.confidence >= 65 ? 'medium' : 'low'}">${mlPrediction.playerPropDetails.confidence}%</span>
-                                <strong>Player Prop:</strong> ${mlPrediction.playerProp}
-                            </div>
-                            <div class="ml-reasoning">
-                                <small><i class="fas fa-lightbulb"></i> ${mlPrediction.reasoning || 'ML algorithm analysis based on game dynamics'}</small>
-                            </div>
+                        <div class="pick-item">
+                            <span style="color: #fff;">Spread:</span>
+                            <span style="color: #ffcc00; font-weight: bold;">${homeWinProb > awayWinProb ? game.homeTeam.displayName : game.awayTeam.displayName} -${spread}</span>
                         </div>
-                        ` : ''}
+                        <div class="pick-item">
+                            <span style="color: #fff;">Total:</span>
+                            <span style="color: #ff6666; font-weight: bold;">O/U ${total}</span>
+                        </div>
                     </div>
                 </div>
             `;
         }).join('');
         
-        predictionsContainer.innerHTML = predictionsHTML;
-        console.log(`✅ Rendered predictions for ${upcomingGames.length} upcoming games`);
+        return predictionsHTML;
     }
     
     renderBetting() {
@@ -2721,7 +2766,7 @@ class SimpleNCAASystem {
                 
                 await this.loadData();
                 if (this.games.length > 0) {
-                    container.innerHTML = this.renderPredictions(this.games);
+                    container.innerHTML = this.renderPredictionsHTML(this.games);
                 } else {
                     container.innerHTML = `
                         <div class="no-games-card">
@@ -2748,7 +2793,7 @@ class SimpleNCAASystem {
                 
                 await this.loadData();
                 if (this.rankings && this.rankings.length > 0) {
-                    container.innerHTML = this.renderRankings(this.rankings);
+                    container.innerHTML = this.renderRankingsHTML(this.rankings);
                 } else {
                     container.innerHTML = `
                         <div class="no-games-card">
