@@ -3,177 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCAA Analytics - Sunday Edge Pro</title>
-    
-    <!-- Premium Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
+    <title>NCAA Analytics - Live College Football</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Chart.js for Data Visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Sunday Edge Pro Styles -->
-    <link rel="stylesheet" href="sunday-edge-pro-styles.css">
-    
-    <!-- Simple System Styles (matching NFL) -->
     <link rel="stylesheet" href="simple-system-styles.css">
-    
-    <!-- SIMPLE NCAA SYSTEM - REPLACES ALL OTHER SCRIPTS -->
-    <script src="simple-ncaa-system.js?v=1"></script>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <i class="fas fa-university"></i>
-                <span>NCAA Analytics</span>
-                <span class="quantum-badge ncaa">WEEK 1 LIVE</span>
-                <span id="last-updated" style="font-size: 10px; color: #666; margin-left: 10px;">Loading...</span>
-            </div>
-            
-            <div class="nav-menu">
-                <a href="#live" class="nav-link active" data-view="live">
-                    <i class="fas fa-broadcast-tower"></i> Live Games
-                </a>
-                <a href="#upcoming" class="nav-link" data-view="upcoming">
-                    <i class="fas fa-calendar-alt"></i> Upcoming
-                </a>
-                <a href="#predictions" class="nav-link" data-view="predictions">
-                    <i class="fas fa-brain"></i> AI Predictions
-                </a>
-                <a href="#rankings" class="nav-link" data-view="rankings">
-                    <i class="fas fa-trophy"></i> Top 25
-                </a>
-                <a href="#betting" class="nav-link" data-view="betting">
-                    <i class="fas fa-coins"></i> Betting Lines
-                </a>
-                <a href="#analytics" class="nav-link" data-view="analytics">
-                    <i class="fas fa-chart-line"></i> Analytics
-                </a>
-            </div>
-            
-            <div class="nav-actions">
-                <button class="btn-refresh" onclick="refreshNCAAData()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-                <button class="btn-refresh" onclick="debugNCAAData()" title="Debug NCAA Data">
-                    <i class="fas fa-bug"></i>
-                </button>
-                <a href="index.html" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Navigation Overlay -->
-    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
-    
-    <!-- Mobile Navigation Menu -->
-    <div class="mobile-nav-menu" id="mobileNavMenu">
-        <div class="mobile-nav-header">
-            <div class="mobile-nav-brand">
-                <i class="fas fa-university"></i>
-                <span>NCAA Analytics</span>
-            </div>
-            <button class="mobile-nav-close" onclick="closeMobileMenu()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="mobile-nav-links">
-            <a href="#live" class="mobile-nav-link active" data-view="live" onclick="showViewMobile('live')">
-                <i class="fas fa-broadcast-tower"></i>
-                <span>Live Games</span>
-            </a>
-            <a href="#upcoming" class="mobile-nav-link" data-view="upcoming" onclick="showViewMobile('upcoming')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Upcoming</span>
-            </a>
-            <a href="#predictions" class="mobile-nav-link" data-view="predictions" onclick="showViewMobile('predictions')">
-                <i class="fas fa-brain"></i>
-                <span>AI Predictions</span>
-            </a>
-            <a href="#rankings" class="mobile-nav-link" data-view="rankings" onclick="showViewMobile('rankings')">
-                <i class="fas fa-trophy"></i>
-                <span>Top 25</span>
-            </a>
-            <a href="#betting" class="mobile-nav-link" data-view="betting" onclick="showViewMobile('betting')">
-                <i class="fas fa-coins"></i>
-                <span>Betting Lines</span>
-            </a>
-            <a href="#analytics" class="mobile-nav-link" data-view="analytics" onclick="showViewMobile('analytics')">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
-        </div>
-        
-        <div class="mobile-nav-actions">
-            <a href="#" class="mobile-nav-action" onclick="refreshNCAAData(); closeMobileMenu();">
-                <i class="fas fa-sync-alt"></i>
-                <span>Refresh Data</span>
-            </a>
-            <a href="index.html" class="mobile-nav-action">
-                <i class="fas fa-arrow-left"></i>
-                <span>Back to Home</span>
-            </a>
-            <a href="nfl-analytics.html" class="mobile-nav-action">
-                <i class="fas fa-football-ball"></i>
-                <span>NFL Analytics</span>
-            </a>
+    <!-- Header -->
+    <div class="header">
+        <h1><i class="fas fa-university"></i> NCAA Analytics</h1>
+        <div class="status-bar">
+            <span class="live-indicator">
+                <div class="live-dot"></div>
+                <span id="live-status">COLLEGE FOOTBALL LIVE</span>
+            </span>
+            <span class="last-updated" id="last-updated">Loading...</span>
         </div>
     </div>
 
-    <!-- Main App Container -->
-    <div class="app-container">
-        <!-- Live Games View -->
-        <div id="live" class="view active">
-            <div class="view-header">
-                <h1><i class="fas fa-university"></i> NCAA Live Games</h1>
-                <p>Real-time college football scores and live betting</p>
-            </div>
-            
-            <!-- Week 1 Status -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-fire"></i> Week 1 is LIVE!</h2>
-                    <div class="live-status-display">
-                        <div class="live-indicator">
-                            <div class="live-dot"></div>
-                            <span>COLLEGE FOOTBALL IS BACK!</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="week-one-preview">
-                    <h3>🏈 College Football Season 2024 Has Begun!</h3>
-                    <p>Week 1 games started Friday and continue through Saturday! Live games, real-time data, and betting opportunities.</p>
-                    <div class="season-stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="week-1-games">130+</div>
-                            <div class="stat-label">Week 1 Games</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="live-cfb-games">--</div>
-                            <div class="stat-label">Live Now</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="cfb-betting-lines">500+</div>
-                            <div class="stat-label">Betting Lines</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="ncaa-live-games" class="games-grid">
+    <!-- Navigation Tabs -->
+    <div class="tab-navigation">
+        <button class="tab-button active" data-tab="live">
+            <i class="fas fa-broadcast-tower"></i> Live Games
+        </button>
+        <button class="tab-button" data-tab="upcoming">
+            <i class="fas fa-calendar-alt"></i> Upcoming
+        </button>
+        <button class="tab-button" data-tab="predictions">
+            <i class="fas fa-brain"></i> AI Predictions
+        </button>
+        <button class="tab-button" data-tab="rankings">
+            <i class="fas fa-trophy"></i> Rankings
+        </button>
+        <button class="tab-button" data-tab="betting">
+            <i class="fas fa-coins"></i> Betting
+        </button>
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Content Tabs -->
+    <div class="main-container">
+        <!-- Live Games Tab -->
+        <div id="live" class="tab-content active">
+            <h2><i class="fas fa-broadcast-tower"></i> Live NCAA Games</h2>
+            <div id="ncaa-live-games" class="games-container">
                 <div class="loading-card">
                     <div class="loading-spinner"></div>
                     <h3>Loading NCAA Live Games</h3>
@@ -181,31 +56,23 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Upcoming Games View -->
-        <div id="upcoming" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-calendar-alt"></i> Upcoming NCAA Games</h1>
-                <p>Schedule and predictions for college football</p>
-            </div>
-            
-            <div id="ncaa-upcoming-games" class="games-grid">
+
+        <!-- Upcoming Games Tab -->
+        <div id="upcoming" class="tab-content">
+            <h2><i class="fas fa-calendar-alt"></i> Upcoming NCAA Games</h2>
+            <div id="ncaa-upcoming-games" class="games-container">
                 <div class="loading-card">
                     <div class="loading-spinner"></div>
                     <h3>Loading Upcoming Games</h3>
-                    <p>Analyzing college football schedules...</p>
+                    <p>Fetching scheduled college football games...</p>
                 </div>
             </div>
         </div>
-        
-        <!-- AI Predictions View -->
-        <div id="predictions" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-brain"></i> NCAA AI Predictions & Models</h1>
-                <p>Advanced machine learning predictions for college football</p>
-            </div>
-            
-            <div id="ncaa-predictions" class="predictions-grid">
+
+        <!-- AI Predictions Tab -->
+        <div id="predictions" class="tab-content">
+            <h2><i class="fas fa-brain"></i> NCAA AI Predictions</h2>
+            <div id="ncaa-predictions" class="games-container">
                 <div class="loading-card">
                     <div class="loading-spinner"></div>
                     <h3>Loading AI Predictions</h3>
@@ -213,1474 +80,146 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Rankings View -->
-        <div id="rankings" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-trophy"></i> AP Top 25 Rankings</h1>
-                <p>Current college football rankings and analysis</p>
-            </div>
-            
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-trophy"></i> AP Top 25</h2>
-                    <button class="btn-refresh" onclick="refreshRankings()">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div id="top-25-rankings" class="rankings-grid">
-                    <div class="loading-card">
-                        <div class="loading-spinner"></div>
-                        <h3>Loading AP Top 25</h3>
-                        <p>Fetching latest college football rankings...</p>
-                    </div>
+
+        <!-- Rankings Tab -->
+        <div id="rankings" class="tab-content">
+            <h2><i class="fas fa-trophy"></i> College Football Rankings</h2>
+            <div id="ncaa-rankings" class="rankings-container">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading AP Top 25</h3>
+                    <p>Fetching latest college football rankings...</p>
                 </div>
             </div>
         </div>
-        
-        <!-- Betting Lines View -->
-        <div id="betting" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-coins"></i> NCAA Betting Lines</h1>
-                <p>Live college football odds and opportunities</p>
-            </div>
-            
-            <div id="ncaa-betting-lines" class="games-grid">
+
+        <!-- Betting Tab -->
+        <div id="betting" class="tab-content">
+            <h2><i class="fas fa-coins"></i> NCAA Betting Lines</h2>
+            <div id="ncaa-betting" class="games-container">
                 <div class="loading-card">
                     <div class="loading-spinner"></div>
-                    <h3>Loading NCAA Betting Lines</h3>
-                    <p>Analyzing college football betting markets...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Analytics View -->
-        <div id="analytics" class="view">
-            <div class="view-header">
-                <h1><i class="fas fa-chart-line"></i> College Football Analytics</h1>
-                <p>Advanced statistical analysis and performance metrics</p>
-            </div>
-            
-            <div id="ncaa-analytics-data" class="games-grid">
-                <div class="loading-card">
-                    <div class="loading-spinner"></div>
-                    <h3>Loading Analytics</h3>
-                    <p>Computing advanced college football metrics...</p>
+                    <h3>Loading Betting Lines</h3>
+                    <p>Fetching college football odds...</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ALL OTHER SCRIPTS DISABLED TO PREVENT CONFLICTS -->
-    <!-- <link rel="stylesheet" href="error-handling-styles.css"> -->
-    <!-- <script src="error-handler.js"></script> -->
-    <!-- <script src="cache-manager.js"></script> -->
-    <!-- <script src="data-validator.js"></script> -->
-    <!-- <script src="loading-state-manager.js"></script> -->
-    <!-- <script src="ncaa-data-service.js"></script> -->
-    <!-- <script src="robust-integration.js"></script> -->
-    <!-- <script src="app.js"></script> -->
-    
-    <!-- ALL INLINE SCRIPTS DISABLED - USING SIMPLE NCAA SYSTEM INSTEAD -->
-    <!-- <script>
-        // Global showView function for mobile navigation
-        window.showView = function(viewName) {
-            console.log('🧭 NCAA showView called for:', viewName);
-            
-            const navLinks = document.querySelectorAll('.nav-link');
-            const views = document.querySelectorAll('.view');
-            
-            // Update active nav link
-            navLinks.forEach(l => l.classList.remove('active'));
-            const activeLink = document.querySelector(`[data-view="${viewName}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Show target view
-            views.forEach(view => {
-                view.classList.remove('active');
-            });
-            
-            const targetElement = document.getElementById(viewName);
-            if (targetElement) {
-                targetElement.classList.add('active');
-                
-                // Load data for specific views
-                if (viewName === 'predictions') {
-                    loadNCAAPredictions();
-                }
-                
-                return true;
-            }
-            
-            console.warn('⚠️ NCAA view not found:', viewName);
-            return false;
-        };
+    <script src="simple-ncaa-system.js"></script>
+    <script>
+        // Initialize NCAA Analytics System
+        let ncaaSystem;
         
-        // NCAA-specific initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔥 NCAA Analytics Platform Loading - FORCE REFRESH MODE');
-            console.log('📅 Page Load Time:', new Date().toLocaleString());
-            
-            // FORCE RELOAD NCAA DATA SERVICE
-            if (window.ncaaDataService) {
-                console.log('🔄 Reinitializing NCAA Data Service...');
-                window.ncaaDataService = new NCAADataService();
-            }
-            
-            // Initialize navigation
-            initializeNavigation();
-            
-            // Initialize NCAA data with force refresh
-            initializeNCAAData();
-            
-            // Add force refresh button
-            addForceRefreshButton();
-            
-            // Set up auto-refresh for live data
-            setInterval(() => {
-                refreshNCAALiveData();
-            }, 30000); // Refresh every 30 seconds
-        });
-        
-        // Add force refresh button
-        function addForceRefreshButton() {
-            const navbar = document.querySelector('.nav-menu');
-            if (navbar) {
-                const refreshBtn = document.createElement('button');
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Force Refresh';
-                refreshBtn.className = 'force-refresh-btn';
-                refreshBtn.style.cssText = `
-                    background: #ff4444;
-                    color: white;
-                    border: none;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 12px;
-                    margin-left: 10px;
-                `;
-                refreshBtn.onclick = forceRefreshAll;
-                navbar.appendChild(refreshBtn);
-            }
-        }
-        
-        // Force refresh everything
-        async function forceRefreshAll() {
-            console.log('🔥 FORCE REFRESH TRIGGERED');
-            
-            // Show loading indicator
-            const refreshBtn = document.querySelector('.force-refresh-btn');
-            if (refreshBtn) {
-                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
-                refreshBtn.disabled = true;
-            }
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🏈 NCAA Analytics System Initializing...');
             
             try {
-                // Reinitialize service
-                window.ncaaDataService = new NCAADataService();
-                
-                // Force reload data
-                await loadNCAAData();
-                
-                console.log('✅ Force refresh completed');
-                
-                if (refreshBtn) {
-                    refreshBtn.innerHTML = '<i class="fas fa-check"></i> Refreshed!';
-                    setTimeout(() => {
-                        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Force Refresh';
-                        refreshBtn.disabled = false;
-                    }, 2000);
+                // Initialize the NCAA system
+                if (typeof SimpleNCAASystem !== 'undefined') {
+                    ncaaSystem = new SimpleNCAASystem();
+                    console.log('✅ NCAA System initialized successfully');
+                    
+                    // Load initial data
+                    await ncaaSystem.initialize();
+                } else {
+                    console.error('❌ SimpleNCAASystem not found');
+                    showError('NCAA System not loaded properly. Please refresh the page.');
                 }
             } catch (error) {
-                console.error('❌ Force refresh failed:', error);
-                if (refreshBtn) {
-                    refreshBtn.innerHTML = '<i class="fas fa-exclamation"></i> Failed';
-                    refreshBtn.disabled = false;
-                }
+                console.error('❌ Error initializing NCAA system:', error);
+                showError('Failed to load NCAA data. Please try again.');
             }
-        }
-        
-        // Navigation functionality
-        function initializeNavigation() {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const views = document.querySelectorAll('.view');
             
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
+            // Setup tab navigation
+            setupTabNavigation();
+        });
+        
+        function setupTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.getAttribute('data-tab');
                     
-                    const targetView = link.getAttribute('data-view');
+                    // Remove active class from all tabs
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
                     
-                    // Update active nav link
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
+                    // Add active class to clicked tab
+                    button.classList.add('active');
+                    const targetContent = document.getElementById(targetTab);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
                     
-                    // Show target view
-                    views.forEach(view => {
-                        view.classList.remove('active');
-                    });
-                    
-                    const targetElement = document.getElementById(targetView);
-                    if (targetElement) {
-                        targetElement.classList.add('active');
-                        
-                        // Load data for specific views
-                        if (targetView === 'predictions') {
-                            loadNCAAPredictions();
+                    // Load specific data for the tab
+                    if (ncaaSystem) {
+                        switch(targetTab) {
+                            case 'live':
+                                ncaaSystem.loadLiveGames();
+                                break;
+                            case 'upcoming':
+                                ncaaSystem.loadUpcomingGames();
+                                break;
+                            case 'predictions':
+                                ncaaSystem.loadPredictions();
+                                break;
+                            case 'rankings':
+                                ncaaSystem.loadRankings();
+                                break;
+                            case 'betting':
+                                ncaaSystem.loadBettingLines();
+                                break;
                         }
                     }
                 });
             });
         }
         
-        // Initialize NCAA Data Integration
-        async function initializeNCAAData() {
-            console.log('🏈 Initializing NCAA data integration...');
-            
-            if (!window.ncaaDataService) {
-                console.warn('⚠️ NCAA Data Service not loaded');
-                return;
-            }
-            
-            try {
-                // Load NCAA data
-                await loadNCAAData();
-                
-                console.log('✅ NCAA data integration initialized');
-            } catch (error) {
-                console.error('❌ Error initializing NCAA data:', error);
-            }
-        }
-        
-        // Load NCAA Data
-        async function loadNCAAData() {
-            console.log('🔥 FORCE LOADING CURRENT NCAA DATA...');
-            console.log('📅 Current Date:', new Date().toLocaleString());
-            console.log('NCAA Data Service:', window.ncaaDataService);
-            console.log('NCAA Data Service Type:', window.ncaaDataService?.constructor?.name);
-            
-            // FORCE CLEAR ALL CACHES
-            if (window.ncaaDataService && window.ncaaDataService.clearCache) {
-                console.log('🗑️ Clearing NCAA service cache...');
-                window.ncaaDataService.clearCache();
-            }
-            
-            // FORCE CACHE CLEAR IN BROWSER
-            if ('caches' in window) {
-                try {
-                    const cacheNames = await caches.keys();
-                    await Promise.all(cacheNames.map(name => caches.delete(name)));
-                    console.log('🗑️ Cleared browser caches');
-                } catch (e) {
-                    console.log('⚠️ Could not clear browser caches:', e.message);
-                }
-            }
-            
-            try {
-                console.log('📡 Fetching fresh NCAA data...');
-                const [allGames, liveGames, rankings, bettingLines] = await Promise.all([
-                    window.ncaaDataService.getTodaysGames(),
-                    window.ncaaDataService.getLiveGames(),
-                    window.ncaaDataService.getTop25Rankings(),
-                    window.ncaaDataService.getBettingOpportunities()
-                ]);
-                
-                console.log('📊 NCAA Data loaded:');
-                console.log('- All Games:', allGames?.length || 0);
-                console.log('- Live Games:', liveGames?.length || 0);
-                console.log('- Rankings:', rankings?.length || 0);
-                console.log('- Betting Lines:', bettingLines?.length || 0);
-                
-                // Check if we're getting college teams
-                if (allGames && allGames.length > 0) {
-                    const firstGame = allGames[0];
-                    console.log('📊 First game teams:');
-                    console.log('- Home:', firstGame.teams?.home?.name);
-                    console.log('- Away:', firstGame.teams?.away?.name);
-                    
-                    const allTeamNames = [];
-                    allGames.forEach(game => {
-                        if (game.teams?.home?.name) allTeamNames.push(game.teams.home.name);
-                        if (game.teams?.away?.name) allTeamNames.push(game.teams.away.name);
-                    });
-                    
-                    const nflTeams = allTeamNames.filter(team => 
-                        ['Chiefs', 'Patriots', 'Cowboys', 'Packers', 'Steelers', 'Bills', 'Eagles'].some(nfl => team.includes(nfl))
-                    );
-                    const collegeTeams = allTeamNames.filter(team => 
-                        ['Bulldogs', 'Tigers', 'Buckeyes', 'Wolverines', 'Crimson Tide', 'Longhorns'].some(college => team.includes(college)) ||
-                        team.includes('University') || team.includes('State')
-                    );
-                    
-                    if (nflTeams.length > 0) {
-                        console.error('❌ NCAA page showing NFL teams:', nflTeams);
-                    } else {
-                        console.log('✅ No NFL teams found in NCAA data');
-                    }
-                    
-                    if (collegeTeams.length > 0) {
-                        console.log('✅ College teams found:', collegeTeams.slice(0, 3));
-                    } else {
-                        console.warn('⚠️ No college teams found in NCAA data');
-                    }
-                }
-                
-                // Update live games counter
-                const liveGamesElement = document.getElementById('live-cfb-games');
-                if (liveGamesElement) {
-                    liveGamesElement.textContent = liveGames.length;
-                }
-                
-                // Load live games
-                const liveContainer = document.getElementById('ncaa-live-games');
-                if (liveContainer) {
-                    liveContainer.innerHTML = renderNCAAGames(liveGames, 'live');
-                }
-                
-                // Load upcoming games
-                const upcomingGames = allGames.filter(game => !game.isLive);
-                const upcomingContainer = document.getElementById('ncaa-upcoming-games');
-                if (upcomingContainer) {
-                    upcomingContainer.innerHTML = renderNCAAGames(upcomingGames, 'upcoming');
-                }
-                
-                // Load rankings
-                const rankingsContainer = document.getElementById('top-25-rankings');
-                if (rankingsContainer && rankings.length > 0) {
-                    rankingsContainer.innerHTML = renderRankings(rankings);
-                }
-                
-                // Load betting lines
-                const bettingContainer = document.getElementById('ncaa-betting-lines');
-                if (bettingContainer) {
-                    bettingContainer.innerHTML = renderBettingLines(bettingLines);
-                }
-                
-                // Update timestamp
-                const timestampEl = document.getElementById('last-updated');
-                if (timestampEl) {
-                    timestampEl.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
-                }
-                
-                console.log('✅ NCAA data loading completed successfully');
-                
-            } catch (error) {
-                console.error('❌ Error loading NCAA data:', error);
-                
-                // Update timestamp with error
-                const timestampEl = document.getElementById('last-updated');
-                if (timestampEl) {
-                    timestampEl.textContent = `Error: ${new Date().toLocaleTimeString()}`;
-                    timestampEl.style.color = '#ff4444';
-                }
-            }
-        }
-        
-        // Render NCAA Games
-        function renderNCAAGames(games, type = 'live') {
-            if (!games || games.length === 0) {
-                return `
-                    <div class="loading-card">
-                        <h3>No ${type === 'live' ? 'Live' : 'Upcoming'} Games</h3>
-                        <p>Check back later for more NCAA football action!</p>
-                    </div>
-                `;
-            }
-            
-            return games.map(game => `
-                <div class="game-card detailed ${game.isLive ? 'live' : ''}">
-                    <div class="game-header">
-                        <div class="team-matchup">
-                            <span class="sport-badge ncaa">NCAA</span>
-                            ${game.shortName || game.name}
-                        </div>
-                        <div class="game-status ${game.isLive ? 'live' : ''}">${getGameStatus(game)}</div>
-                    </div>
-                    
-                    <div class="score-display">
-                        <div class="team-score">
-                            <div class="team-name">${game.teams.away.name}</div>
-                            <div class="score">${game.teams.away.score || 0}</div>
-                            <div class="team-record">${game.teams.away.record}</div>
-                        </div>
-                        <div class="vs">@</div>
-                        <div class="team-score">
-                            <div class="team-name">${game.teams.home.name}</div>
-                            <div class="score">${game.teams.home.score || 0}</div>
-                            <div class="team-record">${game.teams.home.record}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="game-info">
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${game.venue}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>Week ${game.week}</span>
-                        </div>
-                        ${game.isLive ? `
-                            <div class="info-item">
-                                <i class="fas fa-clock"></i>
-                                <span>${game.status.displayClock}</span>
-                            </div>
-                        ` : `
-                            <div class="info-item">
-                                <i class="fas fa-clock"></i>
-                                <span>${formatGameTime(game.date)}</span>
-                            </div>
-                        `}
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // Render Rankings
-        function renderRankings(rankings) {
-            return rankings.slice(0, 25).map(team => `
-                <div class="ranking-item">
-                    <div class="ranking-number">${team.rank}</div>
-                    <div class="team-info">
-                        <div class="team-name">${team.team}</div>
-                        <div class="team-record">${team.record}</div>
-                    </div>
-                    <div class="points">${team.points}</div>
-                </div>
-            `).join('');
-        }
-        
-        // Render Betting Lines
-        function renderBettingLines(lines) {
-            if (!lines || lines.length === 0) {
-                return `
-                    <div class="loading-card">
-                        <h3>No Betting Lines Available</h3>
-                        <p>Check back later for betting opportunities!</p>
-                    </div>
-                `;
-            }
-            
-            return lines.slice(0, 20).map(line => `
-                <div class="game-card">
-                    <div class="game-header">
-                        <div class="team-matchup">
-                            <span class="sport-badge ncaa">NCAA</span>
-                            ${line.teams}
-                        </div>
-                        <div class="confidence-score">${Math.round(line.confidence)}%</div>
-                    </div>
-                    
-                    <div class="odds-grid">
-                        <div class="odds-item">
-                            <div class="odds-label">Spread</div>
-                            <div class="odds-value">${line.spread}</div>
-                        </div>
-                        <div class="odds-item">
-                            <div class="odds-label">O/U</div>
-                            <div class="odds-value">${line.overUnder}</div>
-                        </div>
-                        <div class="odds-item">
-                            <div class="odds-label">ML</div>
-                            <div class="odds-value">${line.homeMoneyline}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="betting-recommendation">
-                        <strong>${line.opportunity.type}:</strong> ${line.opportunity.recommendation}
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // Get Game Status
-        function getGameStatus(game) {
-            if (game.isLive) {
-                return `LIVE - ${game.status.displayClock}`;
-            } else if (game.status.completed) {
-                return 'FINAL';
-            } else {
-                return formatGameTime(game.date);
-            }
-        }
-        
-        // Format Game Time
-        function formatGameTime(date) {
-            return new Date(date).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
-        }
-        
-        // Refresh NCAA Data
-        function refreshNCAAData() {
-            console.log('🔄 Refreshing NCAA data...');
-            
-            if (window.ncaaDataService) {
-                window.ncaaDataService.clearCache();
-                loadNCAAData();
-            }
-        }
-        
-        // Debug NCAA Data
-        function debugNCAAData() {
-            console.log('🐛 NCAA Debug Information:');
-            console.log('- NCAA Data Service:', window.ncaaDataService);
-            console.log('- Service Type:', window.ncaaDataService?.constructor?.name);
-            console.log('- Protected Service:', window.protectedNCAAService);
-            console.log('- All Window Services:', {
-                ncaaDataService: !!window.ncaaDataService,
-                nflDataService: !!window.nflDataService,
-                realSportsDataService: !!window.realSportsDataService
-            });
-            
-            // Test mobile menu elements
-            console.log('🐛 Mobile Menu Debug:');
-            console.log('- Overlay:', document.getElementById('mobileNavOverlay'));
-            console.log('- Menu:', document.getElementById('mobileNavMenu'));
-            console.log('- Toggle Function:', typeof window.toggleMobileMenu);
-            console.log('- Close Function:', typeof window.closeMobileMenu);
-            console.log('- ShowView Function:', typeof window.showView);
-            
-            // Test data loading
-            if (window.ncaaDataService) {
-                console.log('🐛 Testing NCAA data service...');
-                window.ncaaDataService.getTodaysGames().then(games => {
-                    console.log('🐛 NCAA Games Result:', games);
-                }).catch(error => {
-                    console.error('🐛 NCAA Games Error:', error);
-                });
-            }
-        }
-        
-        // Helper function to get confidence badge class
-        function getConfidenceBadgeClass(confidence) {
-            if (confidence >= 85) return 'high';
-            if (confidence >= 70) return 'medium';
-            return 'low';
-        }
-        
-        // Helper function to get edge class
-        function getEdgeClass(edge) {
-            return edge; // HIGH, MEDIUM, LOW
-        }
-        
-        // Helper function to calculate model agreement
-        function calculateModelAgreement(mlAlgorithms) {
-            // Simple calculation based on how close the predictions are
-            const predictions = [
-                mlAlgorithms.neuralNetwork.confidence,
-                mlAlgorithms.xgboost.confidence,
-                mlAlgorithms.ensemble.confidence
+        function showError(message) {
+            const containers = [
+                'ncaa-live-games',
+                'ncaa-upcoming-games', 
+                'ncaa-predictions',
+                'ncaa-rankings',
+                'ncaa-betting'
             ];
             
-            const avg = predictions.reduce((a, b) => a + b, 0) / predictions.length;
-            const variance = predictions.reduce((sum, pred) => sum + Math.pow(pred - avg, 2), 0) / predictions.length;
-            const stdDev = Math.sqrt(variance);
-            
-            // Convert to agreement percentage (lower std dev = higher agreement)
-            const agreement = Math.max(60, Math.min(95, 100 - (stdDev * 2)));
-            return Math.round(agreement);
-        }
-
-        // Load NCAA AI Predictions
-        async function loadNCAAPredictions() {
-            console.log('🧠 Loading NCAA AI Predictions...');
-            const container = document.getElementById('ncaa-predictions');
-            if (!container) return;
-            
-            try {
-                // Get games with ML algorithm predictions from NCAA data service
-                const games = await window.ncaaDataService.getTodaysGames();
-                const gamesWithPredictions = games.filter(game => game.aiPrediction && game.mlAlgorithms);
-                
-                if (gamesWithPredictions.length === 0) {
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
                     container.innerHTML = `
-                        <div class="no-predictions-card">
-                            <div class="ai-icon">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <h3>AI Models Ready</h3>
-                            <p>Predictions will appear when college football games are scheduled</p>
-                            <div class="model-status-grid">
-                                <div class="model-status">
-                                    <div class="model-name">Neural Network</div>
-                                    <div class="model-accuracy">92.8% Ready</div>
-                                </div>
-                                <div class="model-status">
-                                    <div class="model-name">XGBoost</div>
-                                    <div class="model-accuracy">90.4% Ready</div>
-                                </div>
-                                <div class="model-status">
-                                    <div class="model-name">Ensemble</div>
-                                    <div class="model-accuracy">91.9% Ready</div>
-                                </div>
-                            </div>
+                        <div class="error-card">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Error Loading Data</h3>
+                            <p>${message}</p>
+                            <button onclick="location.reload()" class="retry-button">
+                                <i class="fas fa-redo"></i> Retry
+                            </button>
                         </div>
                     `;
-                    return;
                 }
-                
-                container.innerHTML = gamesWithPredictions.map(game => `
-                    <div class="prediction-card">
-                        <div class="prediction-header">
-                            <h3>${game.shortName}</h3>
-                            <div class="confidence-badge ${getConfidenceBadgeClass(game.aiPrediction.confidence)}">
-                                ${game.aiPrediction.confidence}% Confidence
-                            </div>
-                        </div>
-                        
-                        <!-- LIVE BETTING ODDS Section -->
-                        ${game.liveBettingOdds ? `
-                        <div class="live-betting-odds-section ${game.isLive ? 'live-active' : ''}">
-                            <div class="section-title">
-                                <i class="fas fa-dollar-sign"></i> ${game.liveBettingOdds.liveStatus} Betting Odds
-                                ${game.isLive ? '<span class="live-pulse">🔴 LIVE</span>' : ''}
-                            </div>
-                            <div class="odds-container">
-                                <div class="odds-row">
-                                    <div class="odds-type">Spread</div>
-                                    <div class="odds-values">
-                                        <div class="team-odd">
-                                            <span class="team">${game.teams.home.abbreviation}</span>
-                                            <span class="line">${game.liveBettingOdds.spread.home}</span>
-                                        </div>
-                                        <div class="team-odd">
-                                            <span class="team">${game.teams.away.abbreviation}</span>
-                                            <span class="line">${game.liveBettingOdds.spread.away}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="odds-row">
-                                    <div class="odds-type">Moneyline</div>
-                                    <div class="odds-values">
-                                        <div class="team-odd">
-                                            <span class="team">${game.teams.home.abbreviation}</span>
-                                            <span class="line">${game.liveBettingOdds.moneyline.home}</span>
-                                        </div>
-                                        <div class="team-odd">
-                                            <span class="team">${game.teams.away.abbreviation}</span>
-                                            <span class="line">${game.liveBettingOdds.moneyline.away}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="odds-row">
-                                    <div class="odds-type">Total</div>
-                                    <div class="odds-values">
-                                        <div class="total-odd">
-                                            <span class="line">${game.liveBettingOdds.total.over}</span>
-                                        </div>
-                                        <div class="total-odd">
-                                            <span class="line">${game.liveBettingOdds.total.under}</span>
-                                        </div>
-                                        ${game.isLive ? `<div class="current-score">Current: ${game.liveBettingOdds.total.current}</div>` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="odds-footer">
-                                <div class="sportsbooks">📱 ${game.liveBettingOdds.sportsbooks.slice(0,2).join(' • ')}</div>
-                                <div class="last-updated">Updated: ${game.liveBettingOdds.lastUpdated}</div>
-                            </div>
-                        </div>
-                        ` : ''}
-
-                        <!-- AI Prediction Section -->
-                        <div class="ai-prediction-section ${game.isLive ? 'live-prediction' : ''}">
-                            <div class="section-title">
-                                <i class="fas fa-brain"></i> ${game.isLive ? 'LIVE ' : ''}AI Prediction
-                                ${game.aiPrediction.isLiveAnalysis ? '<span class="live-badge">LIVE ANALYSIS</span>' : ''}
-                            </div>
-                            <div class="prediction-details">
-                                <div class="predicted-winner">
-                                    🏆 ${game.aiPrediction.predictedSpread}
-                                </div>
-                                <div class="predicted-score">
-                                    Score: ${game.aiPrediction.predictedScore.home}-${game.aiPrediction.predictedScore.away}
-                                </div>
-                                <div class="win-probabilities">
-                                    <div class="prob-item">
-                                        <span>${game.teams.home.abbreviation}:</span>
-                                        <span>${game.aiPrediction.homeWinProbability}%</span>
-                                    </div>
-                                    <div class="prob-item">
-                                        <span>${game.teams.away.abbreviation}:</span>
-                                        <span>${game.aiPrediction.awayWinProbability}%</span>
-                                    </div>
-                                </div>
-                                <!-- LIVE INSIGHTS -->
-                                ${game.aiPrediction.liveInsights ? `
-                                <div class="live-insights">
-                                    <div class="insights-title">⚡ Live Game Insights</div>
-                                    <ul class="insights-list">
-                                        ${game.aiPrediction.liveInsights.map(insight => `<li>${insight}</li>`).join('')}
-                                    </ul>
-                                </div>
-                                ` : ''}
-                                
-                                <div class="betting-rec ${game.isLive ? 'live-rec' : ''}">
-                                    <strong>${game.isLive ? 'LIVE ' : ''}Recommendation:</strong> ${game.aiPrediction.recommendation}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ML Algorithms Section -->
-                        <div class="ml-algorithms-section">
-                            <div class="section-title">
-                                <i class="fas fa-microchip"></i> ML Algorithm Predictions
-                            </div>
-                            <div class="algorithms-grid">
-                                <div class="algorithm-card neural-network">
-                                    <div class="algorithm-header">
-                                        <div class="algorithm-name">Neural Network</div>
-                                        <div class="algorithm-accuracy">${game.mlAlgorithms.neuralNetwork.accuracy}</div>
-                                    </div>
-                                    <div class="algorithm-prediction">
-                                        <div class="prediction-winner">${game.mlAlgorithms.neuralNetwork.prediction}</div>
-                                        <div class="prediction-confidence">${game.mlAlgorithms.neuralNetwork.confidence}%</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="algorithm-card xgboost">
-                                    <div class="algorithm-header">
-                                        <div class="algorithm-name">XGBoost</div>
-                                        <div class="algorithm-accuracy">${game.mlAlgorithms.xgboost.accuracy}</div>
-                                    </div>
-                                    <div class="algorithm-prediction">
-                                        <div class="prediction-winner">${game.mlAlgorithms.xgboost.prediction}</div>
-                                        <div class="prediction-confidence">${game.mlAlgorithms.xgboost.confidence}%</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="algorithm-card ensemble">
-                                    <div class="algorithm-header">
-                                        <div class="algorithm-name">Ensemble</div>
-                                        <div class="algorithm-accuracy">${game.mlAlgorithms.ensemble.accuracy}</div>
-                                    </div>
-                                    <div class="algorithm-prediction">
-                                        <div class="prediction-winner">${game.mlAlgorithms.ensemble.prediction}</div>
-                                        <div class="prediction-confidence">${game.mlAlgorithms.ensemble.confidence}%</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Consensus Section -->
-                            <div class="consensus-section">
-                                <div class="consensus-header">
-                                    <div class="consensus-title">
-                                        <i class="fas fa-balance-scale"></i> Consensus Prediction
-                                    </div>
-                                    <div class="edge-indicator ${getEdgeClass(game.mlAlgorithms.consensus.edge)}">
-                                        ${game.mlAlgorithms.consensus.edge} EDGE
-                                    </div>
-                                </div>
-                                <div class="consensus-details">
-                                    <div class="consensus-prediction">
-                                        <strong>${game.mlAlgorithms.consensus.prediction}</strong> 
-                                        (${game.mlAlgorithms.consensus.confidence}% confidence)
-                                    </div>
-                                    <div class="model-agreement">
-                                        Model Agreement: ${calculateModelAgreement(game.mlAlgorithms)}%
-                                    </div>
-                                    <div class="consensus-recommendation">
-                                        ${game.aiPrediction.recommendation}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Betting Lines Section -->
-                        ${game.bettingLines ? `
-                        <div class="betting-lines-section">
-                            <div class="section-title">
-                                <i class="fas fa-coins"></i> Betting Lines
-                            </div>
-                            <div class="betting-lines-grid">
-                                <div class="line-item">
-                                    <span class="line-label">Spread:</span>
-                                    <span class="line-value">${game.bettingLines.spread.home} / ${game.bettingLines.spread.away}</span>
-                                </div>
-                                <div class="line-item">
-                                    <span class="line-label">Moneyline:</span>
-                                    <span class="line-value">${game.bettingLines.moneyline.home} / ${game.bettingLines.moneyline.away}</span>
-                                </div>
-                                <div class="line-item">
-                                    <span class="line-label">Total:</span>
-                                    <span class="line-value">${game.bettingLines.total.over} / ${game.bettingLines.total.under}</span>
-                                </div>
-                            </div>
-                            <div class="sportsbooks">
-                                Available at: ${game.bettingLines.sportsbooks.slice(0, 3).join(', ')}
-                            </div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('❌ Error loading NCAA predictions:', error);
-                container.innerHTML = `
-                    <div class="error-card">
-                        <div class="error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <h3>Prediction Error</h3>
-                        <p>Unable to load AI predictions. Please try again.</p>
-                        <button onclick="loadNCAAPredictions()" class="retry-btn">
-                            <i class="fas fa-redo"></i> Retry
-                        </button>
-                    </div>
-                `;
-            }
+            });
         }
-
-        // Helper function to get confidence badge CSS class
-        function getConfidenceBadgeClass(confidence) {
-            if (confidence >= 85) return 'high-confidence';
-            if (confidence >= 70) return 'medium-confidence';
-            return 'low-confidence';
-        }
-
-        // Helper function to get edge indicator CSS class
-        function getEdgeClass(edge) {
-            switch(edge) {
-                case 'HIGH': return 'high-edge';
-                case 'MEDIUM': return 'medium-edge';
-                case 'LOW': return 'low-edge';
-                default: return 'medium-edge';
+        
+        function updateTimestamp() {
+            const timestampEl = document.getElementById('last-updated');
+            if (timestampEl) {
+                timestampEl.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
             }
         }
         
-        // Refresh NCAA Live Data
-        async function refreshNCAALiveData() {
-            try {
-                if (window.ncaaDataService) {
-                    window.ncaaDataService.clearCache();
-                    const liveGames = await window.ncaaDataService.getLiveGames();
-                    
-                    // Update live games counter
-                    const liveGamesElement = document.getElementById('live-cfb-games');
-                    if (liveGamesElement) {
-                        liveGamesElement.textContent = liveGames.length;
-                    }
-                    
-                    console.log(`🔄 Refreshed NCAA live data - ${liveGames.length} live games`);
+        // Auto-refresh every 30 seconds for live data
+        setInterval(() => {
+            if (ncaaSystem) {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id === 'live') {
+                    ncaaSystem.loadLiveGames();
                 }
-            } catch (error) {
-                console.error('❌ Error refreshing NCAA live data:', error);
             }
-        }
-        
-        // Refresh Rankings
-        function refreshRankings() {
-            console.log('🔄 Refreshing AP Top 25 rankings');
-            
-            if (window.ncaaDataService) {
-                window.ncaaDataService.clearCache();
-                loadNCAAData();
-            }
-        }
-        
-        // Mobile Navigation Functions for NCAA Page
-        window.toggleMobileMenu = function() {
-            console.log('📱 NCAA: Toggling mobile menu');
-            const overlay = document.getElementById('mobileNavOverlay');
-            const menu = document.getElementById('mobileNavMenu');
-            
-            if (overlay && menu) {
-                const isActive = menu.classList.contains('active');
-                console.log(`📱 NCAA: Menu is currently ${isActive ? 'active' : 'inactive'}`);
-                
-                if (isActive) {
-                    closeMobileMenu();
-                } else {
-                    openMobileMenu();
-                }
-            } else {
-                console.warn('⚠️ NCAA: Mobile menu elements not found');
-                console.warn('Overlay:', overlay);
-                console.warn('Menu:', menu);
-            }
-        };
-        
-        function openMobileMenu() {
-            console.log('📱 NCAA: Opening mobile menu');
-            const overlay = document.getElementById('mobileNavOverlay');
-            const menu = document.getElementById('mobileNavMenu');
-            
-            if (overlay && menu) {
-                overlay.classList.add('active');
-                menu.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        window.closeMobileMenu = function() {
-            console.log('📱 NCAA: Closing mobile menu');
-            const overlay = document.getElementById('mobileNavOverlay');
-            const menu = document.getElementById('mobileNavMenu');
-            
-            if (overlay && menu) {
-                overlay.classList.remove('active');
-                menu.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        };
-        
-        window.showViewMobile = function(viewName) {
-            console.log('📱 NCAA: Showing view from mobile:', viewName);
-            
-            // Close mobile menu first
-            closeMobileMenu();
-            
-            // Show the view using existing function
-            if (typeof window.showView === 'function') {
-                window.showView(viewName);
-            } else {
-                console.warn('⚠️ NCAA: showView function not available');
-            }
-        };
-        
-        // Enhanced navigation event listeners
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeMobileMenu();
-            }
-        });
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('mobileNavMenu');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (menu && toggle && 
-                !menu.contains(e.target) && 
-                !toggle.contains(e.target) && 
-                menu.classList.contains('active')) {
-                closeMobileMenu();
-            }
-        });
-        
-        // Close mobile menu on window resize (desktop)
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                closeMobileMenu();
-            }
-        }); 
-    </script> -->
-    
-    <style>
-        .btn-back {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--quantum-border);
-            color: var(--quantum-light);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-back:hover {
-            background: var(--quantum-secondary);
-            color: var(--quantum-dark);
-            transform: translateY(-2px);
-        }
-        
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .quantum-badge.ncaa {
-            background: linear-gradient(45deg, var(--quantum-secondary), var(--quantum-accent));
-        }
-        
-        /* NCAA-specific styles already included from sunday-edge-pro-styles.css */
-
-        /* ML Algorithm Prediction Styles for NCAA */
-        
-        /* LIVE BETTING ODDS STYLES */
-        .live-betting-odds-section {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: linear-gradient(135deg, #1a2332, #2a3441);
-            border-radius: 8px;
-            border: 1px solid #3a4451;
-        }
-        
-        .ai-prediction-section.live-prediction {
-            background: linear-gradient(135deg, #2a1a32, #3a2441);
-            border: 2px solid #9c88ff;
-        }
-        
-        .live-badge {
-            background: #ff4444;
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.7em;
-            font-weight: bold;
-            margin-left: 0.5rem;
-        }
-        
-        .live-insights {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(255, 68, 68, 0.1);
-            border-left: 4px solid #ff4444;
-            border-radius: 4px;
-        }
-        
-        .insights-title {
-            font-weight: bold;
-            color: #ff4444;
-            margin-bottom: 0.5rem;
-        }
-        
-        .insights-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .insights-list li {
-            padding: 0.3rem 0;
-            color: #fff;
-            border-bottom: 1px solid rgba(255, 68, 68, 0.2);
-        }
-        
-        .insights-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .betting-rec.live-rec {
-            background: linear-gradient(135deg, #ff4444, #cc3333);
-            color: white;
-            padding: 1rem;
-            border-radius: 6px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 1rem;
-        }
-        
-        .live-betting-odds-section.live-active {
-            border: 2px solid #ff4444;
-            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
-            animation: livePulse 2s infinite;
-        }
-        
-        @keyframes livePulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 68, 68, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(255, 68, 68, 0.5); }
-        }
-        
-        .live-pulse {
-            color: #ff4444;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .odds-container {
-            margin: 1rem 0;
-        }
-        
-        .odds-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #3a4451;
-        }
-        
-        .odds-row:last-child {
-            border-bottom: none;
-        }
-        
-        .odds-type {
-            font-weight: bold;
-            color: #74c0fc;
-            min-width: 80px;
-        }
-        
-        .odds-values {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        .team-odd, .total-odd {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.5rem;
-            background: rgba(116, 192, 252, 0.1);
-            border-radius: 4px;
-            min-width: 60px;
-        }
-        
-        .team-odd .team {
-            font-size: 0.8em;
-            color: #aaa;
-        }
-        
-        .team-odd .line, .total-odd .line {
-            font-weight: bold;
-            color: #fff;
-            font-size: 1.1em;
-        }
-        
-        .current-score {
-            font-size: 0.9em;
-            color: #ffd43b;
-            font-weight: bold;
-        }
-        
-        .odds-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #3a4451;
-            font-size: 0.9em;
-            color: #aaa;
-        }
-        
-        .sportsbooks {
-            color: #74c0fc;
-        }
-        
-        /* ENHANCED AI PREDICTION STYLES */
-        .ai-prediction-section {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 102, 255, 0.1));
-            border-radius: 8px;
-            border-left: 4px solid var(--quantum-primary);
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            color: var(--quantum-primary);
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-        }
-
-        .win-probabilities {
-            display: flex;
-            gap: 1rem;
-            margin: 0.5rem 0;
-        }
-
-        .prob-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.25rem 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            min-width: 80px;
-        }
-
-        /* ML Algorithms Section */
-        .ml-algorithms-section {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(75, 0, 130, 0.1));
-            border-radius: 8px;
-            border-left: 4px solid #8A2BE2;
-        }
-
-        .algorithms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .algorithm-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            padding: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .algorithm-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .algorithm-card.neural-network {
-            border-left: 3px solid #FF6B6B;
-        }
-
-        .algorithm-card.xgboost {
-            border-left: 3px solid #4ECDC4;
-        }
-
-        .algorithm-card.ensemble {
-            border-left: 3px solid #45B7D1;
-        }
-
-        .algorithm-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .algorithm-name {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-        }
-
-        .algorithm-accuracy {
-            font-size: 0.75rem;
-            color: var(--quantum-secondary);
-            font-weight: 500;
-        }
-
-        .algorithm-prediction {
-            text-align: center;
-        }
-
-        .prediction-winner {
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--quantum-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .prediction-confidence {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.25rem;
-        }
-
-        .prediction-spread {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Consensus Section */
-        .consensus-section {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
-            border-radius: 6px;
-            padding: 0.75rem;
-            border-left: 3px solid #FFD700;
-        }
-
-        .consensus-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .consensus-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            color: #FFD700;
-            font-size: 0.9rem;
-        }
-
-        .edge-indicator {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .edge-indicator.high-edge {
-            background: linear-gradient(135deg, #00FF88, #00CC6A);
-            color: #000;
-        }
-
-        .edge-indicator.medium-edge {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-        }
-
-        .edge-indicator.low-edge {
-            background: linear-gradient(135deg, #888, #666);
-            color: #fff;
-        }
-
-        .consensus-prediction {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .model-agreement {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .consensus-recommendation {
-            font-size: 0.85rem;
-            color: var(--quantum-secondary);
-            font-style: italic;
-        }
-
-        /* Confidence Badges */
-        .confidence-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .confidence-badge.high-confidence {
-            background: linear-gradient(135deg, #00FF88, #00CC6A);
-            color: #000;
-        }
-
-        .confidence-badge.medium-confidence {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-        }
-
-        .confidence-badge.low-confidence {
-            background: linear-gradient(135deg, #FF6B6B, #E55555);
-            color: #fff;
-        }
-
-        /* Betting Lines Section */
-        .betting-lines-section {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
-            border-radius: 8px;
-            border-left: 4px solid #FF8C00;
-        }
-
-        .betting-lines-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .line-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-        }
-
-        .line-label {
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .line-value {
-            font-weight: 600;
-            color: var(--quantum-primary);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .sportsbooks {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        /* Error and No Data States */
-        .error-card, .no-predictions-card {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .error-icon, .ai-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--quantum-secondary);
-        }
-
-        .retry-btn {
-            background: var(--quantum-primary);
-            color: #000;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .retry-btn:hover {
-            background: var(--quantum-secondary);
-            transform: translateY(-1px);
-        }
-
-        .model-status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .model-status {
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            border-left: 3px solid var(--quantum-primary);
-        }
-
-        .model-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .model-accuracy {
-            font-size: 0.8rem;
-            color: var(--quantum-secondary);
-        }
-
-        /* Mobile Responsiveness for NCAA ML Algorithms */
-        @media (max-width: 768px) {
-            .algorithms-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .betting-lines-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .win-probabilities {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .consensus-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-        }
-    </style>
+        }, 30000);
+    </script>
 </body>
 </html>
