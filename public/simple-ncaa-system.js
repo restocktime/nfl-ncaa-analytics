@@ -849,10 +849,15 @@ class SimpleNCAASystem {
     
     renderGames() {
         // Main games container
-        const gamesContainer = document.getElementById('games-container');
+        // Try to find any available container for initial load
+        let gamesContainer = document.getElementById('ncaa-live-games') || 
+                           document.getElementById('games-container') ||
+                           document.querySelector('.games-container');
         
         if (!gamesContainer) {
-            console.warn('⚠️ Games container not found!');
+            console.log('⚠️ No games container found - using new HTML structure with individual tabs');
+            // Load data into individual containers if they exist
+            this.loadLiveGames();
             return;
         }
         
