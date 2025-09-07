@@ -2182,10 +2182,24 @@ class SimpleWorkingSystem {
             </div>
         `;
         
-        // Simulate ML processing time
-        setTimeout(() => {
-            const mlResults = this.generateMLResults(modelType, focusArea, confidenceThreshold);
-            this.displayMLResults(mlResults, modelType, focusArea, confidenceThreshold);
+        // Simulate ML processing time with proper async handling
+        setTimeout(async () => {
+            try {
+                const mlResults = await this.generateMLResults(modelType, focusArea, confidenceThreshold);
+                this.displayMLResults(mlResults, modelType, focusArea, confidenceThreshold);
+            } catch (error) {
+                console.error('❌ Error generating ML results:', error);
+                const resultsContainer = document.getElementById('mlResults');
+                if (resultsContainer) {
+                    resultsContainer.innerHTML = `
+                        <div class="ml-no-results">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Error Loading Results</h3>
+                            <p>Failed to generate ML predictions. Please try again.</p>
+                        </div>
+                    `;
+                }
+            }
         }, 2000);
     }
 
@@ -2341,6 +2355,21 @@ class SimpleWorkingSystem {
 
     displayMLResults(results, modelType, focusArea, confidenceThreshold) {
         const resultsContainer = document.getElementById('mlResults');
+        
+        // Add debugging and safety check
+        console.log('📊 DisplayMLResults called with:', results);
+        
+        if (!results || !Array.isArray(results)) {
+            console.error('❌ Results is not an array:', results);
+            resultsContainer.innerHTML = `
+                <div class="ml-no-results">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Results</h3>
+                    <p>Please try again or refresh the page.</p>
+                </div>
+            `;
+            return;
+        }
         
         if (results.length === 0) {
             resultsContainer.innerHTML = `
