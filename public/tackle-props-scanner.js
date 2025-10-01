@@ -123,9 +123,8 @@ class TacklePropsScanner {
      */
     async getAllTackleProps() {
         try {
-            // Temporarily force simulation for debugging goldmine detection
-            // Use the sportsbook API service if available
-            if (false && window.sportsbookAPIService) {
+            // Use the sportsbook API service if available (re-enabled for testing)
+            if (window.sportsbookAPIService) {
                 console.log('📊 Using sportsbook API service for tackle props...');
                 const apiProps = await window.sportsbookAPIService.getAllTackleProps();
                 console.log(`📊 Got ${apiProps?.length || 0} props from sportsbook API`);
@@ -183,17 +182,21 @@ class TacklePropsScanner {
             const rbPlayer = this.extractRBFromDefender(prop.player);
             const defenseTeam = this.extractDefenseTeam(prop.player);
 
+            // BYPASS PFF SERVICE FOR TESTING - Use direct simulation for goldmine detection
             // Get PFF analysis if service is available
             let pffAnalysis;
-            if (window.pffDataService) {
+            if (false && window.pffDataService) { // Temporarily disabled
                 pffAnalysis = await window.pffDataService.analyzeTackleProps('game_1', rbPlayer, defenseTeam);
             } else {
+                console.log(`🎲 Using direct simulation for ${prop.player} vs ${rbPlayer}`);
                 pffAnalysis = this.simulatePFFAnalysis(prop.player, rbPlayer, defenseTeam);
             }
 
-            // Calculate edge
-            const projection = pffAnalysis.topOpportunity?.projectedTackles || prop.line;
+            // Calculate edge - check prop first, then PFF analysis, then default to line
+            const projection = prop.projectedTackles || pffAnalysis.topOpportunity?.projectedTackles || prop.line;
             const edge = projection - prop.line;
+            
+            console.log(`📈 Edge calculation for ${prop.player}: prop.projectedTackles=${prop.projectedTackles}, pff.projectedTackles=${pffAnalysis.topOpportunity?.projectedTackles}, final projection=${projection}`);
             
             // Debug logging for edge calculation
             console.log(`🔍 ${prop.player}: Projection=${projection}, Line=${prop.line}, Edge=${edge.toFixed(2)}, LineShop=${prop.lineShoppingValue}`);
