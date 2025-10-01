@@ -321,12 +321,35 @@ class ComprehensivePlayerPropsService {
      */
     getTeamRoster(team) {
         console.log(`🚀 getTeamRoster called for: "${team}"`);
+        
+        // PRIORITY 1: Use the new 2025 API for 100% accuracy
+        if (window.nflPlayers2025API?.initialized) {
+            console.log(`🎯 Using NFL Players 2025 API for ${team} (injury-filtered)`);
+            const apiPlayers = window.nflPlayers2025API.getPlayersByTeam(team);
+            if (apiPlayers.length > 0) {
+                const apiRoster = {};
+                apiPlayers.forEach(player => {
+                    if (!apiRoster[player.position]) apiRoster[player.position] = [];
+                    apiRoster[player.position].push({ 
+                        name: player.name, 
+                        tier: 'high',
+                        isActive: player.isActive,
+                        apiVerified: true
+                    });
+                });
+                console.log(`✅ API roster loaded for ${team}:`, apiRoster);
+                return apiRoster;
+            }
+        }
+        
         console.log(`🔍 Available globals:`, {
+            nflPlayers2025API: !!window.nflPlayers2025API?.initialized,
             nflTeamRosters: !!window.nflTeamRosters,
             simpleSystem: !!window.simpleSystem,
             simpleSystemTeamRosters: !!(window.simpleSystem?.teamRosters)
         });
-        // First, try to get real roster data from the main system
+        
+        // FALLBACK: Use existing system data  
         if (window.nflTeamRosters || (window.simpleSystem && window.simpleSystem.teamRosters)) {
             const realRoster = this.getRealTeamRoster(team);
             if (realRoster) {
