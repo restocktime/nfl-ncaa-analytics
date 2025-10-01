@@ -193,26 +193,20 @@ class SimpleWorkingSystem {
         const shouldShowPicksTracker = analyticsPages.some(page => currentPage.includes(page));
         
         if (shouldShowPicksTracker) {
-            // Force initialize picks tracker service if not available
-            if (!window.picksTrackerService && typeof PicksTrackerService !== 'undefined') {
-                console.log('📈 Force initializing Picks Tracker Service...');
-                try {
-                    window.picksTrackerService = new PicksTrackerService();
-                    console.log('✅ Picks Tracker Service successfully initialized');
-                } catch (error) {
-                    console.error('❌ Failed to initialize Picks Tracker Service:', error);
-                    // Create a fallback service object
-                    window.picksTrackerService = {
-                        getWeeklyPerformance: () => Promise.resolve(null),
-                        getPicksByWeek: () => Promise.resolve([]),
-                        getOverallPerformance: () => Promise.resolve(null),
-                        recordPick: () => Promise.resolve(null),
-                        _isFallback: true
-                    };
-                    console.log('📦 Created fallback picks tracker service');
-                }
-            } else if (!window.picksTrackerService) {
-                console.warn('⚠️ PicksTrackerService class not found - service unavailable');
+            // Simple picks tracker should already be loaded by simple-picks-tracker.js
+            if (!window.picksTrackerService) {
+                console.log('📈 Picks tracker service not found, creating minimal fallback...');
+                // Create minimal fallback service object
+                window.picksTrackerService = {
+                    getWeeklyPerformance: () => Promise.resolve(null),
+                    getPicksByWeek: () => Promise.resolve([]),
+                    getOverallPerformance: () => Promise.resolve(null),
+                    recordPick: () => Promise.resolve(null),
+                    _isFallback: true
+                };
+                console.log('📦 Created minimal fallback picks tracker service');
+            } else {
+                console.log('✅ Picks tracker service already available');
             }
             this.setupPicksTracker();
         } else {
