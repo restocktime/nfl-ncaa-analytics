@@ -303,12 +303,16 @@ class PFFDataService {
             console.log(`🎯 Analyzing tackle props for game ${gameId}: RB ${rbPlayerId} vs Defense ${defenseTeamId}`);
             
             // Get comprehensive data from multiple sources
-            const [rbData, defenseData, blockingData, nextGenData] = await Promise.all([
+            const [rbData, defenseData, nextGenData] = await Promise.all([
                 this.getRushingAnalytics(rbPlayerId),
                 this.getDefensiveAlignment(defenseTeamId),
-                this.getRunBlockingData(rbData.teamId), // RB's team blocking
                 this.getNextGenStatsEnhancement(rbPlayerId, defenseTeamId)
             ]);
+
+            // Get blocking data after rbData is available
+            const blockingData = rbData?.teamId ? 
+                await this.getRunBlockingData(rbData.teamId) :
+                this.getFallbackBlockingData('UNK');
 
             // ENHANCED ALGORITHM: Combine PFF with NextGen tracking data
             const analysis = this.findAdvancedTacklePropMismatches(rbData, defenseData, blockingData, nextGenData);
