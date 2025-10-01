@@ -175,6 +175,9 @@ class SimpleWorkingSystem {
         // 11. Set up auto-refresh for live scores
         this.setupAutoRefresh();
         
+        // 12. Set up tackle props display
+        this.setupTacklePropsDisplay();
+        
         this.isInitialized = true;
         
         // Show API configuration status
@@ -3302,6 +3305,365 @@ class SimpleWorkingSystem {
                 active: !this.config.oddsApi.enabled && !this.config.draftkings.enabled
             }
         };
+    }
+
+    setupTacklePropsDisplay() {
+        console.log('🎯 Setting up Tackle Props Super Analysis display...');
+        
+        // Create tackle props section if it doesn't exist
+        let tacklePropsSection = document.getElementById('tackle-props-section');
+        if (!tacklePropsSection) {
+            tacklePropsSection = document.createElement('div');
+            tacklePropsSection.id = 'tackle-props-section';
+            tacklePropsSection.className = 'tackle-props-goldmines';
+            tacklePropsSection.innerHTML = `
+                <div class="section-header">
+                    <h2>🎯 TACKLE PROPS GOLDMINES - LIVE ANALYSIS</h2>
+                    <p>Real-time mismatch detection using PFF + NextGen Stats + Multi-sportsbook lines</p>
+                </div>
+                <div id="tackle-props-alerts" class="goldmine-alerts">
+                    <div class="loading">🔄 Scanning for goldmine opportunities...</div>
+                </div>
+                <div id="tackle-props-opportunities" class="opportunities-grid">
+                    <!-- Opportunities will be populated here -->
+                </div>
+            `;
+
+            // Insert after the main content area
+            const mainContent = document.querySelector('.main-content') || document.querySelector('main') || document.body;
+            if (mainContent) {
+                mainContent.appendChild(tacklePropsSection);
+            }
+        }
+
+        // Listen for tackle props scanner alerts
+        if (window.tacklePropsScanner) {
+            this.displayTacklePropsData();
+            
+            // Refresh tackle props display every 2 minutes
+            setInterval(() => {
+                this.displayTacklePropsData();
+            }, 2 * 60 * 1000);
+        } else {
+            console.warn('⚠️ Tackle props scanner not available yet, will retry...');
+            setTimeout(() => this.setupTacklePropsDisplay(), 2000);
+        }
+    }
+
+    async displayTacklePropsData() {
+        try {
+            const alertsContainer = document.getElementById('tackle-props-alerts');
+            const opportunitiesContainer = document.getElementById('tackle-props-opportunities');
+            
+            if (!alertsContainer || !opportunitiesContainer) return;
+
+            // Get current scanner status
+            if (!window.tacklePropsScanner) {
+                alertsContainer.innerHTML = '<div class="error">❌ Tackle Props Scanner not initialized</div>';
+                return;
+            }
+
+            const scannerStatus = window.tacklePropsScanner.getStatus();
+            
+            // Display active alerts
+            const activeAlerts = scannerStatus.activeAlerts || [];
+            if (activeAlerts.length > 0) {
+                alertsContainer.innerHTML = activeAlerts.map(alert => `
+                    <div class="goldmine-alert priority-${alert.priority.toLowerCase()}">
+                        <div class="alert-header">
+                            <span class="alert-icon">🚨</span>
+                            <strong>${alert.type.replace('_', ' ')}</strong>
+                            <span class="alert-priority">${alert.priority}</span>
+                        </div>
+                        <div class="alert-details">
+                            <h3>${alert.defender} vs ${alert.rbOpponent}</h3>
+                            <div class="alert-stats">
+                                <span class="edge">Edge: +${alert.edge.toFixed(1)}</span>
+                                <span class="confidence">Confidence: ${alert.confidence}</span>
+                                <span class="line-shopping">Shopping: ${alert.lineShoppingValue.toFixed(1)}%</span>
+                            </div>
+                            <p class="reasoning">${alert.reasoning}</p>
+                            <div class="action-items">
+                                ${alert.actionItems.map(item => `<div class="action-item">• ${item}</div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="alert-footer">
+                            <small>Expires: ${new Date(alert.expiresAt).toLocaleTimeString()}</small>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                alertsContainer.innerHTML = '<div class="no-alerts">🔍 Scanning for goldmine opportunities...</div>';
+            }
+
+            // Display recent scan results
+            const recentScans = scannerStatus.recentScans || [];
+            if (recentScans.length > 0) {
+                const latestScan = recentScans[recentScans.length - 1];
+                opportunitiesContainer.innerHTML = `
+                    <div class="scan-summary">
+                        <h3>Latest Scan Results</h3>
+                        <div class="scan-stats">
+                            <div class="stat">
+                                <label>Props Scanned:</label>
+                                <value>${latestScan.propsScanned}</value>
+                            </div>
+                            <div class="stat">
+                                <label>Goldmines Found:</label>
+                                <value>${latestScan.goldminesFound}</value>
+                            </div>
+                            <div class="stat">
+                                <label>Average Edge:</label>
+                                <value>+${latestScan.averageEdge}</value>
+                            </div>
+                            <div class="stat">
+                                <label>Last Scan:</label>
+                                <value>${new Date(latestScan.timestamp).toLocaleTimeString()}</value>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scanner-status">
+                        <div class="status-indicator ${scannerStatus.isScanning ? 'active' : 'inactive'}">
+                            ${scannerStatus.isScanning ? '🔄 SCANNING' : '⏸️ PAUSED'}
+                        </div>
+                        <div class="scanner-stats">
+                            <div>Total Scans: ${scannerStatus.statistics.totalScans}</div>
+                            <div>Goldmines Found: ${scannerStatus.statistics.goldminesFound}</div>
+                            <div>Success Rate: ${scannerStatus.statistics.totalScans > 0 ? Math.round((scannerStatus.statistics.goldminesFound / scannerStatus.statistics.totalScans) * 100) : 0}%</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                opportunitiesContainer.innerHTML = '<div class="no-opportunities">⏳ Waiting for scan results...</div>';
+            }
+
+            // Add CSS if not already added
+            this.addTacklePropsStyles();
+
+        } catch (error) {
+            console.error('❌ Error displaying tackle props data:', error);
+            const alertsContainer = document.getElementById('tackle-props-alerts');
+            if (alertsContainer) {
+                alertsContainer.innerHTML = `<div class="error">❌ Error loading tackle props: ${error.message}</div>`;
+            }
+        }
+    }
+
+    addTacklePropsStyles() {
+        if (document.getElementById('tackle-props-styles')) return;
+
+        const styles = document.createElement('style');
+        styles.id = 'tackle-props-styles';
+        styles.textContent = `
+            .tackle-props-goldmines {
+                margin: 2rem 0;
+                padding: 1.5rem;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                border-radius: 12px;
+                border: 1px solid #0f4c75;
+            }
+
+            .tackle-props-goldmines .section-header h2 {
+                color: #ffd700;
+                margin-bottom: 0.5rem;
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+
+            .tackle-props-goldmines .section-header p {
+                color: #a0a0a0;
+                margin-bottom: 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .goldmine-alert {
+                background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%);
+                border: 2px solid #ffd700;
+                border-radius: 8px;
+                padding: 1rem;
+                margin: 1rem 0;
+                animation: pulse 2s infinite;
+            }
+
+            .goldmine-alert.priority-urgent {
+                border-color: #ff4444;
+                box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+            }
+
+            .alert-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .alert-priority {
+                background: #ff4444;
+                color: white;
+                padding: 0.2rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+
+            .alert-details h3 {
+                color: #ffd700;
+                margin: 0.5rem 0;
+                font-size: 1.2rem;
+            }
+
+            .alert-stats {
+                display: flex;
+                gap: 1rem;
+                margin: 0.5rem 0;
+                flex-wrap: wrap;
+            }
+
+            .alert-stats span {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 0.3rem 0.6rem;
+                border-radius: 4px;
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+
+            .edge {
+                color: #4ade80 !important;
+            }
+
+            .confidence {
+                color: #fbbf24 !important;
+            }
+
+            .line-shopping {
+                color: #06b6d4 !important;
+            }
+
+            .reasoning {
+                color: #e5e5e5;
+                font-style: italic;
+                margin: 0.5rem 0;
+                line-height: 1.4;
+            }
+
+            .action-items {
+                margin-top: 0.5rem;
+            }
+
+            .action-item {
+                color: #a0a0a0;
+                font-size: 0.85rem;
+                margin: 0.2rem 0;
+            }
+
+            .scan-summary {
+                background: rgba(255, 255, 255, 0.05);
+                padding: 1rem;
+                border-radius: 6px;
+                margin-bottom: 1rem;
+            }
+
+            .scan-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+                margin-top: 0.5rem;
+            }
+
+            .stat {
+                display: flex;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+
+            .stat label {
+                color: #a0a0a0;
+                font-size: 0.8rem;
+            }
+
+            .stat value {
+                color: #ffd700;
+                font-weight: bold;
+                font-size: 1.1rem;
+            }
+
+            .scanner-status {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 1rem;
+                border-radius: 6px;
+            }
+
+            .status-indicator {
+                font-weight: bold;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+            }
+
+            .status-indicator.active {
+                background: #4ade80;
+                color: #000;
+            }
+
+            .status-indicator.inactive {
+                background: #6b7280;
+                color: #fff;
+            }
+
+            .scanner-stats {
+                display: flex;
+                gap: 1rem;
+                color: #a0a0a0;
+                font-size: 0.9rem;
+            }
+
+            .no-alerts, .no-opportunities, .loading, .error {
+                text-align: center;
+                padding: 2rem;
+                color: #a0a0a0;
+                font-style: italic;
+            }
+
+            .error {
+                color: #ff4444;
+                background: rgba(255, 68, 68, 0.1);
+                border: 1px solid #ff4444;
+                border-radius: 6px;
+            }
+
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+                70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+            }
+
+            @media (max-width: 768px) {
+                .tackle-props-goldmines {
+                    padding: 1rem;
+                }
+                
+                .alert-stats {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                
+                .scanner-status {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+                
+                .scanner-stats {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    text-align: center;
+                }
+            }
+        `;
+
+        document.head.appendChild(styles);
     }
 }
 
