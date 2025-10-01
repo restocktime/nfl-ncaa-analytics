@@ -9,7 +9,7 @@ class TacklePropsScanner {
         this.isScanning = false;
         this.scanInterval = null;
         this.alertThresholds = {
-            minimumEdge: 1.5,           // Minimum +1.5 edge required
+            minimumEdge: 1.2,           // Minimum +1.2 edge required (lowered for more opportunities)
             minimumConfidence: 'medium', // Minimum confidence level
             lineShoppingMin: 1.0,       // Minimum line shopping advantage
             maxTotalProps: 50           // Don't scan more than 50 props per cycle
@@ -178,6 +178,13 @@ class TacklePropsScanner {
             // Calculate edge
             const projection = pffAnalysis.topOpportunity?.projectedTackles || prop.line;
             const edge = projection - prop.line;
+            
+            // Debug logging for edge calculation
+            console.log(`🔍 ${prop.player}: Projection=${projection}, Line=${prop.line}, Edge=${edge.toFixed(2)}, LineShop=${prop.lineShoppingValue}`);
+            
+            if (edge >= this.alertThresholds.minimumEdge && prop.lineShoppingValue >= this.alertThresholds.lineShoppingMin) {
+                console.log(`🎯 Potential goldmine detected: ${prop.player} (Edge: +${edge.toFixed(2)})`);
+            }
 
             return {
                 defender: prop.player,
@@ -414,57 +421,90 @@ class TacklePropsScanner {
      * Helper methods for simulation/development
      */
     simulateAllTackleProps() {
-        return [
-            {
-                player: 'Micah Parsons',
-                line: 6.5,
-                bookCount: 3,
-                bestOver: { sportsbook: 'fanduel', odds: -108, line: 6.5 },
-                bestUnder: { sportsbook: 'betmgm', odds: +100, line: 6.5 },
-                lineShoppingValue: 2.3,
-                marketEfficiency: 4.8
-            },
-            {
-                player: 'Fred Warner', 
-                line: 8.5,
-                bookCount: 2,
-                bestOver: { sportsbook: 'draftkings', odds: -110, line: 8.5 },
-                bestUnder: { sportsbook: 'fanduel', odds: -110, line: 8.5 },
-                lineShoppingValue: 1.8,
-                marketEfficiency: 4.2
-            },
-            {
-                player: 'Roquan Smith',
-                line: 7.5,
-                bookCount: 4,
-                bestOver: { sportsbook: 'caesars', odds: -105, line: 7.5 },
-                bestUnder: { sportsbook: 'pointsbet', odds: -115, line: 7.5 },
-                lineShoppingValue: 2.8,
-                marketEfficiency: 5.1
-            }
+        // Generate more realistic tackle props with varied lines
+        const players = [
+            { name: 'Micah Parsons', baseLines: [5.5, 6.5, 7.5] },
+            { name: 'Fred Warner', baseLines: [7.5, 8.5, 9.5] },
+            { name: 'Roquan Smith', baseLines: [6.5, 7.5, 8.5] },
+            { name: 'Darius Leonard', baseLines: [5.5, 6.5, 7.5] },
+            { name: 'Lavonte David', baseLines: [6.5, 7.5, 8.5] },
+            { name: 'Bobby Wagner', baseLines: [7.5, 8.5, 9.5] },
+            { name: 'Matt Milano', baseLines: [5.5, 6.5, 7.5] },
+            { name: 'Tremaine Edmunds', baseLines: [6.5, 7.5, 8.5] }
         ];
+
+        return players.map(player => {
+            const randomLine = player.baseLines[Math.floor(Math.random() * player.baseLines.length)];
+            const books = ['fanduel', 'draftkings', 'caesars', 'pointsbet', 'betmgm'];
+            const bookCount = 2 + Math.floor(Math.random() * 4); // 2-5 books
+            
+            const overBook = books[Math.floor(Math.random() * books.length)];
+            const underBook = books.filter(b => b !== overBook)[Math.floor(Math.random() * (books.length - 1))];
+            
+            // Generate line shopping value - higher chance for good opportunities
+            const lineShoppingValue = Math.random() > 0.4 ? 
+                (1.2 + Math.random() * 3.5) : // Good shopping opportunity (60% chance)
+                (0.5 + Math.random() * 0.8);   // Poor shopping opportunity (40% chance)
+
+            return {
+                player: player.name,
+                line: randomLine,
+                bookCount: bookCount,
+                bestOver: { 
+                    sportsbook: overBook, 
+                    odds: -100 - Math.floor(Math.random() * 25), // -100 to -125
+                    line: randomLine 
+                },
+                bestUnder: { 
+                    sportsbook: underBook, 
+                    odds: -100 - Math.floor(Math.random() * 25), // -100 to -125
+                    line: randomLine 
+                },
+                lineShoppingValue: Number(lineShoppingValue.toFixed(1)),
+                marketEfficiency: Number((2.5 + Math.random() * 3.0).toFixed(1))
+            };
+        });
     }
 
     simulatePFFAnalysis(defender, rbPlayer, defenseTeam) {
+        // Generate realistic tackle projections that can create goldmine opportunities
+        const baseProjection = 5.5 + (Math.random() * 4.5); // 5.5 - 10.0 range
+        
+        // Sometimes generate clear mismatches (goldmine opportunities)
+        const isGoldmine = Math.random() > 0.7; // 30% chance of goldmine
+        const projectedTackles = isGoldmine ? 
+            baseProjection + (1.5 + Math.random() * 2) : // Add 1.5-3.5 for goldmines
+            baseProjection + (Math.random() - 0.5); // Small random adjustment normally
+
         return {
             topOpportunity: {
                 defender: defender,
-                projectedTackles: 6.5 + (Math.random() * 3), // 6.5-9.5 range
-                confidence: Math.random() > 0.6 ? 'high' : 'medium',
+                projectedTackles: Number(projectedTackles.toFixed(1)),
+                confidence: isGoldmine ? (Math.random() > 0.5 ? 'high' : 'very_high') : (Math.random() > 0.5 ? 'medium' : 'high'),
                 mismatches: [
                     {
                         type: 'DIRECTIONAL_MISMATCH',
-                        details: 'RB runs left 52% vs LB covers left 43%',
+                        details: `RB ${rbPlayer} runs left 52% vs ${defender} covers left ${isGoldmine ? '28%' : '43%'}`,
+                        severity: isGoldmine ? 'VERY_HIGH' : 'HIGH'
+                    },
+                    ...(isGoldmine ? [{
+                        type: 'GAP_PREFERENCE_MISMATCH',
+                        details: `${rbPlayer} prefers A-gap runs (67%) vs ${defender} alignment favors outside coverage`,
                         severity: 'HIGH'
-                    }
+                    }] : [])
                 ],
                 alignmentData: {
-                    tackleOpportunities: 7.2 + (Math.random() * 2)
+                    tackleOpportunities: isGoldmine ? (8.5 + Math.random() * 2) : (7.2 + Math.random() * 1.5)
                 }
             },
             metadata: {
                 rbCarriesPerGame: 16 + (Math.random() * 8),
-                rbDirectionalBias: { left: 0.4 + (Math.random() * 0.2), right: 0.6 - (Math.random() * 0.2) }
+                rbDirectionalBias: { 
+                    left: isGoldmine ? (0.5 + Math.random() * 0.2) : (0.4 + Math.random() * 0.2), 
+                    right: isGoldmine ? (0.3 + Math.random() * 0.2) : (0.6 - Math.random() * 0.2) 
+                },
+                isSimulatedGoldmine: isGoldmine,
+                expectedEdge: projectedTackles - (6.5 + Math.random() * 2) // Rough expected edge for tracking
             }
         };
     }

@@ -178,6 +178,9 @@ class SimpleWorkingSystem {
         // 12. Set up tackle props display
         this.setupTacklePropsDisplay();
         
+        // 13. Set up picks tracking dashboard
+        this.setupPicksTracker();
+        
         this.isInitialized = true;
         
         // Show API configuration status
@@ -3508,6 +3511,1277 @@ class SimpleWorkingSystem {
     getNextScanTime() {
         const next = new Date(Date.now() + (10 * 60 * 1000)); // 10 minutes
         return next.toLocaleTimeString();
+    }
+
+    setupPicksTracker() {
+        console.log('📊 Setting up Picks Tracker dashboard...');
+        
+        // Create picks tracker section if it doesn't exist
+        let picksSection = document.getElementById('picks-tracker-section');
+        if (!picksSection) {
+            picksSection = document.createElement('div');
+            picksSection.id = 'picks-tracker-section';
+            picksSection.className = 'picks-tracker-dashboard';
+            picksSection.innerHTML = `
+                <div class="section-header picks-header">
+                    <h2 class="picks-title">
+                        <span class="tracker-icon">📊</span>
+                        PICKS PERFORMANCE TRACKER
+                        <span class="tracker-icon">📈</span>
+                    </h2>
+                    <div class="tracker-subtitle">
+                        <span class="tracking-badge">🎯 Win Rate</span>
+                        <span class="profit-badge">💰 P&L Tracking</span>
+                        <span class="analytics-badge">📈 Analytics</span>
+                    </div>
+                    <p class="tracker-description">Comprehensive tracking of all predictions with performance metrics</p>
+                </div>
+                
+                <div class="picks-navigation">
+                    <button class="nav-btn active" data-view="current">Current Week</button>
+                    <button class="nav-btn" data-view="overall">Overall Stats</button>
+                    <button class="nav-btn" data-view="history">History</button>
+                </div>
+                
+                <div id="picks-content" class="picks-content">
+                    <div class="loading">📊 Loading picks data...</div>
+                </div>
+            `;
+            
+            // Insert after tackle props section or main content
+            const tacklePropsSection = document.getElementById('tackle-props-section');
+            if (tacklePropsSection) {
+                tacklePropsSection.parentNode.insertBefore(picksSection, tacklePropsSection.nextSibling);
+            } else {
+                const mainContent = document.querySelector('.main-content') || document.querySelector('main') || document.body;
+                if (mainContent) {
+                    mainContent.appendChild(picksSection);
+                }
+            }
+        }
+
+        // Set up navigation
+        this.setupPicksNavigation();
+        
+        // Load initial data
+        if (window.picksTrackerService) {
+            this.displayCurrentWeekPicks();
+        } else {
+            console.warn('⚠️ Picks Tracker Service not available yet, will retry...');
+            setTimeout(() => this.setupPicksTracker(), 2000);
+        }
+        
+        // Add CSS
+        this.addPicksTrackerStyles();
+    }
+
+    setupPicksNavigation() {
+        const navButtons = document.querySelectorAll('.picks-navigation .nav-btn');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remove active class from all buttons
+                navButtons.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                e.target.classList.add('active');
+                
+                const view = e.target.dataset.view;
+                console.log(`📊 Switching to picks view: ${view}`);
+                
+                switch (view) {
+                    case 'current':
+                        this.displayCurrentWeekPicks();
+                        break;
+                    case 'overall':
+                        this.displayOverallStats();
+                        break;
+                    case 'history':
+                        this.displayPicksHistory();
+                        break;
+                }
+            });
+        });
+    }
+
+    async displayCurrentWeekPicks() {
+        try {
+            const contentDiv = document.getElementById('picks-content');
+            if (!contentDiv) return;
+
+            contentDiv.innerHTML = '<div class="loading pulse">📊 Loading current week picks...</div>';
+
+            const currentWeek = this.getCurrentWeek();
+            const currentSeason = '2025';
+            
+            const [weeklyPerformance, weeklyPicks] = await Promise.all([
+                window.picksTrackerService.getWeeklyPerformance(currentSeason, currentWeek),
+                window.picksTrackerService.getPicksByWeek(currentSeason, currentWeek)
+            ]);
+
+            if (!weeklyPerformance || weeklyPicks.length === 0) {
+                contentDiv.innerHTML = `
+                    <div class="no-picks">
+                        <h3>Week ${currentWeek} - No Picks Yet</h3>
+                        <p>Picks will appear here as the system makes predictions</p>
+                        <div class="pick-types-info">
+                            <div class="pick-type">🏈 Spreads & Moneylines</div>
+                            <div class="pick-type">📊 Totals (O/U)</div>
+                            <div class="pick-type">🎯 Player Props</div>
+                            <div class="pick-type">💎 Tackle Props</div>
+                            <div class="pick-type">🤖 ML Predictions</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <div class="week-header">
+                    <h3>Week ${currentWeek} Performance</h3>
+                    <div class="week-summary">
+                        <div class="summary-stat">
+                            <label>Record:</label>
+                            <value class="${weeklyPerformance.wins > weeklyPerformance.losses ? 'positive' : weeklyPerformance.wins < weeklyPerformance.losses ? 'negative' : 'neutral'}">
+                                ${weeklyPerformance.wins}-${weeklyPerformance.losses}${weeklyPerformance.pushes > 0 ? `-${weeklyPerformance.pushes}` : ''}
+                            </value>
+                        </div>
+                        <div class="summary-stat">
+                            <label>Win Rate:</label>
+                            <value class="${weeklyPerformance.winRate >= 55 ? 'positive' : weeklyPerformance.winRate < 45 ? 'negative' : 'neutral'}">
+                                ${weeklyPerformance.winRate.toFixed(1)}%
+                            </value>
+                        </div>
+                        <div class="summary-stat">
+                            <label>Net P&L:</label>
+                            <value class="${weeklyPerformance.netProfit > 0 ? 'positive' : weeklyPerformance.netProfit < 0 ? 'negative' : 'neutral'}">
+                                ${weeklyPerformance.netProfit > 0 ? '+' : ''}${weeklyPerformance.netProfit.toFixed(2)}u
+                            </value>
+                        </div>
+                        <div class="summary-stat">
+                            <label>ROI:</label>
+                            <value class="${weeklyPerformance.roi > 0 ? 'positive' : weeklyPerformance.roi < 0 ? 'negative' : 'neutral'}">
+                                ${weeklyPerformance.roi.toFixed(1)}%
+                            </value>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="picks-breakdown">
+                    <h4>Pick Type Breakdown</h4>
+                    <div class="type-stats">
+                        ${Object.entries(weeklyPerformance.byType).map(([type, stats]) => {
+                            if (stats.total === 0) return '';
+                            return `
+                                <div class="type-stat">
+                                    <div class="type-name">${type.replace('_', ' ').toUpperCase()}</div>
+                                    <div class="type-record">${stats.wins}-${stats.losses}</div>
+                                    <div class="type-rate ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.winRate.toFixed(1)}%</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="recent-picks">
+                    <h4>Recent Picks</h4>
+                    <div class="picks-list">
+                        ${weeklyPicks.slice(-10).reverse().map(pick => `
+                            <div class="pick-card ${pick.status}">
+                                <div class="pick-header">
+                                    <span class="pick-type">${pick.type.replace('_', ' ').toUpperCase()}</span>
+                                    <span class="pick-status ${pick.status}">${pick.status.toUpperCase()}</span>
+                                </div>
+                                <div class="pick-details">
+                                    <div class="pick-game">${pick.homeTeam} vs ${pick.awayTeam}</div>
+                                    <div class="pick-selection">${pick.selection}</div>
+                                    ${pick.line ? `<div class="pick-line">Line: ${pick.line}</div>` : ''}
+                                    <div class="pick-odds">Odds: ${pick.odds > 0 ? '+' : ''}${pick.odds}</div>
+                                </div>
+                                <div class="pick-meta">
+                                    <span class="confidence ${pick.confidence}">${pick.confidence.toUpperCase()}</span>
+                                    ${pick.payout !== null ? `<span class="payout ${pick.payout > 0 ? 'positive' : 'negative'}">${pick.payout > 0 ? '+' : ''}${pick.payout.toFixed(2)}u</span>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            contentDiv.innerHTML = html;
+
+        } catch (error) {
+            console.error('❌ Error displaying current week picks:', error);
+            const contentDiv = document.getElementById('picks-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = '<div class="error">❌ Error loading picks data</div>';
+            }
+        }
+    }
+
+    getCurrentWeek() {
+        const now = new Date();
+        const seasonStart = new Date(now.getFullYear(), 8, 1); // September 1st
+        const weeksSinceStart = Math.floor((now - seasonStart) / (7 * 24 * 60 * 60 * 1000));
+        return Math.max(1, Math.min(18, weeksSinceStart + 1));
+    }
+
+    async displayOverallStats() {
+        try {
+            const contentDiv = document.getElementById('picks-content');
+            if (!contentDiv) return;
+
+            contentDiv.innerHTML = '<div class="loading pulse">📊 Loading overall performance...</div>';
+
+            const overallPerformance = await window.picksTrackerService.getOverallPerformance();
+
+            if (!overallPerformance || overallPerformance.totalPicks === 0) {
+                contentDiv.innerHTML = `
+                    <div class="no-stats">
+                        <h3>📊 Overall Statistics</h3>
+                        <p>No picks recorded yet. Statistics will appear as predictions are made.</p>
+                        <div class="stats-preview">
+                            <div class="stat-preview">📈 Win Rate Tracking</div>
+                            <div class="stat-preview">💰 Profit & Loss Analysis</div>
+                            <div class="stat-preview">🎯 Pick Type Performance</div>
+                            <div class="stat-preview">📊 Confidence Level Analytics</div>
+                            <div class="stat-preview">🔥 Streak Tracking</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <div class="overall-header">
+                    <h3>📊 Overall Performance Summary</h3>
+                    <div class="performance-badges">
+                        <span class="badge ${overallPerformance.winRate >= 55 ? 'excellent' : overallPerformance.winRate >= 50 ? 'good' : 'needs-improvement'}">
+                            ${overallPerformance.winRate >= 55 ? '🔥 Hot' : overallPerformance.winRate >= 50 ? '✅ Solid' : '📈 Building'}
+                        </span>
+                        <span class="badge ${overallPerformance.roi > 10 ? 'profitable' : overallPerformance.roi > 0 ? 'positive' : 'negative'}">
+                            ${overallPerformance.roi > 10 ? '💰 Profitable' : overallPerformance.roi > 0 ? '📈 Positive' : '📉 Red'}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="overall-stats-grid">
+                    <div class="stat-card primary">
+                        <h4>📈 Overall Record</h4>
+                        <div class="big-stat ${overallPerformance.wins > overallPerformance.losses ? 'positive' : 'negative'}">
+                            ${overallPerformance.wins}-${overallPerformance.losses}${overallPerformance.pushes > 0 ? `-${overallPerformance.pushes}` : ''}
+                        </div>
+                        <div class="stat-details">
+                            <span>Win Rate: <strong class="${overallPerformance.winRate >= 50 ? 'positive' : 'negative'}">${overallPerformance.winRate.toFixed(1)}%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card financial">
+                        <h4>💰 Financial Performance</h4>
+                        <div class="big-stat ${overallPerformance.netProfit > 0 ? 'positive' : 'negative'}">
+                            ${overallPerformance.netProfit > 0 ? '+' : ''}${overallPerformance.netProfit.toFixed(2)}u
+                        </div>
+                        <div class="stat-details">
+                            <span>ROI: <strong class="${overallPerformance.roi > 0 ? 'positive' : 'negative'}">${overallPerformance.roi.toFixed(1)}%</strong></span>
+                            <span>Staked: ${overallPerformance.totalStaked.toFixed(2)}u</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card streaks">
+                        <h4>🔥 Current Streak</h4>
+                        <div class="big-stat ${overallPerformance.currentStreak.type === 'won' ? 'positive' : overallPerformance.currentStreak.type === 'lost' ? 'negative' : 'neutral'}">
+                            ${overallPerformance.currentStreak.type === 'won' ? '🔥' : overallPerformance.currentStreak.type === 'lost' ? '❄️' : '➖'} ${overallPerformance.currentStreak.count}
+                        </div>
+                        <div class="stat-details">
+                            <span>Best Win Streak: <strong>${overallPerformance.longestWinStreak}</strong></span>
+                            <span>Worst Loss Streak: <strong>${overallPerformance.longestLoseStreak}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="performance-breakdown">
+                    <div class="breakdown-section">
+                        <h4>🎯 Performance by Pick Type</h4>
+                        <div class="type-breakdown">
+                            ${Object.entries(overallPerformance.byType).map(([type, stats]) => {
+                                if (stats.total === 0) return '';
+                                return `
+                                    <div class="type-performance">
+                                        <div class="type-header">
+                                            <span class="type-name">${this.formatPickType(type)}</span>
+                                            <span class="type-record ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.wins}-${stats.losses}</span>
+                                        </div>
+                                        <div class="type-details">
+                                            <div class="type-winrate ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.winRate.toFixed(1)}%</div>
+                                            <div class="type-profit ${stats.netProfit > 0 ? 'positive' : 'negative'}">${stats.netProfit > 0 ? '+' : ''}${stats.netProfit.toFixed(2)}u</div>
+                                        </div>
+                                        <div class="type-bar">
+                                            <div class="type-fill ${stats.winRate >= 50 ? 'positive' : 'negative'}" style="width: ${Math.min(100, stats.winRate)}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="breakdown-section">
+                        <h4>🎯 Performance by Confidence</h4>
+                        <div class="confidence-breakdown">
+                            ${Object.entries(overallPerformance.byConfidence).map(([confidence, stats]) => {
+                                if (stats.total === 0) return '';
+                                return `
+                                    <div class="confidence-performance">
+                                        <div class="confidence-header">
+                                            <span class="confidence-name">${this.formatConfidence(confidence)}</span>
+                                            <span class="confidence-record ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.wins}-${stats.losses}</span>
+                                        </div>
+                                        <div class="confidence-details">
+                                            <div class="confidence-total">${stats.total} picks</div>
+                                            <div class="confidence-winrate ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.winRate.toFixed(1)}%</div>
+                                        </div>
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill ${stats.winRate >= 50 ? 'positive' : 'negative'}" style="width: ${Math.min(100, stats.winRate)}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            contentDiv.innerHTML = html;
+
+        } catch (error) {
+            console.error('❌ Error displaying overall stats:', error);
+            const contentDiv = document.getElementById('picks-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = '<div class="error">❌ Error loading overall statistics</div>';
+            }
+        }
+    }
+
+    async displayPicksHistory() {
+        try {
+            const contentDiv = document.getElementById('picks-content');
+            if (!contentDiv) return;
+
+            contentDiv.innerHTML = '<div class="loading pulse">📊 Loading picks history...</div>';
+
+            // Get all picks for historical view
+            const overallPerformance = await window.picksTrackerService.getOverallPerformance();
+            const currentSeason = '2025';
+            
+            // Get picks for last 4 weeks
+            const currentWeek = this.getCurrentWeek();
+            const weekPromises = [];
+            for (let i = Math.max(1, currentWeek - 3); i <= currentWeek; i++) {
+                weekPromises.push({
+                    week: i,
+                    promise: window.picksTrackerService.getWeeklyPerformance(currentSeason, i)
+                });
+            }
+            
+            const weeklyResults = await Promise.all(
+                weekPromises.map(async ({ week, promise }) => ({
+                    week,
+                    data: await promise
+                }))
+            );
+
+            if (!overallPerformance || overallPerformance.totalPicks === 0) {
+                contentDiv.innerHTML = `
+                    <div class="no-history">
+                        <h3>📈 Picks History</h3>
+                        <p>Historical performance data will appear as picks are made and settled.</p>
+                        <div class="history-features">
+                            <div class="feature">📅 Weekly Performance Tracking</div>
+                            <div class="feature">📊 Trend Analysis</div>
+                            <div class="feature">🎯 Pick Type Evolution</div>
+                            <div class="feature">📈 ROI History</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <div class="history-header">
+                    <h3>📈 Picks History & Trends</h3>
+                    <div class="history-summary">
+                        <span class="total-picks">${overallPerformance.totalPicks} Total Picks</span>
+                        <span class="date-range">Season 2025</span>
+                    </div>
+                </div>
+
+                <div class="weekly-trends">
+                    <h4>📅 Recent Weekly Performance</h4>
+                    <div class="weekly-grid">
+                        ${weeklyResults.map(({ week, data }) => {
+                            if (!data || data.totalPicks === 0) {
+                                return `
+                                    <div class="week-card empty">
+                                        <div class="week-title">Week ${week}</div>
+                                        <div class="week-status">No picks</div>
+                                    </div>
+                                `;
+                            }
+                            
+                            return `
+                                <div class="week-card ${data.netProfit > 0 ? 'profitable' : data.netProfit < 0 ? 'losing' : 'breakeven'}">
+                                    <div class="week-title">Week ${week}</div>
+                                    <div class="week-record">${data.wins}-${data.losses}${data.pushes > 0 ? `-${data.pushes}` : ''}</div>
+                                    <div class="week-winrate ${data.winRate >= 50 ? 'positive' : 'negative'}">${data.winRate.toFixed(1)}%</div>
+                                    <div class="week-profit ${data.netProfit > 0 ? 'positive' : 'negative'}">${data.netProfit > 0 ? '+' : ''}${data.netProfit.toFixed(2)}u</div>
+                                    <div class="week-roi ${data.roi > 0 ? 'positive' : 'negative'}">ROI: ${data.roi.toFixed(1)}%</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="historical-insights">
+                    <div class="insight-card">
+                        <h4>🎯 Best Performing Pick Type</h4>
+                        <div class="insight-content">
+                            ${this.getBestPickType(overallPerformance.byType)}
+                        </div>
+                    </div>
+                    
+                    <div class="insight-card">
+                        <h4>🎯 Confidence Level Analysis</h4>
+                        <div class="insight-content">
+                            ${this.getBestConfidenceLevel(overallPerformance.byConfidence)}
+                        </div>
+                    </div>
+                    
+                    <div class="insight-card">
+                        <h4>📈 Performance Trends</h4>
+                        <div class="insight-content">
+                            ${this.getPerformanceTrend(weeklyResults)}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="all-time-records">
+                    <h4>🏆 All-Time Records</h4>
+                    <div class="records-grid">
+                        <div class="record-item">
+                            <div class="record-label">Longest Win Streak</div>
+                            <div class="record-value positive">🔥 ${overallPerformance.longestWinStreak}</div>
+                        </div>
+                        <div class="record-item">
+                            <div class="record-label">Best Single Week</div>
+                            <div class="record-value positive">📈 ${this.getBestWeek(weeklyResults)}</div>
+                        </div>
+                        <div class="record-item">
+                            <div class="record-label">Total Units Won</div>
+                            <div class="record-value ${overallPerformance.totalReturn > 0 ? 'positive' : 'negative'}">
+                                💰 ${overallPerformance.totalReturn.toFixed(2)}u
+                            </div>
+                        </div>
+                        <div class="record-item">
+                            <div class="record-label">Average Stake</div>
+                            <div class="record-value neutral">🎯 ${overallPerformance.avgStake.toFixed(2)}u</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            contentDiv.innerHTML = html;
+
+        } catch (error) {
+            console.error('❌ Error displaying picks history:', error);
+            const contentDiv = document.getElementById('picks-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = '<div class="error">❌ Error loading picks history</div>';
+            }
+        }
+    }
+
+    // Helper methods for picks tracking
+    formatPickType(type) {
+        const typeMap = {
+            'spread': '📊 Spreads',
+            'moneyline': '💰 Moneylines', 
+            'total': '📈 Totals',
+            'player_prop': '🏈 Player Props',
+            'tackle_prop': '🎯 Tackle Props',
+            'ml_prediction': '🤖 ML Predictions',
+            'parlay': '🎰 Parlays'
+        };
+        return typeMap[type] || type.replace('_', ' ').toUpperCase();
+    }
+
+    formatConfidence(confidence) {
+        const confidenceMap = {
+            'low': '🟡 Low',
+            'medium': '🟠 Medium',
+            'high': '🔴 High',
+            'very_high': '🔥 Very High'
+        };
+        return confidenceMap[confidence] || confidence.toUpperCase();
+    }
+
+    getBestPickType(byType) {
+        let bestType = null;
+        let bestScore = -1;
+        
+        Object.entries(byType).forEach(([type, stats]) => {
+            if (stats.total >= 3) { // Need at least 3 picks for significance
+                const score = stats.winRate + (stats.netProfit * 5); // Combine win rate and profit
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestType = { type, stats };
+                }
+            }
+        });
+        
+        if (!bestType) return 'Insufficient data for analysis';
+        
+        return `
+            <div class="best-type">
+                <span class="type-name">${this.formatPickType(bestType.type)}</span>
+                <span class="type-stats">${bestType.stats.wins}-${bestType.stats.losses} (${bestType.stats.winRate.toFixed(1)}%)</span>
+                <span class="type-profit ${bestType.stats.netProfit > 0 ? 'positive' : 'negative'}">${bestType.stats.netProfit > 0 ? '+' : ''}${bestType.stats.netProfit.toFixed(2)}u</span>
+            </div>
+        `;
+    }
+
+    getBestConfidenceLevel(byConfidence) {
+        let bestConfidence = null;
+        let bestWinRate = -1;
+        
+        Object.entries(byConfidence).forEach(([confidence, stats]) => {
+            if (stats.total >= 2 && stats.winRate > bestWinRate) {
+                bestWinRate = stats.winRate;
+                bestConfidence = { confidence, stats };
+            }
+        });
+        
+        if (!bestConfidence) return 'Insufficient data for analysis';
+        
+        return `
+            <div class="best-confidence">
+                <span class="conf-level">${this.formatConfidence(bestConfidence.confidence)}</span>
+                <span class="conf-record">${bestConfidence.stats.wins}-${bestConfidence.stats.losses}</span>
+                <span class="conf-rate positive">${bestConfidence.stats.winRate.toFixed(1)}%</span>
+            </div>
+        `;
+    }
+
+    getPerformanceTrend(weeklyResults) {
+        const validWeeks = weeklyResults.filter(w => w.data && w.data.totalPicks > 0);
+        if (validWeeks.length < 2) return 'Need more data for trend analysis';
+        
+        const recent = validWeeks[validWeeks.length - 1].data;
+        const previous = validWeeks[validWeeks.length - 2].data;
+        
+        const winRateChange = recent.winRate - previous.winRate;
+        const profitChange = recent.netProfit - previous.netProfit;
+        
+        const trend = winRateChange > 5 ? '📈 Improving' : winRateChange < -5 ? '📉 Declining' : '➡️ Stable';
+        
+        return `
+            <div class="trend-analysis">
+                <span class="trend-direction">${trend}</span>
+                <span class="trend-details">
+                    Win Rate: ${winRateChange > 0 ? '+' : ''}${winRateChange.toFixed(1)}%
+                    Profit: ${profitChange > 0 ? '+' : ''}${profitChange.toFixed(2)}u
+                </span>
+            </div>
+        `;
+    }
+
+    getBestWeek(weeklyResults) {
+        let bestWeek = null;
+        let bestProfit = -999;
+        
+        weeklyResults.forEach(({ week, data }) => {
+            if (data && data.totalPicks > 0 && data.netProfit > bestProfit) {
+                bestProfit = data.netProfit;
+                bestWeek = { week, data };
+            }
+        });
+        
+        if (!bestWeek) return 'No data available';
+        
+        return `Week ${bestWeek.week} (+${bestWeek.data.netProfit.toFixed(2)}u)`;
+    }
+
+    addPicksTrackerStyles() {
+        if (document.getElementById('picks-tracker-styles')) return;
+
+        const styles = document.createElement('style');
+        styles.id = 'picks-tracker-styles';
+        styles.textContent = `
+            .picks-tracker-dashboard {
+                margin: 2rem 0;
+                padding: 1.5rem;
+                background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 100%);
+                border-radius: 15px;
+                border: 1px solid #0f4c75;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+
+            .picks-header {
+                text-align: center;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 2px solid #0f4c75;
+            }
+
+            .picks-title {
+                font-size: 1.8rem;
+                font-weight: bold;
+                color: #00d9ff;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .tracker-icon {
+                font-size: 1.5rem;
+                animation: tracker-pulse 2s ease-in-out infinite;
+            }
+
+            @keyframes tracker-pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+
+            .tracker-subtitle {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                margin: 1rem 0;
+                flex-wrap: wrap;
+            }
+
+            .tracking-badge, .profit-badge, .analytics-badge {
+                padding: 0.3rem 0.8rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+
+            .tracking-badge {
+                background: linear-gradient(45deg, #4CAF50, #45a049);
+                color: white;
+            }
+
+            .profit-badge {
+                background: linear-gradient(45deg, #FFD700, #FFA500);
+                color: #333;
+            }
+
+            .analytics-badge {
+                background: linear-gradient(45deg, #00d9ff, #0099cc);
+                color: white;
+            }
+
+            .tracker-description {
+                color: #b0b8c4;
+                margin: 0.5rem 0 0 0;
+                font-size: 1rem;
+            }
+
+            .picks-navigation {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+            }
+
+            .nav-btn {
+                padding: 0.8rem 1.5rem;
+                background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+                color: #00d9ff;
+                border: 1px solid #0f4c75;
+                border-radius: 25px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+            .nav-btn:hover {
+                background: linear-gradient(135deg, #0f4c75, #2a2a3e);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+            }
+
+            .nav-btn.active {
+                background: linear-gradient(135deg, #00d9ff, #0099cc);
+                color: #0a0e1a;
+                box-shadow: 0 4px 16px rgba(0, 217, 255, 0.4);
+            }
+
+            .picks-content {
+                min-height: 400px;
+            }
+
+            .loading {
+                text-align: center;
+                padding: 3rem;
+                color: #00d9ff;
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+            .loading.pulse {
+                animation: loading-pulse 1.5s ease-in-out infinite;
+            }
+
+            @keyframes loading-pulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+
+            .no-picks, .no-stats, .no-history {
+                text-align: center;
+                padding: 2rem;
+                color: #b0b8c4;
+            }
+
+            .no-picks h3, .no-stats h3, .no-history h3 {
+                color: #00d9ff;
+                margin-bottom: 1rem;
+            }
+
+            .pick-types-info, .stats-preview, .history-features {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                margin-top: 1.5rem;
+                flex-wrap: wrap;
+            }
+
+            .pick-type, .stat-preview, .feature {
+                padding: 0.5rem 1rem;
+                background: rgba(0, 217, 255, 0.1);
+                border: 1px solid #0f4c75;
+                border-radius: 20px;
+                font-size: 0.9rem;
+            }
+
+            .week-header {
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #0f4c75;
+            }
+
+            .week-header h3 {
+                color: #00d9ff;
+                margin: 0 0 1rem 0;
+            }
+
+            .week-summary {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .summary-stat {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem;
+                background: rgba(0, 217, 255, 0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(0, 217, 255, 0.2);
+            }
+
+            .summary-stat label {
+                font-size: 0.9rem;
+                color: #b0b8c4;
+                margin-bottom: 0.5rem;
+            }
+
+            .summary-stat value {
+                font-size: 1.3rem;
+                font-weight: bold;
+            }
+
+            .positive { color: #4CAF50 !important; }
+            .negative { color: #f44336 !important; }
+            .neutral { color: #FFA500 !important; }
+
+            .picks-breakdown, .performance-breakdown {
+                margin: 2rem 0;
+            }
+
+            .picks-breakdown h4, .performance-breakdown h4 {
+                color: #00d9ff;
+                margin-bottom: 1rem;
+            }
+
+            .type-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .type-stat {
+                padding: 1rem;
+                background: rgba(15, 76, 117, 0.2);
+                border-radius: 8px;
+                border: 1px solid #0f4c75;
+            }
+
+            .type-name {
+                font-weight: bold;
+                color: #00d9ff;
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            .type-record, .type-rate {
+                font-size: 1.1rem;
+                font-weight: bold;
+                margin-right: 1rem;
+            }
+
+            .recent-picks {
+                margin-top: 2rem;
+            }
+
+            .recent-picks h4 {
+                color: #00d9ff;
+                margin-bottom: 1rem;
+            }
+
+            .picks-list {
+                display: grid;
+                gap: 1rem;
+                max-height: 500px;
+                overflow-y: auto;
+            }
+
+            .pick-card {
+                padding: 1rem;
+                background: rgba(26, 26, 46, 0.8);
+                border-radius: 10px;
+                border-left: 4px solid #0f4c75;
+            }
+
+            .pick-card.won {
+                border-left-color: #4CAF50;
+                background: rgba(76, 175, 80, 0.1);
+            }
+
+            .pick-card.lost {
+                border-left-color: #f44336;
+                background: rgba(244, 67, 54, 0.1);
+            }
+
+            .pick-card.push {
+                border-left-color: #FFA500;
+                background: rgba(255, 165, 0, 0.1);
+            }
+
+            .pick-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .pick-type {
+                font-weight: bold;
+                color: #00d9ff;
+            }
+
+            .pick-status {
+                padding: 0.2rem 0.6rem;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            .pick-status.won { background: #4CAF50; color: white; }
+            .pick-status.lost { background: #f44336; color: white; }
+            .pick-status.pending { background: #FFA500; color: white; }
+            .pick-status.push { background: #00BCD4; color: white; }
+
+            .pick-details {
+                margin: 0.5rem 0;
+                color: #b0b8c4;
+            }
+
+            .pick-game {
+                font-weight: bold;
+                color: white;
+                margin-bottom: 0.3rem;
+            }
+
+            .pick-selection {
+                font-size: 1.1rem;
+                color: #00d9ff;
+                margin-bottom: 0.3rem;
+            }
+
+            .pick-meta {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.9rem;
+            }
+
+            .confidence {
+                padding: 0.2rem 0.5rem;
+                border-radius: 10px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            .confidence.low { background: rgba(255, 193, 7, 0.3); color: #FFC107; }
+            .confidence.medium { background: rgba(255, 152, 0, 0.3); color: #FF9800; }
+            .confidence.high { background: rgba(244, 67, 54, 0.3); color: #f44336; }
+            .confidence.very_high { background: rgba(233, 30, 99, 0.3); color: #E91E63; }
+
+            .payout {
+                font-weight: bold;
+                padding: 0.2rem 0.5rem;
+                border-radius: 8px;
+            }
+
+            .payout.positive {
+                background: rgba(76, 175, 80, 0.3);
+                color: #4CAF50;
+            }
+
+            .payout.negative {
+                background: rgba(244, 67, 54, 0.3);
+                color: #f44336;
+            }
+
+            /* Overall Stats Styles */
+            .overall-header {
+                text-align: center;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #0f4c75;
+            }
+
+            .overall-header h3 {
+                color: #00d9ff;
+                margin: 0 0 1rem 0;
+            }
+
+            .performance-badges {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .badge {
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: bold;
+                font-size: 0.9rem;
+            }
+
+            .badge.excellent {
+                background: linear-gradient(45deg, #4CAF50, #45a049);
+                color: white;
+            }
+
+            .badge.good {
+                background: linear-gradient(45deg, #FFA500, #FF8F00);
+                color: white;
+            }
+
+            .badge.needs-improvement {
+                background: linear-gradient(45deg, #f44336, #d32f2f);
+                color: white;
+            }
+
+            .badge.profitable {
+                background: linear-gradient(45deg, #4CAF50, #45a049);
+                color: white;
+            }
+
+            .overall-stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+                background: rgba(26, 26, 46, 0.6);
+                border-radius: 12px;
+                border: 1px solid #0f4c75;
+                text-align: center;
+            }
+
+            .stat-card.primary {
+                border-color: #00d9ff;
+                background: rgba(0, 217, 255, 0.05);
+            }
+
+            .stat-card.financial {
+                border-color: #FFD700;
+                background: rgba(255, 215, 0, 0.05);
+            }
+
+            .stat-card.streaks {
+                border-color: #f44336;
+                background: rgba(244, 67, 54, 0.05);
+            }
+
+            .stat-card h4 {
+                margin: 0 0 1rem 0;
+                color: #00d9ff;
+                font-size: 1rem;
+            }
+
+            .big-stat {
+                font-size: 2rem;
+                font-weight: bold;
+                margin: 0.5rem 0 1rem 0;
+            }
+
+            .stat-details {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+                font-size: 0.9rem;
+                color: #b0b8c4;
+            }
+
+            /* Performance breakdown styles */
+            .breakdown-section {
+                margin: 2rem 0;
+            }
+
+            .type-breakdown, .confidence-breakdown {
+                display: grid;
+                gap: 1rem;
+            }
+
+            .type-performance, .confidence-performance {
+                padding: 1rem;
+                background: rgba(15, 76, 117, 0.1);
+                border-radius: 8px;
+                border: 1px solid #0f4c75;
+            }
+
+            .type-header, .confidence-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .type-details, .confidence-details {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .type-bar, .confidence-bar {
+                height: 6px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 3px;
+                overflow: hidden;
+            }
+
+            .type-fill, .confidence-fill {
+                height: 100%;
+                border-radius: 3px;
+                transition: width 0.3s ease;
+            }
+
+            .type-fill.positive, .confidence-fill.positive {
+                background: linear-gradient(90deg, #4CAF50, #45a049);
+            }
+
+            .type-fill.negative, .confidence-fill.negative {
+                background: linear-gradient(90deg, #f44336, #d32f2f);
+            }
+
+            /* History styles */
+            .history-header {
+                text-align: center;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #0f4c75;
+            }
+
+            .history-header h3 {
+                color: #00d9ff;
+                margin: 0 0 0.5rem 0;
+            }
+
+            .history-summary {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                color: #b0b8c4;
+                flex-wrap: wrap;
+            }
+
+            .weekly-trends {
+                margin-bottom: 2rem;
+            }
+
+            .weekly-trends h4 {
+                color: #00d9ff;
+                margin-bottom: 1rem;
+            }
+
+            .weekly-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .week-card {
+                padding: 1.5rem 1rem;
+                background: rgba(26, 26, 46, 0.6);
+                border-radius: 10px;
+                text-align: center;
+                border: 1px solid #0f4c75;
+            }
+
+            .week-card.profitable {
+                border-color: #4CAF50;
+                background: rgba(76, 175, 80, 0.1);
+            }
+
+            .week-card.losing {
+                border-color: #f44336;
+                background: rgba(244, 67, 54, 0.1);
+            }
+
+            .week-card.empty {
+                opacity: 0.5;
+            }
+
+            .week-title {
+                font-weight: bold;
+                color: #00d9ff;
+                margin-bottom: 0.5rem;
+            }
+
+            .week-record {
+                font-size: 1.2rem;
+                font-weight: bold;
+                margin: 0.3rem 0;
+            }
+
+            .week-winrate, .week-profit, .week-roi {
+                font-size: 0.9rem;
+                margin: 0.2rem 0;
+            }
+
+            .historical-insights {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+
+            .insight-card {
+                padding: 1.5rem;
+                background: rgba(15, 76, 117, 0.1);
+                border-radius: 10px;
+                border: 1px solid #0f4c75;
+            }
+
+            .insight-card h4 {
+                color: #00d9ff;
+                margin: 0 0 1rem 0;
+            }
+
+            .all-time-records {
+                margin-top: 2rem;
+            }
+
+            .all-time-records h4 {
+                color: #00d9ff;
+                margin-bottom: 1rem;
+            }
+
+            .records-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .record-item {
+                padding: 1rem;
+                background: rgba(26, 26, 46, 0.6);
+                border-radius: 8px;
+                border: 1px solid #0f4c75;
+                text-align: center;
+            }
+
+            .record-label {
+                font-size: 0.9rem;
+                color: #b0b8c4;
+                margin-bottom: 0.5rem;
+            }
+
+            .record-value {
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+            .error {
+                text-align: center;
+                color: #f44336;
+                padding: 2rem;
+                font-size: 1.1rem;
+            }
+
+            /* Mobile responsiveness */
+            @media (max-width: 768px) {
+                .picks-tracker-dashboard {
+                    margin: 1rem 0;
+                    padding: 1rem;
+                }
+                
+                .picks-title {
+                    font-size: 1.4rem;
+                }
+                
+                .nav-btn {
+                    padding: 0.6rem 1rem;
+                    font-size: 0.9rem;
+                }
+                
+                .overall-stats-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .big-stat {
+                    font-size: 1.5rem;
+                }
+                
+                .historical-insights {
+                    grid-template-columns: 1fr;
+                }
+                
+                .records-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                .weekly-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+        `;
+
+        document.head.appendChild(styles);
+        console.log('✅ Picks Tracker styles loaded');
     }
     }
 
