@@ -2582,9 +2582,14 @@ class SimpleWorkingSystem {
                     
                     // Try multiple ESPN roster endpoints with current season
                     const rosterEndpoints = [
+                        // Try the newer 2025 season endpoints
+                        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster?season=2025`,
                         `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster?season=2024`,
-                        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster`,
+                        // Try a different athletes endpoint structure  
+                        `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2025/teams/${teamId}/athletes?limit=100`,
                         `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/teams/${teamId}/athletes?limit=100`,
+                        // Original endpoints
+                        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster`,
                         `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}?enable=roster`
                     ];
                     
@@ -2798,13 +2803,25 @@ class SimpleWorkingSystem {
             console.log('🌐 Fetching live NFL rosters from ESPN API...');
             const liveRosters = await this.fetchLiveNFLRosters();
             console.log('🔍 ESPN API returned rosters:', liveRosters ? `${Object.keys(liveRosters).length} teams` : 'null/failed');
+            
+            // Check if we got real player names (not generic fallbacks)
+            let hasRealNames = false;
             if (liveRosters && Object.keys(liveRosters).length > 5) {
+                const firstTeam = Object.keys(liveRosters)[0];
+                const firstTeamRoster = liveRosters[firstTeam];
+                hasRealNames = firstTeamRoster.QB && !firstTeamRoster.QB.includes(' QB') && !firstTeamRoster.QB.includes('QB');
+                console.log(`🔍 Real names check for ${firstTeam}: QB="${firstTeamRoster.QB}", hasRealNames=${hasRealNames}`);
+            }
+            
+            if (liveRosters && Object.keys(liveRosters).length > 5 && hasRealNames) {
                 this.teamRosters = liveRosters;
                 window.nflTeamRosters = liveRosters;
                 this.rosterFetchInProgress = false;
-                console.log('✅ Live 2025-26 NFL rosters loaded from ESPN API');
+                console.log('✅ Live 2025-26 NFL rosters loaded from ESPN API with real player names');
                 console.log('📊 Available teams:', Object.keys(liveRosters));
                 return liveRosters;
+            } else {
+                console.log('⚠️ ESPN API returned generic names, using cached rosters instead');
             }
         } catch (error) {
             console.warn('⚠️ ESPN API failed, falling back to cached 2025-26 rosters:', error);
