@@ -295,14 +295,29 @@ class SimpleWorkingSystem {
         // Mobile nav links
         document.querySelectorAll('.mobile-nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
                 const view = link.dataset.view;
-                this.switchView(view);
+                const href = link.getAttribute('href');
                 
-                // Close menu
-                menu.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
+                // Only prevent default for internal views (data-view present and starts with #)
+                if (view && href && href.startsWith('#')) {
+                    e.preventDefault();
+                    console.log(`📱 Mobile nav internal view: ${view}`);
+                    this.switchView(view);
+                    
+                    // Close menu for internal views
+                    menu.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else if (href && !href.startsWith('#')) {
+                    // For external links, close menu but let navigation happen
+                    console.log(`📱 Mobile nav external link: ${href}`);
+                    menu.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    // Don't prevent default - let the browser navigate
+                } else {
+                    console.log(`📱 Mobile nav link - letting browser handle:`, href);
+                }
             });
         });
 
@@ -315,11 +330,15 @@ class SimpleWorkingSystem {
                 // Only prevent default for internal views (data-view present and starts with #)
                 if (view && href && href.startsWith('#')) {
                     e.preventDefault();
-                    console.log(`🖥️ Desktop nav clicked: ${view}`);
+                    console.log(`🖥️ Desktop nav internal view: ${view}`);
                     this.switchView(view);
-                } else {
-                    // Let external links work normally
+                } else if (href && !href.startsWith('#')) {
+                    // Let external links work normally - don't prevent default
                     console.log(`🖥️ Desktop nav external link: ${href}`);
+                    // Don't prevent default - let the browser handle the navigation
+                } else {
+                    // For any other case, log and let it work normally
+                    console.log(`🖥️ Desktop nav link - letting browser handle:`, href);
                 }
             });
         });
@@ -2848,7 +2867,7 @@ class SimpleWorkingSystem {
             'Ravens': { QB: 'Lamar Jackson', RB: 'Derrick Henry', WR: 'Zay Flowers', TE: 'Mark Andrews', K: 'Justin Tucker', LB: 'Roquan Smith' },
             'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Mike Gesicki', K: 'Evan McPherson', LB: 'Logan Wilson' },
             'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku', K: 'Dustin Hopkins', LB: 'Jeremiah Owusu-Koramoah' },
-            'Steelers': { QB: 'Aaron Rodgers', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
+            'Steelers': { QB: 'Aaron Rodgers', RB: 'Najee Harris', WR: 'Calvin Austin III', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
             
             // AFC SOUTH - 2025-26 Season
             'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo', K: 'Nick Folk', LB: 'Kenneth Murray' },
@@ -2863,7 +2882,7 @@ class SimpleWorkingSystem {
             'Raiders': { QB: 'Gardner Minshew', RB: 'Alexander Mattison', WR: 'Jakobi Meyers', TE: 'Brock Bowers', K: 'Daniel Carlson', LB: 'Divine Deablo' },
             
             // NFC EAST - 2025-26 Season
-            'Cowboys': { QB: 'Dak Prescott', RB: 'Javonte Williams', WR: 'CeeDee Lamb', TE: 'Jake Ferguson', K: 'Brandon Aubrey', LB: 'Micah Parsons' },
+            'Cowboys': { QB: 'Dak Prescott', RB: 'Javonte Williams', WR: 'George Pickens', TE: 'Jake Ferguson', K: 'Brandon Aubrey', LB: 'Micah Parsons' },
             'Eagles': { QB: 'Jalen Hurts', RB: 'Saquon Barkley', WR: 'A.J. Brown', TE: 'Dallas Goedert', K: 'Jake Elliott', LB: 'Nakobe Dean' },
             'Giants': { QB: 'Tommy DeVito', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson', K: 'Greg Joseph', LB: 'Micah McFadden' },
             'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz', K: 'Austin Seibert', LB: 'Bobby Wagner' },
