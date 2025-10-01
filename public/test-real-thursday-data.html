@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Thursday Night Football Data Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .result {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .error {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+        .goldmine {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        pre {
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 Real Thursday Night Football Data Test</h1>
+    <p>Testing with API Key: 9de126998e0df996011a28e9527dd7b9</p>
+    
+    <button onclick="testRealThursdayData()">Get ACTUAL Thursday Game & Props</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_KEY = '9de126998e0df996011a28e9527dd7b9';
+        const BASE_URL = 'https://api.the-odds-api.com/v4';
+
+        async function testRealThursdayData() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="result">🔄 Fetching real data...</div>';
+            
+            try {
+                // Step 1: Get NFL Events to see what's actually scheduled
+                console.log('🔍 Fetching NFL events...');
+                const eventsUrl = `${BASE_URL}/sports/americanfootball_nfl/events?apiKey=${API_KEY}&regions=us&dateFormat=iso`;
+                const eventsResponse = await fetch(eventsUrl);
+                
+                if (!eventsResponse.ok) {
+                    throw new Error(`Events API failed: ${eventsResponse.status} - ${eventsResponse.statusText}`);
+                }
+                
+                const eventsData = await eventsResponse.json();
+                
+                // Step 2: Find Thursday games
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const isThursday = dayOfWeek === 4;
+                
+                // Look for games in the next 7 days that are on Thursday
+                const nextWeek = new Date(today.getTime() + (7 * 24 * 60 * 60 * 1000));
+                
+                const thursdayGames = eventsData.filter(event => {
+                    const gameDate = new Date(event.commence_time);
+                    const gameDayOfWeek = gameDate.getDay();
+                    return gameDayOfWeek === 4 && gameDate >= today && gameDate <= nextWeek;
+                });
+                
+                console.log(`📅 Found ${thursdayGames.length} Thursday games`);
+                
+                let html = `<div class="result">
+                    <h2>📅 Real NFL Events Data</h2>
+                    <p><strong>Total Events Found:</strong> ${eventsData.length}</p>
+                    <p><strong>Thursday Games:</strong> ${thursdayGames.length}</p>
+                `;
+                
+                if (thursdayGames.length > 0) {
+                    html += '<h3>🏈 ACTUAL Thursday Night Football Games:</h3>';
+                    thursdayGames.forEach(game => {
+                        const gameDate = new Date(game.commence_time);
+                        html += `
+                            <div style="margin: 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.05); border-radius: 5px;">
+                                <strong>${game.away_team} @ ${game.home_team}</strong><br>
+                                <span>📅 ${gameDate.toLocaleDateString()} at ${gameDate.toLocaleTimeString()}</span><br>
+                                <span>🆔 Event ID: ${game.id}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    // Step 3: Get betting odds for the Thursday game
+                    if (thursdayGames.length > 0) {
+                        const thursdayGame = thursdayGames[0];
+                        html += '<h3>💰 Getting Real Betting Lines...</h3>';
+                        
+                        try {
+                            // Get main betting lines (spread, total, moneyline)
+                            const oddsUrl = `${BASE_URL}/sports/americanfootball_nfl/odds?apiKey=${API_KEY}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&bookmakers=draftkings,fanduel,betmgm`;
+                            const oddsResponse = await fetch(oddsUrl);
+                            
+                            if (oddsResponse.ok) {
+                                const oddsData = await oddsResponse.json();
+                                const gameOdds = oddsData.find(game => game.id === thursdayGame.id);
+                                
+                                if (gameOdds) {
+                                    html += '<div class="goldmine"><h4>📊 REAL BETTING LINES:</h4>';
+                                    gameOdds.bookmakers.forEach(bookmaker => {
+                                        html += `<p><strong>${bookmaker.title}:</strong></p>`;
+                                        bookmaker.markets.forEach(market => {
+                                            html += `<ul><li>${market.key}: `;
+                                            market.outcomes.forEach(outcome => {
+                                                html += `${outcome.name} ${outcome.price} `;
+                                            });
+                                            html += '</li></ul>';
+                                        });
+                                    });
+                                    html += '</div>';
+                                } else {
+                                    html += '<p>⚠️ Odds not yet available for Thursday game</p>';
+                                }
+                            }
+                            
+                            // Step 4: Try to get player props
+                            html += '<h3>🎯 Searching for Real Tackle Props...</h3>';
+                            const propsUrl = `${BASE_URL}/sports/americanfootball_nfl/events/${thursdayGame.id}/odds?apiKey=${API_KEY}&regions=us&markets=player_tackles,player_tackles_assists&oddsFormat=american&dateFormat=iso`;
+                            const propsResponse = await fetch(propsUrl);
+                            
+                            if (propsResponse.ok) {
+                                const propsData = await propsResponse.json();
+                                if (propsData.bookmakers && propsData.bookmakers.length > 0) {
+                                    html += '<div class="goldmine"><h4>🎯 REAL TACKLE PROPS:</h4>';
+                                    propsData.bookmakers.forEach(bookmaker => {
+                                        bookmaker.markets.forEach(market => {
+                                            if (market.key.includes('tackle')) {
+                                                html += `<h5>${bookmaker.title} - ${market.key}</h5>`;
+                                                market.outcomes.forEach(outcome => {
+                                                    html += `<p>${outcome.description}: Over/Under ${outcome.point} at ${outcome.price}</p>`;
+                                                });
+                                            }
+                                        });
+                                    });
+                                    html += '</div>';
+                                } else {
+                                    html += '<p>⚠️ Tackle props not yet available (may be released closer to game time)</p>';
+                                }
+                            }
+                            
+                        } catch (error) {
+                            html += `<div class="error">❌ Error getting betting data: ${error.message}</div>`;
+                        }
+                    }
+                } else {
+                    html += '<p>⚠️ No Thursday games found in the next 7 days</p>';
+                    html += '<h3>📋 All Upcoming Games:</h3>';
+                    eventsData.slice(0, 10).forEach(game => {
+                        const gameDate = new Date(game.commence_time);
+                        const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][gameDate.getDay()];
+                        html += `<p>${dayName}: ${game.away_team} @ ${game.home_team} - ${gameDate.toLocaleDateString()}</p>`;
+                    });
+                }
+                
+                html += '</div>';
+                
+                // Show API usage info
+                if (eventsResponse.headers.get('x-requests-remaining')) {
+                    html += `<div class="result">
+                        <h3>📊 API Usage</h3>
+                        <p>Requests Remaining: ${eventsResponse.headers.get('x-requests-remaining')}</p>
+                        <p>Requests Used: ${eventsResponse.headers.get('x-requests-used')}</p>
+                    </div>`;
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultsDiv.innerHTML = `
+                    <div class="result error">
+                        <h2>❌ API Error</h2>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>This could mean:</p>
+                        <ul>
+                            <li>API key is invalid or expired</li>
+                            <li>Rate limit exceeded</li>
+                            <li>Network connection issue</li>
+                            <li>CORS policy blocking the request</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-run test when page loads
+        window.addEventListener('load', () => {
+            console.log('🚀 Auto-running Thursday Night Football data test...');
+            testRealThursdayData();
+        });
+    </script>
+</body>
+</html>

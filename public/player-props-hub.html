@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Player Props Hub - All Positions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+        }
+
+        .header h1 {
+            color: #ffd700;
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.8;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .nav-button {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-button.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-selector {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .game-selector select {
+            background: #1a1a2e;
+            color: white;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+
+        .props-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .overview-card {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .overview-card h3 {
+            margin: 0 0 10px 0;
+            color: #00ff88;
+        }
+
+        .overview-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .goldmines-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .goldmines-section h2 {
+            color: #ffd700;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        .goldmine-props {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .goldmine-prop {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .goldmine-prop .player-name {
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+
+        .goldmine-prop .prop-details {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        .goldmine-prop .edge {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .teams-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .team-section {
+            background: rgba(30, 30, 60, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .team-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .team-name {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .position-group {
+            margin-bottom: 25px;
+        }
+
+        .position-header {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px 8px 0 0;
+            padding: 10px 15px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .position-props {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 0;
+        }
+
+        .prop-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prop-item:last-child {
+            border-bottom: none;
+        }
+
+        .prop-item:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .prop-player {
+            font-weight: bold;
+        }
+
+        .prop-market {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .prop-line {
+            text-align: right;
+        }
+
+        .prop-odds {
+            font-size: 0.9rem;
+            color: #00ff88;
+        }
+
+        .prop-projection {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .prop-edge {
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        .prop-edge.positive {
+            color: #00ff88;
+        }
+
+        .prop-edge.negative {
+            color: #ff6b6b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .confidence-very-high { background: #00ff88; color: #000; }
+        .confidence-high { background: #ffd700; color: #000; }
+        .confidence-medium { background: #ff8800; color: #000; }
+        .confidence-low { background: #ff6b6b; color: #fff; }
+
+        @media (max-width: 768px) {
+            .teams-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-chart-line"></i> NFL Player Props Hub</h1>
+        <p>Complete Player Props Analysis - All Positions, All Games, AI-Driven Insights</p>
+    </div>
+
+    <div class="navigation">
+        <a href="nfl-live-games.html" class="nav-button">
+            <i class="fas fa-broadcast-tower"></i> Live Games
+        </a>
+        <a href="nfl-upcoming-games.html" class="nav-button">
+            <i class="fas fa-calendar-alt"></i> Upcoming
+        </a>
+        <a href="nfl-predictions.html" class="nav-button">
+            <i class="fas fa-brain"></i> AI Predictions
+        </a>
+        <a href="nfl-betting.html" class="nav-button">
+            <i class="fas fa-coins"></i> Betting
+        </a>
+        <a href="player-props-hub.html" class="nav-button active">
+            <i class="fas fa-users"></i> Player Props
+        </a>
+        <a href="index.html" class="nav-button">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+
+    <div class="main-container">
+        <div class="game-selector">
+            <h3><i class="fas fa-gamepad"></i> Select Game for Player Props Analysis</h3>
+            <select id="gameSelect">
+                <option value="">Loading games...</option>
+            </select>
+            <button id="loadPropsBtn" onclick="loadSelectedGameProps()">
+                <i class="fas fa-search"></i> Load Player Props
+            </button>
+        </div>
+
+        <div id="propsContainer">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <h3>Loading Player Props...</h3>
+                <p>Analyzing all NFL player props with AI-driven insights</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load all service dependencies -->
+    <script src="comprehensive-player-props-service.js"></script>
+    <script src="simple-working-system.js"></script>
+
+    <script>
+        let currentGameData = null;
+        let nflSystem = null;
+
+        // Initialize the system
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🏈 Player Props Hub initializing...');
+            
+            try {
+                if (typeof SimpleWorkingSystem !== 'undefined') {
+                    nflSystem = new SimpleWorkingSystem();
+                    await nflSystem.start();
+                    
+                    await loadGamesList();
+                    await loadDefaultProps();
+                } else {
+                    showError('System not loaded properly. Please refresh the page.');
+                }
+            } catch (error) {
+                console.error('❌ Error initializing system:', error);
+                showError('Failed to load player props system. Please try again.');
+            }
+        });
+
+        async function loadGamesList() {
+            try {
+                console.log('📅 Loading NFL games list...');
+                
+                // Get games from our existing system
+                const games = nflSystem.games || [];
+                const gameSelect = document.getElementById('gameSelect');
+                
+                if (games.length === 0) {
+                    gameSelect.innerHTML = '<option value="">No games available</option>';
+                    return;
+                }
+
+                // Populate games dropdown
+                gameSelect.innerHTML = '<option value="">Select a game...</option>';
+                games.forEach((game, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${game.awayTeam?.displayName || game.awayTeam?.name} @ ${game.homeTeam?.displayName || game.homeTeam?.name}`;
+                    gameSelect.appendChild(option);
+                });
+
+                console.log(`✅ Loaded ${games.length} games to selector`);
+            } catch (error) {
+                console.error('❌ Error loading games:', error);
+            }
+        }
+
+        async function loadDefaultProps() {
+            try {
+                // Load props for the first available game or Thursday night game
+                const games = nflSystem.games || [];
+                if (games.length > 0) {
+                    const gameSelect = document.getElementById('gameSelect');
+                    gameSelect.selectedIndex = 1; // Select first game
+                    await loadSelectedGameProps();
+                }
+            } catch (error) {
+                console.error('❌ Error loading default props:', error);
+            }
+        }
+
+        async function loadSelectedGameProps() {
+            const gameSelect = document.getElementById('gameSelect');
+            const gameIndex = gameSelect.value;
+            
+            if (!gameIndex && gameIndex !== '0') {
+                showError('Please select a game to view player props.');
+                return;
+            }
+
+            const games = nflSystem.games || [];
+            const selectedGame = games[parseInt(gameIndex)];
+            
+            if (!selectedGame) {
+                showError('Selected game not found.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                console.log('🎯 Loading player props for game:', selectedGame);
+                
+                const homeTeam = selectedGame.homeTeam?.name || 'Home';
+                const awayTeam = selectedGame.awayTeam?.name || 'Away';
+                const gameId = selectedGame.id || 'game_' + gameIndex;
+                
+                // Get comprehensive player props
+                const propsData = await window.comprehensivePlayerPropsService.getAllPlayerPropsForGame(
+                    gameId, homeTeam, awayTeam
+                );
+                
+                currentGameData = propsData;
+                displayPlayerProps(propsData);
+                
+            } catch (error) {
+                console.error('❌ Error loading player props:', error);
+                showError('Failed to load player props. Please try again.');
+            }
+        }
+
+        function displayPlayerProps(propsData) {
+            const container = document.getElementById('propsContainer');
+            
+            const html = `
+                <div class="props-overview">
+                    <div class="overview-card">
+                        <h3><i class="fas fa-chart-bar"></i> Total Props</h3>
+                        <div class="number">${propsData.gameInfo.totalProps}</div>
+                    </div>
+                    <div class="overview-card">
+                        <h3><i class="fas fa-gem"></i> Goldmines</h3>
+                        <div class="number">${propsData.gameInfo.goldmines}</div>
+                    </div>
+                    <div class="overview-card">
+                        <h3><i class="fas fa-clock"></i> Last Updated</h3>
+                        <div style="font-size: 1rem; color: #ffd700;">
+                            ${new Date(propsData.gameInfo.lastUpdated).toLocaleTimeString()}
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <h3><i class="fas fa-football-ball"></i> Matchup</h3>
+                        <div style="font-size: 1.2rem; color: #00ff88;">
+                            ${propsData.gameInfo.matchup}
+                        </div>
+                    </div>
+                </div>
+
+                ${propsData.goldmines.length > 0 ? `
+                <div class="goldmines-section">
+                    <h2><i class="fas fa-star"></i> Top Goldmine Opportunities</h2>
+                    <div class="goldmine-props">
+                        ${propsData.goldmines.map(prop => `
+                            <div class="goldmine-prop">
+                                <div class="player-name">${prop.player}</div>
+                                <div class="prop-details">
+                                    ${prop.market} - Line: ${prop.line}
+                                </div>
+                                <div class="prop-details">
+                                    Projection: <span class="edge">${prop.projection}</span> | 
+                                    Edge: <span class="edge">+${prop.edge}</span>
+                                </div>
+                                <div class="prop-details">
+                                    <span class="confidence-badge confidence-${prop.confidence.toLowerCase().replace('_', '-')}">${prop.confidence}</span>
+                                    ${prop.overOdds}/${prop.underOdds} @ ${prop.bestBook}
+                                </div>
+                                <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">
+                                    ${prop.reasoning}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="teams-section">
+                    <div class="team-section">
+                        <div class="team-header">
+                            <h2 class="team-name">${propsData.awayTeam.name} (Away)</h2>
+                        </div>
+                        ${generateTeamPropsHTML(propsData.awayTeam.props)}
+                    </div>
+                    
+                    <div class="team-section">
+                        <div class="team-header">
+                            <h2 class="team-name">${propsData.homeTeam.name} (Home)</h2>
+                        </div>
+                        ${generateTeamPropsHTML(propsData.homeTeam.props)}
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function generateTeamPropsHTML(teamProps) {
+            const positions = [
+                { key: 'quarterbacks', name: 'Quarterbacks', icon: 'fas fa-hand-paper' },
+                { key: 'runningBacks', name: 'Running Backs', icon: 'fas fa-running' },
+                { key: 'wideReceivers', name: 'Wide Receivers', icon: 'fas fa-hands' },
+                { key: 'tightEnds', name: 'Tight Ends', icon: 'fas fa-hand-rock' },
+                { key: 'kickers', name: 'Kickers', icon: 'fas fa-dot-circle' },
+                { key: 'defense', name: 'Defense', icon: 'fas fa-shield-alt' }
+            ];
+
+            return positions.map(position => {
+                const props = teamProps[position.key] || [];
+                if (props.length === 0) return '';
+
+                return `
+                    <div class="position-group">
+                        <div class="position-header">
+                            <i class="${position.icon}"></i> ${position.name} (${props.length} props)
+                        </div>
+                        <div class="position-props">
+                            ${props.map(prop => `
+                                <div class="prop-item">
+                                    <div>
+                                        <div class="prop-player">${prop.player}</div>
+                                        <div class="prop-market">${prop.propType}</div>
+                                    </div>
+                                    <div class="prop-line">
+                                        <div class="prop-projection">${prop.projection}</div>
+                                        <div class="prop-odds">O/U ${prop.line} (${prop.overOdds}/${prop.underOdds})</div>
+                                        <div class="prop-edge ${prop.edge >= 0 ? 'positive' : 'negative'}">
+                                            ${prop.edge >= 0 ? '+' : ''}${prop.edge} edge
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showLoading() {
+            const container = document.getElementById('propsContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading Player Props...</h3>
+                    <p>Analyzing comprehensive player props with AI insights...</p>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const container = document.getElementById('propsContainer');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 50px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 20px;"></i>
+                    <h3>Error Loading Player Props</h3>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" style="background: #ff4444; border: none; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            if (currentGameData) {
+                console.log('🔄 Auto-refreshing player props...');
+                loadSelectedGameProps();
+            }
+        }, 300000); // 5 minutes
+    </script>
+</body>
+</html>
