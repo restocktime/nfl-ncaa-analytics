@@ -2871,7 +2871,7 @@ class SimpleWorkingSystem {
             
             // AFC SOUTH - 2025-26 Season
             'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo', K: 'Nick Folk', LB: 'Kenneth Murray' },
-            'Colts': { QB: 'Daniel Jones', RB: 'Jonathan Taylor', WR: 'Michael Pittman Jr.', TE: 'Mo Alie-Cox', K: 'Matt Gay', LB: 'Zaire Franklin' },
+            'Colts': { QB: 'Anthony Richardson', RB: 'Jonathan Taylor', WR: 'Michael Pittman Jr.', TE: 'Mo Alie-Cox', K: 'Matt Gay', LB: 'Zaire Franklin' },
             'Jaguars': { QB: 'Trevor Lawrence', RB: 'Travis Etienne', WR: 'Brian Thomas Jr.', TE: 'Evan Engram', K: 'Cam Little', LB: 'Foye Oluokun' },
             'Texans': { QB: 'C.J. Stroud', RB: 'Joe Mixon', WR: 'Nico Collins', TE: 'Dalton Schultz', K: 'Ka\'imi Fairbairn', LB: 'Azeez Al-Shaair' },
             
@@ -2879,12 +2879,12 @@ class SimpleWorkingSystem {
             'Chiefs': { QB: 'Patrick Mahomes', RB: 'Kareem Hunt', WR: 'Xavier Worthy', TE: 'Travis Kelce', K: 'Harrison Butker', LB: 'Nick Bolton' },
             'Chargers': { QB: 'Justin Herbert', RB: 'J.K. Dobbins', WR: 'Ladd McConkey', TE: 'Will Dissly', K: 'Cameron Dicker', LB: 'Khalil Mack' },
             'Broncos': { QB: 'Bo Nix', RB: 'RJ Harvey', WR: 'Courtland Sutton', TE: 'Adam Trautman', K: 'Wil Lutz', LB: 'Alex Singleton' },
-            'Raiders': { QB: 'Gardner Minshew', RB: 'Alexander Mattison', WR: 'Jakobi Meyers', TE: 'Brock Bowers', K: 'Daniel Carlson', LB: 'Divine Deablo' },
+            'Raiders': { QB: 'Geno Smith', RB: 'Alexander Mattison', WR: 'Jakobi Meyers', TE: 'Brock Bowers', K: 'Daniel Carlson', LB: 'Divine Deablo' },
             
             // NFC EAST - 2025-26 Season
             'Cowboys': { QB: 'Dak Prescott', RB: 'Javonte Williams', WR: 'George Pickens', TE: 'Jake Ferguson', K: 'Brandon Aubrey', LB: 'Micah Parsons' },
             'Eagles': { QB: 'Jalen Hurts', RB: 'Saquon Barkley', WR: 'A.J. Brown', TE: 'Dallas Goedert', K: 'Jake Elliott', LB: 'Nakobe Dean' },
-            'Giants': { QB: 'Tommy DeVito', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson', K: 'Greg Joseph', LB: 'Micah McFadden' },
+            'Giants': { QB: 'Daniel Jones', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson', K: 'Greg Joseph', LB: 'Micah McFadden' },
             'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz', K: 'Austin Seibert', LB: 'Bobby Wagner' },
             
             // NFC NORTH - 2025-26 Season
@@ -2900,7 +2900,7 @@ class SimpleWorkingSystem {
             'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton', K: 'Chase McLaughlin', LB: 'Lavonte David' },
             
             // NFC WEST - 2025-26 Season
-            '49ers': { QB: 'Mac Jones', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle', K: 'Jake Moody', LB: 'Fred Warner' },
+            '49ers': { QB: 'Brock Purdy', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle', K: 'Jake Moody', LB: 'Fred Warner' },
             'Seahawks': { QB: 'Geno Smith', RB: 'Kenneth Walker III', WR: 'DK Metcalf', TE: 'Noah Fant', K: 'Jason Myers', LB: 'Bobby Wagner' },
             'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson', K: 'Lucas Havrisik', LB: 'Byron Young' },
             'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride', K: 'Chad Ryland', LB: 'Kyzir White' }
@@ -2917,9 +2917,9 @@ class SimpleWorkingSystem {
             console.log('🗑️ Cleared pick cache due to roster updates');
         }
         
-        console.log('🏈 2025-2026 NFL rosters initialized globally with corrections');
+        console.log('🏈 2025-2026 NFL rosters initialized globally with latest corrections');
         console.log('📊 Available teams:', Object.keys(teamRosters));
-        console.log('✅ Major fixes: Tee Higgins (WR not TE), Myles Garrett (DE not LB), Stefon Diggs (Patriots WR1)');
+        console.log('✅ Latest fixes: Tommy DeVito→Daniel Jones (Giants), Gardner Minshew→Geno Smith (Raiders), Daniel Jones→Anthony Richardson (Colts), Mac Jones→Brock Purdy (49ers starter)');
         
         return teamRosters;
     }
