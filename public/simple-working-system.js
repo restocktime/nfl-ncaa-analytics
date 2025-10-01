@@ -110,7 +110,7 @@ class SimpleWorkingSystem {
         // API Configuration
         this.config = {
             oddsApi: {
-                key: '22e59e4eccd8562ad4b697aeeaccb0fb', // Real API key configured
+                key: '9de126998e0df996011a28e9527dd7b9', // Updated API key from user
                 enabled: true, // Enabled with real key
                 baseUrl: 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds'
             },
@@ -189,9 +189,10 @@ class SimpleWorkingSystem {
             console.log('📊 NFL Analytics ready - Using enhanced simulation (no API keys configured)');
             console.log('💡 To enable live odds: window.simpleSystem.configureOddsAPI("your-key")');
         } else {
-            console.log('🔴 NFL Analytics ready with LIVE API integration!');
-            console.log('💰 The Odds API: ENABLED with real data');
-            console.log('🎯 Player props now using live sportsbook odds!');
+            console.log('🔴 NFL Analytics ready with API integration configured!');
+            console.log(`💰 The Odds API: CONFIGURED (Key: ${this.config.oddsApi.key.substring(0,8)}...)`);
+            console.log('🎯 System will test connectivity and fall back to enhanced simulation if needed');
+            console.log('📈 Enhanced fallback includes realistic 2025 odds and comprehensive data');
         }
         
         console.log('✅ System initialized with real ESPN data and player props!');
@@ -3363,9 +3364,19 @@ class SimpleWorkingSystem {
             try {
                 console.log('🧪 Testing The Odds API connectivity...');
                 const testResponse = await this.testOddsAPI();
-                console.log(`✅ The Odds API test: ${testResponse ? 'SUCCESS' : 'FAILED'}`);
+                if (testResponse) {
+                    console.log(`✅ The Odds API test: SUCCESS - Live odds available`);
+                    status.oddsApi.connectivity = 'CONNECTED';
+                } else {
+                    console.log(`⚠️ The Odds API test: FAILED - Using enhanced fallback data`);
+                    console.log(`📊 Note: System will use comprehensive simulation with realistic odds`);
+                    status.oddsApi.connectivity = 'FALLBACK';
+                }
             } catch (error) {
                 console.log(`❌ The Odds API test failed: ${error.message}`);
+                console.log(`📊 Fallback: Using enhanced 2025 simulation with real roster data`);
+                status.oddsApi.connectivity = 'ERROR';
+                status.oddsApi.errorMessage = error.message;
             }
         }
         
@@ -3394,10 +3405,48 @@ class SimpleWorkingSystem {
         try {
             const testUrl = `${this.config.oddsApi.baseUrl}?apiKey=${this.config.oddsApi.key}&regions=us&markets=spreads&bookmakers=draftkings`;
             const response = await fetch(testUrl);
-            return response.ok;
+            
+            if (!response.ok) {
+                console.log(`⚠️ The Odds API Response: ${response.status} ${response.statusText}`);
+                if (response.status === 401) {
+                    console.log('🔑 API Key may be invalid, expired, or lacks permissions');
+                    console.log('💰 Check your API key at: https://the-odds-api.com/');
+                }
+                return false;
+            }
+            
+            return true;
         } catch (error) {
+            console.log(`❌ Network error testing The Odds API: ${error.message}`);
             return false;
         }
+    }
+    
+    /**
+     * Configure a new Odds API key
+     */
+    configureOddsAPI(newApiKey) {
+        if (!newApiKey || typeof newApiKey !== 'string') {
+            console.error('❌ Invalid API key provided');
+            return false;
+        }
+        
+        this.config.oddsApi.key = newApiKey;
+        this.config.oddsApi.enabled = true;
+        
+        console.log(`⚙️ The Odds API key updated: ${newApiKey.substring(0,8)}...`);
+        console.log('🧪 Testing new API key...');
+        
+        // Test the new key
+        this.testOddsAPI().then(result => {
+            if (result) {
+                console.log('✅ New API key is working! Live odds are now available.');
+            } else {
+                console.log('❌ New API key failed test. Using enhanced fallback data.');
+            }
+        });
+        
+        return true;
     }
 
     setupTacklePropsDisplay() {
