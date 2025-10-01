@@ -165,6 +165,14 @@
         </div>
     </div>
 
+    <!-- Load all service dependencies first -->
+    <script src="pff-data-service.js"></script>
+    <script src="nextgen-stats-service.js"></script>
+    <script src="sportsbook-api-service.js"></script>
+    <script src="tackle-props-scanner.js"></script>
+    <script src="picks-tracker-service.js"></script>
+    
+    <!-- Load main system last -->
     <script src="simple-working-system.js"></script>
     <script>
         let nflSystem;
@@ -177,8 +185,8 @@
                     nflSystem = new SimpleWorkingSystem();
                     console.log('✅ NFL System initialized successfully');
                     
-                    await nflSystem.initialize();
-                    nflSystem.loadBettingLines();
+                    await nflSystem.start();
+                    // Betting lines are loaded automatically as part of start()
                 } else {
                     console.error('❌ SimpleWorkingSystem not found');
                     showError('NFL System not loaded properly. Please refresh the page.');

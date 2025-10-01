@@ -3383,7 +3383,7 @@ class SimpleWorkingSystem {
         // Test ESPN data
         try {
             console.log('🧪 Testing ESPN data fetch...');
-            const games = await this.loadNFLGames();
+            const games = this.games || [];
             console.log(`✅ ESPN NFL games: ${games?.length || 0} games loaded`);
         } catch (error) {
             console.log(`❌ ESPN test failed: ${error.message}`);
@@ -3495,9 +3495,12 @@ class SimpleWorkingSystem {
             setInterval(() => {
                 this.displayTacklePropsData();
             }, 2 * 60 * 1000);
-        } else {
-            console.warn('⚠️ Tackle props scanner not available yet, will retry...');
+        } else if (!this.tacklePropsRetries || this.tacklePropsRetries < 3) {
+            this.tacklePropsRetries = (this.tacklePropsRetries || 0) + 1;
+            console.warn(`⚠️ Tackle props scanner not available yet, will retry (${this.tacklePropsRetries}/3)...`);
             setTimeout(() => this.setupTacklePropsDisplay(), 2000);
+        } else {
+            console.log('❌ Tackle props scanner failed to load after 3 attempts, continuing without it');
         }
     }
 
@@ -3705,9 +3708,12 @@ class SimpleWorkingSystem {
         // Load initial data
         if (window.picksTrackerService) {
             this.displayCurrentWeekPicks();
-        } else {
-            console.warn('⚠️ Picks Tracker Service not available yet, will retry...');
+        } else if (!this.picksTrackerRetries || this.picksTrackerRetries < 3) {
+            this.picksTrackerRetries = (this.picksTrackerRetries || 0) + 1;
+            console.warn(`⚠️ Picks Tracker Service not available yet, will retry (${this.picksTrackerRetries}/3)...`);
             setTimeout(() => this.setupPicksTracker(), 2000);
+        } else {
+            console.log('❌ Picks Tracker Service failed to load after 3 attempts, continuing without it');
         }
         
         // Add CSS
