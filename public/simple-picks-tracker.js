@@ -18,7 +18,19 @@ class SimplePicksTracker {
     // Get REAL weekly performance from actual goldmine picks
     async getWeeklyPerformance(season, week) {
         try {
-            // Get real goldmines from tackle props scanner
+            // Get comprehensive weekly picks from MCP if available
+            if (window.weeklyPicksMCP) {
+                try {
+                    const weeklyPicks = await window.weeklyPicksMCP.getBestWeeklyPicks(season, week);
+                    if (weeklyPicks.topPicks.length > 0) {
+                        return this.convertMCPToPerformance(weeklyPicks, season, week);
+                    }
+                } catch (mcpError) {
+                    console.warn('⚠️ MCP system unavailable, falling back to goldmines:', mcpError);
+                }
+            }
+            
+            // Fallback: Get real goldmines from tackle props scanner
             const goldmines = this.getRealGoldmines();
             
             if (goldmines.length === 0) {
@@ -89,33 +101,53 @@ class SimplePicksTracker {
 
     async getPicksByWeek(season, week) {
         try {
-            // Get REAL goldmine picks from tackle props scanner
+            // Get comprehensive weekly picks from MCP if available
+            if (window.weeklyPicksMCP) {
+                try {
+                    const weeklyPicks = await window.weeklyPicksMCP.getBestWeeklyPicks(season, week);
+                    if (weeklyPicks.topPicks.length > 0) {
+                        return this.convertMCPToPicks(weeklyPicks.topPicks, week);
+                    }
+                } catch (mcpError) {
+                    console.warn('⚠️ MCP system unavailable for picks, falling back to goldmines:', mcpError);
+                }
+            }
+            
+            // Fallback: Get REAL goldmine picks from tackle props scanner
             const goldmines = this.getRealGoldmines();
             
             if (goldmines.length === 0) {
                 return [];
             }
             
-            // Convert goldmines to pick format
-            const realPicks = goldmines.map((goldmine, index) => ({
-                id: index + 1,
-                gameId: goldmine.gameId || `game_${week}_${index}`,
-                type: 'tackle_prop',
-                team: goldmine.team || 'TBD',
-                opponent: goldmine.opponent || 'TBD',
-                player: goldmine.player,
-                line: `Over ${goldmine.line} tackles`,
-                odds: goldmine.bestOdds || -110,
-                status: 'pending', // All are pending until games finish
-                confidence: goldmine.confidence.toLowerCase(),
-                stake: 100, // Standard unit
-                payout: 0, // Pending
-                edge: goldmine.edge,
-                reasoning: goldmine.reasoning || `${goldmine.edge} edge detected with ${goldmine.confidence} confidence`,
-                projection: goldmine.projection,
-                lineShop: goldmine.lineShop,
-                sportsbook: goldmine.bestBook || 'Multiple books'
-            }));
+            // Convert goldmines to pick format - fix field mapping
+            const realPicks = goldmines.map((goldmine, index) => {
+                // Log the first goldmine structure to debug field names
+                if (index === 0) {
+                    console.log('🔍 Goldmine structure for picks conversion:', Object.keys(goldmine));
+                    console.log('🔍 Sample goldmine data:', goldmine);
+                }
+                
+                return {
+                    id: index + 1,
+                    gameId: goldmine.gameId || goldmine.scanId || `game_${week}_${index}`,
+                    type: 'tackle_prop',
+                    team: goldmine.defenseTeam || goldmine.team || 'TBD',
+                    opponent: goldmine.rbOpponent || goldmine.opponent || 'TBD', 
+                    player: goldmine.defender || goldmine.player || 'Unknown Player',
+                    line: `Over ${goldmine.bookLine || goldmine.line || 0} tackles`,
+                    odds: goldmine.bestOverOdds?.odds || goldmine.bestOdds || -110,
+                    status: 'pending', // All are pending until games finish
+                    confidence: (goldmine.confidence || 'medium').toLowerCase(),
+                    stake: 100, // Standard unit
+                    payout: 0, // Pending
+                    edge: goldmine.edge || 0,
+                    reasoning: goldmine.reasoning || `${goldmine.edge || 0} edge detected with ${goldmine.confidence || 'medium'} confidence`,
+                    projection: goldmine.projection || 0,
+                    lineShop: goldmine.lineShoppingValue || goldmine.lineShop || 0,
+                    sportsbook: goldmine.bestOverOdds?.sportsbook || goldmine.bestBook || 'Multiple books'
+                };
+            });
             
             return realPicks;
         } catch (error) {
@@ -246,6 +278,101 @@ class SimplePicksTracker {
             console.error('Error getting real goldmines:', error);
             return [];
         }
+    }
+
+    // Convert MCP picks to picks format
+    convertMCPToPicks(mcpPicks, week) {
+        return mcpPicks.map((pick, index) => ({
+            id: index + 1,
+            gameId: pick.id,
+            type: pick.category,
+            team: pick.team || 'TBD',
+            opponent: pick.opponent || 'TBD',
+            player: pick.player || pick.team,
+            line: pick.market,
+            odds: pick.line || pick.overOdds || -110,
+            status: 'pending',
+            confidence: pick.confidence.toLowerCase(),
+            stake: (pick.units || 1) * 100, // Convert units to dollars
+            payout: 0, // Pending
+            edge: pick.edge,
+            reasoning: pick.reasoning,
+            projection: pick.projection || 0,
+            lineShop: 0,
+            sportsbook: pick.bestBook || 'Multiple books',
+            recommendation: pick.recommendation,
+            riskLevel: pick.riskLevel,
+            category: pick.category,
+            subcategory: pick.subcategory
+        }));
+    }
+
+    // Convert MCP weekly picks to performance format
+    convertMCPToPerformance(weeklyPicks, season, week) {
+        const picks = weeklyPicks.topPicks;
+        const summary = weeklyPicks.summary;
+        
+        return {
+            season: season,
+            week: week,
+            weekKey: `${season}_${week}`,
+            totalPicks: summary.totalRecommendations,
+            settledPicks: 0,
+            pendingPicks: summary.totalRecommendations,
+            wins: 0,
+            losses: 0,
+            pushes: 0,
+            voids: 0,
+            winRate: 0,
+            totalStake: summary.totalUnits * 100, // Convert units to dollars
+            totalPayout: 0,
+            netResult: 0,
+            roi: summary.projectedROI,
+            topPick: picks[0] ? {
+                player: picks[0].player || picks[0].team,
+                market: picks[0].market,
+                edge: picks[0].edge,
+                status: 'pending',
+                recommendation: picks[0].recommendation
+            } : null,
+            averageOdds: -110,
+            averageStake: summary.totalUnits / summary.totalRecommendations * 100,
+            byType: this.groupMCPByType(picks),
+            byConfidence: this.groupMCPByConfidence(picks),
+            mcpSummary: summary // Additional MCP-specific data
+        };
+    }
+
+    // Group MCP picks by type
+    groupMCPByType(picks) {
+        const grouped = {};
+        picks.forEach(pick => {
+            const type = pick.category;
+            if (!grouped[type]) {
+                grouped[type] = { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 };
+            }
+            grouped[type].total++;
+        });
+        return grouped;
+    }
+
+    // Group MCP picks by confidence
+    groupMCPByConfidence(picks) {
+        const grouped = {
+            'very_high': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 },
+            'high': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 },
+            'medium': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 },
+            'low': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 }
+        };
+        
+        picks.forEach(pick => {
+            const confidence = pick.confidence.toLowerCase().replace('_', '_');
+            if (grouped[confidence]) {
+                grouped[confidence].total++;
+            }
+        });
+        
+        return grouped;
     }
 
     // Group goldmines by confidence level
