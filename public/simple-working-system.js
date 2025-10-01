@@ -4176,8 +4176,8 @@ class SimpleWorkingSystem {
                                     <span class="pick-status ${pick.status}">${pick.status.toUpperCase()}</span>
                                 </div>
                                 <div class="pick-details">
-                                    <div class="pick-game">${pick.homeTeam} vs ${pick.awayTeam}</div>
-                                    <div class="pick-selection">${pick.selection}</div>
+                                    <div class="pick-game">${pick.player || pick.team || 'Player'} vs ${pick.opponent || 'Opponent'}</div>
+                                    <div class="pick-selection">${pick.selection || pick.line || pick.market || 'No selection'}</div>
                                     ${pick.line ? `<div class="pick-line">Line: ${pick.line}</div>` : ''}
                                     <div class="pick-odds">Odds: ${pick.odds > 0 ? '+' : ''}${pick.odds}</div>
                                 </div>
@@ -4297,8 +4297,8 @@ class SimpleWorkingSystem {
                                             <span class="type-record ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.wins}-${stats.losses}</span>
                                         </div>
                                         <div class="type-details">
-                                            <div class="type-winrate ${stats.winRate >= 50 ? 'positive' : 'negative'}">${stats.winRate.toFixed(1)}%</div>
-                                            <div class="type-profit ${stats.netProfit > 0 ? 'positive' : 'negative'}">${stats.netProfit > 0 ? '+' : ''}${stats.netProfit.toFixed(2)}u</div>
+                                            <div class="type-winrate ${stats.winRate >= 50 ? 'positive' : 'negative'}">${(stats.winRate || 0).toFixed(1)}%</div>
+                                            <div class="type-profit ${stats.netProfit > 0 ? 'positive' : 'negative'}">${stats.netProfit > 0 ? '+' : ''}${(stats.netProfit || 0).toFixed(2)}u</div>
                                         </div>
                                         <div class="type-bar">
                                             <div class="type-fill ${stats.winRate >= 50 ? 'positive' : 'negative'}" style="width: ${Math.min(100, stats.winRate)}%"></div>
