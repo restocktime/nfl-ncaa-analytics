@@ -79,87 +79,183 @@ class FantasyNewsService {
     }
 
     async simulateNewsApiCalls() {
-        // Simulate real fantasy news data
-        return [
+        // Enhanced news simulation with more realistic and current content
+        const currentDate = new Date();
+        const currentHour = currentDate.getHours();
+        
+        // Generate time-relevant news
+        const newsItems = [
             {
-                id: 'news_1',
-                headline: 'Josh Allen limited in practice with shoulder injury',
-                summary: 'Bills QB Josh Allen was limited in Wednesday practice with a shoulder injury. Monitor his status through the week.',
+                id: `news_${Date.now()}_1`,
+                headline: 'Josh Allen shoulder injury update - Expected to play Sunday',
+                summary: 'Bills QB Josh Allen practiced in full on Friday after being limited earlier in the week with a shoulder injury. Expected to start against the Dolphins with no limitations.',
                 player: 'Josh Allen',
+                playerId: 'josh_allen',
                 team: 'BUF',
                 position: 'QB',
-                impact: 'Monitor',
+                impact: 'Positive',
                 severity: 'Minor',
                 timestamp: new Date().toISOString(),
-                source: 'ESPN Fantasy',
-                fantasyRelevance: 'High'
+                source: 'NFL Network',
+                fantasyRelevance: 'High',
+                bettingImpact: {
+                    props: {
+                        passing_yards: { adjustment: 0, confidence: 'medium' },
+                        passing_touchdowns: { adjustment: 0, confidence: 'medium' }
+                    },
+                    teamImpact: 'neutral'
+                },
+                tags: ['injury_update', 'starting_qb', 'game_status']
             },
             {
-                id: 'news_2',
-                headline: 'Christian McCaffrey expected to return this week',
-                summary: 'San Francisco RB Christian McCaffrey is expected to return from injury this week after missing two games.',
+                id: `news_${Date.now()}_2`,
+                headline: 'Christian McCaffrey officially returns from IR, expected heavy workload',
+                summary: 'San Francisco 49ers have activated RB Christian McCaffrey from injured reserve. Coach Kyle Shanahan indicated he will return to his full workload immediately.',
                 player: 'Christian McCaffrey',
+                playerId: 'christian_mccaffrey',
                 team: 'SF',
                 position: 'RB',
-                impact: 'Start',
-                severity: 'None',
-                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                impact: 'Major Positive',
+                severity: 'Resolved',
+                timestamp: new Date(currentDate.getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+                source: 'ESPN',
+                fantasyRelevance: 'Highest',
+                bettingImpact: {
+                    props: {
+                        rushing_yards: { adjustment: +15, confidence: 'high' },
+                        rushing_touchdowns: { adjustment: +0.3, confidence: 'high' },
+                        receiving_yards: { adjustment: +8, confidence: 'medium' }
+                    },
+                    teamImpact: 'major_positive'
+                },
+                tags: ['return_from_injury', 'featured_back', 'workload_increase']
+            },
+            {
+                id: `news_${Date.now()}_3`,
+                headline: 'Davante Adams questionable with ankle injury, game-time decision',
+                summary: 'Jets WR Davante Adams suffered an ankle injury in practice and is listed as questionable for Sunday. Coach Robert Saleh said it will be a game-time decision.',
+                player: 'Davante Adams',
+                playerId: 'davante_adams',
+                team: 'NYJ',
+                position: 'WR',
+                impact: 'Negative',
+                severity: 'Moderate',
+                timestamp: new Date(currentDate.getTime() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
                 source: 'NFL.com',
-                fantasyRelevance: 'High'
+                fantasyRelevance: 'High',
+                bettingImpact: {
+                    props: {
+                        receiving_yards: { adjustment: -12, confidence: 'medium' },
+                        receptions: { adjustment: -1.5, confidence: 'medium' },
+                        receiving_touchdowns: { adjustment: -0.2, confidence: 'low' }
+                    },
+                    teamImpact: 'negative'
+                },
+                tags: ['injury_concern', 'game_time_decision', 'wr1']
             },
             {
-                id: 'news_3',
-                headline: 'Tyreek Hill dealing with ankle injury',
-                summary: 'Dolphins WR Tyreek Hill is dealing with an ankle injury but expected to play through it this week.',
-                player: 'Tyreek Hill',
-                team: 'MIA',
-                position: 'WR',
-                impact: 'Start',
-                severity: 'Minor',
-                timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-                source: 'FantasyPros',
-                fantasyRelevance: 'High'
-            },
-            {
-                id: 'news_4',
-                headline: 'Jayden Reed trending up for expanded role',
-                summary: 'Green Bay WR Jayden Reed is expected to see increased targets with other receivers dealing with injuries.',
-                player: 'Jayden Reed',
-                team: 'GB',
-                position: 'WR',
-                impact: 'Start',
-                severity: 'None',
-                timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-                source: 'Rotoworld',
-                fantasyRelevance: 'Medium'
-            },
-            {
-                id: 'news_5',
-                headline: 'Travis Kelce on pace for bounce-back week',
-                summary: 'Chiefs TE Travis Kelce has favorable matchup and is expected to have increased involvement in game plan.',
+                id: `news_${Date.now()}_4`,
+                headline: 'Travis Kelce expected to see increased targets with Chiefs facing tough defense',
+                summary: 'With the Chiefs facing a strong secondary, offensive coordinator expects to utilize Travis Kelce more frequently in short and intermediate routes.',
                 player: 'Travis Kelce',
+                playerId: 'travis_kelce',
                 team: 'KC',
                 position: 'TE',
-                impact: 'Start',
+                impact: 'Positive',
                 severity: 'None',
-                timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-                source: 'ESPN Fantasy',
-                fantasyRelevance: 'High'
+                timestamp: new Date(currentDate.getTime() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+                source: 'The Athletic',
+                fantasyRelevance: 'High',
+                bettingImpact: {
+                    props: {
+                        receiving_yards: { adjustment: +8, confidence: 'medium' },
+                        receptions: { adjustment: +0.8, confidence: 'high' },
+                        receiving_touchdowns: { adjustment: +0.1, confidence: 'low' }
+                    },
+                    teamImpact: 'slight_positive'
+                },
+                tags: ['game_plan', 'target_increase', 'matchup_based']
             },
             {
-                id: 'news_6',
-                headline: 'Saquon Barkley questionable with hamstring',
-                summary: 'Eagles RB Saquon Barkley is questionable for this weeks game with a hamstring injury sustained in practice.',
+                id: `news_${Date.now()}_5`,
+                headline: 'Weather alert: High winds expected for Bills vs Dolphins game',
+                summary: 'Weather forecast shows winds of 20-25 mph for Sunday\'s Bills vs Dolphins game in Buffalo. Could impact passing games significantly.',
+                player: null,
+                playerId: null,
+                team: 'BUF vs MIA',
+                position: 'Weather',
+                impact: 'Environmental',
+                severity: 'Moderate',
+                timestamp: new Date(currentDate.getTime() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+                source: 'Weather Channel',
+                fantasyRelevance: 'Medium',
+                bettingImpact: {
+                    props: {
+                        passing_yards: { adjustment: -25, confidence: 'high' },
+                        passing_touchdowns: { adjustment: -0.4, confidence: 'medium' },
+                        rushing_yards: { adjustment: +15, confidence: 'medium' }
+                    },
+                    teamImpact: 'run_heavy_game_script'
+                },
+                tags: ['weather', 'game_environment', 'passing_impact']
+            },
+            {
+                id: `news_${Date.now()}_6`,
+                headline: 'Saquon Barkley faces former team - Revenge game narrative',
+                summary: 'Eagles RB Saquon Barkley returns to face his former Giants team. Historically performs well in revenge games with increased motivation.',
                 player: 'Saquon Barkley',
+                playerId: 'saquon_barkley',
                 team: 'PHI',
                 position: 'RB',
-                impact: 'Monitor',
-                severity: 'Moderate',
-                timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-                source: 'NFL.com',
-                fantasyRelevance: 'High'
+                impact: 'Motivational Positive',
+                severity: 'None',
+                timestamp: new Date(currentDate.getTime() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
+                source: 'FantasyPros',
+                fantasyRelevance: 'High',
+                bettingImpact: {
+                    props: {
+                        rushing_yards: { adjustment: +12, confidence: 'medium' },
+                        rushing_touchdowns: { adjustment: +0.2, confidence: 'medium' },
+                        receiving_yards: { adjustment: +5, confidence: 'low' }
+                    },
+                    teamImpact: 'slight_positive'
+                },
+                tags: ['revenge_game', 'motivation', 'narrative']
             }
         ];
+        
+        // Add time-based variation to make news feel current
+        if (currentHour >= 6 && currentHour <= 10) {
+            // Morning: Practice reports
+            newsItems.push({
+                id: `news_${Date.now()}_morning`,
+                headline: 'Morning practice report: Key players listed as full participants',
+                summary: 'Several key fantasy players upgraded to full participation in morning practice sessions across the league.',
+                player: null,
+                team: 'Multiple',
+                impact: 'Mixed Positive',
+                timestamp: new Date().toISOString(),
+                source: 'NFL Practice Reports',
+                fantasyRelevance: 'Medium',
+                tags: ['practice_report', 'morning_update']
+            });
+        } else if (currentHour >= 16 && currentHour <= 20) {
+            // Afternoon: Inactives and lineup news
+            newsItems.push({
+                id: `news_${Date.now()}_afternoon`,
+                headline: 'Inactive lists expected by 4 PM - Monitor key questionable players',
+                summary: 'Teams must submit inactive lists 90 minutes before kickoff. Several fantasy relevant players remain questionable.',
+                player: null,
+                team: 'Multiple',
+                impact: 'Monitor',
+                timestamp: new Date().toISOString(),
+                source: 'NFL Transactions',
+                fantasyRelevance: 'High',
+                tags: ['inactives', 'lineup_decisions', 'pregame']
+            });
+        }
+        
+        return newsItems;
     }
 
     async updateInjuryReports() {
@@ -264,7 +360,129 @@ class FantasyNewsService {
             news = news.filter(item => item.team === team);
         }
         
+        // Sort by timestamp (newest first)
         return news.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    // NEW METHOD: Get news-adjusted predictions for picks
+    getNewsAdjustedAnalysis(playerId, baseProjection, propType) {
+        try {
+            const allNews = this.newsCache.get('all_news')?.data || [];
+            const relevantNews = allNews.filter(news => 
+                news.playerId === playerId && 
+                news.bettingImpact && 
+                news.bettingImpact.props && 
+                news.bettingImpact.props[propType]
+            );
+            
+            if (relevantNews.length === 0) {
+                return {
+                    adjustedProjection: baseProjection,
+                    newsFactors: [],
+                    confidence: 'medium',
+                    reasoning: 'No relevant news affecting this prop'
+                };
+            }
+            
+            let totalAdjustment = 0;
+            let confidenceFactors = [];
+            let newsReasons = [];
+            
+            relevantNews.forEach(news => {
+                const propImpact = news.bettingImpact.props[propType];
+                if (propImpact) {
+                    totalAdjustment += propImpact.adjustment || 0;
+                    confidenceFactors.push(propImpact.confidence);
+                    newsReasons.push(`${news.impact}: ${news.summary.substring(0, 80)}...`);
+                }
+            });
+            
+            // Calculate confidence based on news consistency
+            const highConfidenceNews = confidenceFactors.filter(c => c === 'high').length;
+            const mediumConfidenceNews = confidenceFactors.filter(c => c === 'medium').length;
+            
+            let overallConfidence = 'low';
+            if (highConfidenceNews >= 2 || (highConfidenceNews >= 1 && mediumConfidenceNews >= 1)) {
+                overallConfidence = 'high';
+            } else if (highConfidenceNews >= 1 || mediumConfidenceNews >= 2) {
+                overallConfidence = 'medium';
+            }
+            
+            const adjustedProjection = Math.max(0, baseProjection + totalAdjustment);
+            
+            return {
+                adjustedProjection: Math.round(adjustedProjection * 10) / 10,
+                newsFactors: newsReasons,
+                confidence: overallConfidence,
+                reasoning: `Adjusted by ${totalAdjustment > 0 ? '+' : ''}${totalAdjustment.toFixed(1)} based on ${relevantNews.length} news item(s)`,
+                newsCount: relevantNews.length,
+                rawAdjustment: totalAdjustment
+            };
+        } catch (error) {
+            console.error('Error in news-adjusted analysis:', error);
+            return {
+                adjustedProjection: baseProjection,
+                newsFactors: [],
+                confidence: 'medium',
+                reasoning: 'News analysis unavailable'
+            };
+        }
+    }
+
+    // Get latest injury report for a player
+    getPlayerInjuryReport(playerName) {
+        return this.injuryData.get(playerName) || null;
+    }
+
+    // Check if any news affects team performance
+    getTeamNewsImpact(team) {
+        const allNews = this.newsCache.get('all_news')?.data || [];
+        const teamNews = allNews.filter(news => 
+            news.team === team && 
+            ['Major Positive', 'Major Negative', 'Positive', 'Negative'].includes(news.impact)
+        );
+        
+        if (teamNews.length === 0) return null;
+        
+        const positiveNews = teamNews.filter(n => n.impact.includes('Positive')).length;
+        const negativeNews = teamNews.filter(n => n.impact.includes('Negative')).length;
+        
+        let overallImpact = 'neutral';
+        if (positiveNews > negativeNews) {
+            overallImpact = positiveNews - negativeNews >= 2 ? 'major_positive' : 'positive';
+        } else if (negativeNews > positiveNews) {
+            overallImpact = negativeNews - positiveNews >= 2 ? 'major_negative' : 'negative';
+        }
+        
+        return {
+            impact: overallImpact,
+            newsCount: teamNews.length,
+            summary: teamNews.slice(0, 3).map(n => n.headline).join('; ')
+        };
+    }
+
+    getFallbackNews() {
+        return [{
+            id: 'fallback_1',
+            headline: 'News service temporarily unavailable',
+            summary: 'Unable to fetch latest news. Using cached data when available.',
+            player: null,
+            team: null,
+            impact: 'None',
+            timestamp: new Date().toISOString(),
+            source: 'System',
+            fantasyRelevance: 'Low'
+        }];
+    }
+
+    getFallbackInjuries() {
+        return [{
+            player: 'System Notice',
+            team: 'N/A',
+            injury: 'Data unavailable',
+            status: 'Monitor news sources',
+            severity: 'Unknown'
+        }];
     }
 
     getInjuryReport(playerName = null) {
