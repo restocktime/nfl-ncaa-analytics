@@ -2834,13 +2834,13 @@ class SimpleWorkingSystem {
             'Bills': { QB: 'Josh Allen', RB: 'James Cook', WR: 'Khalil Shakir', TE: 'Dalton Kincaid', K: 'Tyler Bass', LB: 'Matt Milano' },
             'Dolphins': { QB: 'Tua Tagovailoa', RB: 'De\'Von Achane', WR: 'Tyreek Hill', TE: 'Jonnu Smith', K: 'Jason Sanders', LB: 'Jordyn Brooks' },
             'Patriots': { QB: 'Drake Maye', RB: 'Rhamondre Stevenson', WR: 'DeMario Douglas', TE: 'Hunter Henry', K: 'Joey Slye', LB: 'Ja\'Whaun Bentley' },
-            'Jets': { QB: 'Aaron Rodgers', RB: 'Breece Hall', WR: 'Garrett Wilson', TE: 'Tyler Conklin', K: 'Greg Zuerlein', LB: 'C.J. Mosley' },
+            'Jets': { QB: 'Justin Fields', RB: 'Breece Hall', WR: 'Garrett Wilson', TE: 'Tyler Conklin', K: 'Greg Zuerlein', LB: 'C.J. Mosley' },
             
             // AFC NORTH - 2025-26 Season  
             'Ravens': { QB: 'Lamar Jackson', RB: 'Derrick Henry', WR: 'Zay Flowers', TE: 'Mark Andrews', K: 'Justin Tucker', LB: 'Roquan Smith' },
             'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Tee Higgins', K: 'Evan McPherson', LB: 'Logan Wilson' },
             'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku', K: 'Dustin Hopkins', LB: 'Myles Garrett' },
-            'Steelers': { QB: 'Russell Wilson', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
+            'Steelers': { QB: 'Aaron Rodgers', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
             
             // AFC SOUTH - 2025-26 Season
             'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo' },
@@ -2861,7 +2861,7 @@ class SimpleWorkingSystem {
             'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz' },
             
             // NFC NORTH - 2025-26 Season
-            'Packers': { QB: 'Jordan Love', RB: 'Josh Jacobs', WR: 'Jayden Reed', TE: 'Tucker Kraft' },
+            'Packers': { QB: 'Jordan Love', RB: 'Josh Jacobs', WR: 'Jayden Reed', TE: 'Tucker Kraft', K: 'Brandon McManus', LB: 'Quay Walker' },
             'Bears': { QB: 'Caleb Williams', RB: 'D\'Andre Swift', WR: 'DJ Moore', TE: 'Cole Kmet' },
             'Lions': { QB: 'Jared Goff', RB: 'Jahmyr Gibbs', WR: 'Amon-Ra St. Brown', TE: 'Sam LaPorta' },
             'Vikings': { QB: 'Sam Darnold', RB: 'Aaron Jones', WR: 'Justin Jefferson', TE: 'Josh Oliver' },

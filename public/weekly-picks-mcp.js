@@ -10,23 +10,23 @@ class WeeklyPicksMCP {
         this.apiKey = '9de126998e0df996011a28e9527dd7b9';
         this.baseUrl = 'https://api.the-odds-api.com/v4';
         
-        // STRICT thresholds - Only show picks users should actually bet on
+        // SELECTIVE thresholds - Show quality picks users should bet on
         this.thresholds = {
             playerProps: {
-                minimumEdge: 2.0,      // Must have significant +2.0+ edge
-                minimumConfidence: 'high'  // High confidence required
+                minimumEdge: 1.2,      // Must have +1.2+ edge (realistic for player props)
+                minimumConfidence: 'medium'  // Medium+ confidence required
             },
             gameLines: {
-                minimumEdge: 3.0,      // Must have major +3.0+ edge for moneylines
-                minimumConfidence: 'high'  // High confidence required
+                minimumEdge: 2.0,      // Must have +2.0+ edge for moneylines (more realistic)
+                minimumConfidence: 'medium'  // Medium+ confidence required
             },
             tackleProps: {
-                minimumEdge: 1.5,      // Must have solid +1.5+ edge (actual goldmines)
-                minimumConfidence: 'high'  // High confidence only
+                minimumEdge: 1.0,      // Must have +1.0+ edge (goldmines from scanner)
+                minimumConfidence: 'medium'  // Medium+ confidence
             },
             spreads: {
-                minimumEdge: 2.5,      // Must have strong +2.5+ edge for spreads  
-                minimumConfidence: 'high'  // High confidence required
+                minimumEdge: 1.8,      // Must have +1.8+ edge for spreads (realistic)
+                minimumConfidence: 'medium'  // Medium+ confidence required
             }
         };
 
@@ -74,17 +74,19 @@ class WeeklyPicksMCP {
             const topPicks = this.rankAndFilterPicks(allPicks);
             console.log(`🎯 MCP: Top picks after ranking: ${topPicks.length}`);
             
-            // STRICT FILTERING - Only show the absolute best picks users should bet on
+            // SELECTIVE FILTERING - Show quality picks users should bet on
             const goldminePicks = topPicks.filter(pick => {
-                // Must be high confidence
-                if (pick.confidence !== 'high') return false;
+                // Must be medium+ confidence
+                const confidenceLevel = { 'low': 1, 'medium': 2, 'high': 3, 'very_high': 4 }[pick.confidence.toLowerCase()] || 1;
+                if (confidenceLevel < 2) return false;
                 
-                // Must meet minimum edge thresholds per category
-                if (pick.category === 'game_line' && pick.edge < 3.0) return false;
-                if (pick.category === 'spread' && pick.edge < 2.5) return false;
-                if (pick.category === 'player_prop' && pick.edge < 2.0) return false;
-                if (pick.category === 'tackle_prop' && pick.edge < 1.5) return false;
+                // Must meet realistic edge thresholds per category
+                if (pick.category === 'game_line' && pick.edge < 2.0) return false;
+                if (pick.category === 'spread' && pick.edge < 1.8) return false;
+                if (pick.category === 'player_prop' && pick.edge < 1.2) return false;
+                if (pick.category === 'tackle_prop' && pick.edge < 1.0) return false;
                 
+                console.log(`✅ Pick passed filtering: ${pick.category} - ${pick.market} (+${pick.edge.toFixed(1)} edge, ${pick.confidence} conf)`);
                 return true;
             });
             
@@ -227,8 +229,8 @@ class WeeklyPicksMCP {
                 
                 // Get AI model probability from actual analysis (not random)
                 const aiAnalysis = await this.getAIGameAnalysis(game);
-                if (!aiAnalysis || aiAnalysis.confidence !== 'high') {
-                    console.log(`   ⚠️ Skipping ${game.awayTeam.name} @ ${game.homeTeam.name} - insufficient AI confidence`);
+                if (!aiAnalysis || aiAnalysis.confidence === 'low') {
+                    console.log(`   ⚠️ Skipping ${game.awayTeam.name} @ ${game.homeTeam.name} - insufficient AI confidence (${aiAnalysis?.confidence || 'none'})`);
                     continue;
                 }
                 
@@ -242,8 +244,8 @@ class WeeklyPicksMCP {
                 console.log(`   🔍 AI Model: Home ${(homeModelProb*100).toFixed(1)}% vs Implied ${(homeImplied*100).toFixed(1)}% = ${homeEdge.toFixed(2)}% edge`);
                 console.log(`   🔍 AI Model: Away ${(awayModelProb*100).toFixed(1)}% vs Implied ${(awayImplied*100).toFixed(1)}% = ${awayEdge.toFixed(2)}% edge`);
                 
-                // STRICT filtering - only add picks that meet high thresholds
-                if (homeEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence === 'high') {
+                // SELECTIVE filtering - add picks that meet thresholds
+                if (homeEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence !== 'low') {
                     console.log(`   🎯 GOLDMINE DETECTED: ${game.homeTeam.name} ML +${homeEdge.toFixed(1)}% edge`);
                     gameLinePicks.push({
                         id: `ml_${game.id}_home`,
@@ -256,13 +258,13 @@ class WeeklyPicksMCP {
                         market: `${game.homeTeam.name} ML`,
                         line: homeMoneyline,
                         edge: homeEdge,
-                        confidence: 'high',
+                        confidence: aiAnalysis.confidence,
                         
                         reasoning: `AI model: ${(homeModelProb * 100).toFixed(1)}% win probability vs ${(homeImplied * 100).toFixed(1)}% implied. ${aiAnalysis.reasoning}`,
-                        riskLevel: this.calculateRiskLevel(homeEdge, 'high'),
+                        riskLevel: this.calculateRiskLevel(homeEdge, aiAnalysis.confidence),
                         
                         recommendation: homeEdge >= 5.0 ? 'STRONG BUY' : 'BUY',
-                        units: this.calculateUnits(homeEdge, 'high'),
+                        units: this.calculateUnits(homeEdge, aiAnalysis.confidence),
                         
                         // Additional context
                         gameTime: game.gameTime,
@@ -270,7 +272,7 @@ class WeeklyPicksMCP {
                     });
                 }
                 
-                if (awayEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence === 'high') {
+                if (awayEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence !== 'low') {
                     console.log(`   🎯 GOLDMINE DETECTED: ${game.awayTeam.name} ML +${awayEdge.toFixed(1)}% edge`);
                     gameLinePicks.push({
                         id: `ml_${game.id}_away`,
@@ -283,13 +285,13 @@ class WeeklyPicksMCP {
                         market: `${game.awayTeam.name} ML`,
                         line: awayMoneyline,
                         edge: awayEdge,
-                        confidence: 'high',
+                        confidence: aiAnalysis.confidence,
                         
                         reasoning: `AI model: ${(awayModelProb * 100).toFixed(1)}% win probability vs ${(awayImplied * 100).toFixed(1)}% implied. ${aiAnalysis.reasoning}`,
-                        riskLevel: this.calculateRiskLevel(awayEdge, 'high'),
+                        riskLevel: this.calculateRiskLevel(awayEdge, aiAnalysis.confidence),
                         
                         recommendation: awayEdge >= 5.0 ? 'STRONG BUY' : 'BUY',
-                        units: this.calculateUnits(awayEdge, 'high'),
+                        units: this.calculateUnits(awayEdge, aiAnalysis.confidence),
                         
                         gameTime: game.gameTime,
                         keyFactors: aiAnalysis.keyFactors || []
@@ -327,8 +329,8 @@ class WeeklyPicksMCP {
                 
                 // Get AI spread analysis (not random simulation)
                 const aiAnalysis = await this.getAIGameAnalysis(game);
-                if (!aiAnalysis || aiAnalysis.confidence !== 'high') {
-                    console.log(`   ⚠️ Skipping spread - insufficient AI confidence`);
+                if (!aiAnalysis || aiAnalysis.confidence === 'low') {
+                    console.log(`   ⚠️ Skipping spread - insufficient AI confidence (${aiAnalysis?.confidence || 'none'})`);
                     continue;
                 }
                 
@@ -337,8 +339,8 @@ class WeeklyPicksMCP {
                 
                 console.log(`   🔍 AI Spread: Predicted margin ${predictedMargin.toFixed(1)} vs spread ${gameSpread.toFixed(1)} = ${edge.toFixed(1)} edge`);
                 
-                // STRICT filtering - only high-confidence spread goldmines
-                if (edge >= this.thresholds.spreads.minimumEdge && aiAnalysis.confidence === 'high') {
+                // SELECTIVE filtering - quality spread goldmines
+                if (edge >= this.thresholds.spreads.minimumEdge && aiAnalysis.confidence !== 'low') {
                     const recommendTeam = predictedMargin > gameSpread ? game.homeTeam.name : game.awayTeam.name;
                     const recommendSpread = predictedMargin > gameSpread ? gameSpread : -gameSpread;
                     
@@ -355,13 +357,13 @@ class WeeklyPicksMCP {
                         market: `${recommendTeam} ${recommendSpread > 0 ? '+' : ''}${recommendSpread.toFixed(1)}`,
                         line: spreadLine,
                         edge: edge,
-                        confidence: 'high',
+                        confidence: aiAnalysis.confidence,
                         
                         reasoning: `AI predicts ${predictedMargin.toFixed(1)} margin vs ${gameSpread.toFixed(1)} spread. ${aiAnalysis.reasoning}`,
-                        riskLevel: this.calculateRiskLevel(edge, 'high'),
+                        riskLevel: this.calculateRiskLevel(edge, aiAnalysis.confidence),
                         
                         recommendation: edge >= 4.0 ? 'STRONG BUY' : 'BUY',
-                        units: this.calculateUnits(edge, 'high'),
+                        units: this.calculateUnits(edge, aiAnalysis.confidence),
                         
                         gameTime: game.gameTime,
                         keyFactors: aiAnalysis.keyFactors || []
