@@ -2900,7 +2900,7 @@ class SimpleWorkingSystem {
             'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton', K: 'Chase McLaughlin', LB: 'Lavonte David' },
             
             // NFC WEST - 2025-26 Season
-            '49ers': { QB: 'Brock Purdy', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle', K: 'Jake Moody', LB: 'Fred Warner' },
+            '49ers': { QB: 'Brock Purdy', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'Kyle Juszczyk', K: 'Jake Moody', LB: 'Fred Warner' },
             'Seahawks': { QB: 'Geno Smith', RB: 'Kenneth Walker III', WR: 'DK Metcalf', TE: 'Noah Fant', K: 'Jason Myers', LB: 'Bobby Wagner' },
             'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson', K: 'Lucas Havrisik', LB: 'Byron Young' },
             'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride', K: 'Chad Ryland', LB: 'Kyzir White' }
