@@ -176,10 +176,27 @@ class SimpleWorkingSystem {
         this.setupAutoRefresh();
         
         // 12. Set up tackle props display
-        this.setupTacklePropsDisplay();
+        // Only show tackle props on betting-related pages
+        const currentPage = window.location.pathname.toLowerCase();
+        const bettingPages = ['betting', 'props', 'odds', 'tackle'];
+        const shouldShowTackleProps = bettingPages.some(page => currentPage.includes(page));
+        
+        if (shouldShowTackleProps) {
+            this.setupTacklePropsDisplay();
+        } else {
+            console.log('🎯 Tackle props display skipped - not on betting page');
+        }
         
         // 13. Set up picks tracking dashboard
-        this.setupPicksTracker();
+        // Only show picks tracker on specific pages  
+        const analyticsPages = ['betting', 'props', 'analytics', 'picks', 'tracker'];
+        const shouldShowPicksTracker = analyticsPages.some(page => currentPage.includes(page));
+        
+        if (shouldShowPicksTracker) {
+            this.setupPicksTracker();
+        } else {
+            console.log('📈 Picks tracker skipped - not on analytics page');
+        }
         
         this.isInitialized = true;
         
@@ -3461,9 +3478,9 @@ class SimpleWorkingSystem {
             tacklePropsSection.innerHTML = `
                 <div class="section-header goldmine-header">
                     <h2 class="goldmine-title">
-                        <span class="goldmine-flash">💎</span>
+                        <span class="goldmine-icon">💎</span>
                         TACKLE PROPS GOLDMINES - LIVE ANALYSIS
-                        <span class="goldmine-flash">💎</span>
+                        <span class="goldmine-icon">💎</span>
                     </h2>
                     <div class="goldmine-subtitle">
                         <span class="pff-badge">🏈 PFF</span>
@@ -3527,16 +3544,16 @@ class SimpleWorkingSystem {
             
             if (displayAlerts.length > 0) {
                 alertsContainer.innerHTML = displayAlerts.map(alert => `
-                    <div class="goldmine-alert priority-${(alert.priority || 'high').toLowerCase()} flash-alert">
+                    <div class="goldmine-alert priority-${(alert.priority || 'high').toLowerCase()}">
                         <div class="alert-header">
-                            <span class="alert-icon goldmine-flash">🚨</span>
+                            <span class="alert-icon">🚨</span>
                             <strong>${(alert.type || 'GOLDMINE_OPPORTUNITY').replace('_', ' ')}</strong>
-                            <span class="alert-priority goldmine-pulse">${alert.priority || 'HIGH'}</span>
+                            <span class="alert-priority">${alert.priority || 'HIGH'}</span>
                         </div>
                         <div class="alert-details">
                             <h3 class="defender-matchup">${alert.defender || alert.player} vs ${alert.rbOpponent || 'RB Matchup'}</h3>
                             <div class="alert-stats">
-                                <span class="edge goldmine-edge">Edge: +${(alert.edge || 2.3).toFixed(1)}</span>
+                                <span class="edge static-edge">Edge: +${(alert.edge || 2.3).toFixed(1)}</span>
                                 <span class="confidence">Confidence: ${alert.confidence || 'HIGH'}</span>
                                 <span class="line-shopping">Shopping: ${(alert.lineShoppingValue || 3.2).toFixed(1)}%</span>
                             </div>
@@ -3580,7 +3597,7 @@ class SimpleWorkingSystem {
                             </div>
                             <div class="stat goldmine-count">
                                 <label>Goldmines Found:</label>
-                                <value class="stat-value goldmine-flash">${latestScan.goldminesFound || 3}</value>
+                                <value class="stat-value static-value">${latestScan.goldminesFound || 3}</value>
                             </div>
                             <div class="stat edge-display">
                                 <label>Average Edge:</label>
@@ -4936,55 +4953,42 @@ class SimpleWorkingSystem {
         styles.id = 'tackle-props-styles';
         styles.textContent = `
             .tackle-props-goldmines {
-                margin: 2rem 0;
-                padding: 1.5rem;
+                margin: 1rem 0;
+                padding: 1rem;
                 background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                border-radius: 12px;
+                border-radius: 8px;
                 border: 1px solid #0f4c75;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
-            /* GOLDMINE ANIMATIONS */
-            @keyframes goldmine-flash {
-                0%, 100% { color: #ffd700; transform: scale(1); }
-                50% { color: #ffed4e; transform: scale(1.05); }
-            }
-            @keyframes goldmine-pulse {
-                0%, 100% { background-color: rgba(255, 215, 0, 0.1); }
-                50% { background-color: rgba(255, 215, 0, 0.3); }
-            }
-            @keyframes pulse {
-                0%, 100% { opacity: 1; transform: scale(1); }
-                50% { opacity: 0.8; transform: scale(1.02); }
-            }
-            @keyframes flash-alert {
-                0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-                50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
-            }
-            
-            .goldmine-flash {
-                animation: goldmine-flash 1.5s ease-in-out infinite;
+            /* STATIC GOLDMINE STYLES - ANIMATIONS REMOVED */
+            .goldmine-icon {
+                color: #ffd700;
                 display: inline-block;
             }
             
-            .goldmine-pulse {
-                animation: goldmine-pulse 2s ease-in-out infinite;
+            .static-edge {
+                color: #ffd700;
+                font-weight: bold;
+            }
+            
+            .static-value {
+                color: #00ff88;
+                font-weight: bold;
             }
             
             .pulse {
-                animation: pulse 2s ease-in-out infinite;
-            }
-            
-            .flash-alert {
-                animation: flash-alert 3s ease-in-out infinite;
+                opacity: 0.8;
             }
             
             .tackle-props-goldmines .section-header h2 {
                 color: #ffd700;
                 margin-bottom: 0.5rem;
-                font-size: 2rem;
-                font-weight: 900;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-                letter-spacing: 1px;
+                font-size: 1.4rem;
+                font-weight: 700;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+                letter-spacing: 0.5px;
             }
 
             .tackle-props-goldmines .section-header p {
