@@ -195,6 +195,11 @@ class SimpleWorkingSystem {
         }
         
         console.log('✅ System initialized with real ESPN data and player props!');
+        
+        // Run health check after initialization
+        setTimeout(() => {
+            this.checkSystemHealth();
+        }, 2000);
     }
 
     setupMobileMenu() {
@@ -3296,18 +3301,103 @@ class SimpleWorkingSystem {
     }
 
     getAPIStatus() {
-        return {
+        const status = {
             oddsApi: {
                 enabled: this.config.oddsApi.enabled,
-                hasValidKey: this.config.oddsApi.key !== 'YOUR_ODDS_API_KEY'
+                hasValidKey: this.config.oddsApi.key !== 'YOUR_ODDS_API_KEY',
+                keyConfigured: this.config.oddsApi.key,
+                status: this.config.oddsApi.enabled && this.config.oddsApi.key !== 'YOUR_ODDS_API_KEY' ? 'ACTIVE' : 'DISABLED'
             },
             draftkings: {
-                enabled: this.config.draftkings.enabled
+                enabled: this.config.draftkings.enabled,
+                status: this.config.draftkings.enabled ? 'ACTIVE' : 'DISABLED'
+            },
+            services: {
+                espnData: window.espnAPI ? 'LOADED' : 'MISSING',
+                pffService: window.pffDataService ? 'LOADED' : 'MISSING', 
+                nextgenService: window.nextGenStatsService ? 'LOADED' : 'MISSING',
+                sportsbookService: window.sportsbookAPIService ? 'LOADED' : 'MISSING',
+                tacklePropsScanner: window.tacklePropsScanner ? 'LOADED' : 'MISSING',
+                picksTracker: window.picksTrackerService ? 'LOADED' : 'MISSING'
             },
             simulation: {
                 active: !this.config.oddsApi.enabled && !this.config.draftkings.enabled
-            }
+            },
+            overallStatus: 'UNKNOWN'
         };
+        
+        // Determine overall status
+        const hasLiveData = status.oddsApi.status === 'ACTIVE';
+        const hasAllServices = Object.values(status.services).every(s => s === 'LOADED');
+        
+        if (hasLiveData && hasAllServices) {
+            status.overallStatus = 'FULLY_OPERATIONAL';
+        } else if (hasAllServices) {
+            status.overallStatus = 'SIMULATION_MODE';
+        } else {
+            status.overallStatus = 'PARTIAL_SERVICES';
+        }
+        
+        return status;
+    }
+    
+    /**
+     * Comprehensive system health check
+     */
+    async checkSystemHealth() {
+        console.log('🏥 Running comprehensive system health check...');
+        const status = this.getAPIStatus();
+        
+        console.log('📊 API STATUS REPORT:');
+        console.log(`Overall Status: ${status.overallStatus}`);
+        console.log(`The Odds API: ${status.oddsApi.status} ${status.oddsApi.hasValidKey ? '(Key: ' + status.oddsApi.keyConfigured?.substring(0,8) + '...)' : '(No Key)'}`);
+        console.log(`DraftKings API: ${status.draftkings.status}`);
+        
+        console.log('🔧 SERVICE HEALTH:');
+        Object.entries(status.services).forEach(([service, serviceStatus]) => {
+            console.log(`${service}: ${serviceStatus}`);
+        });
+        
+        // Test API connectivity if enabled
+        if (status.oddsApi.status === 'ACTIVE') {
+            try {
+                console.log('🧪 Testing The Odds API connectivity...');
+                const testResponse = await this.testOddsAPI();
+                console.log(`✅ The Odds API test: ${testResponse ? 'SUCCESS' : 'FAILED'}`);
+            } catch (error) {
+                console.log(`❌ The Odds API test failed: ${error.message}`);
+            }
+        }
+        
+        // Test ESPN data
+        try {
+            console.log('🧪 Testing ESPN data fetch...');
+            const games = await this.loadNFLGames();
+            console.log(`✅ ESPN NFL games: ${games?.length || 0} games loaded`);
+        } catch (error) {
+            console.log(`❌ ESPN test failed: ${error.message}`);
+        }
+        
+        // Test tackle props scanner
+        if (window.tacklePropsScanner) {
+            const scannerStatus = window.tacklePropsScanner.getStatus();
+            console.log(`🎯 Tackle Props Scanner: ${scannerStatus.isScanning ? 'ACTIVE' : 'IDLE'}, ${scannerStatus.statistics?.totalScans || 0} total scans`);
+        }
+        
+        return status;
+    }
+    
+    /**
+     * Test The Odds API connectivity
+     */
+    async testOddsAPI() {
+        try {
+            const testUrl = `${this.config.oddsApi.baseUrl}?apiKey=${this.config.oddsApi.key}&regions=us&markets=spreads&bookmakers=draftkings`;
+            const response = await fetch(testUrl);
+            return response.ok;
+        } catch (error) {
+            return false;
+        }
     }
 
     setupTacklePropsDisplay() {
