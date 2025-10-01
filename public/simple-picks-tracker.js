@@ -102,15 +102,24 @@ class SimplePicksTracker {
     async getPicksByWeek(season, week) {
         try {
             // Get comprehensive weekly picks from MCP if available
+            console.log('🔍 Checking for MCP system...', !!window.weeklyPicksMCP);
             if (window.weeklyPicksMCP) {
                 try {
+                    console.log('🚀 MCP system found, generating weekly picks...');
                     const weeklyPicks = await window.weeklyPicksMCP.getBestWeeklyPicks(season, week);
+                    console.log('📊 MCP returned picks:', weeklyPicks.topPicks?.length || 0, 'picks');
+                    console.log('📊 MCP categories:', weeklyPicks.topPicks?.map(p => p.category) || []);
                     if (weeklyPicks.topPicks.length > 0) {
+                        console.log('✅ Using MCP picks instead of goldmines');
                         return this.convertMCPToPicks(weeklyPicks.topPicks, week);
+                    } else {
+                        console.log('⚠️ MCP returned 0 picks, falling back to goldmines');
                     }
                 } catch (mcpError) {
-                    console.warn('⚠️ MCP system unavailable for picks, falling back to goldmines:', mcpError);
+                    console.warn('⚠️ MCP system error, falling back to goldmines:', mcpError);
                 }
+            } else {
+                console.log('❌ MCP system not found, using goldmines fallback');
             }
             
             // Fallback: Get REAL goldmine picks from tackle props scanner

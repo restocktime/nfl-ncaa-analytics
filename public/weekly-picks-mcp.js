@@ -34,6 +34,11 @@ class WeeklyPicksMCP {
     async getBestWeeklyPicks(season = 2025, week = 5) {
         try {
             console.log(`🚀 MCP: Generating best weekly picks for Week ${week}, ${season}`);
+            console.log(`🔍 MCP: Checking required services...`);
+            console.log(`   - Player Props Service: ${!!window.comprehensivePlayerPropsService}`);
+            console.log(`   - Simple System Games: ${!!(window.simpleSystem?.games?.length)}`);
+            console.log(`   - Tackle Props Scanner: ${!!window.tacklePropsScanner}`);
+            console.log(`   - Available games: ${window.simpleSystem?.games?.length || 0}`);
             
             // Get picks from all sources concurrently
             const [playerPropsPicks, gameLinePicks, tackleProps, spreadPicks] = await Promise.all([
@@ -43,6 +48,13 @@ class WeeklyPicksMCP {
                 this.getBestSpreads()
             ]);
 
+            // Debug results from each source
+            console.log(`📊 MCP Results Summary:`);
+            console.log(`   - Player Props: ${playerPropsPicks.length} picks`);
+            console.log(`   - Game Lines: ${gameLinePicks.length} picks`);
+            console.log(`   - Tackle Props: ${tackleProps.length} picks`);
+            console.log(`   - Spreads: ${spreadPicks.length} picks`);
+
             // Combine and rank all picks
             const allPicks = [
                 ...playerPropsPicks,
@@ -51,8 +63,11 @@ class WeeklyPicksMCP {
                 ...spreadPicks
             ];
 
+            console.log(`🔍 MCP: Total combined picks: ${allPicks.length}`);
+
             // Sort by edge and filter for quality
             const topPicks = this.rankAndFilterPicks(allPicks);
+            console.log(`🎯 MCP: Top picks after ranking: ${topPicks.length}`);
             
             // Organize into categories
             const weeklyRecommendations = {
@@ -171,6 +186,7 @@ class WeeklyPicksMCP {
             console.log('🎯 MCP: Analyzing game lines...');
             
             const games = window.simpleSystem?.games || [];
+            console.log(`🎯 MCP: Found ${games.length} games for line analysis`);
             const gameLinePicks = [];
 
             for (const game of games.slice(0, 8)) { // Check more games for lines
