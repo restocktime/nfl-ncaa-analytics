@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Player Props Hub - All Positions</title>
+    <title>NFL Game Props Hub - All Props & Analysis</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -308,8 +308,8 @@
 </head>
 <body>
     <div class="header">
-        <h1><i class="fas fa-chart-line"></i> NFL Player Props Hub</h1>
-        <p>Complete Player Props Analysis - All Positions, All Games, AI-Driven Insights</p>
+        <h1><i class="fas fa-gamepad"></i> NFL Game Props Hub</h1>
+        <p>Complete Game Props Analysis - Player Props, Game Lines, Spreads & AI Insights</p>
     </div>
 
     <div class="navigation">
@@ -406,7 +406,21 @@
                 games.forEach((game, index) => {
                     const option = document.createElement('option');
                     option.value = index;
-                    option.textContent = `${game.awayTeam?.displayName || game.awayTeam?.name} @ ${game.homeTeam?.displayName || game.homeTeam?.name}`;
+                    
+                    // Better team name extraction
+                    let homeTeam, awayTeam;
+                    if (game.homeTeam && game.awayTeam) {
+                        homeTeam = game.homeTeam.name || game.homeTeam.displayName || game.homeTeam;
+                        awayTeam = game.awayTeam.name || game.awayTeam.displayName || game.awayTeam;
+                    } else if (game.teams) {
+                        homeTeam = game.teams.home?.name || game.teams.home;
+                        awayTeam = game.teams.away?.name || game.teams.away;
+                    } else {
+                        homeTeam = game.home || 'Home Team';
+                        awayTeam = game.away || 'Away Team';
+                    }
+                    
+                    option.textContent = `${awayTeam} @ ${homeTeam}`;
                     gameSelect.appendChild(option);
                 });
 
@@ -452,9 +466,28 @@
             try {
                 console.log('🎯 Loading player props for game:', selectedGame);
                 
-                const homeTeam = selectedGame.homeTeam?.name || 'Home';
-                const awayTeam = selectedGame.awayTeam?.name || 'Away';
-                const gameId = selectedGame.id || 'game_' + gameIndex;
+                // Fix team name extraction - handle different game data structures
+                let homeTeam, awayTeam, gameId;
+                
+                if (selectedGame.homeTeam && selectedGame.awayTeam) {
+                    // Standard structure
+                    homeTeam = selectedGame.homeTeam.name || selectedGame.homeTeam.displayName || selectedGame.homeTeam;
+                    awayTeam = selectedGame.awayTeam.name || selectedGame.awayTeam.displayName || selectedGame.awayTeam;
+                } else if (selectedGame.teams) {
+                    // Alternative structure
+                    homeTeam = selectedGame.teams.home?.name || selectedGame.teams.home;
+                    awayTeam = selectedGame.teams.away?.name || selectedGame.teams.away;
+                } else {
+                    // Fallback - extract from game title
+                    const gameTitle = gameSelect.options[gameSelect.selectedIndex]?.text || '';
+                    const teams = gameTitle.split(' @ ');
+                    awayTeam = teams[0]?.trim() || 'Away Team';
+                    homeTeam = teams[1]?.trim() || 'Home Team';
+                }
+                
+                gameId = selectedGame.id || selectedGame.gameId || 'game_' + gameIndex;
+                
+                console.log(`✅ Team names resolved: ${awayTeam} @ ${homeTeam}`);
                 
                 // Get comprehensive player props
                 const propsData = await window.comprehensivePlayerPropsService.getAllPlayerPropsForGame(
