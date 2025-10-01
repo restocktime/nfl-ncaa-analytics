@@ -7,179 +7,187 @@ class SimplePicksTracker {
     constructor() {
         this.isReady = true; // Always ready immediately
         
-        // Sample data that works instantly
-        this.sampleWeeklyData = {
-            season: '2025',
-            week: 1,
-            totalPicks: 12,
-            settledPicks: 11,
-            pendingPicks: 1,
-            wins: 8,
-            losses: 3,
-            pushes: 1,
-            voids: 0,
-            winRate: 66.7,
-            totalStake: 1200,
-            totalPayout: 1450,
-            netResult: 450,
-            roi: 15.2,
-            topPick: { player: 'Nick Bosa', edge: 2.4, status: 'won' },
-            averageOdds: -108,
-            averageStake: 100,
-            byType: {
-                'spread': { total: 5, wins: 3, losses: 2, winRate: 60 },
-                'moneyline': { total: 4, wins: 3, losses: 1, winRate: 75 },
-                'total': { total: 2, wins: 1, losses: 0, pushes: 1, winRate: 50 },
-                'player_prop': { total: 1, wins: 1, losses: 0, winRate: 100 }
-            },
-            byConfidence: {
-                'high': { total: 4, wins: 3, losses: 1, winRate: 75 },
-                'medium': { total: 6, wins: 4, losses: 2, winRate: 66.7 },
-                'low': { total: 2, wins: 1, losses: 0, pushes: 1, winRate: 50 }
-            }
-        };
-        
-        this.sampleOverallData = {
-            totalPicks: 156,
-            wins: 94,
-            losses: 58,
-            pushes: 4,
-            winRate: 61.8,
-            totalStake: 15600,
-            totalPayout: 18200,
-            netResult: 2600,
-            roi: 16.7,
-            currentStreak: { type: 'win', count: 3 },
-            longestWinStreak: 7,
-            longestLoseStreak: 4,
-            byType: {
-                'spread': { total: 65, wins: 38, losses: 25, pushes: 2, winRate: 60.3 },
-                'moneyline': { total: 42, wins: 28, losses: 14, winRate: 66.7 },
-                'total': { total: 35, wins: 20, losses: 13, pushes: 2, winRate: 60.6 },
-                'player_prop': { total: 14, wins: 8, losses: 6, winRate: 57.1 }
-            },
-            weeklyBreakdown: [
-                { week: 1, wins: 8, losses: 3, pushes: 1, winRate: 66.7 },
-                { week: 2, wins: 7, losses: 4, pushes: 0, winRate: 63.6 },
-                { week: 3, wins: 9, losses: 2, pushes: 1, winRate: 81.8 }
-            ]
-        };
+        // Real data integration - no fake samples
+        this.realPicks = [];
+        this.realPerformance = null;
 
         console.log('✅ Simple Picks Tracker loaded - Ready immediately!');
     }
 
-    // Synchronous methods that work instantly
-    getWeeklyPerformance(season, week) {
-        return Promise.resolve({
-            ...this.sampleWeeklyData,
-            season: season,
-            week: week,
-            weekKey: `${season}_${week}`
-        });
-    }
-
-    getPicksByWeek(season, week) {
-        // Return sample picks for the week
-        const samplePicks = [
-            {
-                id: 1,
-                gameId: `game_${week}_1`,
-                type: 'tackle_prop',
-                team: 'San Francisco 49ers',
-                opponent: 'Los Angeles Rams',
-                player: 'Nick Bosa',
-                line: 'Over 4.0 tackles',
-                odds: -115,
-                status: 'won',
-                confidence: 'very_high',
-                stake: 100,
-                payout: 186.96,
-                edge: 2.4,
-                reasoning: 'Elite pass rusher with favorable matchup vs weak OL'
-            },
-            {
-                id: 2,
-                gameId: `game_${week}_2`,
-                type: 'spread',
-                team: 'Kansas City Chiefs',
-                opponent: 'Buffalo Bills',
-                line: 'KC -3.5',
-                odds: -110,
-                status: 'won',
-                confidence: 'high',
-                stake: 100,
-                payout: 190.91,
-                edge: 1.8,
-                reasoning: 'Home field advantage and superior coaching'
-            },
-            {
-                id: 3,
-                gameId: `game_${week}_3`,
-                type: 'tackle_prop',
-                team: 'Los Angeles Chargers',
-                opponent: 'Denver Broncos',
-                player: 'Derwin James',
-                line: 'Over 6.5 tackles',
-                odds: -108,
-                status: 'won',
-                confidence: 'very_high',
-                stake: 100,
-                payout: 192.59,
-                edge: 2.2,
-                reasoning: 'Elite safety vs run-heavy offense, perfect matchup'
-            },
-            {
-                id: 4,
-                gameId: `game_${week}_4`,
-                type: 'moneyline',
-                team: 'Philadelphia Eagles',
-                opponent: 'Dallas Cowboys',
-                line: 'Eagles ML',
-                odds: +120,
-                status: 'lost',
-                confidence: 'medium',
-                stake: 100,
-                payout: 0,
-                edge: 1.1,
-                reasoning: 'Better offensive line and rushing attack'
-            },
-            {
-                id: 5,
-                gameId: `game_${week}_5`,
-                type: 'total',
-                teams: 'Vikings @ Lions',
-                line: 'Over 51.5',
-                odds: -105,
-                status: 'won',
-                confidence: 'high',
-                stake: 100,
-                payout: 195.24,
-                edge: 1.6,
-                reasoning: 'Two high-powered offenses, dome game conditions'
-            },
-            {
-                id: 6,
-                gameId: `game_${week}_6`,
-                type: 'tackle_prop',
-                team: 'Pittsburgh Steelers',
-                opponent: 'Baltimore Ravens',
-                player: 'T.J. Watt',
-                line: 'Over 5.5 tackles',
-                odds: -112,
-                status: 'pending',
-                confidence: 'high',
-                stake: 100,
-                payout: 189.29,
-                edge: 1.6,
-                reasoning: 'Ravens run heavy offense, Watt excellent vs run'
+    // Get REAL weekly performance from actual goldmine picks
+    async getWeeklyPerformance(season, week) {
+        try {
+            // Get real goldmines from tackle props scanner
+            const goldmines = this.getRealGoldmines();
+            
+            if (goldmines.length === 0) {
+                return {
+                    season: season,
+                    week: week,
+                    weekKey: `${season}_${week}`,
+                    totalPicks: 0,
+                    settledPicks: 0,
+                    pendingPicks: 0,
+                    wins: 0,
+                    losses: 0,
+                    pushes: 0,
+                    voids: 0,
+                    winRate: 0,
+                    totalStake: 0,
+                    totalPayout: 0,
+                    netResult: 0,
+                    roi: 0,
+                    topPick: null,
+                    averageOdds: 0,
+                    averageStake: 0,
+                    byType: {},
+                    byConfidence: {}
+                };
             }
-        ];
-        
-        return Promise.resolve(samplePicks);
+            
+            // Convert goldmines to real performance data
+            return {
+                season: season,
+                week: week,
+                weekKey: `${season}_${week}`,
+                totalPicks: goldmines.length,
+                settledPicks: 0, // All are pending until games finish
+                pendingPicks: goldmines.length,
+                wins: 0,
+                losses: 0,
+                pushes: 0,
+                voids: 0,
+                winRate: 0,
+                totalStake: goldmines.length * 100, // Assume $100 per pick
+                totalPayout: 0, // Pending
+                netResult: 0, // Pending
+                roi: 0,
+                topPick: goldmines[0] ? {
+                    player: goldmines[0].player,
+                    edge: goldmines[0].edge,
+                    status: 'pending'
+                } : null,
+                averageOdds: -110,
+                averageStake: 100,
+                byType: {
+                    'tackle_prop': { 
+                        total: goldmines.length, 
+                        wins: 0, 
+                        losses: 0, 
+                        pushes: 0,
+                        winRate: 0 
+                    }
+                },
+                byConfidence: this.groupByConfidence(goldmines)
+            };
+        } catch (error) {
+            console.error('Error getting real weekly performance:', error);
+            return null;
+        }
     }
 
-    getOverallPerformance() {
-        return Promise.resolve(this.sampleOverallData);
+    async getPicksByWeek(season, week) {
+        try {
+            // Get REAL goldmine picks from tackle props scanner
+            const goldmines = this.getRealGoldmines();
+            
+            if (goldmines.length === 0) {
+                return [];
+            }
+            
+            // Convert goldmines to pick format
+            const realPicks = goldmines.map((goldmine, index) => ({
+                id: index + 1,
+                gameId: goldmine.gameId || `game_${week}_${index}`,
+                type: 'tackle_prop',
+                team: goldmine.team || 'TBD',
+                opponent: goldmine.opponent || 'TBD',
+                player: goldmine.player,
+                line: `Over ${goldmine.line} tackles`,
+                odds: goldmine.bestOdds || -110,
+                status: 'pending', // All are pending until games finish
+                confidence: goldmine.confidence.toLowerCase(),
+                stake: 100, // Standard unit
+                payout: 0, // Pending
+                edge: goldmine.edge,
+                reasoning: goldmine.reasoning || `${goldmine.edge} edge detected with ${goldmine.confidence} confidence`,
+                projection: goldmine.projection,
+                lineShop: goldmine.lineShop,
+                sportsbook: goldmine.bestBook || 'Multiple books'
+            }));
+            
+            return realPicks;
+        } catch (error) {
+            console.error('Error getting real picks by week:', error);
+            return [];
+        }
+    }
+
+    async getOverallPerformance() {
+        try {
+            const goldmines = this.getRealGoldmines();
+            
+            if (goldmines.length === 0) {
+                return {
+                    totalPicks: 0,
+                    settledPicks: 0,
+                    pendingPicks: 0,
+                    wins: 0,
+                    losses: 0,
+                    pushes: 0,
+                    voids: 0,
+                    winRate: 0,
+                    totalStake: 0,
+                    totalPayout: 0,
+                    netResult: 0,
+                    roi: 0,
+                    bestWeek: null,
+                    worstWeek: null,
+                    currentStreak: { type: 'none', count: 0 },
+                    longestWinStreak: 0,
+                    longestLoseStreak: 0,
+                    byType: {},
+                    byConfidence: {},
+                    weeklyBreakdown: [],
+                    lastUpdated: new Date().toISOString()
+                };
+            }
+            
+            return {
+                totalPicks: goldmines.length,
+                settledPicks: 0, // All pending
+                pendingPicks: goldmines.length,
+                wins: 0,
+                losses: 0,
+                pushes: 0,
+                voids: 0,
+                winRate: 0,
+                totalStake: goldmines.length * 100,
+                totalPayout: 0, // Pending
+                netResult: 0, // Pending
+                roi: 0,
+                bestWeek: null,
+                worstWeek: null,
+                currentStreak: { type: 'none', count: 0 },
+                longestWinStreak: 0,
+                longestLoseStreak: 0,
+                byType: {
+                    'tackle_prop': { 
+                        total: goldmines.length, 
+                        wins: 0, 
+                        losses: 0, 
+                        pushes: 0,
+                        winRate: 0 
+                    }
+                },
+                byConfidence: this.groupByConfidence(goldmines),
+                weeklyBreakdown: [],
+                lastUpdated: new Date().toISOString()
+            };
+        } catch (error) {
+            console.error('Error getting real overall performance:', error);
+            return null;
+        }
     }
 
     recordPick(pickData) {
@@ -190,6 +198,65 @@ class SimplePicksTracker {
     updatePickResult(pickId, result) {
         console.log('📊 Pick result updated:', pickId, result);
         return Promise.resolve(true);
+    }
+
+    // Get REAL goldmines from tackle props scanner
+    getRealGoldmines() {
+        try {
+            console.log('🔍 Searching for real goldmines...');
+            console.log('🔍 Tackle props scanner status:', window.tacklePropsScanner ? 'LOADED' : 'MISSING');
+            console.log('🔍 Scanner goldmines:', window.tacklePropsScanner?.goldmines?.length || 0);
+            console.log('🔍 Global goldmines:', window.currentGoldmines?.length || 0);
+            
+            // Access the global tackle props scanner goldmines
+            if (window.tacklePropsScanner && window.tacklePropsScanner.goldmines) {
+                const goldmines = window.tacklePropsScanner.goldmines;
+                console.log(`📊 Found ${goldmines.length} real goldmine picks from tackle props scanner`);
+                if (goldmines.length > 0) {
+                    console.log('📊 Sample goldmine:', goldmines[0]);
+                }
+                return goldmines;
+            }
+            
+            // Fallback: check if goldmines are stored elsewhere
+            if (window.currentGoldmines && window.currentGoldmines.length > 0) {
+                console.log(`📊 Found ${window.currentGoldmines.length} goldmines from global storage`);
+                return window.currentGoldmines;
+            }
+            
+            console.log('📊 No real goldmines found - running manual scan...');
+            
+            // Try to trigger a scan if none found
+            if (window.tacklePropsScanner && typeof window.tacklePropsScanner.performScan === 'function') {
+                console.log('🎯 Triggering manual goldmine scan...');
+                window.tacklePropsScanner.performScan();
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('Error getting real goldmines:', error);
+            return [];
+        }
+    }
+
+    // Group goldmines by confidence level
+    groupByConfidence(goldmines) {
+        const grouped = {
+            'very_high': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 },
+            'high': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 },
+            'medium': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 },
+            'low': { total: 0, wins: 0, losses: 0, pushes: 0, winRate: 0 }
+        };
+        
+        goldmines.forEach(goldmine => {
+            const confidence = goldmine.confidence.toLowerCase().replace('_', '_');
+            if (grouped[confidence]) {
+                grouped[confidence].total++;
+                // All are pending for now
+            }
+        });
+        
+        return grouped;
     }
 
     // Utility methods

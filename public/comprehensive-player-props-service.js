@@ -214,9 +214,126 @@ class ComprehensivePlayerPropsService {
     }
 
     /**
+     * Normalize team names to match roster keys
+     */
+    normalizeTeamName(team) {
+        const teamMappings = {
+            'Minnesota Vikings': 'Vikings',
+            'Minnesota': 'Vikings',
+            'MIN': 'Vikings',
+            'Cleveland Browns': 'Browns', 
+            'Cleveland': 'Browns',
+            'CLE': 'Browns',
+            'San Francisco 49ers': '49ers',
+            'San Francisco': '49ers',
+            'SF': '49ers',
+            'Los Angeles Rams': 'Rams',
+            'LA Rams': 'Rams',
+            'LAR': 'Rams',
+            'New York Giants': 'Giants',
+            'NY Giants': 'Giants',
+            'NYG': 'Giants',
+            'New Orleans Saints': 'Saints',
+            'New Orleans': 'Saints',
+            'NO': 'Saints',
+            'Las Vegas Raiders': 'Raiders',
+            'LV Raiders': 'Raiders',
+            'LV': 'Raiders',
+            'Indianapolis Colts': 'Colts',
+            'Indianapolis': 'Colts',
+            'IND': 'Colts',
+            'Dallas Cowboys': 'Cowboys',
+            'Dallas': 'Cowboys',
+            'DAL': 'Cowboys',
+            'New York Jets': 'Jets',
+            'NY Jets': 'Jets',
+            'NYJ': 'Jets'
+            // Add more mappings as needed
+        };
+        
+        // Check direct mapping first
+        if (teamMappings[team]) {
+            return teamMappings[team];
+        }
+        
+        // If no mapping found, try to extract the team name part
+        // Handle cases like "Los Angeles Rams" -> "Rams"
+        const parts = team.split(' ');
+        const lastPart = parts[parts.length - 1];
+        
+        // Common team name endings that are the actual team name
+        const teamNameWords = ['49ers', 'Vikings', 'Browns', 'Rams', 'Giants', 'Saints', 'Raiders', 'Colts', 'Cowboys', 'Jets', 'Bills', 'Patriots', 'Dolphins', 'Steelers', 'Ravens', 'Bengals', 'Titans', 'Jaguars', 'Texans', 'Chiefs', 'Broncos', 'Chargers', 'Cardinals', 'Seahawks', 'Packers', 'Bears', 'Lions', 'Panthers', 'Falcons', 'Buccaneers', 'Eagles', 'Commanders'];
+        
+        if (teamNameWords.includes(lastPart)) {
+            return lastPart;
+        }
+        
+        // If all else fails, return original
+        return team;
+    }
+
+    /**
+     * Get real team roster from main system data
+     */
+    getRealTeamRoster(team) {
+        try {
+            console.log(`🔍 Looking up roster for team: "${team}"`);
+            
+            // Normalize team name (handle cases like "Minnesota Vikings" -> "Vikings")
+            const normalizedTeam = this.normalizeTeamName(team);
+            console.log(`🔄 Normalized "${team}" to "${normalizedTeam}"`);
+            console.log('🔍 Checking roster sources:', {
+                nflTeamRosters: Object.keys(window.nflTeamRosters || {}),
+                simpleSystemRosters: Object.keys(window.simpleSystem?.teamRosters || {}),
+            });
+            
+            // Try multiple sources for roster data
+            const teamPlayers = window.nflTeamRosters?.[normalizedTeam] || 
+                               window.simpleSystem?.teamRosters?.[normalizedTeam] || 
+                               window.simpleSystem?.team2025Players?.[normalizedTeam];
+            if (!teamPlayers) {
+                console.warn(`❌ No roster found for "${normalizedTeam}". Available teams:`, Object.keys(window.nflTeamRosters || window.simpleSystem?.teamRosters || {}));
+                console.warn('🔍 Trying direct window.nflTeamRosters lookup...');
+                console.log('📋 All available rosters:', window.nflTeamRosters);
+                return null;
+            }
+            console.log(`✅ Found real roster for ${normalizedTeam}:`, teamPlayers);
+            
+            return {
+                QB: [{ name: teamPlayers.QB, tier: 'high' }],
+                RB: [{ name: teamPlayers.RB, tier: 'high' }],
+                WR: [{ name: teamPlayers.WR, tier: 'high' }],
+                TE: [{ name: teamPlayers.TE, tier: 'high' }],
+                K: [{ name: `${team} Kicker`, tier: 'medium' }],
+                DEF: [
+                    { name: `${team} LB1`, tier: 'high' },
+                    { name: `${team} S1`, tier: 'high' }
+                ]
+            };
+        } catch (error) {
+            console.warn(`⚠️ Could not get real roster for ${team}:`, error);
+            return null;
+        }
+    }
+
+    /**
      * Get realistic team rosters for 2025 season
      */
     getTeamRoster(team) {
+        console.log(`🚀 getTeamRoster called for: "${team}"`);
+        console.log(`🔍 Available globals:`, {
+            nflTeamRosters: !!window.nflTeamRosters,
+            simpleSystem: !!window.simpleSystem,
+            simpleSystemTeamRosters: !!(window.simpleSystem?.teamRosters)
+        });
+        // First, try to get real roster data from the main system
+        if (window.nflTeamRosters || (window.simpleSystem && window.simpleSystem.teamRosters)) {
+            const realRoster = this.getRealTeamRoster(team);
+            if (realRoster) {
+                return realRoster;
+            }
+        }
+        
         const rosters = {
             'SF': {
                 QB: [

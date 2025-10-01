@@ -9,9 +9,9 @@ class TacklePropsScanner {
         this.isScanning = false;
         this.scanInterval = null;
         this.alertThresholds = {
-            minimumEdge: 1.2,           // Minimum +1.2 edge required (lowered for more opportunities)
-            minimumConfidence: 'medium', // Minimum confidence level
-            lineShoppingMin: 1.0,       // Minimum line shopping advantage
+            minimumEdge: 0.5,           // Minimum +0.5 edge required (realistic for -110 odds)
+            minimumConfidence: 'low',    // Lower confidence to catch more opportunities
+            lineShoppingMin: 0.3,       // Minimum line shopping advantage (realistic)
             maxTotalProps: 50           // Don't scan more than 50 props per cycle
         };
         
@@ -101,6 +101,10 @@ class TacklePropsScanner {
 
             // Step 4: Identify goldmine opportunities
             const goldmines = this.identifyGoldmines(analysisResults);
+            
+            // Store goldmines globally for picks tracker access
+            this.goldmines = goldmines;
+            window.currentGoldmines = goldmines;
 
             // Step 5: Generate alerts for new opportunities
             const newAlerts = this.generateAlerts(goldmines);
@@ -572,8 +576,14 @@ window.tacklePropsScanner = new TacklePropsScanner();
 
 console.log('🔍 Tackle Props Scanner loaded - Ready to find goldmine opportunities');
 
-// Auto-start scanning if in production environment
-if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    // Start scanning every 10 minutes in production
-    window.tacklePropsScanner.startScanning(10);
-}
+// Auto-start scanning in all environments for real goldmine detection  
+// Start scanning every 5 minutes for faster goldmine detection
+window.tacklePropsScanner.startScanning(5);
+console.log('🔍 Auto-scan enabled - goldmine detection active!');
+
+// Run an immediate scan to populate goldmines right away
+setTimeout(() => {
+    console.log('🎯 Running immediate scan for goldmines...');
+    console.log('🔍 Current scanner thresholds:', window.tacklePropsScanner.alertThresholds);
+    window.tacklePropsScanner.performScan();
+}, 2000); // Wait 2 seconds for all services to fully load

@@ -127,6 +127,11 @@ class SimpleWorkingSystem {
         
         console.log('🔥 Initializing simple working system...');
         
+        // Expose 2025-2026 NFL rosters globally immediately (async)
+        this.initializeGlobalRosters().catch(error => {
+            console.warn('⚠️ Roster initialization failed:', error);
+        });
+        
         // Wait for DOM
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.start());
@@ -2541,10 +2546,243 @@ class SimpleWorkingSystem {
         }
     }
     
-    generatePlayerNames(game) {
-        // UPDATED 2025-2026 NFL SEASON - ALL 32 TEAMS CURRENT ACTIVE ROSTERS
+    async fetchLiveNFLRosters() {
+        try {
+            console.log('🔄 fetchLiveNFLRosters() called - starting ESPN API fetch...');
+            
+            // Try a simpler ESPN endpoint first
+            console.log('📡 Trying ESPN teams API...');
+            const teamsResponse = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams');
+            
+            if (!teamsResponse.ok) {
+                throw new Error(`ESPN teams API failed: ${teamsResponse.status}`);
+            }
+            
+            const teamsData = await teamsResponse.json();
+            console.log('📊 ESPN teams API response received:', teamsData ? 'success' : 'failed');
+            
+            if (!teamsData.sports?.[0]?.leagues?.[0]?.teams) {
+                throw new Error('Invalid teams data structure');
+            }
+            
+            const teams = teamsData.sports[0].leagues[0].teams;
+            const rosters = {};
+            
+            console.log(`📊 Found ${teams.length} NFL teams, fetching rosters with live API data...`);
+            
+            // Fetch roster for each team (limit concurrent requests to avoid rate limits)
+            const rosterPromises = teams.slice(0, 32).map(async (team) => { // Get all teams
+                try {
+                    const teamId = team.team.id;
+                    const teamDisplayName = team.team.displayName;
+                    const teamShortName = team.team.shortDisplayName || team.team.name || teamDisplayName;
+                    const teamAbbrev = team.team.abbreviation;
+                    
+                    console.log(`🔄 Fetching roster for ${teamDisplayName}...`);
+                    
+                    // Try multiple ESPN roster endpoints with current season
+                    const rosterEndpoints = [
+                        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster?season=2024`,
+                        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster`,
+                        `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/teams/${teamId}/athletes?limit=100`,
+                        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}?enable=roster`
+                    ];
+                    
+                    for (const endpoint of rosterEndpoints) {
+                        try {
+                            const rosterResponse = await fetch(endpoint);
+                            if (rosterResponse.ok) {
+                                const rosterData = await rosterResponse.json();
+                                const parsedRoster = this.parseESPNRoster(rosterData, teamShortName);
+                                
+                                if (parsedRoster && parsedRoster.QB) {
+                                    // Store under both full and short names for flexibility
+                                    rosters[teamDisplayName] = parsedRoster;
+                                    rosters[teamShortName] = parsedRoster;
+                                    if (teamAbbrev) rosters[teamAbbrev] = parsedRoster;
+                                    
+                                    console.log(`✅ ${teamShortName} roster loaded: QB=${parsedRoster.QB}`);
+                                    break;
+                                }
+                            }
+                        } catch (endpointError) {
+                            console.warn(`⚠️ Failed endpoint ${endpoint}:`, endpointError.message);
+                        }
+                    }
+                } catch (teamError) {
+                    console.warn(`⚠️ Failed to fetch roster for ${team.team?.displayName}:`, teamError.message);
+                }
+            });
+            
+            await Promise.all(rosterPromises);
+            
+            // Return rosters if we got at least a few teams
+            if (Object.keys(rosters).length >= 4) {
+                console.log(`✅ Successfully loaded ${Object.keys(rosters).length} team rosters from ESPN`);
+                return rosters;
+            } else {
+                throw new Error(`Only got ${Object.keys(rosters).length} rosters - not enough`);
+            }
+            
+        } catch (error) {
+            console.error('❌ Failed to fetch live NFL rosters:', error);
+            return null;
+        }
+    }
+    
+    parseESPNRoster(rosterData, teamName) {
+        try {
+            console.log(`🔍 Parsing roster data for ${teamName}:`, rosterData);
+            
+            // Handle different ESPN API response structures
+            let players = [];
+            
+            // ESPN API returns grouped structure: offense, defense, specialTeam, etc.
+            if (Array.isArray(rosterData)) {
+                console.log(`📊 Processing ${rosterData.length} groups/categories`);
+                // If it's an array of groups
+                rosterData.forEach((group, groupIndex) => {
+                    console.log(`🔍 Group ${groupIndex}:`, typeof group, group.position || group.name || 'Unknown');
+                    
+                    // Check if this group has athletes/items
+                    if (group.items && Array.isArray(group.items)) {
+                        console.log(`  └─ Found ${group.items.length} items in group`);
+                        players.push(...group.items);
+                    } else if (group.athletes && Array.isArray(group.athletes)) {
+                        console.log(`  └─ Found ${group.athletes.length} athletes in group`);
+                        players.push(...group.athletes);
+                    } else if (group.entries && Array.isArray(group.entries)) {
+                        console.log(`  └─ Found ${group.entries.length} entries in group`);
+                        players.push(...group.entries);
+                    } else if (Array.isArray(group)) {
+                        // Sometimes the group itself is an array of players
+                        console.log(`  └─ Group is array with ${group.length} players`);
+                        players.push(...group);
+                    } else {
+                        console.log(`  └─ Group structure:`, Object.keys(group));
+                    }
+                });
+            } else if (rosterData.athletes) {
+                players = rosterData.athletes;
+            } else if (rosterData.roster) {
+                players = rosterData.roster;
+            } else if (rosterData.items) {
+                players = rosterData.items;
+            } else if (rosterData.team?.roster) {
+                players = rosterData.team.roster;
+            } else if (rosterData.entries) {
+                players = rosterData.entries;
+            } else if (rosterData.$ref) {
+                console.warn(`⚠️ Got reference URL for ${teamName}: ${rosterData.$ref}`);
+                // Could fetch the reference URL here if needed
+                return null;
+            }
+            
+            console.log(`📋 Total players extracted: ${players.length} for ${teamName}`);
+            
+            if (players.length === 0) {
+                console.warn(`⚠️ No players found in API response for ${teamName}`);
+                console.log('🔍 Raw API response structure:', Object.keys(rosterData));
+                console.log('🔍 Full response sample:', JSON.stringify(rosterData, null, 2).substring(0, 500));
+            }
+            
+            const roster = { QB: null, RB: null, WR: null, TE: null };
+            
+            // Extract key players by position with more flexible parsing
+            players.forEach((player, index) => {
+                if (index < 5) { // Log first 5 players for debugging
+                    console.log(`🔍 Player ${index} raw data:`, player);
+                }
+                
+                const position = player.position?.abbreviation || 
+                               player.position?.name || 
+                               player.pos || 
+                               player.position;
+                
+                const name = player.displayName || 
+                           player.name || 
+                           player.fullName ||
+                           `${player.firstName || ''} ${player.lastName || ''}`.trim() ||
+                           player.athlete?.displayName ||
+                           player.athlete?.name ||
+                           player.athlete?.fullName ||
+                           `${player.athlete?.firstName || ''} ${player.athlete?.lastName || ''}`.trim();
+                
+                if (index < 5) { // Debug first 5 players
+                    console.log(`👤 Parsed - Name: "${name}", Position: "${position}"`);
+                }
+                
+                if (name && name !== teamName && !name.includes('QB') && !name.includes('RB')) {
+                    if ((position === 'QB' || position === 'Quarterback') && !roster.QB) {
+                        roster.QB = name;
+                        console.log(`✅ Found QB: ${name}`);
+                    } else if ((position === 'RB' || position === 'Running Back') && !roster.RB) {
+                        roster.RB = name;
+                        console.log(`✅ Found RB: ${name}`);
+                    } else if ((position === 'WR' || position === 'Wide Receiver') && !roster.WR) {
+                        roster.WR = name;
+                        console.log(`✅ Found WR: ${name}`);
+                    } else if ((position === 'TE' || position === 'Tight End') && !roster.TE) {
+                        roster.TE = name;
+                        console.log(`✅ Found TE: ${name}`);
+                    }
+                }
+            });
+            
+            // Only set fallbacks if we got no real names at all
+            const hasRealNames = roster.QB && !roster.QB.includes(`${teamName} QB`);
+            if (!hasRealNames) {
+                console.warn(`⚠️ No real player names found for ${teamName}, using fallbacks`);
+                roster.QB = roster.QB || `${teamName} QB`;
+                roster.RB = roster.RB || `${teamName} RB`;
+                roster.WR = roster.WR || `${teamName} WR`;
+                roster.TE = roster.TE || `${teamName} TE`;
+            }
+            
+            console.log(`🏈 Final roster for ${teamName}:`, roster);
+            return roster;
+        } catch (error) {
+            console.warn(`⚠️ Failed to parse roster for ${teamName}:`, error);
+            return null;
+        }
+    }
+    
+    async initializeGlobalRosters() {
+        // Prevent multiple simultaneous roster fetches
+        if (this.rosterFetchInProgress) {
+            console.log('🔄 Roster fetch already in progress, waiting...');
+            return this.teamRosters;
+        }
+        
+        if (this.teamRosters && Object.keys(this.teamRosters).length > 10) {
+            console.log('✅ Rosters already loaded, using cached data');
+            return this.teamRosters;
+        }
+        
+        this.rosterFetchInProgress = true;
+        console.log('🏈 Fetching live 2025-2026 NFL rosters from ESPN API...');
+        
+        try {
+            // Get live roster data from ESPN API
+            console.log('🌐 Fetching live NFL rosters from ESPN API...');
+            const liveRosters = await this.fetchLiveNFLRosters();
+            console.log('🔍 ESPN API returned rosters:', liveRosters ? `${Object.keys(liveRosters).length} teams` : 'null/failed');
+            if (liveRosters && Object.keys(liveRosters).length > 5) {
+                this.teamRosters = liveRosters;
+                window.nflTeamRosters = liveRosters;
+                this.rosterFetchInProgress = false;
+                console.log('✅ Live 2025-26 NFL rosters loaded from ESPN API');
+                console.log('📊 Available teams:', Object.keys(liveRosters));
+                return liveRosters;
+            }
+        } catch (error) {
+            console.warn('⚠️ ESPN API failed, falling back to cached 2025-26 rosters:', error);
+        }
+        
+        // Fallback to cached rosters if API fails
+        console.log('📋 Using cached 2025-26 rosters as fallback');
         const teamRosters = {
-            // AFC EAST - 2025-26 Season
+            // AFC EAST - 2025-26 Season (Updated with current starters)
             'Bills': { QB: 'Josh Allen', RB: 'James Cook', WR: 'Khalil Shakir', TE: 'Dalton Kincaid' },
             'Dolphins': { QB: 'Tua Tagovailoa', RB: 'De\'Von Achane', WR: 'Tyreek Hill', TE: 'Jonnu Smith' },
             'Patriots': { QB: 'Drake Maye', RB: 'Rhamondre Stevenson', WR: 'DeMario Douglas', TE: 'Hunter Henry' },
@@ -2553,12 +2791,12 @@ class SimpleWorkingSystem {
             // AFC NORTH - 2025-26 Season  
             'Ravens': { QB: 'Lamar Jackson', RB: 'Derrick Henry', WR: 'Zay Flowers', TE: 'Mark Andrews' },
             'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Tee Higgins' },
-            'Browns': { QB: 'Jameis Winston', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku' },
+            'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku' },
             'Steelers': { QB: 'Russell Wilson', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth' },
             
             // AFC SOUTH - 2025-26 Season
             'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo' },
-            'Colts': { QB: 'Anthony Richardson', RB: 'Jonathan Taylor', WR: 'Michael Pittman Jr.', TE: 'Mo Alie-Cox' },
+            'Colts': { QB: 'Daniel Jones', RB: 'Jonathan Taylor', WR: 'Michael Pittman Jr.', TE: 'Mo Alie-Cox' },
             'Jaguars': { QB: 'Trevor Lawrence', RB: 'Travis Etienne', WR: 'Brian Thomas Jr.', TE: 'Evan Engram' },
             'Texans': { QB: 'C.J. Stroud', RB: 'Joe Mixon', WR: 'Nico Collins', TE: 'Dalton Schultz' },
             
@@ -2571,7 +2809,7 @@ class SimpleWorkingSystem {
             // NFC EAST - 2025-26 Season
             'Cowboys': { QB: 'Dak Prescott', RB: 'Rico Dowdle', WR: 'CeeDee Lamb', TE: 'Jake Ferguson' },
             'Eagles': { QB: 'Jalen Hurts', RB: 'Saquon Barkley', WR: 'A.J. Brown', TE: 'Dallas Goedert' },
-            'Giants': { QB: 'Drew Lock', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson' },
+            'Giants': { QB: 'Tommy DeVito', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson' },
             'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz' },
             
             // NFC NORTH - 2025-26 Season
@@ -2592,6 +2830,21 @@ class SimpleWorkingSystem {
             'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson' },
             'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride' }
         };
+        
+        // Expose roster data globally for other services
+        this.teamRosters = teamRosters;
+        window.nflTeamRosters = teamRosters;
+        this.rosterFetchInProgress = false;
+        
+        console.log('🏈 2025-2026 NFL rosters initialized globally');
+        console.log('📊 Available teams:', Object.keys(teamRosters));
+        
+        return teamRosters;
+    }
+    
+    generatePlayerNames(game) {
+        // Use the globally initialized rosters
+        const teamRosters = this.teamRosters || this.initializeGlobalRosters();
         
         // Get exact team names from game data
         const homeTeamName = game.homeTeam.name;
