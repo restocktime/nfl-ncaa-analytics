@@ -107,11 +107,16 @@ class SimplePicksTracker {
                 try {
                     console.log('🚀 MCP system found, generating weekly picks...');
                     const weeklyPicks = await window.weeklyPicksMCP.getBestWeeklyPicks(season, week);
-                    console.log('📊 MCP returned picks:', weeklyPicks.topPicks?.length || 0, 'picks');
-                    console.log('📊 MCP categories:', weeklyPicks.topPicks?.map(p => p.category) || []);
-                    if (weeklyPicks.topPicks.length > 0) {
-                        console.log('✅ Using MCP picks instead of goldmines');
-                        return this.convertMCPToPicks(weeklyPicks.topPicks, week);
+                    console.log('📊 MCP returned ALL picks:', weeklyPicks.allPicks?.length || 0, 'total picks available');
+                    console.log('📊 MCP categories breakdown:');
+                    console.log(`   - Tackle Props: ${weeklyPicks.tackleProps?.length || 0}`);
+                    console.log(`   - Player Props: ${weeklyPicks.playerProps?.length || 0}`);
+                    console.log(`   - Game Lines: ${weeklyPicks.gameLines?.length || 0}`);
+                    console.log(`   - Spreads: ${weeklyPicks.spreads?.length || 0}`);
+                    
+                    if (weeklyPicks.allPicks && weeklyPicks.allPicks.length > 0) {
+                        console.log('✅ Using ALL MCP picks - comprehensive betting opportunities');
+                        return this.convertMCPToPicks(weeklyPicks.allPicks, week);
                     } else {
                         console.log('⚠️ MCP returned 0 picks, falling back to goldmines');
                     }

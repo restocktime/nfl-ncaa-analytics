@@ -10,6 +10,11 @@ class WeeklyPicksMCP {
         this.apiKey = '9de126998e0df996011a28e9527dd7b9';
         this.baseUrl = 'https://api.the-odds-api.com/v4';
         
+        // STABLE CACHING - Prevent picks from changing on refresh
+        this.pickCache = new Map();
+        this.cacheTimestamp = null;
+        this.cacheValidityPeriod = 15 * 60 * 1000; // 15 minutes
+        
         // SELECTIVE thresholds - Show quality picks users should bet on
         this.thresholds = {
             playerProps: {
@@ -17,8 +22,9 @@ class WeeklyPicksMCP {
                 minimumConfidence: 'medium'  // Medium+ confidence required
             },
             gameLines: {
-                minimumEdge: 2.0,      // Must have +2.0+ edge for moneylines (more realistic)
-                minimumConfidence: 'medium'  // Medium+ confidence required
+                minimumEdge: 2.5,      // Must have +2.5+ edge for moneylines (high value only)
+                minimumConfidence: 'high',  // HIGH confidence required (80%+ assurance)
+                minimumWinProbability: 0.8  // 80%+ win probability for game lines
             },
             tackleProps: {
                 minimumEdge: 1.0,      // Must have +1.0+ edge (goldmines from scanner)
@@ -34,11 +40,19 @@ class WeeklyPicksMCP {
     }
 
     /**
-     * Get the best weekly picks across all sources
+     * Get the best weekly picks across all sources (with stable caching)
      */
     async getBestWeeklyPicks(season = 2025, week = 5) {
         try {
-            console.log(`🚀 MCP: Generating best weekly picks for Week ${week}, ${season}`);
+            const cacheKey = `weekly_picks_${season}_${week}`;
+            
+            // Check if we have valid cached picks
+            if (this.pickCache.has(cacheKey) && this.isCacheValid()) {
+                console.log(`📦 MCP: Using cached picks for Week ${week} (prevents changes on refresh)`);
+                return this.pickCache.get(cacheKey);
+            }
+            
+            console.log(`🚀 MCP: Generating fresh weekly picks for Week ${week}, ${season}`);
             console.log(`🔍 MCP: Checking required services...`);
             console.log(`   - Player Props Service: ${!!window.comprehensivePlayerPropsService}`);
             console.log(`   - Simple System Games: ${!!(window.simpleSystem?.games?.length)}`);
@@ -111,14 +125,15 @@ class WeeklyPicksMCP {
                     injuryFiltering: true
                 },
                 
-                // Only show top goldmine picks - maximum 6 picks total (injury-filtered)
-                topPicks: injuryFilteredPicks.slice(0, 6),
+                // Show ALL goldmine picks - users want to see everything available
+                topPicks: injuryFilteredPicks.slice(0, 20), // Top 20 best picks
+                allPicks: injuryFilteredPicks, // ALL available picks
                 
-                // Category breakdown - very limited (injury-filtered)
-                playerProps: injuryFilteredPicks.filter(p => p.category === 'player_prop').slice(0, 2),
-                gameLines: injuryFilteredPicks.filter(p => p.category === 'game_line').slice(0, 2),
-                spreads: injuryFilteredPicks.filter(p => p.category === 'spread').slice(0, 2),
-                tackleProps: injuryFilteredPicks.filter(p => p.category === 'tackle_prop').slice(0, 2),
+                // Category breakdown - SHOW ALL in each category
+                playerProps: injuryFilteredPicks.filter(p => p.category === 'player_prop'), // ALL player props
+                gameLines: injuryFilteredPicks.filter(p => p.category === 'game_line'), // ALL game lines  
+                spreads: injuryFilteredPicks.filter(p => p.category === 'spread'), // ALL spreads
+                tackleProps: injuryFilteredPicks.filter(p => p.category === 'tackle_prop'), // ALL tackle props
                 
                 // Risk categories - focus on low risk (injury-filtered)
                 lowRisk: injuryFilteredPicks.filter(p => p.riskLevel === 'low').slice(0, 3),
@@ -130,6 +145,12 @@ class WeeklyPicksMCP {
             };
 
             console.log(`✅ MCP: Generated ${injuryFilteredPicks.length} injury-filtered recommendations (from ${goldminePicks.length} goldmines, ${allPicks.length} total opportunities)`);
+            
+            // Cache the results to prevent changes on refresh
+            this.pickCache.set(cacheKey, weeklyRecommendations);
+            this.cacheTimestamp = Date.now();
+            console.log(`💾 MCP: Cached picks for 15 minutes - won't change on refresh`);
+            
             return weeklyRecommendations;
             
         } catch (error) {
@@ -252,8 +273,9 @@ class WeeklyPicksMCP {
                 console.log(`   🔍 AI Model: Home ${(homeModelProb*100).toFixed(1)}% vs Implied ${(homeImplied*100).toFixed(1)}% = ${homeEdge.toFixed(2)}% edge`);
                 console.log(`   🔍 AI Model: Away ${(awayModelProb*100).toFixed(1)}% vs Implied ${(awayImplied*100).toFixed(1)}% = ${awayEdge.toFixed(2)}% edge`);
                 
-                // SELECTIVE filtering - add picks that meet thresholds
-                if (homeEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence !== 'low') {
+                // HIGH-CONFIDENCE filtering for game lines - 80%+ assurance only
+                const homeWinProb80Plus = homeModelProb >= this.thresholds.gameLines.minimumWinProbability;
+                if (homeEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence === 'high' && homeWinProb80Plus) {
                     console.log(`   🎯 GOLDMINE DETECTED: ${game.homeTeam.name} ML +${homeEdge.toFixed(1)}% edge`);
                     gameLinePicks.push({
                         id: `ml_${game.id}_home`,
@@ -280,7 +302,8 @@ class WeeklyPicksMCP {
                     });
                 }
                 
-                if (awayEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence !== 'low') {
+                const awayWinProb80Plus = awayModelProb >= this.thresholds.gameLines.minimumWinProbability;
+                if (awayEdge >= this.thresholds.gameLines.minimumEdge && aiAnalysis.confidence === 'high' && awayWinProb80Plus) {
                     console.log(`   🎯 GOLDMINE DETECTED: ${game.awayTeam.name} ML +${awayEdge.toFixed(1)}% edge`);
                     gameLinePicks.push({
                         id: `ml_${game.id}_away`,
@@ -771,6 +794,32 @@ class WeeklyPicksMCP {
 
     formatPick(pick) {
         return `${pick.market} (${pick.recommendation}) - Edge: +${pick.edge.toFixed(1)} - ${pick.units}u`;
+    }
+
+    /**
+     * Check if cached picks are still valid (prevents changes on refresh)
+     */
+    isCacheValid() {
+        if (!this.cacheTimestamp) return false;
+        const now = Date.now();
+        const elapsed = now - this.cacheTimestamp;
+        const isValid = elapsed < this.cacheValidityPeriod;
+        
+        if (!isValid) {
+            console.log(`⏰ MCP: Cache expired after ${Math.floor(elapsed / 1000 / 60)} minutes - will regenerate picks`);
+            this.pickCache.clear();
+        }
+        
+        return isValid;
+    }
+
+    /**
+     * Manually clear cache (for testing or forced refresh)
+     */
+    clearCache() {
+        console.log('🗑️ MCP: Manually clearing pick cache');
+        this.pickCache.clear();
+        this.cacheTimestamp = null;
     }
 }
 

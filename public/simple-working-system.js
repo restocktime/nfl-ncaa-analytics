@@ -2843,39 +2843,39 @@ class SimpleWorkingSystem {
             'Steelers': { QB: 'Aaron Rodgers', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
             
             // AFC SOUTH - 2025-26 Season
-            'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo' },
-            'Colts': { QB: 'Daniel Jones', RB: 'Jonathan Taylor', WR: 'Michael Pittman Jr.', TE: 'Mo Alie-Cox' },
-            'Jaguars': { QB: 'Trevor Lawrence', RB: 'Travis Etienne', WR: 'Brian Thomas Jr.', TE: 'Evan Engram' },
-            'Texans': { QB: 'C.J. Stroud', RB: 'Joe Mixon', WR: 'Nico Collins', TE: 'Dalton Schultz' },
+            'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo', K: 'Nick Folk', LB: 'Kenneth Murray' },
+            'Colts': { QB: 'Daniel Jones', RB: 'Jonathan Taylor', WR: 'Michael Pittman Jr.', TE: 'Mo Alie-Cox', K: 'Matt Gay', LB: 'Zaire Franklin' },
+            'Jaguars': { QB: 'Trevor Lawrence', RB: 'Travis Etienne', WR: 'Brian Thomas Jr.', TE: 'Evan Engram', K: 'Cam Little', LB: 'Foye Oluokun' },
+            'Texans': { QB: 'C.J. Stroud', RB: 'Joe Mixon', WR: 'Nico Collins', TE: 'Dalton Schultz', K: 'Ka\'imi Fairbairn', LB: 'Azeez Al-Shaair' },
             
             // AFC WEST - 2025-26 Season
-            'Chiefs': { QB: 'Patrick Mahomes', RB: 'Kareem Hunt', WR: 'Xavier Worthy', TE: 'Travis Kelce' },
-            'Chargers': { QB: 'Justin Herbert', RB: 'J.K. Dobbins', WR: 'Ladd McConkey', TE: 'Will Dissly' },
+            'Chiefs': { QB: 'Patrick Mahomes', RB: 'Kareem Hunt', WR: 'Xavier Worthy', TE: 'Travis Kelce', K: 'Harrison Butker', LB: 'Nick Bolton' },
+            'Chargers': { QB: 'Justin Herbert', RB: 'J.K. Dobbins', WR: 'Ladd McConkey', TE: 'Will Dissly', K: 'Cameron Dicker', LB: 'Khalil Mack' },
             'Broncos': { QB: 'Bo Nix', RB: 'RJ Harvey', WR: 'Courtland Sutton', TE: 'Adam Trautman', K: 'Wil Lutz', LB: 'Alex Singleton' },
-            'Raiders': { QB: 'Gardner Minshew', RB: 'Alexander Mattison', WR: 'Jakobi Meyers', TE: 'Brock Bowers' },
+            'Raiders': { QB: 'Gardner Minshew', RB: 'Alexander Mattison', WR: 'Jakobi Meyers', TE: 'Brock Bowers', K: 'Daniel Carlson', LB: 'Divine Deablo' },
             
             // NFC EAST - 2025-26 Season
             'Cowboys': { QB: 'Dak Prescott', RB: 'Javonte Williams', WR: 'CeeDee Lamb', TE: 'Jake Ferguson', K: 'Brandon Aubrey', LB: 'Micah Parsons' },
-            'Eagles': { QB: 'Jalen Hurts', RB: 'Saquon Barkley', WR: 'A.J. Brown', TE: 'Dallas Goedert' },
-            'Giants': { QB: 'Tommy DeVito', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson' },
-            'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz' },
+            'Eagles': { QB: 'Jalen Hurts', RB: 'Saquon Barkley', WR: 'A.J. Brown', TE: 'Dallas Goedert', K: 'Jake Elliott', LB: 'Nakobe Dean' },
+            'Giants': { QB: 'Tommy DeVito', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson', K: 'Greg Joseph', LB: 'Micah McFadden' },
+            'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz', K: 'Austin Seibert', LB: 'Bobby Wagner' },
             
             // NFC NORTH - 2025-26 Season
             'Packers': { QB: 'Jordan Love', RB: 'Josh Jacobs', WR: 'Jayden Reed', TE: 'Tucker Kraft', K: 'Brandon McManus', LB: 'Quay Walker' },
-            'Bears': { QB: 'Caleb Williams', RB: 'D\'Andre Swift', WR: 'DJ Moore', TE: 'Cole Kmet' },
-            'Lions': { QB: 'Jared Goff', RB: 'Jahmyr Gibbs', WR: 'Amon-Ra St. Brown', TE: 'Sam LaPorta' },
-            'Vikings': { QB: 'Sam Darnold', RB: 'Aaron Jones', WR: 'Justin Jefferson', TE: 'Josh Oliver' },
+            'Bears': { QB: 'Caleb Williams', RB: 'D\'Andre Swift', WR: 'DJ Moore', TE: 'Cole Kmet', K: 'Cairo Santos', LB: 'T.J. Edwards' },
+            'Lions': { QB: 'Jared Goff', RB: 'Jahmyr Gibbs', WR: 'Amon-Ra St. Brown', TE: 'Sam LaPorta', K: 'Jake Bates', LB: 'Jack Campbell' },
+            'Vikings': { QB: 'Sam Darnold', RB: 'Aaron Jones', WR: 'Justin Jefferson', TE: 'Josh Oliver', K: 'Will Reichard', LB: 'Blake Cashman' },
             
             // NFC SOUTH - 2025-26 Season
-            'Saints': { QB: 'Spencer Rattler', RB: 'Alvin Kamara', WR: 'Chris Olave', TE: 'Juwan Johnson' },
-            'Falcons': { QB: 'Michael Penix Jr.', RB: 'Bijan Robinson', WR: 'Drake London', TE: 'Kyle Pitts' },
-            'Panthers': { QB: 'Bryce Young', RB: 'Chuba Hubbard', WR: 'Adam Thielen', TE: 'Ja\'Tavion Sanders' },
+            'Saints': { QB: 'Spencer Rattler', RB: 'Alvin Kamara', WR: 'Chris Olave', TE: 'Juwan Johnson', K: 'Blake Grupe', LB: 'Demario Davis' },
+            'Falcons': { QB: 'Michael Penix Jr.', RB: 'Bijan Robinson', WR: 'Drake London', TE: 'Kyle Pitts', K: 'Younghoe Koo', LB: 'Kaden Elliss' },
+            'Panthers': { QB: 'Bryce Young', RB: 'Chuba Hubbard', WR: 'Adam Thielen', TE: 'Ja\'Tavion Sanders', K: 'Eddy Pineiro', LB: 'Shaq Thompson' },
             'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton', K: 'Chase McLaughlin', LB: 'Lavonte David' },
             
             // NFC WEST - 2025-26 Season
             '49ers': { QB: 'Mac Jones', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'Logan Thomas', K: 'Jake Moody', LB: 'Fred Warner' },
             'Seahawks': { QB: 'Geno Smith', RB: 'Kenneth Walker III', WR: 'DK Metcalf', TE: 'Noah Fant', K: 'Jason Myers', LB: 'Bobby Wagner' },
-            'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson', K: 'Lucas Havrisik', LB: 'Ernest Jones' },
+            'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson', K: 'Lucas Havrisik', LB: 'Byron Young' },
             'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride', K: 'Chad Ryland', LB: 'Kyzir White' }
         };
         

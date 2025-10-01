@@ -504,13 +504,15 @@ class TacklePropsScanner {
 
     simulatePFFAnalysis(defender, rbPlayer, defenseTeam) {
         // AGGRESSIVE GOLDMINE SIMULATION FOR TESTING - Generate high-edge opportunities
-        const baseProjection = 6.0 + (Math.random() * 3.0); // 6.0 - 9.0 range
+        // Use consistent seeding based on player names to prevent changes on refresh
+        const seed = this.createSeededRandom(defender + rbPlayer + defenseTeam);
+        const baseProjection = 6.0 + (seed() * 3.0); // 6.0 - 9.0 range
         
         // Force most to be goldmines for testing
-        const isGoldmine = Math.random() > 0.3; // 70% chance of goldmine (increased from 30%)
+        const isGoldmine = seed() > 0.3; // 70% chance of goldmine (using seeded random)
         const projectedTackles = isGoldmine ? 
-            baseProjection + (2.0 + Math.random() * 2.5) : // Add 2.0-4.5 for guaranteed goldmines
-            baseProjection + (Math.random() * 0.8 - 0.4); // Small adjustment for non-goldmines
+            baseProjection + (2.0 + seed() * 2.5) : // Add 2.0-4.5 for guaranteed goldmines
+            baseProjection + (seed() * 0.8 - 0.4); // Small adjustment for non-goldmines
         
         console.log(`🎲 Simulated analysis for ${defender}: projection=${projectedTackles.toFixed(1)}, isGoldmine=${isGoldmine}`);
 
@@ -518,7 +520,7 @@ class TacklePropsScanner {
             topOpportunity: {
                 defender: defender,
                 projectedTackles: Number(projectedTackles.toFixed(1)),
-                confidence: isGoldmine ? (Math.random() > 0.5 ? 'high' : 'very_high') : (Math.random() > 0.5 ? 'medium' : 'high'),
+                confidence: isGoldmine ? (seed() > 0.5 ? 'high' : 'very_high') : (seed() > 0.5 ? 'medium' : 'high'),
                 mismatches: [
                     {
                         type: 'DIRECTIONAL_MISMATCH',
@@ -532,17 +534,17 @@ class TacklePropsScanner {
                     }] : [])
                 ],
                 alignmentData: {
-                    tackleOpportunities: isGoldmine ? (8.5 + Math.random() * 2) : (7.2 + Math.random() * 1.5)
+                    tackleOpportunities: isGoldmine ? (8.5 + seed() * 2) : (7.2 + seed() * 1.5)
                 }
             },
             metadata: {
-                rbCarriesPerGame: 16 + (Math.random() * 8),
+                rbCarriesPerGame: 16 + (seed() * 8),
                 rbDirectionalBias: { 
-                    left: isGoldmine ? (0.5 + Math.random() * 0.2) : (0.4 + Math.random() * 0.2), 
-                    right: isGoldmine ? (0.3 + Math.random() * 0.2) : (0.6 - Math.random() * 0.2) 
+                    left: isGoldmine ? (0.5 + seed() * 0.2) : (0.4 + seed() * 0.2), 
+                    right: isGoldmine ? (0.3 + seed() * 0.2) : (0.6 - seed() * 0.2) 
                 },
                 isSimulatedGoldmine: isGoldmine,
-                expectedEdge: projectedTackles - (6.5 + Math.random() * 2), // Rough expected edge for tracking
+                expectedEdge: projectedTackles - (6.5 + seed() * 2), // Rough expected edge for tracking
                 simulationMode: 'AGGRESSIVE_GOLDMINE_TESTING'
             }
         };
@@ -627,6 +629,27 @@ class TacklePropsScanner {
             'Maxx Crosby': 'Raiders'
         };
         return teams[defenderName] || 'Unknown';
+    }
+
+    /**
+     * Create a seeded random number generator to prevent picks from changing on refresh
+     */
+    createSeededRandom(seedString) {
+        // Simple hash function to convert string to number
+        let hash = 0;
+        for (let i = 0; i < seedString.length; i++) {
+            const char = seedString.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        
+        // Linear congruential generator using the hash as seed
+        let seed = Math.abs(hash);
+        
+        return function() {
+            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+            return seed / 0x7fffffff;
+        };
     }
 }
 

@@ -174,9 +174,9 @@
     <script src="sportsbook-api-service.js"></script>
     <script src="tackle-props-scanner.js"></script>
     <script src="injury-status-service.js"></script>
-    <script src="simple-picks-tracker.js"></script>
     <script src="comprehensive-player-props-service.js"></script>
     <script src="weekly-picks-mcp.js"></script>
+    <script src="comprehensive-picks-display.js"></script>
     
     <!-- Load main system last -->
     <script src="simple-working-system.js"></script>
@@ -192,7 +192,14 @@
                     console.log('✅ NFL System initialized successfully');
                     
                     await nflSystem.start();
-                    // Betting lines are loaded automatically as part of start()
+                    
+                    // Load comprehensive picks display with ALL betting opportunities
+                    if (window.comprehensivePicksDisplay) {
+                        console.log('🎯 Loading ALL betting opportunities...');
+                        await window.comprehensivePicksDisplay.displayAllPicks();
+                    } else {
+                        console.warn('⚠️ Comprehensive picks display not available');
+                    }
                 } else {
                     console.error('❌ SimpleWorkingSystem not found');
                     showError('NFL System not loaded properly. Please refresh the page.');

@@ -177,7 +177,7 @@ class ComprehensivePlayerPropsService {
             
             // Prop Details
             propType: this.formatPropType(propType),
-            market: `${this.formatPropType(propType)} - ${player.name}`,
+            market: `OVER ${line} ${this.formatPropType(propType)} - ${player.name}`,
             line: line,
             
             // Projections & Analysis
@@ -482,8 +482,9 @@ class ComprehensivePlayerPropsService {
         const matchupBonus = this.getMatchupProjectionBonus(matchup, propType);
         projection += matchupBonus;
         
-        // Add some realistic variance
-        const variance = (Math.random() - 0.5) * 0.3;
+        // Add some realistic variance (seeded to prevent changes on refresh)
+        const seed = this.createSeededRandom(`${propType}_${position}_${matchup.overall}`);
+        const variance = (seed() - 0.5) * 0.3;
         projection += variance;
         
         return Math.max(0.1, projection);
@@ -625,39 +626,46 @@ class ComprehensivePlayerPropsService {
         return grouped;
     }
 
-    // Helper methods for analysis
+    // Helper methods for analysis (seeded for stability)
     getOverallMatchup(team1, team2) {
         const matchups = ['favorable', 'neutral', 'unfavorable'];
-        return matchups[Math.floor(Math.random() * matchups.length)];
+        const seed = this.createSeededRandom(team1 + team2);
+        return matchups[Math.floor(seed() * matchups.length)];
     }
 
     getPositionalMatchup(position, opponent) {
         const matchups = ['elite', 'good', 'average', 'poor'];
-        return matchups[Math.floor(Math.random() * matchups.length)];
+        const seed = this.createSeededRandom(position + opponent);
+        return matchups[Math.floor(seed() * matchups.length)];
     }
 
     predictGameScript(team, opponent) {
         const scripts = ['pass_heavy', 'balanced', 'run_heavy'];
-        return scripts[Math.floor(Math.random() * scripts.length)];
+        const seed = this.createSeededRandom(team + opponent + 'gamescript');
+        return scripts[Math.floor(seed() * scripts.length)];
     }
 
     getWeatherImpact() {
-        return Math.random() > 0.8 ? 'poor' : 'good';
+        const seed = this.createSeededRandom('weather' + new Date().toDateString());
+        return seed() > 0.8 ? 'poor' : 'good';
     }
 
     getTeamTrend(team) {
         const trends = ['hot', 'neutral', 'cold'];
-        return trends[Math.floor(Math.random() * trends.length)];
+        const seed = this.createSeededRandom(team + 'trend');
+        return trends[Math.floor(seed() * trends.length)];
     }
 
     getPlayerTrend(player) {
         const trends = ['trending_up', 'stable', 'trending_down'];
-        return trends[Math.floor(Math.random() * trends.length)];
+        const seed = this.createSeededRandom(player + 'trend');
+        return trends[Math.floor(seed() * trends.length)];
     }
 
     calculateMatchupGrade(team, opponent, position) {
         const grades = ['A', 'B', 'C', 'D', 'F'];
-        return grades[Math.floor(Math.random() * grades.length)];
+        const seed = this.createSeededRandom(team + opponent + position);
+        return grades[Math.floor(seed() * grades.length)];
     }
 
     formatPropType(propType) {
@@ -789,6 +797,27 @@ class ComprehensivePlayerPropsService {
         });
         
         return merged;
+    }
+
+    /**
+     * Create a seeded random number generator to prevent picks from changing on refresh
+     */
+    createSeededRandom(seedString) {
+        // Simple hash function to convert string to number
+        let hash = 0;
+        for (let i = 0; i < seedString.length; i++) {
+            const char = seedString.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        
+        // Linear congruential generator using the hash as seed
+        let seed = Math.abs(hash);
+        
+        return function() {
+            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+            return seed / 0x7fffffff;
+        };
     }
 }
 
