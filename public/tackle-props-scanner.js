@@ -123,15 +123,23 @@ class TacklePropsScanner {
      */
     async getAllTackleProps() {
         try {
+            // Temporarily force simulation for debugging goldmine detection
             // Use the sportsbook API service if available
-            if (window.sportsbookAPIService) {
-                return await window.sportsbookAPIService.getAllTackleProps();
+            if (false && window.sportsbookAPIService) {
+                console.log('📊 Using sportsbook API service for tackle props...');
+                const apiProps = await window.sportsbookAPIService.getAllTackleProps();
+                console.log(`📊 Got ${apiProps?.length || 0} props from sportsbook API`);
+                return apiProps;
             }
 
             // Fallback to simulation for development
-            return this.simulateAllTackleProps();
+            console.log('🎲 Using simulated tackle props for development...');
+            const simProps = this.simulateAllTackleProps();
+            console.log(`🎲 Generated ${simProps?.length || 0} simulated tackle props`);
+            return simProps;
         } catch (error) {
             console.error('❌ Error fetching tackle props:', error);
+            console.log('🎲 Falling back to simulated tackle props...');
             return this.simulateAllTackleProps();
         }
     }
@@ -140,22 +148,30 @@ class TacklePropsScanner {
      * Filter props for scanning based on line shopping opportunities
      */
     filterScannableProps(allProps) {
-        return allProps
+        console.log(`🔍 Filtering ${allProps?.length || 0} tackle props for scanning...`);
+        
+        const filtered = allProps
             .filter(prop => {
                 // Must have multiple books for line shopping
-                if (prop.bookCount < 2) return false;
+                if (prop.bookCount < 2) {
+                    console.log(`❌ ${prop.player}: Filtered out (bookCount: ${prop.bookCount})`);
+                    return false;
+                }
                 
                 // Must have decent line shopping value
-                if (prop.lineShoppingValue < this.alertThresholds.lineShoppingMin) return false;
+                if (prop.lineShoppingValue < this.alertThresholds.lineShoppingMin) {
+                    console.log(`❌ ${prop.player}: Filtered out (lineShop: ${prop.lineShoppingValue})`);
+                    return false;
+                }
                 
-                // Focus on common defensive players
-                const commonDefenders = ['Parsons', 'Warner', 'Smith', 'Leonard', 'David', 'Wagner', 'Milano'];
-                if (!commonDefenders.some(name => prop.player.includes(name))) return false;
-                
+                console.log(`✅ ${prop.player}: Passed filter (books: ${prop.bookCount}, lineShop: ${prop.lineShoppingValue})`);
                 return true;
             })
             .sort((a, b) => b.lineShoppingValue - a.lineShoppingValue) // Best line shopping first
             .slice(0, this.alertThresholds.maxTotalProps);
+            
+        console.log(`🔍 Filtered to ${filtered?.length || 0} scannable props`);
+        return filtered;
     }
 
     /**
@@ -416,6 +432,16 @@ class TacklePropsScanner {
         this.alertThresholds = { ...this.alertThresholds, ...newThresholds };
         console.log('⚙️ Updated scanner thresholds:', this.alertThresholds);
     }
+    
+    /**
+     * Test goldmine detection with aggressive simulation
+     */
+    async testGoldmineDetection() {
+        console.log('🗺 Starting goldmine detection test...');
+        this.stopScanning(); // Stop any existing scans
+        await this.performScan(); // Run one manual scan
+        console.log('🗺 Test complete. Check results above.');
+    }
 
     /**
      * Helper methods for simulation/development
@@ -467,14 +493,16 @@ class TacklePropsScanner {
     }
 
     simulatePFFAnalysis(defender, rbPlayer, defenseTeam) {
-        // Generate realistic tackle projections that can create goldmine opportunities
-        const baseProjection = 5.5 + (Math.random() * 4.5); // 5.5 - 10.0 range
+        // AGGRESSIVE GOLDMINE SIMULATION FOR TESTING - Generate high-edge opportunities
+        const baseProjection = 6.0 + (Math.random() * 3.0); // 6.0 - 9.0 range
         
-        // Sometimes generate clear mismatches (goldmine opportunities)
-        const isGoldmine = Math.random() > 0.7; // 30% chance of goldmine
+        // Force most to be goldmines for testing
+        const isGoldmine = Math.random() > 0.3; // 70% chance of goldmine (increased from 30%)
         const projectedTackles = isGoldmine ? 
-            baseProjection + (1.5 + Math.random() * 2) : // Add 1.5-3.5 for goldmines
-            baseProjection + (Math.random() - 0.5); // Small random adjustment normally
+            baseProjection + (2.0 + Math.random() * 2.5) : // Add 2.0-4.5 for guaranteed goldmines
+            baseProjection + (Math.random() * 0.8 - 0.4); // Small adjustment for non-goldmines
+        
+        console.log(`🎲 Simulated analysis for ${defender}: projection=${projectedTackles.toFixed(1)}, isGoldmine=${isGoldmine}`);
 
         return {
             topOpportunity: {
@@ -504,7 +532,8 @@ class TacklePropsScanner {
                     right: isGoldmine ? (0.3 + Math.random() * 0.2) : (0.6 - Math.random() * 0.2) 
                 },
                 isSimulatedGoldmine: isGoldmine,
-                expectedEdge: projectedTackles - (6.5 + Math.random() * 2) // Rough expected edge for tracking
+                expectedEdge: projectedTackles - (6.5 + Math.random() * 2), // Rough expected edge for tracking
+                simulationMode: 'AGGRESSIVE_GOLDMINE_TESTING'
             }
         };
     }
