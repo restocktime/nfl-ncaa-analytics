@@ -6,7 +6,7 @@
 
 class PFFDataService {
     constructor() {
-        this.apiKey = process.env.PFF_API_KEY || 'your_pff_premium_key_here';
+        this.apiKey = (typeof process !== 'undefined' && process.env && process.env.PFF_API_KEY) || 'your_pff_premium_key_here';
         this.baseURL = 'https://api.pro-football-focus.com/v1';
         
         // Cache for PFF data (expensive API calls)
@@ -28,7 +28,7 @@ class PFFDataService {
     /**
      * Get comprehensive rushing analytics for RB tackle prop analysis
      */
-    async getRushingAnalytics(playerId, season = '2024') {
+    async getRushingAnalytics(playerId, season = '2025') {
         const cacheKey = `pff_rushing_${playerId}_${season}`;
         const cached = this.getCachedData(cacheKey);
         if (cached) return cached;
@@ -122,7 +122,7 @@ class PFFDataService {
      * Get defensive alignment and linebacker positioning data
      * CRITICAL for tackle prop mismatch analysis
      */
-    async getDefensiveAlignment(teamId, season = '2024') {
+    async getDefensiveAlignment(teamId, season = '2025') {
         const cacheKey = `pff_defense_${teamId}_${season}`;
         const cached = this.getCachedData(cacheKey);
         if (cached) return cached;
@@ -217,7 +217,7 @@ class PFFDataService {
     /**
      * Get run blocking efficiency data for offensive line analysis
      */
-    async getRunBlockingData(teamId, season = '2024') {
+    async getRunBlockingData(teamId, season = '2025') {
         const cacheKey = `pff_blocking_${teamId}_${season}`;
         const cached = this.getCachedData(cacheKey);
         if (cached) return cached;
@@ -332,7 +332,7 @@ class PFFDataService {
                 
                 const [rbTracking, defenseTracking] = await Promise.all([
                     window.nextGenStatsService.getPlayerTrackingSummary(rbPlayerId),
-                    window.nextGenStatsService.getTackleTrackingData(2024, 'REG', 'LB')
+                    window.nextGenStatsService.getTackleTrackingData(2025, 'REG', 'LB')
                 ]);
                 
                 return {
@@ -695,6 +695,41 @@ class PFFDataService {
         return reasons.join('. ') + '.';
     }
 
+    generateNextGenAnalysisReasoning(analysis, nextGenData) {
+        const reasons = [];
+        
+        if (analysis.mismatches.some(m => m.type === 'NEXTGEN_SPEED_DIRECTIONAL')) {
+            reasons.push('NextGen tracking reveals significant speed-directional mismatch');
+        }
+        
+        if (analysis.mismatches.some(m => m.type === 'NEXTGEN_TACKLE_DIFFICULTY')) {
+            reasons.push('RB tackle avoidance creates more attempt opportunities');
+        }
+        
+        if (analysis.mismatches.some(m => m.type === 'NEXTGEN_ENHANCED_DIRECTIONAL')) {
+            reasons.push('Speed-enhanced directional bias favors collision opportunities');
+        }
+        
+        if (analysis.mismatches.some(m => m.type === 'NEXTGEN_GAP_TIMING')) {
+            reasons.push('Quick-hitting gaps exploit linebacker positioning weakness');
+        }
+        
+        if (analysis.mismatches.some(m => m.type === 'NEXTGEN_VOLUME_OPPORTUNITY')) {
+            reasons.push('High projected volume with linebacker opportunity alignment');
+        }
+        
+        // Add NextGen data quality context
+        if (nextGenData?.dataSource === 'NEXTGEN_ENHANCED') {
+            reasons.push('Analysis enhanced with official NextGen Stats tracking data');
+        }
+        
+        if (reasons.length === 0) {
+            reasons.push('NextGen-enhanced standard matchup analysis');
+        }
+        
+        return reasons.join('. ') + '.';
+    }
+
     // Cache management methods
     getCachedData(key) {
         const cached = this.cache.get(key);
@@ -718,7 +753,7 @@ class PFFDataService {
         // Return realistic PFF-style data based on common patterns
         return {
             playerId: playerId,
-            season: '2024',
+            season: '2025',
             gapPreferences: {
                 A_gap: 0.35,
                 B_gap: 0.28,
@@ -756,7 +791,7 @@ class PFFDataService {
         
         return {
             teamId: teamId,
-            season: '2024',
+            season: '2025',
             linebackers: [
                 {
                     playerId: 'lb_1',

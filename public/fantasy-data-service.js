@@ -92,7 +92,7 @@ class FantasyDataService {
                     depth: player.depth_chart_position,
                     number: player.number,
                     // Additional metadata for current season
-                    currentSeason: seasonState?.season || '2024',
+                    currentSeason: seasonState?.season || '2025',
                     lastUpdated: new Date().toISOString(),
                     rosterStatus: 'ACTIVE'
                 }))
@@ -632,7 +632,7 @@ class FantasyDataService {
         ].map(player => ({
             ...player,
             lastUpdated: new Date().toISOString(),
-            currentSeason: '2024',
+            currentSeason: '2025',
             dataSource: 'fallback'
         }));
     }

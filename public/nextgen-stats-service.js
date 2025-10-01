@@ -39,7 +39,7 @@ class NextGenStatsService {
     /**
      * Get fastest sacks data - critical for understanding pass rush speed
      */
-    async getFastestSacks(season = 2024, seasonType = 'REG', week = 'all') {
+    async getFastestSacks(season = 2025, seasonType = 'REG', week = 'all') {
         const cacheKey = `fastest_sacks_${season}_${seasonType}_${week}`;
         const cached = this.getCachedData(cacheKey);
         if (cached) return cached;
@@ -68,7 +68,7 @@ class NextGenStatsService {
     /**
      * Get tackle tracking data for linebacker analysis
      */
-    async getTackleTrackingData(season = 2024, seasonType = 'REG', position = 'LB') {
+    async getTackleTrackingData(season = 2025, seasonType = 'REG', position = 'LB') {
         const cacheKey = `tackle_tracking_${season}_${seasonType}_${position}`;
         const cached = this.getCachedData(cacheKey);
         if (cached) return cached;
@@ -114,7 +114,7 @@ class NextGenStatsService {
     /**
      * Get running back tracking data for directional analysis
      */
-    async getRushingTrackingData(season = 2024, seasonType = 'REG') {
+    async getRushingTrackingData(season = 2025, seasonType = 'REG') {
         const cacheKey = `rushing_tracking_${season}_${seasonType}`;
         const cached = this.getCachedData(cacheKey);
         if (cached) return cached;
@@ -281,7 +281,7 @@ class NextGenStatsService {
     async trySportsDataIOAPI(season, dataType) {
         try {
             // This requires a SportsDataIO API key
-            const apiKey = process.env.SPORTSDATA_API_KEY || 'demo'; // Demo key for testing
+            const apiKey = (typeof process !== 'undefined' && process.env && process.env.SPORTSDATA_API_KEY) || 'demo'; // Demo key for testing
             
             console.log(`💼 Trying SportsDataIO API for ${dataType}...`);
             
@@ -317,7 +317,7 @@ class NextGenStatsService {
      */
     async tryAPISports(season, dataType) {
         try {
-            const apiKey = process.env.API_SPORTS_KEY || 'demo';
+            const apiKey = (typeof process !== 'undefined' && process.env && process.env.API_SPORTS_KEY) || 'demo';
             
             console.log(`🏈 Trying API-Sports for ${dataType}...`);
             
@@ -686,7 +686,7 @@ class NextGenStatsService {
     /**
      * Get comprehensive player tracking summary for tackle props
      */
-    async getPlayerTrackingSummary(playerName, season = 2024) {
+    async getPlayerTrackingSummary(playerName, season = 2025) {
         try {
             console.log(`📊 Getting comprehensive tracking data for ${playerName}...`);
             
