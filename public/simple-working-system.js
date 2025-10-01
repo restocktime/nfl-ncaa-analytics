@@ -2643,23 +2643,54 @@ class SimpleWorkingSystem {
                 // If it's an array of groups
                 rosterData.forEach((group, groupIndex) => {
                     console.log(`🔍 Group ${groupIndex}:`, typeof group, group.position || group.name || 'Unknown');
+                    if (groupIndex < 3) {
+                        console.log(`🔍 Group ${groupIndex} full structure:`, JSON.stringify(group, null, 2).substring(0, 200));
+                    }
                     
-                    // Check if this group has athletes/items
+                    // The ESPN API structure is: group.position = "offense", and the actual players are at a deeper level
+                    // Need to look for athletes/items deeply nested
                     if (group.items && Array.isArray(group.items)) {
                         console.log(`  └─ Found ${group.items.length} items in group`);
-                        players.push(...group.items);
+                        // Check if items contain athletes
+                        group.items.forEach(item => {
+                            if (item.athletes && Array.isArray(item.athletes)) {
+                                console.log(`    └─ Found ${item.athletes.length} athletes in item`);
+                                players.push(...item.athletes);
+                            } else if (item.athlete) {
+                                console.log(`    └─ Found single athlete in item`);
+                                players.push(item.athlete);
+                            } else if (item.position && item.displayName) {
+                                // Direct player object
+                                players.push(item);
+                            }
+                        });
                     } else if (group.athletes && Array.isArray(group.athletes)) {
                         console.log(`  └─ Found ${group.athletes.length} athletes in group`);
                         players.push(...group.athletes);
                     } else if (group.entries && Array.isArray(group.entries)) {
                         console.log(`  └─ Found ${group.entries.length} entries in group`);
-                        players.push(...group.entries);
+                        group.entries.forEach(entry => {
+                            if (entry.athletes && Array.isArray(entry.athletes)) {
+                                players.push(...entry.athletes);
+                            } else if (entry.athlete) {
+                                players.push(entry.athlete);
+                            } else {
+                                players.push(entry);
+                            }
+                        });
                     } else if (Array.isArray(group)) {
                         // Sometimes the group itself is an array of players
                         console.log(`  └─ Group is array with ${group.length} players`);
                         players.push(...group);
                     } else {
-                        console.log(`  └─ Group structure:`, Object.keys(group));
+                        // Skip the category objects themselves (offense, defense, etc.)
+                        if (group.position === 'offense' || group.position === 'defense' || 
+                            group.position === 'specialTeam' || group.position === 'injuredReserveOrOut' || 
+                            group.position === 'suspended') {
+                            console.log(`  └─ Skipping category object: ${group.position}`);
+                        } else {
+                            console.log(`  └─ Group structure:`, Object.keys(group));
+                        }
                     }
                 });
             } else if (rosterData.athletes) {
