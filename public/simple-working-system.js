@@ -193,6 +193,27 @@ class SimpleWorkingSystem {
         const shouldShowPicksTracker = analyticsPages.some(page => currentPage.includes(page));
         
         if (shouldShowPicksTracker) {
+            // Force initialize picks tracker service if not available
+            if (!window.picksTrackerService && typeof PicksTrackerService !== 'undefined') {
+                console.log('📈 Force initializing Picks Tracker Service...');
+                try {
+                    window.picksTrackerService = new PicksTrackerService();
+                    console.log('✅ Picks Tracker Service successfully initialized');
+                } catch (error) {
+                    console.error('❌ Failed to initialize Picks Tracker Service:', error);
+                    // Create a fallback service object
+                    window.picksTrackerService = {
+                        getWeeklyPerformance: () => Promise.resolve(null),
+                        getPicksByWeek: () => Promise.resolve([]),
+                        getOverallPerformance: () => Promise.resolve(null),
+                        recordPick: () => Promise.resolve(null),
+                        _isFallback: true
+                    };
+                    console.log('📦 Created fallback picks tracker service');
+                }
+            } else if (!window.picksTrackerService) {
+                console.warn('⚠️ PicksTrackerService class not found - service unavailable');
+            }
             this.setupPicksTracker();
         } else {
             console.log('📈 Picks tracker skipped - not on analytics page');
@@ -3331,12 +3352,12 @@ class SimpleWorkingSystem {
                 status: this.config.draftkings.enabled ? 'ACTIVE' : 'DISABLED'
             },
             services: {
-                espnData: window.espnAPI ? 'LOADED' : 'MISSING',
-                pffService: window.pffDataService ? 'LOADED' : 'MISSING', 
-                nextgenService: window.nextGenStatsService ? 'LOADED' : 'MISSING',
-                sportsbookService: window.sportsbookAPIService ? 'LOADED' : 'MISSING',
-                tacklePropsScanner: window.tacklePropsScanner ? 'LOADED' : 'MISSING',
-                picksTracker: window.picksTrackerService ? 'LOADED' : 'MISSING'
+                espnData: this.games && this.games.length > 0 ? 'LOADED' : 'MISSING',
+                pffService: window.pffDataService && typeof window.pffDataService.analyzeTackleProps === 'function' ? 'LOADED' : 'MISSING', 
+                nextgenService: window.nextGenStatsService && typeof window.nextGenStatsService.getTackleTrackingData === 'function' ? 'LOADED' : 'MISSING',
+                sportsbookService: window.sportsbookAPIService && typeof window.sportsbookAPIService.getAllTackleProps === 'function' ? 'LOADED' : 'MISSING',
+                tacklePropsScanner: window.tacklePropsScanner && typeof window.tacklePropsScanner.performScan === 'function' ? 'LOADED' : 'MISSING',
+                picksTracker: window.picksTrackerService && (window.picksTrackerService._isFallback || typeof window.picksTrackerService.getWeeklyPerformance === 'function') ? 'LOADED' : 'MISSING'
             },
             simulation: {
                 active: !this.config.oddsApi.enabled && !this.config.draftkings.enabled
