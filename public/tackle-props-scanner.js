@@ -244,13 +244,15 @@ class TacklePropsScanner {
      * Identify goldmine opportunities based on thresholds
      */
     identifyGoldmines(analyses) {
+        // Define confidence scoring outside of filter/sort functions
+        const confidenceOrder = { 'low': 1, 'medium': 2, 'high': 3, 'very_high': 4 };
+        
         return analyses
             .filter(analysis => {
                 // Edge threshold
                 if (analysis.edge < this.alertThresholds.minimumEdge) return false;
                 
                 // Confidence threshold
-                const confidenceOrder = { 'low': 1, 'medium': 2, 'high': 3 };
                 const minConfidenceLevel = confidenceOrder[this.alertThresholds.minimumConfidence];
                 const analysisConfidenceLevel = confidenceOrder[analysis.confidence.toLowerCase()];
                 if (analysisConfidenceLevel < minConfidenceLevel) return false;
@@ -258,6 +260,7 @@ class TacklePropsScanner {
                 // Must have good line shopping opportunity
                 if (analysis.lineShoppingValue < this.alertThresholds.lineShoppingMin) return false;
                 
+                console.log(`✅ ${analysis.defender}: GOLDMINE DETECTED! Edge: +${analysis.edge.toFixed(2)}, Confidence: ${analysis.confidence}`);
                 return true;
             })
             .sort((a, b) => {

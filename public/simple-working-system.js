@@ -4873,7 +4873,6 @@ class SimpleWorkingSystem {
         document.head.appendChild(styles);
         console.log('✅ Picks Tracker styles loaded');
     }
-    }
 
     addTacklePropsStyles() {
         if (document.getElementById('tackle-props-styles')) return;
