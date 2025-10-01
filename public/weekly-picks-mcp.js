@@ -92,6 +92,13 @@ class WeeklyPicksMCP {
             
             console.log(`🔍 MCP: After strict filtering: ${goldminePicks.length} goldmine picks`);
             
+            // CRITICAL: Filter out picks for injured/inactive players
+            const injuryFilteredPicks = window.injuryStatusService ? 
+                window.injuryStatusService.filterPicksForInjuries(goldminePicks) : 
+                goldminePicks;
+            
+            console.log(`🏥 MCP: After injury filtering: ${injuryFilteredPicks.length} available picks`);
+            
             // Organize into categories - LIMIT to only best opportunities
             const weeklyRecommendations = {
                 meta: {
@@ -99,29 +106,30 @@ class WeeklyPicksMCP {
                     week: week,
                     generatedAt: new Date().toISOString(),
                     totalOpportunities: allPicks.length,
-                    recommendedPicks: goldminePicks.length,
-                    strictFiltering: true
+                    recommendedPicks: injuryFilteredPicks.length,
+                    strictFiltering: true,
+                    injuryFiltering: true
                 },
                 
-                // Only show top goldmine picks - maximum 6 picks total
-                topPicks: goldminePicks.slice(0, 6),
+                // Only show top goldmine picks - maximum 6 picks total (injury-filtered)
+                topPicks: injuryFilteredPicks.slice(0, 6),
                 
-                // Category breakdown - very limited
-                playerProps: goldminePicks.filter(p => p.category === 'player_prop').slice(0, 2),
-                gameLines: goldminePicks.filter(p => p.category === 'game_line').slice(0, 2),
-                spreads: goldminePicks.filter(p => p.category === 'spread').slice(0, 2),
-                tackleProps: goldminePicks.filter(p => p.category === 'tackle_prop').slice(0, 2),
+                // Category breakdown - very limited (injury-filtered)
+                playerProps: injuryFilteredPicks.filter(p => p.category === 'player_prop').slice(0, 2),
+                gameLines: injuryFilteredPicks.filter(p => p.category === 'game_line').slice(0, 2),
+                spreads: injuryFilteredPicks.filter(p => p.category === 'spread').slice(0, 2),
+                tackleProps: injuryFilteredPicks.filter(p => p.category === 'tackle_prop').slice(0, 2),
                 
-                // Risk categories - focus on low risk
-                lowRisk: goldminePicks.filter(p => p.riskLevel === 'low').slice(0, 3),
-                mediumRisk: goldminePicks.filter(p => p.riskLevel === 'medium').slice(0, 2),
-                highRisk: goldminePicks.filter(p => p.riskLevel === 'high').slice(0, 1),
+                // Risk categories - focus on low risk (injury-filtered)
+                lowRisk: injuryFilteredPicks.filter(p => p.riskLevel === 'low').slice(0, 3),
+                mediumRisk: injuryFilteredPicks.filter(p => p.riskLevel === 'medium').slice(0, 2),
+                highRisk: injuryFilteredPicks.filter(p => p.riskLevel === 'high').slice(0, 1),
                 
-                // Summary stats
-                summary: this.generateWeeklySummary(goldminePicks)
+                // Summary stats (injury-filtered)
+                summary: this.generateWeeklySummary(injuryFilteredPicks)
             };
 
-            console.log(`✅ MCP: Generated ${goldminePicks.length} goldmine recommendations (filtered from ${allPicks.length} total opportunities)`);
+            console.log(`✅ MCP: Generated ${injuryFilteredPicks.length} injury-filtered recommendations (from ${goldminePicks.length} goldmines, ${allPicks.length} total opportunities)`);
             return weeklyRecommendations;
             
         } catch (error) {
@@ -631,6 +639,17 @@ class WeeklyPicksMCP {
             };
             
             console.log(`   ✅ AI Analysis: ${(homeWinProb*100).toFixed(1)}% home win, ${predictedMargin.toFixed(1)} margin, ${confidence} confidence`);
+            
+            // CRITICAL: Validate analysis accounts for player injuries
+            if (window.injuryStatusService) {
+                const validatedAnalysis = window.injuryStatusService.validateGameAnalysis(
+                    game.homeTeam.name, 
+                    game.awayTeam.name, 
+                    analysis
+                );
+                return validatedAnalysis;
+            }
+            
             return analysis;
             
         } catch (error) {
