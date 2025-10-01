@@ -10,6 +10,7 @@ class SimplePicksTracker {
         // Real data integration - no fake samples
         this.realPicks = [];
         this.realPerformance = null;
+        this.lastLogTime = 0; // For debouncing console logs
 
         console.log('✅ Simple Picks Tracker loaded - Ready immediately!');
     }
@@ -203,17 +204,25 @@ class SimplePicksTracker {
     // Get REAL goldmines from tackle props scanner
     getRealGoldmines() {
         try {
-            console.log('🔍 Searching for real goldmines...');
-            console.log('🔍 Tackle props scanner status:', window.tacklePropsScanner ? 'LOADED' : 'MISSING');
-            console.log('🔍 Scanner goldmines:', window.tacklePropsScanner?.goldmines?.length || 0);
-            console.log('🔍 Global goldmines:', window.currentGoldmines?.length || 0);
+            // Only log once per second to avoid spam
+            const now = Date.now();
+            if (!this.lastLogTime || (now - this.lastLogTime) > 1000) {
+                console.log('🔍 Searching for real goldmines...');
+                console.log('🔍 Tackle props scanner status:', window.tacklePropsScanner ? 'LOADED' : 'MISSING');
+                console.log('🔍 Scanner goldmines:', window.tacklePropsScanner?.goldmines?.length || 0);
+                console.log('🔍 Global goldmines:', window.currentGoldmines?.length || 0);
+                this.lastLogTime = now;
+            }
             
             // Access the global tackle props scanner goldmines
             if (window.tacklePropsScanner && window.tacklePropsScanner.goldmines) {
                 const goldmines = window.tacklePropsScanner.goldmines;
-                console.log(`📊 Found ${goldmines.length} real goldmine picks from tackle props scanner`);
-                if (goldmines.length > 0) {
-                    console.log('📊 Sample goldmine:', goldmines[0]);
+                // Only log sample once per second to avoid spam
+                if (!this.lastLogTime || (Date.now() - this.lastLogTime) > 1000) {
+                    console.log(`📊 Found ${goldmines.length} real goldmine picks from tackle props scanner`);
+                    if (goldmines.length > 0) {
+                        console.log('📊 Sample goldmine:', goldmines[0]);
+                    }
                 }
                 return goldmines;
             }

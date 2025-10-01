@@ -4464,7 +4464,7 @@ class SimpleWorkingSystem {
                         <div class="record-item">
                             <div class="record-label">Total Units Won</div>
                             <div class="record-value ${overallPerformance.totalReturn > 0 ? 'positive' : 'negative'}">
-                                💰 ${overallPerformance.totalReturn.toFixed(2)}u
+                                💰 ${(overallPerformance.totalReturn || 0).toFixed(2)}u
                             </div>
                         </div>
                         <div class="record-item">
