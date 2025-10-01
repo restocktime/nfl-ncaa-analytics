@@ -3792,6 +3792,21 @@ class SimpleWorkingSystem {
 
             contentDiv.innerHTML = '<div class="loading pulse">📊 Loading current week picks...</div>';
 
+            // Check if picks tracker service is properly loaded
+            if (!window.picksTrackerService || typeof window.picksTrackerService.getWeeklyPerformance !== 'function') {
+                console.warn('⚠️ Picks tracker service not available, showing placeholder');
+                contentDiv.innerHTML = `
+                    <div class="no-picks">
+                        <h3>📊 Picks Tracker Service Loading...</h3>
+                        <p>The picks tracker service is still initializing. Please refresh the page.</p>
+                        <button onclick="location.reload()" style="background: #00ff88; border: none; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                            <i class="fas fa-redo"></i> Refresh Page
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
             const currentWeek = this.getCurrentWeek();
             const currentSeason = '2025';
             
@@ -3913,6 +3928,21 @@ class SimpleWorkingSystem {
             if (!contentDiv) return;
 
             contentDiv.innerHTML = '<div class="loading pulse">📊 Loading overall performance...</div>';
+
+            // Check if picks tracker service is properly loaded
+            if (!window.picksTrackerService || typeof window.picksTrackerService.getOverallPerformance !== 'function') {
+                console.warn('⚠️ Picks tracker service not available for overall stats');
+                contentDiv.innerHTML = `
+                    <div class="no-stats">
+                        <h3>📊 Picks Tracker Service Loading...</h3>
+                        <p>The picks tracker service is still initializing. Please refresh the page.</p>
+                        <button onclick="location.reload()" style="background: #00ff88; border: none; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                            <i class="fas fa-redo"></i> Refresh Page
+                        </button>
+                    </div>
+                `;
+                return;
+            }
 
             const overallPerformance = await window.picksTrackerService.getOverallPerformance();
 
@@ -4048,6 +4078,21 @@ class SimpleWorkingSystem {
             if (!contentDiv) return;
 
             contentDiv.innerHTML = '<div class="loading pulse">📊 Loading picks history...</div>';
+
+            // Check if picks tracker service is properly loaded
+            if (!window.picksTrackerService || typeof window.picksTrackerService.getOverallPerformance !== 'function') {
+                console.warn('⚠️ Picks tracker service not available for picks history');
+                contentDiv.innerHTML = `
+                    <div class="no-history">
+                        <h3>📊 Picks Tracker Service Loading...</h3>
+                        <p>The picks tracker service is still initializing. Please refresh the page.</p>
+                        <button onclick="location.reload()" style="background: #00ff88; border: none; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                            <i class="fas fa-redo"></i> Refresh Page
+                        </button>
+                    </div>
+                `;
+                return;
+            }
 
             // Get all picks for historical view
             const overallPerformance = await window.picksTrackerService.getOverallPerformance();
