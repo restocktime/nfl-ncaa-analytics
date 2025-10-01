@@ -9,19 +9,19 @@ class WeeklyPicksMCP {
         this.apiKey = '9de126998e0df996011a28e9527dd7b9';
         this.baseUrl = 'https://api.the-odds-api.com/v4';
         
-        // Minimum thresholds for recommendations
+        // Minimum thresholds for recommendations (temporarily lowered for testing)
         this.thresholds = {
             playerProps: {
-                minimumEdge: 1.0,    // Only +1.0 edge or higher player props
+                minimumEdge: 0.5,    // Lowered for testing - was 1.0
                 minimumConfidence: 'medium'
             },
             gameLines: {
-                minimumEdge: 0.8,    // Slightly lower for game lines
+                minimumEdge: 0.3,    // Lowered for testing - was 0.8
                 minimumConfidence: 'medium'
             },
             tackleProps: {
-                minimumEdge: 1.2,    // Higher for tackle props (more volatile)
-                minimumConfidence: 'high'
+                minimumEdge: 0.5,    // Lowered for testing - was 1.2
+                minimumConfidence: 'medium'  // Lowered for testing - was 'high'
             }
         };
 
@@ -190,6 +190,8 @@ class WeeklyPicksMCP {
             const gameLinePicks = [];
 
             for (const game of games.slice(0, 8)) { // Check more games for lines
+                console.log(`🎯 MCP: Analyzing game ${game.id}: ${game.awayTeam?.name} @ ${game.homeTeam?.name}`);
+                
                 // Simulate game line analysis (replace with real API integration)
                 const homeMoneyline = -110 + (Math.random() * 40 - 20); // -130 to -90
                 const awayMoneyline = -110 + (Math.random() * 40 - 20);
@@ -198,13 +200,16 @@ class WeeklyPicksMCP {
                 const homeImplied = this.oddsToImpliedProbability(homeMoneyline);
                 const awayImplied = this.oddsToImpliedProbability(awayMoneyline);
                 
-                // Simulate AI model probability
-                const homeModelProb = Math.random() * 0.4 + 0.3; // 30-70%
+                // Simulate AI model probability (more favorable for testing)
+                const homeModelProb = Math.random() * 0.5 + 0.35; // 35-85% (wider range)
                 const awayModelProb = 1 - homeModelProb;
                 
                 // Calculate edges
                 const homeEdge = homeModelProb - homeImplied;
                 const awayEdge = awayModelProb - awayImplied;
+                
+                console.log(`   Home: ${(homeModelProb*100).toFixed(1)}% model vs ${(homeImplied*100).toFixed(1)}% implied = ${(homeEdge*100).toFixed(2)} edge`);
+                console.log(`   Away: ${(awayModelProb*100).toFixed(1)}% model vs ${(awayImplied*100).toFixed(1)}% implied = ${(awayEdge*100).toFixed(2)} edge`);
                 
                 if (homeEdge >= this.thresholds.gameLines.minimumEdge / 100) {
                     gameLinePicks.push({
