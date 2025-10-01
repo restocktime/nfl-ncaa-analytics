@@ -305,10 +305,9 @@ class ComprehensivePlayerPropsService {
                 RB: [{ name: teamPlayers.RB, tier: 'high' }],
                 WR: [{ name: teamPlayers.WR, tier: 'high' }],
                 TE: [{ name: teamPlayers.TE, tier: 'high' }],
-                K: [{ name: teamPlayers.K || `${team} Kicker`, tier: 'medium' }],
+                K: [{ name: teamPlayers.K || 'Team Kicker', tier: 'medium' }],
                 DEF: [
-                    { name: teamPlayers.LB || teamPlayers.DEF || `${team} LB1`, tier: 'high' },
-                    { name: teamPlayers.S || teamPlayers.DEF2 || `${team} S1`, tier: 'high' }
+                    { name: teamPlayers.LB || 'Team Linebacker', tier: 'high' }
                 ]
             };
         } catch (error) {
@@ -402,26 +401,37 @@ class ComprehensivePlayerPropsService {
     }
 
     /**
-     * Generate generic roster for teams not yet defined
+     * Generate generic roster for teams not yet defined (should not be used - all teams should have real rosters)
      */
     generateGenericRoster(team) {
+        console.warn(`⚠️ Using generic roster for ${team} - this should not happen with complete 2025 rosters!`);
+        
+        // Fallback with more realistic names
+        const fallbackPlayers = {
+            'Bills': { QB: 'Josh Allen', RB: 'James Cook', WR: 'Khalil Shakir', TE: 'Dalton Kincaid', K: 'Tyler Bass', LB: 'Matt Milano' },
+            'Dolphins': { QB: 'Tua Tagovailoa', RB: 'De\'Von Achane', WR: 'Tyreek Hill', TE: 'Jonnu Smith', K: 'Jason Sanders', LB: 'Jordyn Brooks' }
+        };
+        
+        const fallback = fallbackPlayers[team];
+        if (fallback) {
+            return {
+                QB: [{ name: fallback.QB, tier: 'high' }],
+                RB: [{ name: fallback.RB, tier: 'high' }],
+                WR: [{ name: fallback.WR, tier: 'high' }],
+                TE: [{ name: fallback.TE, tier: 'high' }],
+                K: [{ name: fallback.K, tier: 'medium' }],
+                DEF: [{ name: fallback.LB, tier: 'high' }]
+            };
+        }
+        
+        // Absolutely last resort
         return {
-            QB: [{ name: `${team} QB1`, tier: 'medium' }],
-            RB: [
-                { name: `${team} RB1`, tier: 'medium' },
-                { name: `${team} RB2`, tier: 'low' }
-            ],
-            WR: [
-                { name: `${team} WR1`, tier: 'high' },
-                { name: `${team} WR2`, tier: 'medium' },
-                { name: `${team} WR3`, tier: 'low' }
-            ],
-            TE: [{ name: `${team} TE1`, tier: 'medium' }],
-            K: [{ name: `${team} K`, tier: 'medium' }],
-            DEF: [
-                { name: `${team} LB1`, tier: 'medium' },
-                { name: `${team} S1`, tier: 'medium' }
-            ]
+            QB: [{ name: `${team} Starting QB`, tier: 'medium' }],
+            RB: [{ name: `${team} Starting RB`, tier: 'medium' }],
+            WR: [{ name: `${team} Starting WR`, tier: 'high' }],
+            TE: [{ name: `${team} Starting TE`, tier: 'medium' }],
+            K: [{ name: `${team} Starting K`, tier: 'medium' }],
+            DEF: [{ name: `${team} Starting LB`, tier: 'medium' }]
         };
     }
 

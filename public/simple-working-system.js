@@ -309,10 +309,18 @@ class SimpleWorkingSystem {
         // Desktop nav links
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
                 const view = link.dataset.view;
-                console.log(`🖥️ Desktop nav clicked: ${view}`);
-                this.switchView(view);
+                const href = link.getAttribute('href');
+                
+                // Only prevent default for internal views (data-view present and starts with #)
+                if (view && href && href.startsWith('#')) {
+                    e.preventDefault();
+                    console.log(`🖥️ Desktop nav clicked: ${view}`);
+                    this.switchView(view);
+                } else {
+                    // Let external links work normally
+                    console.log(`🖥️ Desktop nav external link: ${href}`);
+                }
             });
         });
 
@@ -2833,13 +2841,13 @@ class SimpleWorkingSystem {
             // AFC EAST - 2025-26 Season (Updated with current starters)
             'Bills': { QB: 'Josh Allen', RB: 'James Cook', WR: 'Khalil Shakir', TE: 'Dalton Kincaid', K: 'Tyler Bass', LB: 'Matt Milano' },
             'Dolphins': { QB: 'Tua Tagovailoa', RB: 'De\'Von Achane', WR: 'Tyreek Hill', TE: 'Jonnu Smith', K: 'Jason Sanders', LB: 'Jordyn Brooks' },
-            'Patriots': { QB: 'Drake Maye', RB: 'Rhamondre Stevenson', WR: 'DeMario Douglas', TE: 'Hunter Henry', K: 'Joey Slye', LB: 'Ja\'Whaun Bentley' },
+            'Patriots': { QB: 'Drake Maye', RB: 'Rhamondre Stevenson', WR: 'Stefon Diggs', TE: 'Hunter Henry', K: 'Joey Slye', LB: 'Ja\'Whaun Bentley' },
             'Jets': { QB: 'Justin Fields', RB: 'Breece Hall', WR: 'Garrett Wilson', TE: 'Tyler Conklin', K: 'Greg Zuerlein', LB: 'C.J. Mosley' },
             
             // AFC NORTH - 2025-26 Season  
             'Ravens': { QB: 'Lamar Jackson', RB: 'Derrick Henry', WR: 'Zay Flowers', TE: 'Mark Andrews', K: 'Justin Tucker', LB: 'Roquan Smith' },
-            'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Tee Higgins', K: 'Evan McPherson', LB: 'Logan Wilson' },
-            'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku', K: 'Dustin Hopkins', LB: 'Myles Garrett' },
+            'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Mike Gesicki', K: 'Evan McPherson', LB: 'Logan Wilson' },
+            'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku', K: 'Dustin Hopkins', LB: 'Jeremiah Owusu-Koramoah' },
             'Steelers': { QB: 'Aaron Rodgers', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
             
             // AFC SOUTH - 2025-26 Season
@@ -2873,7 +2881,7 @@ class SimpleWorkingSystem {
             'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton', K: 'Chase McLaughlin', LB: 'Lavonte David' },
             
             // NFC WEST - 2025-26 Season
-            '49ers': { QB: 'Mac Jones', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'Logan Thomas', K: 'Jake Moody', LB: 'Fred Warner' },
+            '49ers': { QB: 'Mac Jones', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle', K: 'Jake Moody', LB: 'Fred Warner' },
             'Seahawks': { QB: 'Geno Smith', RB: 'Kenneth Walker III', WR: 'DK Metcalf', TE: 'Noah Fant', K: 'Jason Myers', LB: 'Bobby Wagner' },
             'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson', K: 'Lucas Havrisik', LB: 'Byron Young' },
             'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride', K: 'Chad Ryland', LB: 'Kyzir White' }
@@ -2884,8 +2892,15 @@ class SimpleWorkingSystem {
         window.nflTeamRosters = teamRosters;
         this.rosterFetchInProgress = false;
         
-        console.log('🏈 2025-2026 NFL rosters initialized globally');
+        // Clear pick cache when rosters are updated to force fresh picks
+        if (window.weeklyPicksMCP) {
+            window.weeklyPicksMCP.clearCache();
+            console.log('🗑️ Cleared pick cache due to roster updates');
+        }
+        
+        console.log('🏈 2025-2026 NFL rosters initialized globally with corrections');
         console.log('📊 Available teams:', Object.keys(teamRosters));
+        console.log('✅ Major fixes: Tee Higgins (WR not TE), Myles Garrett (DE not LB), Stefon Diggs (Patriots WR1)');
         
         return teamRosters;
     }

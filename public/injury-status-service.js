@@ -39,11 +39,11 @@ class InjuryStatusService {
             {
                 player: 'George Kittle',
                 team: '49ers', 
-                status: 'IR',
-                injury: 'Hamstring',
-                timeframe: 'Minimum 4 games',
-                replacement: 'Logan Thomas',
-                expectedReturn: this.calculateExpectedReturn('4 games')
+                status: 'ACTIVE',
+                injury: 'Hamstring (recovered)',
+                timeframe: 'N/A',
+                replacement: null,
+                expectedReturn: null
             },
             // Add other major injuries across ALL teams here
             // This would be populated from real injury API in production
