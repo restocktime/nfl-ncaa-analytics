@@ -2851,11 +2851,11 @@ class SimpleWorkingSystem {
             // AFC WEST - 2025-26 Season
             'Chiefs': { QB: 'Patrick Mahomes', RB: 'Kareem Hunt', WR: 'Xavier Worthy', TE: 'Travis Kelce' },
             'Chargers': { QB: 'Justin Herbert', RB: 'J.K. Dobbins', WR: 'Ladd McConkey', TE: 'Will Dissly' },
-            'Broncos': { QB: 'Bo Nix', RB: 'Javonte Williams', WR: 'Courtland Sutton', TE: 'Adam Trautman' },
+            'Broncos': { QB: 'Bo Nix', RB: 'RJ Harvey', WR: 'Courtland Sutton', TE: 'Adam Trautman', K: 'Wil Lutz', LB: 'Alex Singleton' },
             'Raiders': { QB: 'Gardner Minshew', RB: 'Alexander Mattison', WR: 'Jakobi Meyers', TE: 'Brock Bowers' },
             
             // NFC EAST - 2025-26 Season
-            'Cowboys': { QB: 'Dak Prescott', RB: 'Rico Dowdle', WR: 'CeeDee Lamb', TE: 'Jake Ferguson' },
+            'Cowboys': { QB: 'Dak Prescott', RB: 'Javonte Williams', WR: 'CeeDee Lamb', TE: 'Jake Ferguson', K: 'Brandon Aubrey', LB: 'Micah Parsons' },
             'Eagles': { QB: 'Jalen Hurts', RB: 'Saquon Barkley', WR: 'A.J. Brown', TE: 'Dallas Goedert' },
             'Giants': { QB: 'Tommy DeVito', RB: 'Tyrone Tracy Jr.', WR: 'Malik Nabers', TE: 'Theo Johnson' },
             'Commanders': { QB: 'Jayden Daniels', RB: 'Brian Robinson Jr.', WR: 'Terry McLaurin', TE: 'Zach Ertz' },
@@ -2870,7 +2870,7 @@ class SimpleWorkingSystem {
             'Saints': { QB: 'Spencer Rattler', RB: 'Alvin Kamara', WR: 'Chris Olave', TE: 'Juwan Johnson' },
             'Falcons': { QB: 'Michael Penix Jr.', RB: 'Bijan Robinson', WR: 'Drake London', TE: 'Kyle Pitts' },
             'Panthers': { QB: 'Bryce Young', RB: 'Chuba Hubbard', WR: 'Adam Thielen', TE: 'Ja\'Tavion Sanders' },
-            'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton' },
+            'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton', K: 'Chase McLaughlin', LB: 'Lavonte David' },
             
             // NFC WEST - 2025-26 Season
             '49ers': { QB: 'Brock Purdy', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle', K: 'Jake Moody', LB: 'Fred Warner' },
