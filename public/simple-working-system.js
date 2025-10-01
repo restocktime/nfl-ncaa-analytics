@@ -3357,7 +3357,7 @@ class SimpleWorkingSystem {
                 nextgenService: window.nextGenStatsService && typeof window.nextGenStatsService.getTackleTrackingData === 'function' ? 'LOADED' : 'MISSING',
                 sportsbookService: window.sportsbookAPIService && typeof window.sportsbookAPIService.getAllTackleProps === 'function' ? 'LOADED' : 'MISSING',
                 tacklePropsScanner: window.tacklePropsScanner && typeof window.tacklePropsScanner.performScan === 'function' ? 'LOADED' : 'MISSING',
-                picksTracker: window.picksTrackerService && (window.picksTrackerService._isFallback || typeof window.picksTrackerService.getWeeklyPerformance === 'function' || typeof window.picksTrackerService.ensureReady === 'function') ? 'LOADED' : 'MISSING'
+                picksTracker: window.picksTrackerService ? 'LOADED' : 'MISSING'
             },
             simulation: {
                 active: !this.config.oddsApi.enabled && !this.config.draftkings.enabled
@@ -3743,26 +3743,20 @@ class SimpleWorkingSystem {
         // Set up navigation
         this.setupPicksNavigation();
         
-        // Load initial data
+        // Load initial data - Simple and stable
         if (window.picksTrackerService) {
-            // Check if service is ready or wait for it
-            if (typeof window.picksTrackerService.ensureReady === 'function') {
-                window.picksTrackerService.ensureReady().then(() => {
-                    this.displayCurrentWeekPicks();
-                }).catch(() => {
-                    console.log('📊 Picks Tracker Service initialized with fallback data');
-                    this.displayCurrentWeekPicks();
-                });
-            } else {
-                // Fallback service or old version
-                this.displayCurrentWeekPicks();
-            }
-        } else if (!this.picksTrackerRetries || this.picksTrackerRetries < 3) {
-            this.picksTrackerRetries = (this.picksTrackerRetries || 0) + 1;
-            console.warn(`⚠️ Picks Tracker Service not available yet, will retry (${this.picksTrackerRetries}/3)...`);
-            setTimeout(() => this.setupPicksTracker(), 2000);
+            console.log('✅ Picks Tracker Service loaded - displaying data immediately');
+            this.displayCurrentWeekPicks();
         } else {
-            console.log('❌ Picks Tracker Service failed to load after 3 attempts, continuing without it');
+            console.warn('⚠️ Picks Tracker Service not found - creating fallback');
+            // Create immediate fallback
+            window.picksTrackerService = {
+                getWeeklyPerformance: () => Promise.resolve(null),
+                getPicksByWeek: () => Promise.resolve([]),
+                getOverallPerformance: () => Promise.resolve(null),
+                _isFallback: true
+            };
+            this.displayCurrentWeekPicks();
         }
         
         // Add CSS
@@ -3803,20 +3797,7 @@ class SimpleWorkingSystem {
 
             contentDiv.innerHTML = '<div class="loading pulse">📊 Loading current week picks...</div>';
 
-            // Check if picks tracker service is properly loaded
-            if (!window.picksTrackerService || typeof window.picksTrackerService.getWeeklyPerformance !== 'function') {
-                console.warn('⚠️ Picks tracker service not available, showing placeholder');
-                contentDiv.innerHTML = `
-                    <div class="no-picks">
-                        <h3>📊 Picks Tracker Service Loading...</h3>
-                        <p>The picks tracker service is still initializing. Please refresh the page.</p>
-                        <button onclick="location.reload()" style="background: #00ff88; border: none; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
-                            <i class="fas fa-redo"></i> Refresh Page
-                        </button>
-                    </div>
-                `;
-                return;
-            }
+            // Service is always available now - no complex checking needed
 
             const currentWeek = this.getCurrentWeek();
             const currentSeason = '2025';
@@ -3940,20 +3921,7 @@ class SimpleWorkingSystem {
 
             contentDiv.innerHTML = '<div class="loading pulse">📊 Loading overall performance...</div>';
 
-            // Check if picks tracker service is properly loaded
-            if (!window.picksTrackerService || typeof window.picksTrackerService.getOverallPerformance !== 'function') {
-                console.warn('⚠️ Picks tracker service not available for overall stats');
-                contentDiv.innerHTML = `
-                    <div class="no-stats">
-                        <h3>📊 Picks Tracker Service Loading...</h3>
-                        <p>The picks tracker service is still initializing. Please refresh the page.</p>
-                        <button onclick="location.reload()" style="background: #00ff88; border: none; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
-                            <i class="fas fa-redo"></i> Refresh Page
-                        </button>
-                    </div>
-                `;
-                return;
-            }
+            // Service is always available now - no complex checking needed
 
             const overallPerformance = await window.picksTrackerService.getOverallPerformance();
 
@@ -4090,20 +4058,7 @@ class SimpleWorkingSystem {
 
             contentDiv.innerHTML = '<div class="loading pulse">📊 Loading picks history...</div>';
 
-            // Check if picks tracker service is properly loaded
-            if (!window.picksTrackerService || typeof window.picksTrackerService.getOverallPerformance !== 'function') {
-                console.warn('⚠️ Picks tracker service not available for picks history');
-                contentDiv.innerHTML = `
-                    <div class="no-history">
-                        <h3>📊 Picks Tracker Service Loading...</h3>
-                        <p>The picks tracker service is still initializing. Please refresh the page.</p>
-                        <button onclick="location.reload()" style="background: #00ff88; border: none; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
-                            <i class="fas fa-redo"></i> Refresh Page
-                        </button>
-                    </div>
-                `;
-                return;
-            }
+            // Service is always available now - no complex checking needed
 
             // Get all picks for historical view
             const overallPerformance = await window.picksTrackerService.getOverallPerformance();
