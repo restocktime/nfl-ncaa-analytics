@@ -65,7 +65,7 @@ class RealOddsAPIIntegration {
             oddsapi: {
                 name: 'The Odds API',
                 baseUrl: 'https://api.the-odds-api.com/v4',
-                apiKey: '22e59e4eccd8562ad4b697aeeaccb0fb', // Pre-configured API key
+                apiKey: '9de126998e0df996011a28e9527dd7b9', // Current working API key
                 widgetKey: 'wk_c1f30f86cb719d970238ce3e1583d7c3', // Pre-configured widget key
                 endpoints: {
                     sports: '/sports',
