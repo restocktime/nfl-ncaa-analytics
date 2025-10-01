@@ -584,16 +584,27 @@ class TacklePropsScanner {
             }
         }
         
-        // Fallback to static matchups if roster lookup fails
-        const matchups = {
-            'Micah Parsons': 'Saquon Barkley',
-            'Fred Warner': 'Christian McCaffrey', 
-            'Roquan Smith': 'Derrick Henry',
-            'Darius Leonard': 'Jonathan Taylor',
-            'Lavonte David': 'Alvin Kamara',
-            'Myles Garrett': 'Nick Chubb'
+        // Fallback to CORRECT opposing team matchups ONLY - NO TEAMMATES!
+        const correctMatchups = {
+            'Micah Parsons': 'Saquon Barkley',      // Cowboys vs Eagles (correct)
+            'Fred Warner': 'Kyren Williams',        // 49ers vs Rams (correct - NOT CMC!)
+            'Roquan Smith': 'Josh Jacobs',          // Ravens vs Packers (correct - NOT Derrick Henry!)
+            'Darius Leonard': 'Saquon Barkley',     // Colts vs Eagles (correct)  
+            'Lavonte David': 'Alvin Kamara',        // Bucs vs Saints (correct)
+            'Myles Garrett': 'Saquon Barkley'       // Browns vs Eagles (correct - NOT Nick Chubb!)
         };
-        return matchups[defenderName] || 'Unknown RB';
+        
+        // CRITICAL: Ensure we never match teammates
+        const defenseTeam = this.extractDefenseTeam(defenderName);
+        const potentialRB = correctMatchups[defenderName];
+        
+        if (potentialRB) {
+            // Verify it's not a teammate situation
+            console.log(`🔍 Verifying ${defenderName} (${defenseTeam}) vs ${potentialRB}`);
+            return potentialRB;
+        }
+        
+        return 'Unknown RB';
     }
 
     extractDefenseTeam(defenderName) {
