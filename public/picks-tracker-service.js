@@ -8,6 +8,8 @@ class PicksTrackerService {
         this.dbName = 'nfl_picks_tracker';
         this.dbVersion = 1;
         this.db = null;
+        this.isReady = false;
+        this.initPromise = null;
         
         this.pickTypes = {
             SPREAD: 'spread',
@@ -35,25 +37,37 @@ class PicksTrackerService {
         };
         
         console.log('📊 Initializing NFL Picks Tracker Service...');
-        this.initializeDatabase();
+        this.initPromise = this.initializeDatabase();
     }
 
     /**
      * Initialize IndexedDB for local storage of picks data
      */
     async initializeDatabase() {
-        try {
-            const request = indexedDB.open(this.dbName, this.dbVersion);
-            
-            request.onerror = () => {
-                console.error('❌ Failed to open picks database:', request.error);
-            };
-            
-            request.onsuccess = () => {
-                this.db = request.result;
-                console.log('✅ Picks database initialized');
-                this.loadHistoricalData();
-            };
+        return new Promise((resolve, reject) => {
+            try {
+                if (!window.indexedDB) {
+                    console.warn('⚠️ IndexedDB not supported, using fallback mode');
+                    this.isReady = true;
+                    resolve(true);
+                    return;
+                }
+
+                const request = indexedDB.open(this.dbName, this.dbVersion);
+                
+                request.onerror = () => {
+                    console.error('❌ Failed to open picks database:', request.error);
+                    this.isReady = true; // Set ready even on error to prevent blocking
+                    resolve(false);
+                };
+                
+                request.onsuccess = () => {
+                    this.db = request.result;
+                    this.isReady = true;
+                    console.log('✅ Picks database initialized');
+                    this.loadHistoricalData();
+                    resolve(true);
+                };
             
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
@@ -85,8 +99,26 @@ class PicksTrackerService {
                 console.log('🔧 Database schema created');
             };
             
+            } catch (error) {
+                console.error('❌ Database initialization failed:', error);
+                this.isReady = true; // Set ready even on error
+                resolve(false);
+            }
+        });
+    }
+
+    /**
+     * Ensure service is ready
+     */
+    async ensureReady() {
+        if (this.isReady) return true;
+        
+        try {
+            await this.initPromise;
+            return true;
         } catch (error) {
-            console.error('❌ Database initialization failed:', error);
+            console.warn('⚠️ Service initialization failed, using fallback mode');
+            return false;
         }
     }
 
@@ -199,6 +231,13 @@ class PicksTrackerService {
      */
     async getPicksByWeek(season, week) {
         try {
+            // Ensure service is ready first
+            const isReady = await this.ensureReady();
+            if (!isReady || !this.db) {
+                console.log('📊 Service not ready, providing empty picks array');
+                return [];
+            }
+
             const transaction = this.db.transaction(['picks'], 'readonly');
             const store = transaction.objectStore('picks');
             const index = store.index('week');
@@ -232,6 +271,13 @@ class PicksTrackerService {
      */
     async getWeeklyPerformance(season, week) {
         try {
+            // Ensure service is ready first
+            const isReady = await this.ensureReady();
+            if (!isReady) {
+                console.log('📊 Service not ready, providing sample weekly performance data');
+                return this.generateSampleWeeklyPerformance(season, week);
+            }
+
             const picks = await this.getPicksByWeek(season, week);
             
             const performance = {
@@ -303,6 +349,13 @@ class PicksTrackerService {
      */
     async getOverallPerformance() {
         try {
+            // Ensure service is ready first
+            const isReady = await this.ensureReady();
+            if (!isReady || !this.db) {
+                console.log('📊 Service not ready, providing sample overall performance data');
+                return this.generateSampleOverallPerformance();
+            }
+
             const transaction = this.db.transaction(['picks'], 'readonly');
             const store = transaction.objectStore('picks');
             
@@ -495,6 +548,58 @@ class PicksTrackerService {
     async loadHistoricalData() {
         // Load any existing historical performance data
         console.log('📈 Loading historical picks data...');
+    }
+
+    // Fallback data generation methods
+    generateSampleWeeklyPerformance(season, week) {
+        return {
+            weekKey: `${season}_${week}`,
+            season,
+            week,
+            totalPicks: 0,
+            settledPicks: 0,
+            pendingPicks: 0,
+            wins: 0,
+            losses: 0,
+            pushes: 0,
+            voids: 0,
+            byType: {},
+            byConfidence: {},
+            winRate: 0,
+            totalStake: 0,
+            totalPayout: 0,
+            netResult: 0,
+            roi: 0,
+            topPick: null,
+            averageOdds: 0,
+            averageStake: 0
+        };
+    }
+
+    generateSampleOverallPerformance() {
+        return {
+            totalPicks: 0,
+            settledPicks: 0,
+            pendingPicks: 0,
+            wins: 0,
+            losses: 0,
+            pushes: 0,
+            voids: 0,
+            winRate: 0,
+            totalStake: 0,
+            totalPayout: 0,
+            netResult: 0,
+            roi: 0,
+            bestWeek: null,
+            worstWeek: null,
+            currentStreak: { type: 'none', count: 0 },
+            longestWinStreak: 0,
+            longestLoseStreak: 0,
+            byType: {},
+            byConfidence: {},
+            weeklyBreakdown: [],
+            lastUpdated: new Date().toISOString()
+        };
     }
 }
 
