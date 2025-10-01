@@ -4138,13 +4138,13 @@ class SimpleWorkingSystem {
                         <div class="summary-stat">
                             <label>Net P&L:</label>
                             <value class="${weeklyPerformance.netProfit > 0 ? 'positive' : weeklyPerformance.netProfit < 0 ? 'negative' : 'neutral'}">
-                                ${weeklyPerformance.netProfit > 0 ? '+' : ''}${weeklyPerformance.netProfit.toFixed(2)}u
+                                ${weeklyPerformance.netProfit > 0 ? '+' : ''}${(weeklyPerformance.netProfit || 0).toFixed(2)}u
                             </value>
                         </div>
                         <div class="summary-stat">
                             <label>ROI:</label>
                             <value class="${weeklyPerformance.roi > 0 ? 'positive' : weeklyPerformance.roi < 0 ? 'negative' : 'neutral'}">
-                                ${weeklyPerformance.roi.toFixed(1)}%
+                                ${(weeklyPerformance.roi || 0).toFixed(1)}%
                             </value>
                         </div>
                     </div>
@@ -4264,11 +4264,11 @@ class SimpleWorkingSystem {
                     <div class="stat-card financial">
                         <h4>💰 Financial Performance</h4>
                         <div class="big-stat ${overallPerformance.netProfit > 0 ? 'positive' : 'negative'}">
-                            ${overallPerformance.netProfit > 0 ? '+' : ''}${overallPerformance.netProfit.toFixed(2)}u
+                            ${overallPerformance.netProfit > 0 ? '+' : ''}${(overallPerformance.netProfit || 0).toFixed(2)}u
                         </div>
                         <div class="stat-details">
-                            <span>ROI: <strong class="${overallPerformance.roi > 0 ? 'positive' : 'negative'}">${overallPerformance.roi.toFixed(1)}%</strong></span>
-                            <span>Staked: ${overallPerformance.totalStaked.toFixed(2)}u</span>
+                            <span>ROI: <strong class="${overallPerformance.roi > 0 ? 'positive' : 'negative'}">${(overallPerformance.roi || 0).toFixed(1)}%</strong></span>
+                            <span>Staked: ${(overallPerformance.totalStaked || 0).toFixed(2)}u</span>
                         </div>
                     </div>
 
@@ -4418,9 +4418,9 @@ class SimpleWorkingSystem {
                                 <div class="week-card ${data.netProfit > 0 ? 'profitable' : data.netProfit < 0 ? 'losing' : 'breakeven'}">
                                     <div class="week-title">Week ${week}</div>
                                     <div class="week-record">${data.wins}-${data.losses}${data.pushes > 0 ? `-${data.pushes}` : ''}</div>
-                                    <div class="week-winrate ${data.winRate >= 50 ? 'positive' : 'negative'}">${data.winRate.toFixed(1)}%</div>
-                                    <div class="week-profit ${data.netProfit > 0 ? 'positive' : 'negative'}">${data.netProfit > 0 ? '+' : ''}${data.netProfit.toFixed(2)}u</div>
-                                    <div class="week-roi ${data.roi > 0 ? 'positive' : 'negative'}">ROI: ${data.roi.toFixed(1)}%</div>
+                                    <div class="week-winrate ${data.winRate >= 50 ? 'positive' : 'negative'}">${(data.winRate || 0).toFixed(1)}%</div>
+                                    <div class="week-profit ${data.netProfit > 0 ? 'positive' : 'negative'}">${data.netProfit > 0 ? '+' : ''}${(data.netProfit || 0).toFixed(2)}u</div>
+                                    <div class="week-roi ${data.roi > 0 ? 'positive' : 'negative'}">ROI: ${(data.roi || 0).toFixed(1)}%</div>
                                 </div>
                             `;
                         }).join('')}

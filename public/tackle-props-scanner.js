@@ -558,11 +558,20 @@ class TacklePropsScanner {
             
             // Find a likely opponent team (simulate matchup logic)
             const teamNames = Object.keys(rosters);
+            console.log(`🔍 Looking for RB opponent for ${defenderName} (${defenseTeam})`);
+            console.log(`📋 Available teams:`, teamNames.slice(0, 10));
+            
             const opponentTeams = teamNames.filter(team => {
                 const shortName = team.toLowerCase();
-                return !shortName.includes(defenseTeam.toLowerCase()) && 
-                       rosters[team] && rosters[team].RB;
+                const defenseTeamLower = defenseTeam.toLowerCase();
+                const hasRB = rosters[team] && rosters[team].RB;
+                const notSameTeam = !shortName.includes(defenseTeamLower) && !defenseTeamLower.includes(shortName);
+                
+                console.log(`  🔍 ${team}: hasRB=${hasRB}, notSameTeam=${notSameTeam}`);
+                return notSameTeam && hasRB;
             });
+            
+            console.log(`🎯 Found ${opponentTeams.length} potential opponent teams:`, opponentTeams);
             
             if (opponentTeams.length > 0) {
                 // Pick a random opponent for simulation
@@ -570,6 +579,8 @@ class TacklePropsScanner {
                 const opponentRB = rosters[randomOpponent].RB;
                 console.log(`🏈 Matched ${defenderName} (${defenseTeam}) vs ${opponentRB} (${randomOpponent})`);
                 return opponentRB;
+            } else {
+                console.warn(`⚠️ No opponent teams found for ${defenderName} (${defenseTeam})`);
             }
         }
         
@@ -595,7 +606,14 @@ class TacklePropsScanner {
             'Myles Garrett': 'Browns',
             'Bobby Wagner': 'Seahawks',
             'Matt Milano': 'Bills',
-            'Tremaine Edmunds': 'Bears'
+            'Tremaine Edmunds': 'Bears',
+            'Nick Bosa': '49ers',
+            'Budda Baker': 'Cardinals',
+            'T.J. Watt': 'Steelers',
+            'Aaron Donald': 'Rams',
+            'Khalil Mack': 'Chargers',
+            'Von Miller': 'Bills',
+            'Maxx Crosby': 'Raiders'
         };
         return teams[defenderName] || 'Unknown';
     }
