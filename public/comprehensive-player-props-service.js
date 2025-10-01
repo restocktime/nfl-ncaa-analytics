@@ -305,10 +305,10 @@ class ComprehensivePlayerPropsService {
                 RB: [{ name: teamPlayers.RB, tier: 'high' }],
                 WR: [{ name: teamPlayers.WR, tier: 'high' }],
                 TE: [{ name: teamPlayers.TE, tier: 'high' }],
-                K: [{ name: `${team} Kicker`, tier: 'medium' }],
+                K: [{ name: teamPlayers.K || `${team} Kicker`, tier: 'medium' }],
                 DEF: [
-                    { name: `${team} LB1`, tier: 'high' },
-                    { name: `${team} S1`, tier: 'high' }
+                    { name: teamPlayers.LB || teamPlayers.DEF || `${team} LB1`, tier: 'high' },
+                    { name: teamPlayers.S || teamPlayers.DEF2 || `${team} S1`, tier: 'high' }
                 ]
             };
         } catch (error) {

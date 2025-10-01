@@ -2831,16 +2831,16 @@ class SimpleWorkingSystem {
         console.log('📋 Using cached 2025-26 rosters as fallback');
         const teamRosters = {
             // AFC EAST - 2025-26 Season (Updated with current starters)
-            'Bills': { QB: 'Josh Allen', RB: 'James Cook', WR: 'Khalil Shakir', TE: 'Dalton Kincaid' },
-            'Dolphins': { QB: 'Tua Tagovailoa', RB: 'De\'Von Achane', WR: 'Tyreek Hill', TE: 'Jonnu Smith' },
-            'Patriots': { QB: 'Drake Maye', RB: 'Rhamondre Stevenson', WR: 'DeMario Douglas', TE: 'Hunter Henry' },
-            'Jets': { QB: 'Aaron Rodgers', RB: 'Breece Hall', WR: 'Garrett Wilson', TE: 'Tyler Conklin' },
+            'Bills': { QB: 'Josh Allen', RB: 'James Cook', WR: 'Khalil Shakir', TE: 'Dalton Kincaid', K: 'Tyler Bass', LB: 'Matt Milano' },
+            'Dolphins': { QB: 'Tua Tagovailoa', RB: 'De\'Von Achane', WR: 'Tyreek Hill', TE: 'Jonnu Smith', K: 'Jason Sanders', LB: 'Jordyn Brooks' },
+            'Patriots': { QB: 'Drake Maye', RB: 'Rhamondre Stevenson', WR: 'DeMario Douglas', TE: 'Hunter Henry', K: 'Joey Slye', LB: 'Ja\'Whaun Bentley' },
+            'Jets': { QB: 'Aaron Rodgers', RB: 'Breece Hall', WR: 'Garrett Wilson', TE: 'Tyler Conklin', K: 'Greg Zuerlein', LB: 'C.J. Mosley' },
             
             // AFC NORTH - 2025-26 Season  
-            'Ravens': { QB: 'Lamar Jackson', RB: 'Derrick Henry', WR: 'Zay Flowers', TE: 'Mark Andrews' },
-            'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Tee Higgins' },
-            'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku' },
-            'Steelers': { QB: 'Russell Wilson', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth' },
+            'Ravens': { QB: 'Lamar Jackson', RB: 'Derrick Henry', WR: 'Zay Flowers', TE: 'Mark Andrews', K: 'Justin Tucker', LB: 'Roquan Smith' },
+            'Bengals': { QB: 'Joe Burrow', RB: 'Chase Brown', WR: 'Ja\'Marr Chase', TE: 'Tee Higgins', K: 'Evan McPherson', LB: 'Logan Wilson' },
+            'Browns': { QB: 'Joe Flacco', RB: 'Nick Chubb', WR: 'Jerry Jeudy', TE: 'David Njoku', K: 'Dustin Hopkins', LB: 'Myles Garrett' },
+            'Steelers': { QB: 'Russell Wilson', RB: 'Najee Harris', WR: 'George Pickens', TE: 'Pat Freiermuth', K: 'Chris Boswell', LB: 'T.J. Watt' },
             
             // AFC SOUTH - 2025-26 Season
             'Titans': { QB: 'Will Levis', RB: 'Tony Pollard', WR: 'Calvin Ridley', TE: 'Chigoziem Okonkwo' },
@@ -2873,10 +2873,10 @@ class SimpleWorkingSystem {
             'Buccaneers': { QB: 'Baker Mayfield', RB: 'Bucky Irving', WR: 'Mike Evans', TE: 'Cade Otton' },
             
             // NFC WEST - 2025-26 Season
-            '49ers': { QB: 'Brock Purdy', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle' },
-            'Seahawks': { QB: 'Geno Smith', RB: 'Kenneth Walker III', WR: 'DK Metcalf', TE: 'Noah Fant' },
-            'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson' },
-            'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride' }
+            '49ers': { QB: 'Brock Purdy', RB: 'Christian McCaffrey', WR: 'Deebo Samuel', TE: 'George Kittle', K: 'Jake Moody', LB: 'Fred Warner' },
+            'Seahawks': { QB: 'Geno Smith', RB: 'Kenneth Walker III', WR: 'DK Metcalf', TE: 'Noah Fant', K: 'Jason Myers', LB: 'Bobby Wagner' },
+            'Rams': { QB: 'Matthew Stafford', RB: 'Kyren Williams', WR: 'Cooper Kupp', TE: 'Colby Parkinson', K: 'Lucas Havrisik', LB: 'Ernest Jones' },
+            'Cardinals': { QB: 'Kyler Murray', RB: 'James Conner', WR: 'Marvin Harrison Jr.', TE: 'Trey McBride', K: 'Chad Ryland', LB: 'Kyzir White' }
         };
         
         // Expose roster data globally for other services
