@@ -197,7 +197,8 @@ class ComprehensivePlayerPropsService {
             
             // Metadata
             gameId: gameId,
-            isGoldmine: edge >= 1.5,
+            isGoldmine: edge >= 0.5, // Lower threshold for goldmine detection
+            isPremiumGoldmine: edge >= 1.0, // High-value goldmines for priority display
             valueRating: this.getValueRating(edge, confidence),
             lastUpdated: new Date().toISOString(),
             
@@ -588,10 +589,17 @@ class ComprehensivePlayerPropsService {
                 props: this.groupPropsByPosition(allProps.filter(p => p.team === homeTeam))
             },
             
-            // Top opportunities
+            // Top opportunities - prioritize +1.0 edge goldmines at the top
             goldmines: allProps
                 .filter(p => p.isGoldmine)
-                .sort((a, b) => b.edge - a.edge)
+                .sort((a, b) => {
+                    // First sort by +1.0+ edge goldmines
+                    const aHighEdge = a.edge >= 1.0 ? 1 : 0;
+                    const bHighEdge = b.edge >= 1.0 ? 1 : 0;
+                    if (aHighEdge !== bHighEdge) return bHighEdge - aHighEdge;
+                    // Then by edge within each group
+                    return b.edge - a.edge;
+                })
                 .slice(0, 10),
                 
             // All props sorted by edge

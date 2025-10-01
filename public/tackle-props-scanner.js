@@ -549,25 +549,55 @@ class TacklePropsScanner {
     }
 
     extractRBFromDefender(defenderName) {
+        // Use real roster data to find RB matchups
+        if (window.nflTeamRosters || (window.simpleSystem && window.simpleSystem.teamRosters)) {
+            const rosters = window.nflTeamRosters || window.simpleSystem.teamRosters;
+            
+            // Get the defense team for this defender
+            const defenseTeam = this.extractDefenseTeam(defenderName);
+            
+            // Find a likely opponent team (simulate matchup logic)
+            const teamNames = Object.keys(rosters);
+            const opponentTeams = teamNames.filter(team => {
+                const shortName = team.toLowerCase();
+                return !shortName.includes(defenseTeam.toLowerCase()) && 
+                       rosters[team] && rosters[team].RB;
+            });
+            
+            if (opponentTeams.length > 0) {
+                // Pick a random opponent for simulation
+                const randomOpponent = opponentTeams[Math.floor(Math.random() * opponentTeams.length)];
+                const opponentRB = rosters[randomOpponent].RB;
+                console.log(`🏈 Matched ${defenderName} (${defenseTeam}) vs ${opponentRB} (${randomOpponent})`);
+                return opponentRB;
+            }
+        }
+        
+        // Fallback to static matchups if roster lookup fails
         const matchups = {
             'Micah Parsons': 'Saquon Barkley',
             'Fred Warner': 'Christian McCaffrey', 
             'Roquan Smith': 'Derrick Henry',
             'Darius Leonard': 'Jonathan Taylor',
-            'Lavonte David': 'Alvin Kamara'
+            'Lavonte David': 'Alvin Kamara',
+            'Myles Garrett': 'Nick Chubb'
         };
         return matchups[defenderName] || 'Unknown RB';
     }
 
     extractDefenseTeam(defenderName) {
         const teams = {
-            'Micah Parsons': 'DAL',
-            'Fred Warner': 'SF',
-            'Roquan Smith': 'BAL',
-            'Darius Leonard': 'IND',
-            'Lavonte David': 'TB'
+            'Micah Parsons': 'Cowboys',
+            'Fred Warner': '49ers',
+            'Roquan Smith': 'Ravens',
+            'Darius Leonard': 'Colts',
+            'Lavonte David': 'Buccaneers',
+            'Myles Garrett': 'Browns',
+            'Bobby Wagner': 'Seahawks',
+            'Matt Milano': 'Bills',
+            'Tremaine Edmunds': 'Bears'
         };
-        return teams[defenderName] || 'UNK';
+        return teams[defenderName] || 'Unknown';
     }
 }
 
