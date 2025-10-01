@@ -3357,7 +3357,7 @@ class SimpleWorkingSystem {
                 nextgenService: window.nextGenStatsService && typeof window.nextGenStatsService.getTackleTrackingData === 'function' ? 'LOADED' : 'MISSING',
                 sportsbookService: window.sportsbookAPIService && typeof window.sportsbookAPIService.getAllTackleProps === 'function' ? 'LOADED' : 'MISSING',
                 tacklePropsScanner: window.tacklePropsScanner && typeof window.tacklePropsScanner.performScan === 'function' ? 'LOADED' : 'MISSING',
-                picksTracker: window.picksTrackerService && (window.picksTrackerService._isFallback || typeof window.picksTrackerService.getWeeklyPerformance === 'function') ? 'LOADED' : 'MISSING'
+                picksTracker: window.picksTrackerService && (window.picksTrackerService._isFallback || typeof window.picksTrackerService.getWeeklyPerformance === 'function' || typeof window.picksTrackerService.ensureReady === 'function') ? 'LOADED' : 'MISSING'
             },
             simulation: {
                 active: !this.config.oddsApi.enabled && !this.config.draftkings.enabled
@@ -3745,7 +3745,18 @@ class SimpleWorkingSystem {
         
         // Load initial data
         if (window.picksTrackerService) {
-            this.displayCurrentWeekPicks();
+            // Check if service is ready or wait for it
+            if (typeof window.picksTrackerService.ensureReady === 'function') {
+                window.picksTrackerService.ensureReady().then(() => {
+                    this.displayCurrentWeekPicks();
+                }).catch(() => {
+                    console.log('📊 Picks Tracker Service initialized with fallback data');
+                    this.displayCurrentWeekPicks();
+                });
+            } else {
+                // Fallback service or old version
+                this.displayCurrentWeekPicks();
+            }
         } else if (!this.picksTrackerRetries || this.picksTrackerRetries < 3) {
             this.picksTrackerRetries = (this.picksTrackerRetries || 0) + 1;
             console.warn(`⚠️ Picks Tracker Service not available yet, will retry (${this.picksTrackerRetries}/3)...`);
