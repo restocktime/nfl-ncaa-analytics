@@ -1,0 +1,28 @@
+{
+  "name": "nfl-analytics-production",
+  "version": "1.0.0",
+  "description": "Production-ready NFL Analytics with database API",
+  "main": "deploy-database-server.js",
+  "scripts": {
+    "start": "node deploy-database-server.js",
+    "dev": "nodemon deploy-database-server.js",
+    "test": "curl http://localhost:3001/health"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "nfl",
+    "analytics",
+    "database",
+    "api",
+    "production"
+  ],
+  "author": "NFL Analytics System",
+  "license": "MIT"
+}

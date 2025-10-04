@@ -5,8 +5,22 @@
  */
 
 class NFLDatabaseClient {
-    constructor(apiBaseUrl = 'http://localhost:3001/api/nfl') {
-        this.apiBaseUrl = apiBaseUrl;
+    constructor(apiBaseUrl) {
+        // Auto-detect environment and use appropriate API URL
+        if (!apiBaseUrl) {
+            if (typeof window !== 'undefined' && window.productionConfig) {
+                this.apiBaseUrl = window.productionConfig.getApiUrl();
+            } else {
+                // Fallback detection
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                this.apiBaseUrl = isLocal 
+                    ? 'http://localhost:3001/api/nfl' 
+                    : `${window.location.origin}/api/nfl`;
+            }
+        } else {
+            this.apiBaseUrl = apiBaseUrl;
+        }
+        
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         console.log(`🚀 NFL Database Client initialized with server: ${this.apiBaseUrl}`);
