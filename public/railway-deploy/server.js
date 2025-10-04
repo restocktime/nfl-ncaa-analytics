@@ -129,13 +129,24 @@ function findTeam(identifier) {
 
 // ===== API ROUTES =====
 
-// Health check
+// Health check - Railway expects /health
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         message: 'NFL Database API is running on Railway',
         timestamp: new Date().toISOString(),
         environment: 'Railway Production'
+    });
+});
+
+// Also provide health check at /api/health for Railway
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'NFL Database API is running on Railway',
+        timestamp: new Date().toISOString(),
+        environment: 'Railway Production',
+        endpoint: '/api/health'
     });
 });
 
@@ -296,12 +307,22 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 NFL Database API running on Railway`);
     console.log(`🌐 Port: ${PORT}`);
     console.log(`📊 Teams: ${NFL_TEAMS.length}`);
     console.log(`👥 Player rosters: ${Object.keys(NFL_PLAYERS).length} teams`);
+    console.log(`🏥 Health checks available at /health and /api/health`);
     console.log(`✅ Ready to serve NFL data!`);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('🛑 SIGTERM received, shutting down gracefully');
+    server.close(() => {
+        console.log('✅ Process terminated');
+        process.exit(0);
+    });
 });
 
 module.exports = app;
