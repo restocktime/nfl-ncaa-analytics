@@ -1,7 +1,7 @@
 {
-  "name": "nfl-api",
+  "name": "nfl-api-production",
   "version": "1.0.0",
-  "description": "NFL Database API",
+  "description": "NFL Database API for Production",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -11,6 +11,6 @@
     "cors": "^2.8.5"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": "18.x"
   }
 }
