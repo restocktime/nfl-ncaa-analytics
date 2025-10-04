@@ -1,0 +1,4 @@
+# Disable Docker builds - use Nixpacks instead
+*
+!package.json
+!server.js
