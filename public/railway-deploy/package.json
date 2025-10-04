@@ -1,0 +1,22 @@
+{
+  "name": "nfl-database-api",
+  "version": "1.0.0",
+  "description": "NFL Database API for Railway deployment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.1.6",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": ["nfl", "api", "database"],
+  "author": "NFL Analytics System",
+  "license": "MIT"
+}
