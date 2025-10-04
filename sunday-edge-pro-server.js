@@ -23,7 +23,7 @@ app.use(helmet({
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
             scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
             imgSrc: ["'self'", "data:", "https:", "http:"],
-            connectSrc: ["'self'", "https://site.api.espn.com", "https://api.sportsdata.io", "https://api.the-odds-api.com", "https://api.openweathermap.org"],
+            connectSrc: ["'self'", "http://localhost:3000", "http://localhost:3001", "https://site.api.espn.com", "https://api.sportsdata.io", "https://api.the-odds-api.com", "https://api.openweathermap.org"],
             frameSrc: ["'self'", "https://app.hardrock.bet"]
         }
     }
@@ -33,7 +33,7 @@ app.use(compression());
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? ['https://sunday-edge-pro.vercel.app']
-        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+        : ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'],
     credentials: true
 }));
 
@@ -285,6 +285,63 @@ app.get('/api/status', (req, res) => {
     };
     
     res.json(status);
+});
+
+/**
+ * Get NFL teams data
+ */
+app.get('/api/nfl/teams', (req, res) => {
+    const teams = [
+        // AFC East
+        { id: 1, name: "Buffalo Bills", abbreviation: "BUF", conference: "AFC", division: "East", city: "Buffalo", state: "NY" },
+        { id: 2, name: "Miami Dolphins", abbreviation: "MIA", conference: "AFC", division: "East", city: "Miami", state: "FL" },
+        { id: 3, name: "New York Jets", abbreviation: "NYJ", conference: "AFC", division: "East", city: "New York", state: "NY" },
+        { id: 4, name: "New England Patriots", abbreviation: "NE", conference: "AFC", division: "East", city: "Foxborough", state: "MA" },
+        
+        // AFC North
+        { id: 5, name: "Baltimore Ravens", abbreviation: "BAL", conference: "AFC", division: "North", city: "Baltimore", state: "MD" },
+        { id: 6, name: "Pittsburgh Steelers", abbreviation: "PIT", conference: "AFC", division: "North", city: "Pittsburgh", state: "PA" },
+        { id: 7, name: "Cleveland Browns", abbreviation: "CLE", conference: "AFC", division: "North", city: "Cleveland", state: "OH" },
+        { id: 8, name: "Cincinnati Bengals", abbreviation: "CIN", conference: "AFC", division: "North", city: "Cincinnati", state: "OH" },
+        
+        // AFC South
+        { id: 9, name: "Houston Texans", abbreviation: "HOU", conference: "AFC", division: "South", city: "Houston", state: "TX" },
+        { id: 10, name: "Indianapolis Colts", abbreviation: "IND", conference: "AFC", division: "South", city: "Indianapolis", state: "IN" },
+        { id: 11, name: "Jacksonville Jaguars", abbreviation: "JAX", conference: "AFC", division: "South", city: "Jacksonville", state: "FL" },
+        { id: 12, name: "Tennessee Titans", abbreviation: "TEN", conference: "AFC", division: "South", city: "Nashville", state: "TN" },
+        
+        // AFC West
+        { id: 13, name: "Kansas City Chiefs", abbreviation: "KC", conference: "AFC", division: "West", city: "Kansas City", state: "MO" },
+        { id: 14, name: "Los Angeles Chargers", abbreviation: "LAC", conference: "AFC", division: "West", city: "Los Angeles", state: "CA" },
+        { id: 15, name: "Denver Broncos", abbreviation: "DEN", conference: "AFC", division: "West", city: "Denver", state: "CO" },
+        { id: 16, name: "Las Vegas Raiders", abbreviation: "LV", conference: "AFC", division: "West", city: "Las Vegas", state: "NV" },
+        
+        // NFC East
+        { id: 17, name: "Philadelphia Eagles", abbreviation: "PHI", conference: "NFC", division: "East", city: "Philadelphia", state: "PA" },
+        { id: 18, name: "Washington Commanders", abbreviation: "WAS", conference: "NFC", division: "East", city: "Washington", state: "DC" },
+        { id: 19, name: "Dallas Cowboys", abbreviation: "DAL", conference: "NFC", division: "East", city: "Dallas", state: "TX" },
+        { id: 20, name: "New York Giants", abbreviation: "NYG", conference: "NFC", division: "East", city: "New York", state: "NY" },
+        
+        // NFC North
+        { id: 21, name: "Detroit Lions", abbreviation: "DET", conference: "NFC", division: "North", city: "Detroit", state: "MI" },
+        { id: 22, name: "Green Bay Packers", abbreviation: "GB", conference: "NFC", division: "North", city: "Green Bay", state: "WI" },
+        { id: 23, name: "Chicago Bears", abbreviation: "CHI", conference: "NFC", division: "North", city: "Chicago", state: "IL" },
+        { id: 24, name: "Minnesota Vikings", abbreviation: "MIN", conference: "NFC", division: "North", city: "Minneapolis", state: "MN" },
+        
+        // NFC South
+        { id: 25, name: "Atlanta Falcons", abbreviation: "ATL", conference: "NFC", division: "South", city: "Atlanta", state: "GA" },
+        { id: 26, name: "New Orleans Saints", abbreviation: "NO", conference: "NFC", division: "South", city: "New Orleans", state: "LA" },
+        { id: 27, name: "Tampa Bay Buccaneers", abbreviation: "TB", conference: "NFC", division: "South", city: "Tampa", state: "FL" },
+        { id: 28, name: "Carolina Panthers", abbreviation: "CAR", conference: "NFC", division: "South", city: "Charlotte", state: "NC" },
+        
+        // NFC West
+        { id: 29, name: "San Francisco 49ers", abbreviation: "SF", conference: "NFC", division: "West", city: "San Francisco", state: "CA" },
+        { id: 30, name: "Los Angeles Rams", abbreviation: "LAR", conference: "NFC", division: "West", city: "Los Angeles", state: "CA" },
+        { id: 31, name: "Seattle Seahawks", abbreviation: "SEA", conference: "NFC", division: "West", city: "Seattle", state: "WA" },
+        { id: 32, name: "Arizona Cardinals", abbreviation: "ARI", conference: "NFC", division: "West", city: "Phoenix", state: "AZ" }
+    ];
+    
+    res.json(teams);
 });
 
 // Utility Functions
