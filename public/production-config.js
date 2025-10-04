@@ -27,13 +27,27 @@ class ProductionConfig {
             };
         }
         
-        // Production environment
+        // Production environment - Check if Railway URL is configured
+        const railwayUrl = this.getRailwayUrl();
+        if (railwayUrl) {
+            return {
+                environment: 'production',
+                apiBaseUrl: `${railwayUrl}/api/nfl`,
+                databaseUrl: railwayUrl,
+                isProduction: true,
+                isDevelopment: false,
+                deploymentType: 'railway'
+            };
+        }
+        
+        // Fallback to same-domain API
         return {
             environment: 'production',
             apiBaseUrl: `${protocol}//${hostname}${port ? ':' + port : ''}/api/nfl`,
             databaseUrl: `${protocol}//${hostname}${port ? ':' + port : ''}`,
             isProduction: true,
-            isDevelopment: false
+            isDevelopment: false,
+            deploymentType: 'same-domain'
         };
     }
     
@@ -55,6 +69,29 @@ class ProductionConfig {
     
     getEnvironment() {
         return this.config.environment;
+    }
+    
+    getRailwayUrl() {
+        // Check for Railway URL configuration
+        // Option 1: Environment variable (if set)
+        if (typeof process !== 'undefined' && process.env && process.env.RAILWAY_API_URL) {
+            return process.env.RAILWAY_API_URL;
+        }
+        
+        // Option 2: Hardcoded Railway URL (update this after deployment)
+        const RAILWAY_API_URL = null; // Set to your Railway URL like: 'https://your-app.railway.app'
+        
+        // Option 3: Auto-detect Railway domain pattern
+        const hostname = window.location.hostname;
+        if (hostname.includes('railway.app') || hostname.includes('up.railway.app')) {
+            return `${window.location.protocol}//${hostname}`;
+        }
+        
+        return RAILWAY_API_URL;
+    }
+    
+    getDeploymentType() {
+        return this.config.deploymentType || 'unknown';
     }
 }
 
