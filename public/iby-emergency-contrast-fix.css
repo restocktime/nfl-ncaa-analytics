@@ -1,0 +1,160 @@
+/**
+ * IBY Emergency Contrast Fix - Nuclear Option
+ * Created by IBY @benyakar94 - IG
+ * Removes ALL white text visibility issues
+ */
+
+/* ============================================================================
+   NUCLEAR CONTRAST FIX - HIGHEST PRIORITY
+   ============================================================================ */
+
+/* Force ALL text to be visible - Nuclear approach */
+* {
+    color: #1a1a2e !important;
+}
+
+/* Specific exceptions for elements that should be white text */
+.btn-primary,
+.btn-primary *,
+.status-live,
+.status-live *,
+.pick-recommendation,
+.pick-recommendation *,
+.confidence-high,
+.confidence-high *,
+.confidence-medium,
+.confidence-medium *,
+.confidence-low,
+.confidence-low * {
+    color: white !important;
+}
+
+/* Navigation specific */
+.nav-link {
+    color: #6b7280 !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #3282f6 !important;
+}
+
+.nav-brand {
+    color: #1a1a2e !important;
+}
+
+/* Game cards - force all text to be dark */
+.game-card,
+.game-card *:not(.status-live):not(.btn-primary) {
+    color: #1a1a2e !important;
+}
+
+.game-card .team-name {
+    color: #1a1a2e !important;
+    font-weight: 600 !important;
+}
+
+.game-card .team-record {
+    color: #6b7280 !important;
+}
+
+.game-card .game-time {
+    color: #6b7280 !important;
+}
+
+.game-card .team-logo {
+    color: #1a1a2e !important;
+    background: #f3f4f6 !important;
+}
+
+/* Cards and widgets */
+.card,
+.card *:not(.btn-primary):not(.status-live),
+.widget,
+.widget *:not(.btn-primary):not(.status-live) {
+    color: #1a1a2e !important;
+}
+
+/* Modal content */
+.modal-container,
+.modal-container *:not(.btn-primary):not(.status-live):not(.pick-recommendation):not(.confidence-high):not(.confidence-medium):not(.confidence-low) {
+    color: #1a1a2e !important;
+}
+
+/* Headers and titles */
+h1, h2, h3, h4, h5, h6 {
+    color: #1a1a2e !important;
+}
+
+/* Secondary text */
+.text-secondary,
+.card-subtitle,
+.text-muted,
+.game-time,
+.team-record,
+.activity-time,
+.news-time,
+.pick-confidence {
+    color: #6b7280 !important;
+}
+
+/* Links and interactive elements */
+a:not(.btn):not(.nav-link) {
+    color: #3282f6 !important;
+}
+
+/* Bright accent text */
+.team-score,
+.metric-value,
+.injury-type,
+.status-uptime {
+    color: #3282f6 !important;
+}
+
+/* Status badges with proper contrast */
+.status-badge.status-upcoming {
+    background: #e5e7eb !important;
+    color: #1a1a2e !important;
+}
+
+.status-badge.status-final {
+    background: #d1d5db !important;
+    color: #1a1a2e !important;
+}
+
+/* Override any remaining white text */
+[style*="color: white"]:not(.btn-primary):not(.status-live):not(.pick-recommendation) {
+    color: #1a1a2e !important;
+}
+
+[style*="color: #fff"]:not(.btn-primary):not(.status-live):not(.pick-recommendation) {
+    color: #1a1a2e !important;
+}
+
+[style*="color: #ffffff"]:not(.btn-primary):not(.status-live):not(.pick-recommendation) {
+    color: #1a1a2e !important;
+}
+
+/* Any class with white in the name */
+.text-white:not(.btn-primary):not(.status-live):not(.pick-recommendation) {
+    color: #1a1a2e !important;
+}
+
+[class*="white"]:not(.btn-primary):not(.status-live):not(.pick-recommendation) {
+    color: #1a1a2e !important;
+}
+
+/* Ensure backgrounds provide contrast */
+.game-card,
+.card,
+.widget {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Debug - uncomment to see all text elements */
+/*
+* {
+    outline: 1px solid red !important;
+}
+*/

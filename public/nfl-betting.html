@@ -3,235 +3,833 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Betting Lines - Live Odds & Analysis</title>
+    <title>NFL Betting Analysis - Professional Odds & Lines</title>
+    
+    <!-- Apple Theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="simple-system-styles.css">
+    <link rel="stylesheet" href="apple-theme.css">
+    
     <style>
-        body {
-            background: #000;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .header {
+        /* Betting-specific styles */
+        .betting-hero {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 60px 0;
+            margin-bottom: 40px;
         }
-
-        .header h1 {
-            color: #ffd700;
-            margin: 0 0 10px 0;
-            font-size: 2rem;
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #007aff, #34c759, #ff9500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
         }
-
-        .navigation {
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #86868b;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        
+        .odds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .odds-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .odds-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        
+        .game-header {
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
-
-        .nav-button {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
+        
+        .game-teams {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .team-info {
+            text-align: center;
+        }
+        
+        .team-name {
+            font-weight: 600;
+            color: #1d1d1f;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .team-record {
+            font-size: 0.9rem;
+            color: #86868b;
+        }
+        
+        .game-time {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .betting-markets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+        
+        .market-card {
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .market-card:hover {
+            background: rgba(0, 122, 255, 0.05);
+            border-color: rgba(0, 122, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .market-label {
+            font-size: 0.8rem;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .market-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        
+        .market-odds {
+            font-size: 0.9rem;
+            color: #007aff;
+            font-weight: 500;
+        }
+        
+        .ai-recommendation {
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(0, 122, 255, 0.05));
+            border: 1px solid rgba(52, 199, 89, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .recommendation-header {
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            margin-bottom: 12px;
         }
-
-        .nav-button:hover {
-            background: rgba(0, 255, 136, 0.2);
-            transform: translateY(-2px);
+        
+        .recommendation-icon {
+            color: #34c759;
+            font-size: 1.2rem;
         }
-
-        .nav-button.active {
-            background: rgba(255, 215, 0, 0.3);
-            border-color: #ffd700;
-            color: #ffd700;
+        
+        .recommendation-title {
+            font-weight: 600;
+            color: #1d1d1f;
+            font-size: 1rem;
         }
-
-        .back-button {
-            background: rgba(255, 136, 0, 0.1);
-            border: 1px solid rgba(255, 136, 0, 0.3);
-            color: #ff8800;
+        
+        .recommendation-text {
+            color: #1d1d1f;
+            line-height: 1.5;
+            margin-bottom: 12px;
         }
-
-        .back-button:hover {
-            background: rgba(255, 136, 0, 0.2);
+        
+        .confidence-bar {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
         }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        
+        .confidence-fill {
+            background: linear-gradient(90deg, #34c759, #007aff);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.3s ease;
         }
-
-        .games-container {
+        
+        .confidence-text {
+            font-size: 0.8rem;
+            color: #86868b;
+            text-align: right;
+        }
+        
+        .goldmine-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #ff9500, #ffd700);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stats-summary {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 40px 0;
         }
-
-        .loading-card {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            padding: 30px;
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 20px;
             text-align: center;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
         }
-
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #007aff;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #86868b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .loading-games {
+            text-align: center;
+            padding: 60px 20px;
+            color: #86868b;
+        }
+        
         .loading-spinner {
-            border: 3px solid rgba(255, 215, 0, 0.3);
-            border-top: 3px solid #ffd700;
+            border: 3px solid rgba(0, 122, 255, 0.2);
+            border-top: 3px solid #007aff;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .betting-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .betting-icon {
-            color: #ffd700;
+        
+        .refresh-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
             font-size: 1.2rem;
-            animation: sparkle 3s ease-in-out infinite;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 122, 255, 0.3);
+            transition: all 0.2s ease;
         }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        
+        .refresh-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(0, 122, 255, 0.4);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .filter-chip {
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1d1d1f;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-chip.active {
+            background: #007aff;
+            color: white;
+            border-color: #007aff;
+        }
+        
+        .filter-chip:hover {
+            background: rgba(0, 122, 255, 0.1);
+            border-color: rgba(0, 122, 255, 0.3);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .odds-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .betting-markets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .betting-markets {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1><i class="fas fa-coins"></i> NFL Betting Lines</h1>
-        <div class="betting-indicator">
-            <i class="fas fa-chart-line betting-icon"></i>
-            <span id="betting-status">LIVE BETTING ODDS & ANALYSIS</span>
-        </div>
-    </div>
+    <!-- Header -->
+    <header class="header">
+        <h1 class="header-title">💰 NFL Betting Hub</h1>
+        <p class="header-subtitle">Live odds, professional analysis, and AI-powered betting insights</p>
+    </header>
 
-    <div class="navigation">
-        <a href="nfl-live-games.html" class="nav-button nav-link" data-view="live-games">
-            <i class="fas fa-broadcast-tower"></i> Live Games
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            Home
         </a>
-        <a href="nfl-upcoming-games.html" class="nav-button nav-link" data-view="upcoming-games">
-            <i class="fas fa-calendar-alt"></i> Upcoming
+        <a href="nfl-analytics.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i>
+            Analytics
         </a>
-        <a href="nfl-predictions.html" class="nav-button nav-link" data-view="predictions">
-            <i class="fas fa-brain"></i> AI Predictions
+        <a href="player-props-hub.html" class="nav-item">
+            <i class="fas fa-robot"></i>
+            AI Hub
         </a>
-        <a href="nfl-betting.html" class="nav-button nav-link active" data-view="betting">
-            <i class="fas fa-coins"></i> Betting
+        <a href="nfl-live-games.html" class="nav-item">
+            <i class="fas fa-broadcast-tower"></i>
+            Live Games
         </a>
-        <a href="player-props-hub.html" class="nav-button nav-link" data-view="player-props">
-            <i class="fas fa-users"></i> Player Props
+        <a href="nfl-upcoming-games.html" class="nav-item">
+            <i class="fas fa-calendar-alt"></i>
+            Upcoming
         </a>
-        <a href="index.html" class="nav-button nav-link back-button" data-view="home">
-            <i class="fas fa-arrow-left"></i> Back to Home
+        <a href="nfl-predictions.html" class="nav-item">
+            <i class="fas fa-crystal-ball"></i>
+            Predictions
         </a>
-    </div>
+        <a href="nfl-betting.html" class="nav-item active">
+            <i class="fas fa-coins"></i>
+            Betting
+        </a>
+    </nav>
 
-    <div class="main-container">
-        <div id="nfl-betting" class="games-container">
-            <div class="loading-card">
-                <div class="loading-spinner"></div>
-                <h3>Loading Betting Lines</h3>
-                <p>Fetching live NFL odds and analysis...</p>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="betting-hero">
+            <h1 class="hero-title">Professional NFL Betting</h1>
+            <p class="hero-subtitle">
+                Real-time odds, advanced analytics, and AI-driven recommendations 
+                for informed betting decisions across all NFL markets.
+            </p>
+        </section>
+
+        <!-- Betting Summary Stats -->
+        <section class="stats-summary">
+            <div class="stat-item">
+                <div class="stat-number" id="totalGames">16</div>
+                <div class="stat-label">Games This Week</div>
             </div>
-        </div>
+            <div class="stat-item">
+                <div class="stat-number" id="liveOdds">500+</div>
+                <div class="stat-label">Live Betting Lines</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="aiPicks">24</div>
+                <div class="stat-label">AI Recommendations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="goldmines">8</div>
+                <div class="stat-label">Goldmine Opportunities</div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters">
+            <button class="filter-chip active" data-filter="all">All Games</button>
+            <button class="filter-chip" data-filter="live">Live Games</button>
+            <button class="filter-chip" data-filter="upcoming">Upcoming</button>
+            <button class="filter-chip" data-filter="goldmines">Goldmines</button>
+            <button class="filter-chip" data-filter="recommendations">AI Picks</button>
+        </section>
+
+        <!-- Betting Odds Grid -->
+        <section class="odds-grid" id="oddsGrid">
+            <div class="loading-games">
+                <div class="loading-spinner"></div>
+                <p>Loading live betting odds...</p>
+                <p style="font-size: 0.9rem; margin-top: 12px;">Fetching real-time data from sportsbooks</p>
+            </div>
+        </section>
+
+        <!-- AI Analysis Summary -->
+        <section>
+            <div class="card card-large">
+                <div class="card-header">
+                    <i class="fas fa-robot card-icon"></i>
+                    <h2 class="card-title">AI Betting Intelligence</h2>
+                </div>
+                <div id="aiSummary">
+                    <div class="loading-games">
+                        <div class="loading-spinner"></div>
+                        <p>Processing AI analysis...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <!-- Load all service dependencies first -->
-    <script src="pff-data-service.js"></script>
-    <script src="nextgen-stats-service.js"></script>
-    <script src="sportsbook-api-service.js"></script>
-    <script src="tackle-props-scanner.js"></script>
-    <script src="injury-status-service.js"></script>
+    <!-- Refresh Button -->
+    <button class="refresh-button" onclick="refreshOdds()" title="Refresh Odds">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <!-- Load Scripts -->
+    <script src="production-config.js?v=real-ml-unified"></script>
+    <script src="nfl-database-client.js?v=real-ml-unified"></script>
+    <script src="real-ml-analyzer.js?v=real-ml-unified"></script>
+    <script src="daily-roster-updater.js"></script>
     <script src="comprehensive-player-props-service.js"></script>
-    <script src="weekly-picks-mcp.js"></script>
-    <script src="comprehensive-picks-display.js"></script>
-    
-    <!-- Load main system last -->
-    <script src="simple-working-system.js"></script>
+
     <script>
-        let nflSystem;
-        
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🏈 NFL Betting System Initializing...');
-            
-            try {
-                if (typeof SimpleWorkingSystem !== 'undefined') {
-                    nflSystem = new SimpleWorkingSystem();
-                    console.log('✅ NFL System initialized successfully');
-                    
-                    await nflSystem.start();
-                    
-                    // Load comprehensive picks display with ALL betting opportunities
-                    if (window.comprehensivePicksDisplay) {
-                        console.log('🎯 Loading ALL betting opportunities...');
-                        await window.comprehensivePicksDisplay.displayAllPicks();
-                    } else {
-                        console.warn('⚠️ Comprehensive picks display not available');
-                    }
-                } else {
-                    console.error('❌ SimpleWorkingSystem not found');
-                    showError('NFL System not loaded properly. Please refresh the page.');
-                }
-            } catch (error) {
-                console.error('❌ Error initializing NFL system:', error);
-                showError('Failed to load NFL data. Please try again.');
+        // NFL Betting Application
+        class NFLBetting {
+            constructor() {
+                this.currentFilter = 'all';
+                this.gamesData = [];
+                this.refreshInterval = null;
+                this.init();
             }
-        });
-        
-        function showError(message) {
-            const container = document.getElementById('nfl-betting');
-            if (container) {
-                container.innerHTML = `
-                    <div class="loading-card">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error Loading Data</h3>
-                        <p>${message}</p>
-                        <button onclick="location.reload()" style="background: #ff4444; border: none; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
-                            <i class="fas fa-redo"></i> Retry
-                        </button>
+
+            async init() {
+                console.log('💰 Initializing NFL Betting Hub...');
+                this.setupEventListeners();
+                await this.loadBettingData();
+                this.startAutoRefresh();
+            }
+
+            setupEventListeners() {
+                // Filter buttons
+                document.querySelectorAll('.filter-chip').forEach(chip => {
+                    chip.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.filterGames();
+                    });
+                });
+            }
+
+            async loadBettingData() {
+                try {
+                    console.log('📊 Loading betting data...');
+                    
+                    // Load current NFL games
+                    const gamesResponse = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+                    const gamesData = await gamesResponse.json();
+                    
+                    if (gamesData.events && gamesData.events.length > 0) {
+                        this.gamesData = gamesData.events;
+                        
+                        // Process each game with AI analysis
+                        const processedGames = await Promise.allSettled(
+                            this.gamesData.slice(0, 8).map(async (game) => {
+                                return await this.processGameForBetting(game);
+                            })
+                        );
+
+                        const validGames = processedGames
+                            .filter(result => result.status === 'fulfilled')
+                            .map(result => result.value);
+
+                        await this.displayBettingOdds(validGames);
+                        this.updateStatsSummary(validGames);
+                    } else {
+                        this.showNoGamesMessage();
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to load betting data:', error);
+                    this.showErrorMessage();
+                }
+            }
+
+            async processGameForBetting(game) {
+                try {
+                    const competitors = game.competitions[0]?.competitors || [];
+                    if (competitors.length < 2) return null;
+
+                    const homeTeam = competitors.find(c => c.homeAway === 'home')?.team.displayName;
+                    const awayTeam = competitors.find(c => c.homeAway === 'away')?.team.displayName;
+
+                    console.log(`🏈 Game ${game.id}: ${awayTeam} @ ${homeTeam}`);
+
+                    if (!homeTeam || !awayTeam) {
+                        console.warn('⚠️ Missing team names:', { homeTeam, awayTeam });
+                        return null;
+                    }
+
+                    // Ensure REAL ML analyzer is initialized before use
+                    if (!window.realMLAnalyzer.isInitialized) {
+                        console.log('🚀 Initializing REAL ML Analyzer for betting analysis...');
+                        await window.realMLAnalyzer.initialize();
+                    }
+                    
+                    // Get REAL ML analysis for the game (deterministic, no random data)
+                    const aiAnalysis = await window.realMLAnalyzer.analyzeGameComprehensively(
+                        game.id, homeTeam, awayTeam
+                    );
+
+                    return {
+                        id: game.id,
+                        homeTeam,
+                        awayTeam,
+                        gameTime: game.date,
+                        status: game.status.type.name,
+                        homeScore: competitors.find(c => c.homeAway === 'home')?.score || '0',
+                        awayScore: competitors.find(c => c.homeAway === 'away')?.score || '0',
+                        aiAnalysis
+                    };
+                } catch (error) {
+                    console.error('❌ Failed to process game:', error);
+                    return null;
+                }
+            }
+
+            async displayBettingOdds(games) {
+                const oddsGrid = document.getElementById('oddsGrid');
+                
+                if (!games || games.length === 0) {
+                    oddsGrid.innerHTML = `
+                        <div class="loading-games">
+                            <i class="fas fa-info-circle" style="font-size: 2rem; color: #007aff; margin-bottom: 16px;"></i>
+                            <p>No games available for betting analysis</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const oddsHTML = games.filter(game => game).map(game => {
+                    const analysis = game.aiAnalysis;
+                    const isLive = game.status === 'in-progress';
+                    const hasGoldmines = analysis?.playerProps?.goldmines?.length > 0;
+                    const confidence = analysis?.gameInfo?.aiConfidence || 0;
+
+                    return `
+                        <div class="odds-card" data-filter="${isLive ? 'live' : 'upcoming'} ${hasGoldmines ? 'goldmines' : ''} ${analysis?.aiRecommendations?.topPicks?.length > 0 ? 'recommendations' : ''}">
+                            <div class="game-header">
+                                <div class="game-teams">
+                                    <div class="team-info">
+                                        <div class="team-name">${game.awayTeam}</div>
+                                        <div class="team-record">${game.awayScore}</div>
+                                    </div>
+                                    <div style="margin: 0 16px; font-size: 1.2rem; color: #86868b;">@</div>
+                                    <div class="team-info">
+                                        <div class="team-name">${game.homeTeam}</div>
+                                        <div class="team-record">${game.homeScore}</div>
+                                    </div>
+                                </div>
+                                <div class="game-time">
+                                    ${isLive ? '🔴 LIVE' : new Date(game.gameTime).toLocaleTimeString('en-US', { 
+                                        hour: 'numeric', 
+                                        minute: '2-digit',
+                                        timeZoneName: 'short'
+                                    })}
+                                </div>
+                            </div>
+                            
+                            <div class="betting-markets">
+                                <div class="market-card">
+                                    <div class="market-label">Moneyline</div>
+                                    <div class="market-value">${analysis?.moneyline?.available ? 'Available' : 'Loading'}</div>
+                                    <div class="market-odds">${analysis?.moneyline?.confidence ? (analysis.moneyline.confidence * 100).toFixed(0) + '%' : '-'}</div>
+                                </div>
+                                <div class="market-card">
+                                    <div class="market-label">Spread</div>
+                                    <div class="market-value">${analysis?.spreads?.available ? 'Available' : 'Loading'}</div>
+                                    <div class="market-odds">${analysis?.spreads?.confidence ? (analysis.spreads.confidence * 100).toFixed(0) + '%' : '-'}</div>
+                                </div>
+                                <div class="market-card">
+                                    <div class="market-label">Player Props</div>
+                                    <div class="market-value">${analysis?.playerProps?.totalProps || 0}</div>
+                                    <div class="market-odds">${analysis?.playerProps?.goldmines?.length || 0} goldmines</div>
+                                </div>
+                            </div>
+                            
+                            ${this.generateAIRecommendation(analysis, hasGoldmines)}
+                        </div>
+                    `;
+                }).join('');
+
+                oddsGrid.innerHTML = oddsHTML;
+            }
+
+            generateAIRecommendation(analysis, hasGoldmines) {
+                if (!analysis || (!analysis.aiRecommendations?.topPicks?.length && !hasGoldmines)) {
+                    return `
+                        <div class="ai-recommendation">
+                            <div class="recommendation-header">
+                                <i class="fas fa-brain recommendation-icon"></i>
+                                <span class="recommendation-title">AI Analysis</span>
+                            </div>
+                            <div class="recommendation-text">Processing betting opportunities...</div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 20%;"></div>
+                            </div>
+                            <div class="confidence-text">Analysis in progress</div>
+                        </div>
+                    `;
+                }
+
+                const topPick = analysis.aiRecommendations?.topPicks?.[0];
+                const goldmine = analysis.playerProps?.goldmines?.[0];
+                const confidence = analysis.gameInfo?.aiConfidence || 0;
+
+                let recommendationText = '';
+                let badgeHTML = '';
+
+                if (goldmine) {
+                    recommendationText = `🏆 GOLDMINE: ${goldmine.player} ${goldmine.prop} ${goldmine.pick} ${goldmine.line}`;
+                    badgeHTML = '<span class="goldmine-badge"><i class="fas fa-gem"></i> Goldmine</span>';
+                } else if (topPick) {
+                    recommendationText = `AI recommends: ${topPick.type.toUpperCase()} - ${topPick.pick}`;
+                }
+
+                return `
+                    <div class="ai-recommendation">
+                        <div class="recommendation-header">
+                            <i class="fas fa-robot recommendation-icon"></i>
+                            <span class="recommendation-title">AI Recommendation</span>
+                            ${badgeHTML}
+                        </div>
+                        <div class="recommendation-text">${recommendationText}</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${confidence * 100}%;"></div>
+                        </div>
+                        <div class="confidence-text">Confidence: ${(confidence * 100).toFixed(0)}%</div>
                     </div>
                 `;
             }
-        }
-        
-        // Auto-refresh betting lines every 2 minutes
-        setInterval(() => {
-            if (nflSystem) {
-                nflSystem.loadBettingLines();
+
+            filterGames() {
+                const cards = document.querySelectorAll('.odds-card');
+                
+                cards.forEach(card => {
+                    if (this.currentFilter === 'all') {
+                        card.style.display = 'block';
+                    } else {
+                        const hasFilter = card.dataset.filter.includes(this.currentFilter);
+                        card.style.display = hasFilter ? 'block' : 'none';
+                    }
+                });
             }
-        }, 120000);
+
+            updateStatsSummary(games) {
+                const validGames = games.filter(game => game);
+                
+                const totalGoldmines = validGames.reduce((sum, game) => 
+                    sum + (game.aiAnalysis?.playerProps?.goldmines?.length || 0), 0);
+                
+                const totalRecommendations = validGames.reduce((sum, game) => 
+                    sum + (game.aiAnalysis?.aiRecommendations?.topPicks?.length || 0), 0);
+
+                const totalProps = validGames.reduce((sum, game) => 
+                    sum + (game.aiAnalysis?.playerProps?.totalProps || 0), 0);
+
+                document.getElementById('totalGames').textContent = validGames.length;
+                document.getElementById('liveOdds').textContent = totalProps + '+';
+                document.getElementById('aiPicks').textContent = totalRecommendations;
+                document.getElementById('goldmines').textContent = totalGoldmines;
+
+                // Update AI Summary
+                this.updateAISummary(validGames, totalGoldmines, totalRecommendations);
+            }
+
+            updateAISummary(games, goldmines, recommendations) {
+                const aiSummary = document.getElementById('aiSummary');
+                
+                const avgConfidence = games.reduce((sum, game) => 
+                    sum + (game.aiAnalysis?.gameInfo?.aiConfidence || 0), 0) / games.length;
+
+                const highConfidenceGames = games.filter(game => 
+                    (game.aiAnalysis?.gameInfo?.aiConfidence || 0) > 0.7).length;
+
+                aiSummary.innerHTML = `
+                    <div class="grid grid-auto">
+                        <div class="card card-compact">
+                            <h3 class="text-title mb-3">📊 Analysis Summary</h3>
+                            <div class="performance-metrics">
+                                <div class="metric">
+                                    <div class="metric-value">${(avgConfidence * 100).toFixed(0)}%</div>
+                                    <div class="metric-label">Avg Confidence</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value">${highConfidenceGames}</div>
+                                    <div class="metric-label">High Confidence</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card card-compact">
+                            <h3 class="text-title mb-3">🏆 Top Opportunities</h3>
+                            <div class="text-body">
+                                <div style="margin-bottom: 12px;">
+                                    <span class="badge badge-success">Goldmines: ${goldmines}</span>
+                                </div>
+                                <div style="margin-bottom: 12px;">
+                                    <span class="badge badge-info">AI Picks: ${recommendations}</span>
+                                </div>
+                                <div class="text-caption">
+                                    ${goldmines > 0 ? `${goldmines} high-value betting opportunities identified` : 'No goldmines detected in current analysis'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            showNoGamesMessage() {
+                document.getElementById('oddsGrid').innerHTML = `
+                    <div class="loading-games">
+                        <i class="fas fa-calendar-times" style="font-size: 2rem; color: #86868b; margin-bottom: 16px;"></i>
+                        <p>No games scheduled at this time</p>
+                        <p style="font-size: 0.9rem; margin-top: 12px;">Check back during NFL season for live betting odds</p>
+                    </div>
+                `;
+            }
+
+            showErrorMessage() {
+                document.getElementById('oddsGrid').innerHTML = `
+                    <div class="loading-games">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ff3b30; margin-bottom: 16px;"></i>
+                        <p>Unable to load betting data</p>
+                        <p style="font-size: 0.9rem; margin-top: 12px;">Please try again later</p>
+                    </div>
+                `;
+            }
+
+            startAutoRefresh() {
+                // Refresh every 2 minutes for live odds
+                this.refreshInterval = setInterval(() => {
+                    this.loadBettingData();
+                }, 120000);
+            }
+
+            stopAutoRefresh() {
+                if (this.refreshInterval) {
+                    clearInterval(this.refreshInterval);
+                    this.refreshInterval = null;
+                }
+            }
+        }
+
+        // Global refresh function
+        function refreshOdds() {
+            if (window.nflBetting) {
+                window.nflBetting.loadBettingData();
+                
+                // Animate refresh button
+                const button = document.querySelector('.refresh-button i');
+                button.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    button.style.transform = 'rotate(0deg)';
+                }, 300);
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.nflBetting = new NFLBetting();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.nflBetting) {
+                window.nflBetting.stopAutoRefresh();
+            }
+        });
     </script>
 </body>
 </html>

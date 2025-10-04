@@ -1,0 +1,531 @@
+/**
+ * IBY Clean Professional Theme
+ * Created by IBY @benyakar94 - IG
+ * Clean, minimal, professional colors - no ugly backgrounds
+ */
+
+/* ============================================================================
+   CLEAN PROFESSIONAL COLOR OVERRIDES
+   ============================================================================ */
+
+/* Reset all ugly backgrounds to clean white */
+body {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+.card,
+.game-card,
+.widget,
+.prop-card,
+.prediction-item,
+.insight-card,
+.team-analytic,
+.model-stat,
+.performance-metric,
+.movement-item,
+.injury-prop-item {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Clean card headers */
+.card-header,
+.widget-header {
+    background: #f9fafb !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* Navigation clean */
+.navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+.nav-link {
+    color: #6b7280 !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #1f2937 !important;
+    background: #f3f4f6 !important;
+}
+
+.nav-brand {
+    color: #1f2937 !important;
+}
+
+/* Clean secondary backgrounds */
+.game-status-bar,
+.prop-header,
+.prediction-header {
+    background: none !important;
+}
+
+/* Team logos clean */
+.team-logo {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    color: #1f2937 !important;
+}
+
+/* VS divider clean */
+.vs-text {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    color: #6b7280 !important;
+}
+
+/* Status badges - minimal colors */
+.status-badge {
+    border: 1px solid #e5e7eb !important;
+    background: #f9fafb !important;
+    color: #374151 !important;
+}
+
+.status-badge.status-live {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border-color: #10b981 !important;
+}
+
+.status-badge.status-upcoming {
+    background: #ffffff !important;
+    color: #6b7280 !important;
+    border-color: #d1d5db !important;
+}
+
+/* Confidence badges - cleaner */
+.confidence-badge.high,
+.pick-recommendation {
+    background: #059669 !important;
+    color: #ffffff !important;
+}
+
+.confidence-badge.medium {
+    background: #d97706 !important;
+    color: #ffffff !important;
+}
+
+.confidence-badge.low {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+/* Buttons clean */
+.btn-primary {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.btn-primary:hover {
+    background: #374151 !important;
+}
+
+.btn-secondary {
+    background: #f9fafb !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.btn-secondary:hover {
+    background: #f3f4f6 !important;
+    color: #1f2937 !important;
+}
+
+/* Clean metrics */
+.metric-value,
+.stat-value {
+    color: #1f2937 !important;
+}
+
+/* Odds clean */
+.odds-over {
+    background: #f0fdf4 !important;
+    color: #166534 !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.odds-under {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+}
+
+/* Edge indicators clean */
+.edge-indicator {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+/* Movement changes */
+.movement-change.positive {
+    background: #10b981 !important;
+    color: #ffffff !important;
+}
+
+.movement-change.negative {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* Remove all gradients and fancy backgrounds */
+.game-card.featured,
+.prop-card.featured {
+    background: #ffffff !important;
+    border: 2px solid #1f2937 !important;
+}
+
+.game-card.featured::before,
+.prop-card.featured::before {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+/* Clean insight cards */
+.insight-icon {
+    background: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Modal clean */
+.modal-container {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.modal-header {
+    background: #f9fafb !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* Remove any colorful backgrounds from specific elements */
+.iby-signature {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+}
+
+/* Clean up any remaining ugly elements */
+.dynamic-status-indicator {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    color: #6b7280 !important;
+}
+
+.iby-brand-footer {
+    background: #f9fafb !important;
+    border-top: 1px solid #e5e7eb !important;
+    color: #6b7280 !important;
+}
+
+/* Text colors - clean and readable */
+h1, h2, h3, h4, h5, h6 {
+    color: #1f2937 !important;
+}
+
+.text-secondary {
+    color: #6b7280 !important;
+}
+
+.text-muted {
+    color: #9ca3af !important;
+}
+
+/* Links clean */
+a:not(.btn):not(.nav-link) {
+    color: #1f2937 !important;
+}
+
+a:not(.btn):not(.nav-link):hover {
+    color: #374151 !important;
+}
+
+/* Remove any box shadows that look ugly */
+.card:hover,
+.game-card:hover,
+.prop-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Clean up any remaining elements */
+.app-container {
+    background: transparent !important;
+}
+
+.view {
+    background: transparent !important;
+}
+
+.view-header {
+    background: transparent !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+
+/* Injury factors clean */
+.injury-factor {
+    color: #059669 !important;
+}
+
+.injury-type {
+    color: #1f2937 !important;
+}
+
+/* Player info clean */
+.player-team {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+}
+
+/* Clean up prediction types */
+.prediction-type {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+/* Ensure all text is readable */
+.prop-player,
+.team-name,
+.player-name,
+.affected-player,
+.movement-player {
+    color: #1f2937 !important;
+    font-weight: 600 !important;
+}
+
+/* Clean up any remaining colorful elements */
+.live-dot {
+    background: #10b981 !important;
+}
+
+/* Remove any remaining ugly backgrounds or gradients */
+* {
+    background-image: none !important;
+}
+
+/* Focus states clean */
+*:focus-visible {
+    outline: 2px solid #1f2937 !important;
+    outline-offset: 2px !important;
+}
+
+/* Game Props By Game Styling */
+.game-props-section {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    margin: 24px 0 !important;
+    overflow: hidden !important;
+}
+
+.game-props-header {
+    background: #f9fafb !important;
+    padding: 20px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+.game-matchup-title {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    margin-bottom: 8px !important;
+}
+
+.vs {
+    color: #6b7280 !important;
+    margin: 0 12px !important;
+}
+
+.game-time {
+    font-size: 14px !important;
+    color: #6b7280 !important;
+    margin-bottom: 4px !important;
+}
+
+.injury-alert {
+    font-size: 12px !important;
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    display: inline-block !important;
+}
+
+.game-props-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+    gap: 16px !important;
+    padding: 20px !important;
+}
+
+.game-prop-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+}
+
+.game-prop-card.has-injury {
+    border-left: 4px solid #f59e0b !important;
+}
+
+.prop-player-info {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+}
+
+.player-name {
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+}
+
+.injury-status {
+    font-size: 12px !important;
+    padding: 2px 6px !important;
+    background: #f3f4f6 !important;
+    border-radius: 4px !important;
+    color: #6b7280 !important;
+}
+
+.prop-stat {
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    margin-bottom: 8px !important;
+}
+
+.prop-odds {
+    display: flex !important;
+    gap: 12px !important;
+    margin-bottom: 12px !important;
+}
+
+.over-odds,
+.under-odds {
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.over-odds {
+    background: #f0fdf4 !important;
+    color: #166534 !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.under-odds {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+}
+
+.confidence.high {
+    background: #10b981 !important;
+    color: #ffffff !important;
+}
+
+.confidence.medium {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+}
+
+.confidence.low {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+.confidence.unavailable {
+    background: #6b7280 !important;
+    color: #ffffff !important;
+}
+
+.confidence {
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    display: inline-block !important;
+    margin-bottom: 6px !important;
+}
+
+.recommendation {
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+}
+
+.injury-impact-section {
+    background: #fffbeb !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 16px 20px !important;
+}
+
+.injury-impact-section h4 {
+    color: #92400e !important;
+    margin-bottom: 12px !important;
+}
+
+.injury-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+.injury-impact-item {
+    display: grid !important;
+    grid-template-columns: 1fr auto auto 1fr !important;
+    gap: 12px !important;
+    align-items: center !important;
+    padding: 8px !important;
+    background: #ffffff !important;
+    border-radius: 6px !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.status.out {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+}
+
+.status.questionable {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+}
+
+.real-data-indicator {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .game-props-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .injury-impact-item {
+        grid-template-columns: 1fr !important;
+        gap: 4px !important;
+        text-align: center !important;
+    }
+}

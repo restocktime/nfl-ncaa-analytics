@@ -1,0 +1,52 @@
+services:
+  # PostgreSQL Database
+  nfl_database:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: nfl_analytics
+      POSTGRES_USER: nfl_admin
+      POSTGRES_PASSWORD: nfl_secure_2025
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - nfl_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nfl_admin -d nfl_analytics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # NFL API Server
+  nfl_api:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=nfl_database
+      - DB_PORT=5432
+      - DB_NAME=nfl_analytics
+      - DB_USER=nfl_admin
+      - DB_PASSWORD=nfl_secure_2025
+      - THE_ODDS_API_KEY=9de126998e0df996011a28e9527dd7b9
+      - API_SPORTS_KEY=47647545b8ddeb4b557a8482be930f09
+    depends_on:
+      nfl_database:
+        condition: service_healthy
+    restart: always
+
+  # Redis for Caching (Optional but recommended)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+volumes:
+  nfl_data:
+  redis_data:

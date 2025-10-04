@@ -1,0 +1,465 @@
+/**
+ * IBY Mobile Optimized Styles
+ * Created by IBY @benyakar94 - IG
+ * Mobile-first responsive design enhancements
+ */
+
+/* ============================================================================
+   MOBILE NAVIGATION
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .nav-container {
+        padding: 0 var(--space-4);
+    }
+    
+    .nav-brand {
+        font-size: var(--text-lg);
+    }
+    
+    .iby-signature {
+        display: none;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        border-bottom: 1px solid var(--border-light);
+        flex-direction: column;
+        padding: var(--space-4);
+        gap: var(--space-2);
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-medium);
+        z-index: var(--z-dropdown);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .nav-menu.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .nav-link {
+        width: 100%;
+        justify-content: flex-start;
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-lg);
+    }
+    
+    .nav-actions {
+        gap: var(--space-2);
+    }
+    
+    .status-indicator {
+        display: none;
+    }
+}
+
+/* ============================================================================
+   MOBILE DASHBOARD LAYOUT
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .app-container {
+        padding: var(--space-4);
+    }
+    
+    .view-header {
+        margin-bottom: var(--space-6);
+    }
+    
+    .view-header h1 {
+        font-size: var(--text-2xl);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .card,
+    .widget {
+        border-radius: var(--radius-lg);
+    }
+    
+    .card-header,
+    .widget-header {
+        padding: var(--space-4);
+    }
+    
+    .card-body,
+    .widget-body {
+        padding: var(--space-4);
+    }
+    
+    .card-title {
+        font-size: var(--text-lg);
+    }
+}
+
+/* ============================================================================
+   MOBILE GAME CARDS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+    
+    .game-card {
+        padding: var(--space-4);
+    }
+    
+    .team-matchup {
+        gap: var(--space-2);
+    }
+    
+    .team-logo {
+        width: 40px;
+        height: 40px;
+        font-size: var(--text-base);
+        margin-bottom: var(--space-2);
+    }
+    
+    .team-name {
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-1);
+    }
+    
+    .team-record {
+        font-size: var(--text-xs);
+    }
+    
+    .team-score {
+        font-size: var(--text-xl);
+        margin-top: var(--space-1);
+    }
+    
+    .vs-text {
+        padding: var(--space-1) var(--space-2);
+        font-size: 10px;
+    }
+    
+    .game-status {
+        padding: var(--space-3) 0;
+        margin-top: var(--space-3);
+    }
+    
+    .status-badge {
+        padding: var(--space-1) var(--space-3);
+        font-size: var(--text-xs);
+    }
+    
+    .betting-lines {
+        grid-template-columns: 1fr;
+        gap: var(--space-1);
+        margin-top: var(--space-3);
+        padding-top: var(--space-3);
+    }
+    
+    .line-item {
+        padding: var(--space-2);
+    }
+}
+
+/* ============================================================================
+   MOBILE METRICS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .metric-card {
+        padding: var(--space-3);
+    }
+    
+    .metric-value {
+        font-size: var(--text-2xl);
+        margin-bottom: var(--space-1);
+    }
+    
+    .metric-label {
+        font-size: var(--text-xs);
+    }
+}
+
+/* ============================================================================
+   MOBILE SIDEBAR WIDGETS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .sidebar {
+        gap: var(--space-4);
+    }
+    
+    .widget-title {
+        font-size: var(--text-base);
+    }
+    
+    .insight-item,
+    .status-item,
+    .activity-item {
+        padding: var(--space-2) 0;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .insight-content {
+        margin-top: var(--space-1);
+    }
+    
+    .insight-title {
+        font-size: var(--text-xs);
+    }
+    
+    .insight-desc {
+        font-size: 11px;
+    }
+    
+    .status-indicator {
+        margin-top: var(--space-1);
+    }
+    
+    .activity-time {
+        font-size: 11px;
+        margin-bottom: var(--space-1);
+    }
+    
+    .activity-desc {
+        font-size: var(--text-xs);
+    }
+}
+
+/* ============================================================================
+   MOBILE BUTTONS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .btn {
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--text-sm);
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+    }
+    
+    .mobile-menu-toggle:active {
+        background: var(--background-secondary);
+        transform: scale(0.95);
+    }
+}
+
+/* ============================================================================
+   MOBILE STATUS INDICATORS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .dynamic-status-indicator {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: var(--space-4) 0;
+        display: inline-flex;
+        font-size: 11px;
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-md);
+    }
+}
+
+/* ============================================================================
+   MOBILE IBY BRANDING
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .iby-brand-footer {
+        padding: var(--space-6) 0;
+        margin-top: var(--space-8);
+    }
+    
+    .iby-signature-line {
+        font-size: var(--text-xs);
+        margin-bottom: var(--space-2);
+    }
+    
+    .iby-signature-main {
+        font-size: var(--text-base);
+        flex-direction: column;
+        gap: var(--space-1);
+    }
+}
+
+/* ============================================================================
+   TOUCH INTERACTIONS
+   ============================================================================ */
+
+@media (pointer: coarse) {
+    .game-card,
+    .btn,
+    .nav-link {
+        min-height: 44px;
+    }
+    
+    .game-card:active {
+        transform: scale(0.98);
+    }
+    
+    .btn:active {
+        transform: scale(0.95);
+    }
+    
+    .nav-link:active {
+        background: var(--background-tertiary);
+    }
+}
+
+/* ============================================================================
+   MOBILE LOADING STATES
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .loading {
+        padding: var(--space-6);
+    }
+    
+    .spinner {
+        width: 24px;
+        height: 24px;
+        border-width: 2px;
+    }
+    
+    .games-empty {
+        padding: var(--space-8) var(--space-4);
+    }
+    
+    .games-empty-icon {
+        font-size: 48px;
+        margin-bottom: var(--space-3);
+    }
+    
+    .games-empty-title {
+        font-size: var(--text-lg);
+        margin-bottom: var(--space-2);
+    }
+    
+    .games-empty-description {
+        font-size: var(--text-xs);
+    }
+}
+
+/* ============================================================================
+   MOBILE ANIMATIONS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    .game-card:hover {
+        transform: none;
+    }
+    
+    .game-card:active {
+        transform: translateY(1px);
+        transition: transform 0.1s ease;
+    }
+    
+    /* Disable hover effects on mobile */
+    .metric-card:hover,
+    .widget:hover,
+    .card:hover {
+        transform: none;
+        box-shadow: var(--shadow-sm);
+    }
+}
+
+/* ============================================================================
+   LANDSCAPE MODE ADJUSTMENTS
+   ============================================================================ */
+
+@media (max-width: 767px) and (orientation: landscape) {
+    .view-header {
+        margin-bottom: var(--space-4);
+    }
+    
+    .view-header h1 {
+        font-size: var(--text-xl);
+    }
+    
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    /* Larger touch targets */
+    .mobile-menu-toggle {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* Better focus indicators */
+    .nav-link:focus-visible,
+    .btn:focus-visible,
+    .game-card:focus-visible {
+        outline: 3px solid var(--iby-bright);
+        outline-offset: 2px;
+    }
+    
+    /* Improved text contrast */
+    .text-muted {
+        color: var(--gray-600);
+    }
+}
+
+/* ============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    /* Reduce animation complexity on mobile */
+    * {
+        animation-duration: 0.2s !important;
+        transition-duration: 0.2s !important;
+    }
+    
+    /* Simplify shadows */
+    .card,
+    .widget,
+    .game-card {
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .card:hover,
+    .widget:hover,
+    .game-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+}

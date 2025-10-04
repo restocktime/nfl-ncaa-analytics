@@ -1,46 +1,44 @@
 {
-  "name": "sleeper-proxy-server",
+  "name": "nfl-analytics-database",
   "version": "1.0.0",
-  "description": "CORS proxy server for Sleeper Fantasy API",
-  "main": "sleeper-proxy-server.js",
+  "description": "Containerized NFL analytics system with PostgreSQL database",
+  "main": "nfl-database-server.js",
   "scripts": {
-    "start": "node sleeper-proxy-server.js",
-    "dev": "nodemon sleeper-proxy-server.js",
-    "test": "echo \"No tests yet\" && exit 0"
+    "start": "node nfl-database-server.js",
+    "dev": "nodemon nfl-database-server.js",
+    "migrate": "node migrate-sqlite-to-postgres.js",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "test-db": "curl http://localhost:3001/health"
   },
-  "keywords": [
-    "sleeper",
-    "fantasy",
-    "cors",
-    "proxy",
-    "api"
-  ],
-  "author": "NFL Analytics Pro",
-  "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "node-fetch": "^2.6.9"
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^2.7.0",
+    "pg": "^8.16.3",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
+  "keywords": [
+    "nfl",
+    "analytics",
+    "database",
+    "sqlite",
+    "sports",
+    "data"
+  ],
+  "author": "NFL Analytics System",
+  "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/restocktime/nfl-ncaa-analytics.git"
-  },
-  "deployments": {
-    "vercel": {
-      "functions": {
-        "api/sleeper.js": "sleeper-proxy-server.js"
-      }
-    },
-    "netlify": {
-      "functions": {
-        "sleeper": "sleeper-proxy-server.js"
-      }
-    }
+    "url": "."
   }
 }

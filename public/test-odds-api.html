@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Odds API Endpoint Tester</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+        }
+        button:hover {
+            background: #ffed4e;
+        }
+        #results {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .success { color: #00ff88; }
+        .error { color: #ff6b6b; }
+        .warning { color: #ffa500; }
+        .info { color: #87ceeb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 The Odds API Endpoint Tester</h1>
+            <p>Testing different endpoints to see available NFL data</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Quick Tests</h3>
+            <button onclick="runAllTests()">Run All Endpoint Tests</button>
+            <button onclick="testEvents()">Test Events Only</button>
+            <button onclick="testPlayerProps()">Test Player Props Only</button>
+            <button onclick="testUsage()">Check API Usage</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Individual Endpoint Tests</h3>
+            <button onclick="testSportsList()">Sports List</button>
+            <button onclick="testOdds()">General Odds</button>
+            <button onclick="testHistorical()">Historical Data</button>
+        </div>
+
+        <div id="results">
+            Ready to test The Odds API endpoints...
+            Click "Run All Endpoint Tests" to start testing all endpoints systematically.
+        </div>
+    </div>
+
+    <script src="test-odds-api-endpoints.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        // Override console.log to display in results div
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            appendToResults(args.join(' '), 'info');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            appendToResults(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            appendToResults(args.join(' '), 'warning');
+        };
+        
+        function appendToResults(message, type = 'info') {
+            const span = document.createElement('span');
+            span.className = type;
+            span.textContent = message + '\n';
+            resultsDiv.appendChild(span);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = 'Results cleared. Ready for new tests...\n';
+        }
+        
+        // Test functions
+        async function runAllTests() {
+            clearResults();
+            console.log('🚀 Starting comprehensive endpoint tests...\n');
+            try {
+                await window.oddsAPITester.testAllEndpoints();
+                await window.oddsAPITester.testUsage();
+            } catch (error) {
+                console.error('❌ Test suite failed:', error.message);
+            }
+        }
+        
+        async function testEvents() {
+            clearResults();
+            console.log('📅 Testing Events endpoint only...\n');
+            try {
+                await window.oddsAPITester.testEvents();
+            } catch (error) {
+                console.error('❌ Events test failed:', error.message);
+            }
+        }
+        
+        async function testPlayerProps() {
+            clearResults();
+            console.log('🏈 Testing Player Props endpoint only...\n');
+            try {
+                // First get events to get an event ID
+                await window.oddsAPITester.testEvents();
+                await window.oddsAPITester.testEventSpecificOdds();
+            } catch (error) {
+                console.error('❌ Player props test failed:', error.message);
+            }
+        }
+        
+        async function testUsage() {
+            clearResults();
+            console.log('📊 Checking API usage...\n');
+            try {
+                await window.oddsAPITester.testUsage();
+            } catch (error) {
+                console.error('❌ Usage check failed:', error.message);
+            }
+        }
+        
+        async function testSportsList() {
+            clearResults();
+            console.log('📋 Testing Sports List endpoint...\n');
+            try {
+                await window.oddsAPITester.testSportsList();
+            } catch (error) {
+                console.error('❌ Sports list test failed:', error.message);
+            }
+        }
+        
+        async function testOdds() {
+            clearResults();
+            console.log('💰 Testing General Odds endpoint...\n');
+            try {
+                await window.oddsAPITester.testOdds();
+            } catch (error) {
+                console.error('❌ Odds test failed:', error.message);
+            }
+        }
+        
+        async function testHistorical() {
+            clearResults();
+            console.log('📈 Testing Historical Data endpoint...\n');
+            try {
+                await window.oddsAPITester.testHistoricalData();
+            } catch (error) {
+                console.error('❌ Historical test failed:', error.message);
+            }
+        }
+    </script>
+</body>
+</html>

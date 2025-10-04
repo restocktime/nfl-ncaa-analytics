@@ -1,0 +1,464 @@
+/**
+ * IBY Text Contrast Fix
+ * Created by IBY @benyakar94 - IG
+ * Ensures all text has proper contrast and is readable
+ */
+
+/* ============================================================================
+   HIGH PRIORITY TEXT CONTRAST FIXES
+   ============================================================================ */
+
+/* Force text visibility on cards and main content */
+.card, 
+.game-card, 
+.widget,
+.modal-container,
+.prop-item,
+.news-item,
+.fantasy-section,
+.prediction-card,
+.injury-item,
+.status-card,
+.game-item {
+    color: var(--text-primary) !important;
+}
+
+.card *,
+.game-card *,
+.widget *,
+.modal-container *,
+.prop-item *,
+.news-item *,
+.fantasy-section *,
+.prediction-card *,
+.injury-item *,
+.status-card *,
+.game-item * {
+    color: inherit !important;
+}
+
+/* Specific element fixes */
+.team-name,
+.team-record,
+.player-name,
+.prop-player,
+.news-item h4,
+.status-info h4,
+.prediction-player,
+.injury-item .player-name {
+    color: var(--text-primary) !important;
+}
+
+.team-logo,
+.game-time,
+.game-week,
+.prop-stat,
+.status-info p,
+.prediction-stat,
+.injury-details,
+.pick-confidence {
+    color: var(--text-secondary) !important;
+}
+
+/* Secondary text elements */
+.card-subtitle,
+.text-secondary,
+.text-muted,
+.meta-info,
+.small-text,
+.helper-text {
+    color: var(--text-secondary) !important;
+}
+
+/* Button text contrast */
+.btn-secondary,
+.btn-ghost {
+    color: var(--text-primary) !important;
+}
+
+.btn-secondary:hover,
+.btn-ghost:hover {
+    color: var(--iby-bright) !important;
+}
+
+/* Navigation text - Enhanced visibility */
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--iby-bright) !important;
+    font-weight: 600 !important;
+}
+
+/* Navigation brand text */
+.nav-brand {
+    color: var(--iby-primary) !important;
+}
+
+.iby-signature {
+    color: var(--text-muted) !important;
+    background: var(--gray-100) !important;
+}
+
+/* Modal content */
+.modal-body h3,
+.modal-body h4,
+.modal-body h5 {
+    color: var(--iby-primary) !important;
+}
+
+.modal-body p,
+.modal-body span:not(.pick-recommendation):not(.confidence-badge):not(.status-badge) {
+    color: var(--text-secondary) !important;
+}
+
+/* Status indicators with proper contrast */
+.status-badge.status-live {
+    background: var(--iby-success) !important;
+    color: var(--white) !important;
+}
+
+.status-badge.status-upcoming {
+    background: var(--background-tertiary) !important;
+    color: var(--text-primary) !important;
+}
+
+.status-badge.status-final {
+    background: var(--background-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Confidence badges */
+.confidence-high,
+.pick-recommendation {
+    background: var(--iby-success) !important;
+    color: var(--white) !important;
+}
+
+.confidence-medium {
+    background: var(--iby-warning) !important;
+    color: var(--white) !important;
+}
+
+.confidence-low {
+    background: var(--iby-danger) !important;
+    color: var(--white) !important;
+}
+
+/* Team info specific fixes */
+.team-info .team-name {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+.team-info .team-record {
+    color: var(--text-secondary) !important;
+}
+
+.team-info .team-logo {
+    color: var(--text-primary) !important;
+    background: var(--background-secondary) !important;
+}
+
+/* VS divider visibility */
+.vs-text {
+    color: var(--text-primary) !important;
+    background: var(--background-secondary) !important;
+}
+
+/* Game status bar */
+.game-week {
+    color: var(--text-muted) !important;
+}
+
+.game-time {
+    color: var(--text-secondary) !important;
+}
+
+/* Widget content */
+.insight-title,
+.activity-desc {
+    color: var(--text-primary) !important;
+}
+
+.insight-desc,
+.activity-time {
+    color: var(--text-secondary) !important;
+}
+
+/* Player props specific */
+.prop-pick {
+    color: var(--text-primary) !important;
+}
+
+.prop-pick .pick-confidence {
+    color: var(--text-secondary) !important;
+}
+
+/* News content */
+.news-time,
+.news-source {
+    color: var(--text-secondary) !important;
+}
+
+.news-item h4 {
+    color: var(--text-primary) !important;
+}
+
+.news-item p {
+    color: var(--text-secondary) !important;
+}
+
+/* Fantasy content */
+.player-item .player-name {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+.player-item .player-note {
+    color: var(--text-secondary) !important;
+}
+
+/* Injury report */
+.injury-item .player-name {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+.injury-item .player-team {
+    color: var(--text-secondary) !important;
+}
+
+.injury-type {
+    color: var(--iby-bright) !important;
+}
+
+.injury-impact {
+    color: var(--text-secondary) !important;
+}
+
+/* System status */
+.status-info h4 {
+    color: var(--text-primary) !important;
+}
+
+.status-info p {
+    color: var(--text-secondary) !important;
+}
+
+.status-uptime {
+    color: var(--iby-bright) !important;
+}
+
+/* Game cards specific fixes */
+.game-card .team-score {
+    color: var(--iby-bright) !important;
+}
+
+/* Enhanced game card text visibility */
+.game-card {
+    background: var(--white) !important;
+    color: var(--text-primary) !important;
+}
+
+.game-card .team-name {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+}
+
+.game-card .team-record {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+.game-card .game-time {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+.game-card .game-week {
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+}
+
+/* Status badges enhanced */
+.status-badge {
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+}
+
+.status-badge.status-live {
+    background: var(--iby-success) !important;
+    color: var(--white) !important;
+}
+
+.status-badge.status-upcoming {
+    background: var(--gray-200) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-medium) !important;
+}
+
+/* Main content headers */
+.view-header h1 {
+    color: var(--iby-primary) !important;
+    font-weight: 700 !important;
+}
+
+.view-header p {
+    color: var(--text-secondary) !important;
+    font-weight: 400 !important;
+}
+
+/* Card titles and content */
+.card-title {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+.card-subtitle {
+    color: var(--text-secondary) !important;
+    font-weight: 400 !important;
+}
+
+/* Section headers */
+.section-title {
+    color: var(--iby-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Override any conflicting white text */
+[style*="color: white"],
+[style*="color: #ffffff"],
+[style*="color: #fff"] {
+    color: var(--text-primary) !important;
+}
+
+/* High priority overrides for common issues */
+.card .text-white,
+.widget .text-white,
+.modal-body .text-white {
+    color: var(--text-primary) !important;
+}
+
+/* Ensure backgrounds provide proper contrast */
+.card,
+.widget,
+.game-card {
+    background: var(--white) !important;
+    border: 1px solid var(--border-light) !important;
+}
+
+.modal-container {
+    background: var(--white) !important;
+}
+
+.prop-item,
+.news-item,
+.fantasy-section,
+.prediction-card,
+.injury-item,
+.status-card {
+    background: var(--background-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Debug helper - remove in production */
+/* 
+.debug-contrast * {
+    border: 1px dotted red !important;
+    background: yellow !important;
+    color: black !important;
+}
+*/
+
+/* Print styles with good contrast */
+@media print {
+    * {
+        color: #000 !important;
+        background: #fff !important;
+    }
+}
+
+/* Additional specific fixes */
+.vs-text {
+    background: var(--background-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-light) !important;
+    font-weight: 600 !important;
+}
+
+/* Team logo text */
+.team-logo {
+    background: var(--background-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--border-light) !important;
+    font-weight: 700 !important;
+}
+
+/* Metric values */
+.metric-value {
+    color: var(--iby-bright) !important;
+    font-weight: 700 !important;
+}
+
+.metric-label {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+/* Widget content enhanced */
+.widget-title {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Ensure all text inputs and form elements are visible */
+input, textarea, select, button {
+    color: var(--text-primary) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* Live indicator specific */
+.live-dot {
+    background: var(--iby-success) !important;
+}
+
+/* Any remaining white text fixes */
+* {
+    text-shadow: none !important;
+}
+
+[class*="text-white"] {
+    color: var(--text-primary) !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .card,
+    .widget,
+    .game-card,
+    .modal-container {
+        background: var(--dark-bg-secondary) !important;
+        color: var(--dark-text-primary) !important;
+        border-color: var(--dark-border-light) !important;
+    }
+    
+    .prop-item,
+    .news-item,
+    .fantasy-section,
+    .prediction-card,
+    .injury-item,
+    .status-card {
+        background: var(--dark-bg-tertiary) !important;
+        color: var(--dark-text-primary) !important;
+    }
+}

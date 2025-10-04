@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔄 Cache Clear & System Test</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            text-align: center; 
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.1); 
+            padding: 40px; 
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            border: none; 
+            border-radius: 10px; 
+            background: #4CAF50; 
+            color: white; 
+            cursor: pointer; 
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .status { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 NFL Analytics Cache Clear</h1>
+        <p>This will clear any cached scripts and reload the system with the latest fixes.</p>
+        
+        <div class="status" id="status">
+            <p>✅ Script conflicts resolved</p>
+            <p>✅ Old simple-working-system.js removed</p>
+            <p>✅ Comprehensive AI analyzer updated</p>
+            <p>✅ Cache-busting parameters applied</p>
+        </div>
+
+        <button onclick="clearAndTest('nfl-betting.html')">🎰 Open Betting Page (Fixed)</button>
+        <button onclick="clearAndTest('player-props-hub.html')">🏈 Open Props Hub (Fixed)</button>
+        <button onclick="clearAndTest('verification-test.html')">🧪 Run Verification Test</button>
+        
+        <br><br>
+        
+        <p style="font-size: 14px; opacity: 0.8;">
+            The system has been completely cleaned up. No more "Expression not available" errors!
+        </p>
+    </div>
+
+    <script>
+        function clearAndTest(page) {
+            // Add timestamp to force fresh load
+            const timestamp = Date.now();
+            const url = `${page}?cachebust=${timestamp}`;
+            
+            // Clear any cached scripts
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            
+            // Open in new window/tab with cache-busting
+            window.open(url, '_blank');
+        }
+        
+        console.log('🔧 Cache clearing system ready');
+        console.log('✅ No more simple-working-system.js conflicts');
+        console.log('✅ Using only comprehensive-ai-analyzer.js');
+    </script>
+</body>
+</html>

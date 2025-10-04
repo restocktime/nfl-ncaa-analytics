@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test REAL ML System</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            padding: 40px; 
+            background: #f8f9fa;
+        }
+        .test-section { 
+            background: white; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 12px; 
+            border: 1px solid #e0e0e0;
+        }
+        .success { color: #34c759; }
+        .error { color: #ff3b30; }
+        .warning { color: #ff9500; }
+        .info { color: #007aff; }
+        button { 
+            background: #007aff; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 8px 4px;
+        }
+        button:hover { background: #0056b3; }
+        .results {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+        }
+        .confidence-test {
+            display: flex;
+            gap: 20px;
+            margin: 16px 0;
+        }
+        .confidence-result {
+            padding: 12px;
+            border-radius: 8px;
+            min-width: 120px;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 REAL ML System Test</h1>
+    <p>Testing the new deterministic ML analyzer vs the old random system</p>
+
+    <div class="test-section">
+        <h2>🔧 System Status</h2>
+        <div id="systemStatus">Checking...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Deterministic AI Confidence Test</h2>
+        <p>This will run the same analysis multiple times. AI confidence should be <strong>identical</strong> every time.</p>
+        <button onclick="testDeterministicConfidence()">Run Confidence Test</button>
+        <div id="confidenceResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Player Stats Test</h2>
+        <p>Test real player statistics from database</p>
+        <button onclick="testPlayerStats()">Test Player Stats</button>
+        <div id="playerStatsResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🏈 Full Game Analysis Test</h2>
+        <p>Complete game analysis with Chiefs vs Bills</p>
+        <button onclick="testFullAnalysis()">Run Full Analysis</button>
+        <div id="fullAnalysisResults"></div>
+    </div>
+
+    <!-- Load REAL ML System -->
+    <script src="production-config.js?v=real-ml-test"></script>
+    <script src="nfl-database-client.js?v=real-ml-test"></script>
+    <script src="real-ml-analyzer.js?v=real-ml-test"></script>
+
+    <script>
+        // Test Results Storage
+        let testResults = {
+            confidenceTests: [],
+            playerStatsTest: null,
+            fullAnalysisTest: null
+        };
+
+        // System Status Check
+        async function checkSystemStatus() {
+            const statusDiv = document.getElementById('systemStatus');
+            let statusHTML = '<div class="results">';
+            
+            // Check if scripts loaded
+            statusHTML += `<div class="${typeof window.realMLAnalyzer !== 'undefined' ? 'success' : 'error'}">
+                ✓ Real ML Analyzer: ${typeof window.realMLAnalyzer !== 'undefined' ? 'Loaded' : 'Missing'}
+            </div>`;
+            
+            statusHTML += `<div class="${typeof window.nflDatabaseClient !== 'undefined' ? 'success' : 'error'}">
+                ✓ Database Client: ${typeof window.nflDatabaseClient !== 'undefined' ? 'Loaded' : 'Missing'}
+            </div>`;
+            
+            if (window.realMLAnalyzer) {
+                try {
+                    await window.realMLAnalyzer.initialize();
+                    statusHTML += `<div class="success">✓ ML Analyzer Initialized: ${window.realMLAnalyzer.isInitialized}</div>`;
+                } catch (error) {
+                    statusHTML += `<div class="error">❌ ML Analyzer Init Failed: ${error.message}</div>`;
+                }
+            }
+
+            if (window.nflDatabaseClient) {
+                try {
+                    const teams = await window.nflDatabaseClient.getTeams();
+                    statusHTML += `<div class="success">✓ Database Connected: ${teams.length} teams loaded</div>`;
+                } catch (error) {
+                    statusHTML += `<div class="error">❌ Database Failed: ${error.message}</div>`;
+                }
+            }
+            
+            statusHTML += '</div>';
+            statusDiv.innerHTML = statusHTML;
+        }
+
+        // Test Deterministic Confidence
+        async function testDeterministicConfidence() {
+            const resultsDiv = document.getElementById('confidenceResults');
+            resultsDiv.innerHTML = '<div class="info">Running confidence tests...</div>';
+            
+            const gameId = 'test_401671696';
+            const homeTeam = 'Kansas City Chiefs';
+            const awayTeam = 'Buffalo Bills';
+            
+            let confidenceValues = [];
+            
+            try {
+                // Run the same analysis 5 times
+                for (let i = 0; i < 5; i++) {
+                    console.log(`🔄 Running test ${i + 1}/5...`);
+                    const analysis = await window.realMLAnalyzer.analyzeGameComprehensively(
+                        gameId, homeTeam, awayTeam
+                    );
+                    
+                    confidenceValues.push({
+                        test: i + 1,
+                        confidence: (analysis.gameInfo.aiConfidence * 100).toFixed(2),
+                        gameHash: analysis.gameInfo.gameHash
+                    });
+                }
+                
+                // Check if all values are identical
+                const firstConfidence = confidenceValues[0].confidence;
+                const allIdentical = confidenceValues.every(test => test.confidence === firstConfidence);
+                
+                let resultsHTML = '<div class="results">';
+                resultsHTML += `<h3>Confidence Test Results:</h3>`;
+                
+                confidenceValues.forEach(test => {
+                    resultsHTML += `<div class="${test.confidence === firstConfidence ? 'success' : 'error'}">
+                        Test ${test.test}: ${test.confidence}% (Hash: ${test.gameHash})
+                    </div>`;
+                });
+                
+                resultsHTML += `<div style="margin-top: 16px; padding: 12px; border-radius: 8px; background: ${allIdentical ? '#d4edda' : '#f8d7da'}; color: ${allIdentical ? '#155724' : '#721c24'};">
+                    <strong>${allIdentical ? '✅ PASS' : '❌ FAIL'}</strong>: ${allIdentical ? 'All confidence values are identical!' : 'Confidence values are different!'}
+                </div>`;
+                
+                resultsHTML += '</div>';
+                resultsDiv.innerHTML = resultsHTML;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Test failed: ${error.message}</div>`;
+            }
+        }
+
+        // Test Player Stats
+        async function testPlayerStats() {
+            const resultsDiv = document.getElementById('playerStatsResults');
+            resultsDiv.innerHTML = '<div class="info">Testing player stats...</div>';
+            
+            try {
+                const chiefRoster = await window.nflDatabaseClient.getRosterForTeam('Kansas City Chiefs');
+                const billsRoster = await window.nflDatabaseClient.getRosterForTeam('Buffalo Bills');
+                
+                let resultsHTML = '<div class="results">';
+                resultsHTML += `<h3>Player Stats Test Results:</h3>`;
+                resultsHTML += `<div class="success">✓ Chiefs Roster: ${Array.isArray(chiefRoster) ? chiefRoster.length : 0} players</div>`;
+                resultsHTML += `<div class="success">✓ Bills Roster: ${Array.isArray(billsRoster) ? billsRoster.length : 0} players</div>`;
+                
+                if (Array.isArray(chiefRoster) && chiefRoster.length > 0) {
+                    const samplePlayer = chiefRoster.find(p => p.position === 'QB') || chiefRoster[0];
+                    resultsHTML += `<div class="info">Sample Player: ${samplePlayer.name} (${samplePlayer.position})</div>`;
+                }
+                
+                resultsHTML += '</div>';
+                resultsDiv.innerHTML = resultsHTML;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Player stats test failed: ${error.message}</div>`;
+            }
+        }
+
+        // Test Full Analysis
+        async function testFullAnalysis() {
+            const resultsDiv = document.getElementById('fullAnalysisResults');
+            resultsDiv.innerHTML = '<div class="info">Running full game analysis...</div>';
+            
+            try {
+                const analysis = await window.realMLAnalyzer.analyzeGameComprehensively(
+                    'test_401671696', 
+                    'Kansas City Chiefs', 
+                    'Buffalo Bills'
+                );
+                
+                let resultsHTML = '<div class="results">';
+                resultsHTML += `<h3>Full Analysis Results:</h3>`;
+                resultsHTML += `<div class="success">✓ AI Confidence: ${(analysis.gameInfo.aiConfidence * 100).toFixed(1)}%</div>`;
+                resultsHTML += `<div class="success">✓ ML Model Version: ${analysis.gameInfo.mlModelVersion}</div>`;
+                resultsHTML += `<div class="success">✓ Data Quality: ${analysis.gameInfo.dataQuality}</div>`;
+                resultsHTML += `<div class="success">✓ Player Props Generated: ${analysis.playerProps.count}</div>`;
+                resultsHTML += `<div class="success">✓ Goldmine Props: ${analysis.playerProps.goldmines.length}</div>`;
+                resultsHTML += `<div class="success">✓ Moneyline Available: ${analysis.moneyline.available ? 'Yes' : 'No'}</div>`;
+                resultsHTML += `<div class="success">✓ Spread Available: ${analysis.spreads.available ? 'Yes' : 'No'}</div>`;
+                
+                if (analysis.playerProps.goldmines.length > 0) {
+                    resultsHTML += `<h4>Sample Goldmine:</h4>`;
+                    const goldmine = analysis.playerProps.goldmines[0];
+                    resultsHTML += `<div class="info">${goldmine.player} (${goldmine.team}) - ${goldmine.type}: ${goldmine.line}</div>`;
+                    resultsHTML += `<div class="info">Confidence: ${(goldmine.confidence * 100).toFixed(1)}%</div>`;
+                }
+                
+                resultsHTML += '</div>';
+                resultsDiv.innerHTML = resultsHTML;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Full analysis failed: ${error.message}</div>`;
+                console.error('Full analysis error:', error);
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSystemStatus();
+        });
+    </script>
+</body>
+</html>

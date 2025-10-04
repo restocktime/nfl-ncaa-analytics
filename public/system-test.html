@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Test - NFL Analytics</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { background: #e8f5e8; border-color: #4caf50; }
+        .error { background: #ffe8e8; border-color: #f44336; }
+        .loading { background: #e8f4ff; border-color: #2196f3; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🏈 NFL Analytics System Test</h1>
+    <p>Testing all components to ensure they work together...</p>
+    
+    <div id="configTest" class="test-section loading">
+        <h3>1. Production Configuration Test</h3>
+        <div id="configResult">Testing...</div>
+    </div>
+    
+    <div id="databaseTest" class="test-section loading">
+        <h3>2. Database API Test</h3>
+        <div id="databaseResult">Testing...</div>
+    </div>
+    
+    <div id="analyzerTest" class="test-section loading">
+        <h3>3. Comprehensive AI Analyzer Test</h3>
+        <div id="analyzerResult">Testing...</div>
+    </div>
+    
+    <div id="gameAnalysisTest" class="test-section loading">
+        <h3>4. Real Game Analysis Test</h3>
+        <div id="gameAnalysisResult">Testing...</div>
+    </div>
+    
+    <div id="playerPropsTest" class="test-section loading">
+        <h3>5. Player Props Generation Test</h3>
+        <div id="playerPropsResult">Testing...</div>
+    </div>
+
+    <!-- Load all required scripts -->
+    <script src="production-config.js"></script>
+    <script src="nfl-database-client.js"></script>
+    <script src="comprehensive-ai-analyzer.js"></script>
+
+    <script>
+        async function runSystemTests() {
+            console.log('🚀 Starting comprehensive system tests...');
+            
+            // Test 1: Production Configuration
+            try {
+                const config = window.productionConfig;
+                const configDiv = document.getElementById('configTest');
+                const configResult = document.getElementById('configResult');
+                
+                if (config) {
+                    configResult.innerHTML = `
+                        <strong>✅ Production Config Working</strong><br>
+                        Environment: ${config.getEnvironment()}<br>
+                        API URL: ${config.getApiUrl()}<br>
+                        Database URL: ${config.getDatabaseUrl()}
+                    `;
+                    configDiv.className = 'test-section success';
+                } else {
+                    throw new Error('Production config not available');
+                }
+            } catch (error) {
+                document.getElementById('configResult').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('configTest').className = 'test-section error';
+            }
+            
+            // Test 2: Database API
+            try {
+                const dbClient = new NFLDatabaseClient(window.productionConfig.getApiUrl());
+                const teams = await dbClient.getTeams();
+                
+                const dbDiv = document.getElementById('databaseTest');
+                const dbResult = document.getElementById('databaseResult');
+                
+                if (teams && teams.length > 0) {
+                    dbResult.innerHTML = `
+                        <strong>✅ Database API Working</strong><br>
+                        Teams loaded: ${teams.length}<br>
+                        Sample team: ${teams[0].name} (${teams[0].abbreviation})
+                    `;
+                    dbDiv.className = 'test-section success';
+                } else {
+                    throw new Error('No teams data received');
+                }
+                
+                // Test roster data
+                const roster = await dbClient.getTeamRoster(teams[0].id);
+                if (roster && roster.length > 0) {
+                    dbResult.innerHTML += `<br>Roster loaded: ${roster.length} players<br>Sample player: ${roster[0].name} (${roster[0].position})`;
+                }
+                
+            } catch (error) {
+                document.getElementById('databaseResult').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('databaseTest').className = 'test-section error';
+            }
+            
+            // Test 3: Comprehensive AI Analyzer
+            try {
+                const analyzer = window.comprehensiveAIAnalyzer;
+                const analyzerDiv = document.getElementById('analyzerTest');
+                const analyzerResult = document.getElementById('analyzerResult');
+                
+                if (analyzer) {
+                    const initResult = await analyzer.initialize();
+                    if (initResult) {
+                        analyzerResult.innerHTML = `
+                            <strong>✅ AI Analyzer Working</strong><br>
+                            Initialized: ${initResult}<br>
+                            Database URL: ${analyzer.apiConfig.database}
+                        `;
+                        analyzerDiv.className = 'test-section success';
+                    } else {
+                        throw new Error('Failed to initialize analyzer');
+                    }
+                } else {
+                    throw new Error('AI Analyzer not available');
+                }
+            } catch (error) {
+                document.getElementById('analyzerResult').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('analyzerTest').className = 'test-section error';
+            }
+            
+            // Test 4: Real Game Analysis
+            try {
+                const analyzer = window.comprehensiveAIAnalyzer;
+                const gameDiv = document.getElementById('gameAnalysisTest');
+                const gameResult = document.getElementById('gameAnalysisResult');
+                
+                // Test with sample teams
+                const analysis = await analyzer.analyzeGameComprehensively(
+                    'test-game-123',
+                    'Kansas City Chiefs',
+                    'Buffalo Bills'
+                );
+                
+                if (analysis && analysis.gameInfo) {
+                    gameResult.innerHTML = `
+                        <strong>✅ Game Analysis Working</strong><br>
+                        Matchup: ${analysis.gameInfo.matchup}<br>
+                        Recommended Team: ${analysis.prediction.recommendedTeam}<br>
+                        Confidence: ${Math.round(analysis.prediction.confidence * 100)}%<br>
+                        Player Props: ${analysis.playerProps.count}<br>
+                        Goldmines: ${analysis.playerProps.goldmines.length}<br>
+                        Data Source: ${analysis.summary.dataSource}
+                    `;
+                    gameDiv.className = 'test-section success';
+                } else {
+                    throw new Error('Invalid analysis result');
+                }
+            } catch (error) {
+                document.getElementById('gameAnalysisResult').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('gameAnalysisTest').className = 'test-section error';
+            }
+            
+            // Test 5: Player Props Generation
+            try {
+                const analyzer = window.comprehensiveAIAnalyzer;
+                const propsDiv = document.getElementById('playerPropsTest');
+                const propsResult = document.getElementById('playerPropsResult');
+                
+                // Test another matchup to show different results
+                const analysis = await analyzer.analyzeGameComprehensively(
+                    'test-game-456',
+                    'Los Angeles Rams',
+                    'San Francisco 49ers'
+                );
+                
+                if (analysis && analysis.playerProps.available) {
+                    const topProps = analysis.playerProps.available.slice(0, 3);
+                    const propsHtml = topProps.map(prop => 
+                        `${prop.player} (${prop.team}) - ${prop.type}: ${prop.line.toFixed(1)} (${prop.confidence.toFixed(0)}% confidence)`
+                    ).join('<br>');
+                    
+                    propsResult.innerHTML = `
+                        <strong>✅ Player Props Generation Working</strong><br>
+                        Total Props Generated: ${analysis.playerProps.available.length}<br>
+                        High Confidence Props: ${analysis.playerProps.goldmines.length}<br>
+                        <br><strong>Sample Props:</strong><br>
+                        ${propsHtml}
+                    `;
+                    propsDiv.className = 'test-section success';
+                } else {
+                    throw new Error('No player props generated');
+                }
+            } catch (error) {
+                document.getElementById('playerPropsResult').innerHTML = `❌ Error: ${error.message}`;
+                document.getElementById('playerPropsTest').className = 'test-section error';
+            }
+            
+            console.log('✅ System tests completed');
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runSystemTests);
+    </script>
+</body>
+</html>

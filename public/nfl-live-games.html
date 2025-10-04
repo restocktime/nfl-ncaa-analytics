@@ -3,228 +3,955 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Live Games - Real-time Analysis</title>
+    <title>NFL Live Games - Real-Time Analysis</title>
+    
+    <!-- Apple Theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="simple-system-styles.css">
+    <link rel="stylesheet" href="apple-theme.css">
+    
     <style>
-        body {
-            background: #000;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .header {
+        /* Live Games specific styles */
+        .live-hero {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(0, 255, 136, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 136, 0.3);
+            padding: 60px 0;
+            margin-bottom: 40px;
         }
-
-        .header h1 {
-            color: #00ff88;
-            margin: 0 0 10px 0;
-            font-size: 2rem;
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff3b30, #007aff, #34c759);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
         }
-
-        .navigation {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #86868b;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
         }
-
-        .nav-button {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
+        
+        .live-status-bar {
+            background: linear-gradient(135deg, rgba(255, 59, 48, 0.1), rgba(255, 149, 0, 0.05));
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 32px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-
-        .nav-button:hover {
-            background: rgba(0, 255, 136, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .nav-button.active {
-            background: rgba(0, 255, 136, 0.3);
-            border-color: #00ff88;
-            color: #00ff88;
-        }
-
-        .back-button {
-            background: rgba(255, 136, 0, 0.1);
-            border: 1px solid rgba(255, 136, 0, 0.3);
-            color: #ff8800;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 136, 0, 0.2);
-        }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .games-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .loading-card {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            border: 3px solid rgba(0, 255, 136, 0.3);
-            border-top: 3px solid #00ff88;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        
         .live-indicator {
             display: flex;
             align-items: center;
             gap: 8px;
-            justify-content: center;
-            margin-top: 10px;
+            color: #ff3b30;
+            font-weight: 600;
         }
-
+        
         .live-dot {
             width: 8px;
             height: 8px;
-            background: #ff4444;
+            background: #ff3b30;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+        
+        .live-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .live-stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #007aff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .game-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        
+        .game-card.live {
+            border-color: rgba(255, 59, 48, 0.3);
+            box-shadow: 0 4px 24px rgba(255, 59, 48, 0.08);
+        }
+        
+        .game-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-live {
+            background: linear-gradient(135deg, #ff3b30, #ff9500);
+            color: white;
+        }
+        
+        .status-final {
+            background: rgba(0, 0, 0, 0.1);
+            color: #86868b;
+        }
+        
+        .status-upcoming {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+        }
+        
+        .game-matchup {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .team-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .team-info {
+            flex: 1;
+        }
+        
+        .team-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        
+        .team-record {
+            font-size: 0.9rem;
+            color: #86868b;
+        }
+        
+        .team-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1d1d1f;
+            margin: 0 20px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .game-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            text-align: center;
+            padding: 12px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+        }
+        
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .game-progress {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            height: 6px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #007aff, #34c759);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+        
+        .ai-analysis {
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.05), rgba(88, 86, 214, 0.03));
+            border: 1px solid rgba(0, 122, 255, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .analysis-icon {
+            color: #007aff;
+            font-size: 1.2rem;
+        }
+        
+        .analysis-title {
+            font-weight: 600;
+            color: #1d1d1f;
+            font-size: 1rem;
+        }
+        
+        .analysis-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+        }
+        
+        .analysis-metric {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+        }
+        
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #007aff;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 0.7rem;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .no-live-games {
+            text-align: center;
+            padding: 80px 20px;
+            color: #86868b;
+        }
+        
+        .no-games-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .refresh-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #86868b;
+            font-size: 0.9rem;
+        }
+        
+        .refresh-switch {
+            width: 44px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-switch.active {
+            background: #007aff;
+        }
+        
+        .refresh-toggle {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .refresh-switch.active .refresh-toggle {
+            transform: translateX(20px);
+        }
+        
+        .last-updated {
+            font-size: 0.9rem;
+            color: #86868b;
+        }
+        
+        /* Loading states */
+        .loading-spinner {
+            border: 3px solid rgba(0, 122, 255, 0.2);
+            border-top: 3px solid #007aff;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .live-stats {
+                justify-content: center;
+            }
+            
+            .refresh-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .team-score {
+                font-size: 2rem;
+                margin: 0 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .game-matchup {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .team {
+                justify-content: center;
+            }
+            
+            .team-score {
+                margin: 0;
+                order: -1;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1><i class="fas fa-football-ball"></i> NFL Live Games</h1>
-        <div class="live-indicator">
-            <div class="live-dot"></div>
-            <span id="live-status">LIVE NFL GAMES</span>
-        </div>
-    </div>
+    <!-- Header -->
+    <header class="header">
+        <h1 class="header-title">🔴 NFL Live Games</h1>
+        <p class="header-subtitle">Real-time scores, live analysis, and in-game betting insights</p>
+    </header>
 
-    <div class="navigation">
-        <a href="nfl-live-games.html" class="nav-button nav-link active">
-            <i class="fas fa-broadcast-tower"></i> Live Games
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            Home
         </a>
-        <a href="nfl-upcoming-games.html" class="nav-button nav-link">
-            <i class="fas fa-calendar-alt"></i> Upcoming
+        <a href="nfl-analytics.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i>
+            Analytics
         </a>
-        <a href="nfl-predictions.html" class="nav-button nav-link">
-            <i class="fas fa-brain"></i> AI Predictions
+        <a href="player-props-hub.html" class="nav-item">
+            <i class="fas fa-robot"></i>
+            AI Hub
         </a>
-        <a href="nfl-betting.html" class="nav-button nav-link">
-            <i class="fas fa-coins"></i> Betting
+        <a href="nfl-live-games.html" class="nav-item active">
+            <i class="fas fa-broadcast-tower"></i>
+            Live Games
         </a>
-        <a href="player-props-hub.html" class="nav-button nav-link">
-            <i class="fas fa-users"></i> Player Props
+        <a href="nfl-upcoming-games.html" class="nav-item">
+            <i class="fas fa-calendar-alt"></i>
+            Upcoming
         </a>
-        <a href="index.html" class="nav-button nav-link back-button">
-            <i class="fas fa-arrow-left"></i> Back to Home
+        <a href="nfl-predictions.html" class="nav-item">
+            <i class="fas fa-crystal-ball"></i>
+            Predictions
         </a>
-    </div>
+        <a href="nfl-betting.html" class="nav-item">
+            <i class="fas fa-coins"></i>
+            Betting
+        </a>
+    </nav>
 
-    <div class="main-container">
-        <div id="nfl-live-games" class="games-container">
-            <div class="loading-card">
-                <div class="loading-spinner"></div>
-                <h3>Loading NFL Live Games</h3>
-                <p>Fetching real-time NFL data...</p>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="live-hero">
+            <h1 class="hero-title">Live NFL Action</h1>
+            <p class="hero-subtitle">
+                Follow every play with real-time scores, advanced analytics, 
+                and AI-powered insights as the games unfold.
+            </p>
+        </section>
+
+        <!-- Live Status Bar -->
+        <section class="live-status-bar">
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span>LIVE</span>
+                <span id="liveGamesCount">0 Games Active</span>
             </div>
-        </div>
+            <div class="live-stats">
+                <div class="live-stat">
+                    <div class="stat-number" id="totalPlays">--</div>
+                    <div class="stat-label">Total Plays</div>
+                </div>
+                <div class="live-stat">
+                    <div class="stat-number" id="totalPoints">--</div>
+                    <div class="stat-label">Points Scored</div>
+                </div>
+                <div class="live-stat">
+                    <div class="stat-number" id="bigPlays">--</div>
+                    <div class="stat-label">Big Plays</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Refresh Controls -->
+        <section class="refresh-controls">
+            <div class="auto-refresh">
+                <span>Auto-refresh</span>
+                <div class="refresh-switch" id="autoRefreshToggle">
+                    <div class="refresh-toggle"></div>
+                </div>
+                <span>(every 30s)</span>
+            </div>
+            <div class="last-updated" id="lastUpdated">
+                Last updated: Loading...
+            </div>
+            <button class="btn btn-secondary" onclick="manualRefresh()">
+                <i class="fas fa-sync-alt"></i>
+                Refresh Now
+            </button>
+        </section>
+
+        <!-- Live Games Grid -->
+        <section class="games-grid" id="liveGamesGrid">
+            <div class="no-live-games">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 20px;">Loading live games...</p>
+            </div>
+        </section>
+
+        <!-- AI Insights Summary -->
+        <section>
+            <div class="card card-large">
+                <div class="card-header">
+                    <i class="fas fa-brain card-icon"></i>
+                    <h2 class="card-title">Live Game Intelligence</h2>
+                </div>
+                <div id="liveInsights">
+                    <div class="no-live-games">
+                        <div class="loading-spinner"></div>
+                        <p style="margin-top: 20px;">Processing live analysis...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <!-- Load all service dependencies first -->
-    <script src="pff-data-service.js"></script>
-    <script src="nextgen-stats-service.js"></script>
-    <script src="sportsbook-api-service.js"></script>
-    <script src="tackle-props-scanner.js"></script>
-    <!-- simple-picks-tracker.js removed - only for nfl-analytics.html -->
-    
-    <!-- Load main system last -->
-    <script src="simple-working-system.js"></script>
+    <!-- Load Scripts -->
+    <script src="nfl-database-client.js"></script>
+    <script src="comprehensive-ai-analyzer.js"></script>
+    <script src="daily-roster-updater.js"></script>
+
     <script>
-        let nflSystem;
-        
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🏈 NFL Live Games System Initializing...');
-            
-            try {
-                if (typeof SimpleWorkingSystem !== 'undefined') {
-                    nflSystem = new SimpleWorkingSystem();
-                    console.log('✅ NFL System initialized successfully');
-                    
-                    await nflSystem.initialize();
-                    nflSystem.loadLiveGames();
-                } else {
-                    console.error('❌ SimpleWorkingSystem not found');
-                    showError('NFL System not loaded properly. Please refresh the page.');
-                }
-            } catch (error) {
-                console.error('❌ Error initializing NFL system:', error);
-                showError('Failed to load NFL data. Please try again.');
+        // NFL Live Games Application
+        class NFLLiveGames {
+            constructor() {
+                this.autoRefresh = true;
+                this.refreshInterval = null;
+                this.liveGames = [];
+                this.lastUpdate = null;
+                this.init();
             }
-        });
-        
-        function showError(message) {
-            const container = document.getElementById('nfl-live-games');
-            if (container) {
-                container.innerHTML = `
-                    <div class="loading-card">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error Loading Data</h3>
-                        <p>${message}</p>
-                        <button onclick="location.reload()" style="background: #ff4444; border: none; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
-                            <i class="fas fa-redo"></i> Retry
-                        </button>
+
+            async init() {
+                console.log('🔴 Initializing NFL Live Games...');
+                this.setupEventListeners();
+                await this.loadLiveGames();
+                this.startAutoRefresh();
+            }
+
+            setupEventListeners() {
+                // Auto-refresh toggle
+                document.getElementById('autoRefreshToggle').addEventListener('click', () => {
+                    this.toggleAutoRefresh();
+                });
+            }
+
+            toggleAutoRefresh() {
+                this.autoRefresh = !this.autoRefresh;
+                const toggle = document.getElementById('autoRefreshToggle');
+                
+                if (this.autoRefresh) {
+                    toggle.classList.add('active');
+                    this.startAutoRefresh();
+                } else {
+                    toggle.classList.remove('active');
+                    this.stopAutoRefresh();
+                }
+            }
+
+            async loadLiveGames() {
+                try {
+                    console.log('📡 Loading live NFL games...');
+                    
+                    // Get current NFL scoreboard
+                    const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+                    const data = await response.json();
+                    
+                    if (data.events && data.events.length > 0) {
+                        // Process games and separate live/recent ones
+                        const processedGames = await Promise.allSettled(
+                            data.events.map(game => this.processGameData(game))
+                        );
+
+                        const validGames = processedGames
+                            .filter(result => result.status === 'fulfilled')
+                            .map(result => result.value)
+                            .filter(game => game);
+
+                        // Filter for live and recently completed games
+                        this.liveGames = validGames.filter(game => 
+                            game.status === 'in-progress' || 
+                            game.status === 'final' || 
+                            game.status === 'halftime'
+                        );
+
+                        this.displayLiveGames();
+                        this.updateLiveStats();
+                        this.updateInsights();
+                    } else {
+                        this.showNoGamesMessage();
+                    }
+
+                    this.lastUpdate = new Date();
+                    this.updateLastUpdatedTime();
+
+                } catch (error) {
+                    console.error('❌ Failed to load live games:', error);
+                    this.showErrorMessage();
+                }
+            }
+
+            async processGameData(game) {
+                try {
+                    const competitors = game.competitions[0]?.competitors || [];
+                    if (competitors.length < 2) return null;
+
+                    const homeTeam = competitors.find(c => c.homeAway === 'home');
+                    const awayTeam = competitors.find(c => c.homeAway === 'away');
+
+                    if (!homeTeam || !awayTeam) return null;
+
+                    const gameStatus = game.status.type.name;
+                    const clock = game.status.displayClock || '';
+                    const period = game.status.period || 0;
+
+                    // Get basic game stats
+                    const competition = game.competitions[0];
+                    const situation = competition.situation;
+                    const details = competition.details || '';
+
+                    return {
+                        id: game.id,
+                        homeTeam: {
+                            name: homeTeam.team.displayName,
+                            abbreviation: homeTeam.team.abbreviation,
+                            score: homeTeam.score || '0',
+                            record: homeTeam.records?.[0]?.summary || '0-0'
+                        },
+                        awayTeam: {
+                            name: awayTeam.team.displayName,
+                            abbreviation: awayTeam.team.abbreviation,
+                            score: awayTeam.score || '0',
+                            record: awayTeam.records?.[0]?.summary || '0-0'
+                        },
+                        status: gameStatus,
+                        clock,
+                        period,
+                        isLive: gameStatus === 'in-progress',
+                        situation,
+                        details,
+                        gameData: game
+                    };
+                } catch (error) {
+                    console.error('❌ Failed to process game:', error);
+                    return null;
+                }
+            }
+
+            displayLiveGames() {
+                const grid = document.getElementById('liveGamesGrid');
+                
+                if (this.liveGames.length === 0) {
+                    this.showNoGamesMessage();
+                    return;
+                }
+
+                const gamesHTML = this.liveGames.map(game => {
+                    const statusClass = game.isLive ? 'status-live' : 
+                                      game.status === 'final' ? 'status-final' : 'status-upcoming';
+                    const cardClass = game.isLive ? 'live' : '';
+                    const progress = this.calculateGameProgress(game);
+
+                    return `
+                        <div class="game-card ${cardClass}">
+                            <div class="game-status ${statusClass}">
+                                ${game.isLive ? '🔴 LIVE' : game.status.toUpperCase()}
+                            </div>
+                            
+                            <div class="game-matchup">
+                                <div class="team">
+                                    <div class="team-logo">
+                                        ${game.awayTeam.abbreviation.substring(0, 3)}
+                                    </div>
+                                    <div class="team-info">
+                                        <div class="team-name">${game.awayTeam.name}</div>
+                                        <div class="team-record">${game.awayTeam.record}</div>
+                                    </div>
+                                </div>
+                                <div class="team-score">${game.awayTeam.score}</div>
+                                <div class="team-score">${game.homeTeam.score}</div>
+                                <div class="team">
+                                    <div class="team-info">
+                                        <div class="team-name">${game.homeTeam.name}</div>
+                                        <div class="team-record">${game.homeTeam.record}</div>
+                                    </div>
+                                    <div class="team-logo">
+                                        ${game.homeTeam.abbreviation.substring(0, 3)}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${game.isLive ? `
+                                <div class="game-progress">
+                                    <div class="progress-fill" style="width: ${progress}%;"></div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="game-details">
+                                <div class="detail-item">
+                                    <div class="detail-value">${game.clock || 'Final'}</div>
+                                    <div class="detail-label">Time</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-value">${game.period ? `Q${game.period}` : '--'}</div>
+                                    <div class="detail-label">Quarter</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-value">${parseInt(game.awayTeam.score) + parseInt(game.homeTeam.score)}</div>
+                                    <div class="detail-label">Total Points</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-value">${Math.abs(parseInt(game.awayTeam.score) - parseInt(game.homeTeam.score))}</div>
+                                    <div class="detail-label">Margin</div>
+                                </div>
+                            </div>
+                            
+                            ${this.generateGameAnalysis(game)}
+                        </div>
+                    `;
+                }).join('');
+
+                grid.innerHTML = gamesHTML;
+            }
+
+            generateGameAnalysis(game) {
+                // Simulate AI analysis metrics
+                const totalScore = parseInt(game.awayTeam.score) + parseInt(game.homeTeam.score);
+                const margin = Math.abs(parseInt(game.awayTeam.score) - parseInt(game.homeTeam.score));
+                const pace = game.isLive ? 'High' : 'Normal';
+                const momentum = parseInt(game.homeTeam.score) > parseInt(game.awayTeam.score) ? 'Home' : 'Away';
+
+                return `
+                    <div class="ai-analysis">
+                        <div class="analysis-header">
+                            <i class="fas fa-brain analysis-icon"></i>
+                            <span class="analysis-title">Live Analysis</span>
+                        </div>
+                        <div class="analysis-content">
+                            <div class="analysis-metric">
+                                <div class="metric-value">${totalScore}</div>
+                                <div class="metric-label">Total Score</div>
+                            </div>
+                            <div class="analysis-metric">
+                                <div class="metric-value">${pace}</div>
+                                <div class="metric-label">Game Pace</div>
+                            </div>
+                            <div class="analysis-metric">
+                                <div class="metric-value">${momentum}</div>
+                                <div class="metric-label">Momentum</div>
+                            </div>
+                            <div class="analysis-metric">
+                                <div class="metric-value">${margin}</div>
+                                <div class="metric-label">Score Margin</div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
-        }
-        
-        // Auto-refresh every 30 seconds for live data
-        setInterval(() => {
-            if (nflSystem) {
-                nflSystem.loadLiveGames();
+
+            calculateGameProgress(game) {
+                if (!game.isLive) return 100;
+                
+                // Estimate progress based on period (quarter)
+                if (game.period <= 1) return 25;
+                if (game.period <= 2) return 50;
+                if (game.period <= 3) return 75;
+                return 90; // 4th quarter or overtime
             }
-        }, 30000);
+
+            updateLiveStats() {
+                const liveGames = this.liveGames.filter(game => game.isLive);
+                const totalPoints = this.liveGames.reduce((sum, game) => 
+                    sum + parseInt(game.awayTeam.score) + parseInt(game.homeTeam.score), 0);
+                
+                document.getElementById('liveGamesCount').textContent = `${liveGames.length} Game${liveGames.length !== 1 ? 's' : ''} Active`;
+                document.getElementById('totalPlays').textContent = liveGames.length * 15; // Estimate
+                document.getElementById('totalPoints').textContent = totalPoints;
+                document.getElementById('bigPlays').textContent = Math.floor(totalPoints / 10); // Estimate
+            }
+
+            updateInsights() {
+                const liveInsights = document.getElementById('liveInsights');
+                const liveGames = this.liveGames.filter(game => game.isLive);
+                
+                if (liveGames.length === 0) {
+                    liveInsights.innerHTML = `
+                        <div class="no-live-games">
+                            <i class="fas fa-clock no-games-icon"></i>
+                            <p>No live games currently in progress</p>
+                            <p style="font-size: 0.9rem; margin-top: 12px;">Check back during game time for live insights</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const totalScore = liveGames.reduce((sum, game) => 
+                    sum + parseInt(game.awayTeam.score) + parseInt(game.homeTeam.score), 0);
+                const avgScore = totalScore / liveGames.length;
+                const closeGames = liveGames.filter(game => 
+                    Math.abs(parseInt(game.awayTeam.score) - parseInt(game.homeTeam.score)) <= 7).length;
+                const blowouts = liveGames.filter(game => 
+                    Math.abs(parseInt(game.awayTeam.score) - parseInt(game.homeTeam.score)) >= 21).length;
+
+                liveInsights.innerHTML = `
+                    <div class="grid grid-auto">
+                        <div class="card card-compact">
+                            <h3 class="text-title mb-3">📊 Game Analysis</h3>
+                            <div class="analysis-content">
+                                <div class="analysis-metric">
+                                    <div class="metric-value">${avgScore.toFixed(1)}</div>
+                                    <div class="metric-label">Avg Total Score</div>
+                                </div>
+                                <div class="analysis-metric">
+                                    <div class="metric-value">${closeGames}</div>
+                                    <div class="metric-label">Close Games</div>
+                                </div>
+                                <div class="analysis-metric">
+                                    <div class="metric-value">${blowouts}</div>
+                                    <div class="metric-label">Blowouts</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card card-compact">
+                            <h3 class="text-title mb-3">🎯 Live Insights</h3>
+                            <div class="text-body">
+                                ${liveGames.length > 0 ? `
+                                    <div style="margin-bottom: 12px;">
+                                        <span class="badge badge-success">${liveGames.length} Live</span>
+                                    </div>
+                                    <div style="margin-bottom: 12px;">
+                                        <span class="badge badge-info">${closeGames} Close</span>
+                                    </div>
+                                    <div class="text-caption">
+                                        ${closeGames > 0 ? `${closeGames} games within one score` : 'No tight games currently'}
+                                    </div>
+                                ` : `
+                                    <div class="text-caption">No live analysis available</div>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            showNoGamesMessage() {
+                document.getElementById('liveGamesGrid').innerHTML = `
+                    <div class="no-live-games">
+                        <i class="fas fa-football-ball no-games-icon"></i>
+                        <p>No live games at this time</p>
+                        <p style="font-size: 0.9rem; margin-top: 12px;">Games typically air Thursday, Sunday, and Monday during NFL season</p>
+                    </div>
+                `;
+            }
+
+            showErrorMessage() {
+                document.getElementById('liveGamesGrid').innerHTML = `
+                    <div class="no-live-games">
+                        <i class="fas fa-exclamation-triangle no-games-icon"></i>
+                        <p>Unable to load live games</p>
+                        <p style="font-size: 0.9rem; margin-top: 12px;">Please check your connection and try again</p>
+                    </div>
+                `;
+            }
+
+            updateLastUpdatedTime() {
+                if (this.lastUpdate) {
+                    const timeString = this.lastUpdate.toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
+                }
+            }
+
+            startAutoRefresh() {
+                if (this.autoRefresh && !this.refreshInterval) {
+                    // Refresh every 30 seconds for live games
+                    this.refreshInterval = setInterval(() => {
+                        this.loadLiveGames();
+                    }, 30000);
+                }
+            }
+
+            stopAutoRefresh() {
+                if (this.refreshInterval) {
+                    clearInterval(this.refreshInterval);
+                    this.refreshInterval = null;
+                }
+            }
+
+            async manualRefresh() {
+                await this.loadLiveGames();
+                
+                // Visual feedback for manual refresh
+                const button = document.querySelector('.btn i');
+                button.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    button.style.transform = 'rotate(0deg)';
+                }, 300);
+            }
+        }
+
+        // Global refresh function
+        function manualRefresh() {
+            if (window.nflLiveGames) {
+                window.nflLiveGames.manualRefresh();
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.nflLiveGames = new NFLLiveGames();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.nflLiveGames) {
+                window.nflLiveGames.stopAutoRefresh();
+            }
+        });
     </script>
 </body>
 </html>

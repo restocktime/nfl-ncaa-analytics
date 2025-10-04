@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧪 Bug Fix Verification Test</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 40px; }
+        .test-result { margin: 16px 0; padding: 12px; border-radius: 8px; }
+        .pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .loading { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .summary { margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 NFL Analytics Bug Fix Verification</h1>
+    <p>Testing the specific bugs reported by the user...</p>
+    
+    <div id="testResults"></div>
+    <div id="summary" class="summary" style="display: none;"></div>
+
+    <script src="production-config.js?v=fixed-port"></script>
+    <script src="nfl-database-client.js?v=fixed-port"></script>
+    <script src="comprehensive-ai-analyzer.js?v=verification-fixed-final"></script>
+
+    <script>
+        class BugVerificationTest {
+            constructor() {
+                this.results = [];
+                this.passedTests = 0;
+                this.failedTests = 0;
+            }
+
+            addResult(testName, passed, message, details = null) {
+                this.results.push({ testName, passed, message, details });
+                if (passed) this.passedTests++;
+                else this.failedTests++;
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                const resultsDiv = document.getElementById('testResults');
+                resultsDiv.innerHTML = this.results.map(result => `
+                    <div class="test-result ${result.passed ? 'pass' : 'fail'}">
+                        <strong>${result.passed ? '✅' : '❌'} ${result.testName}</strong><br>
+                        ${result.message}
+                        ${result.details ? `<br><small>${result.details}</small>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            showSummary() {
+                const summaryDiv = document.getElementById('summary');
+                const total = this.passedTests + this.failedTests;
+                summaryDiv.innerHTML = `
+                    <h2>🏁 Test Summary</h2>
+                    <p><strong>Total Tests:</strong> ${total}</p>
+                    <p><strong>Passed:</strong> ${this.passedTests}</p>
+                    <p><strong>Failed:</strong> ${this.failedTests}</p>
+                    <p><strong>Success Rate:</strong> ${((this.passedTests / total) * 100).toFixed(1)}%</p>
+                    ${this.failedTests === 0 ? 
+                        '<p style="color: green; font-weight: bold;">🎉 ALL BUGS FIXED! The system is working correctly.</p>' :
+                        '<p style="color: red; font-weight: bold;">⚠️ Some issues remain. Check failed tests above.</p>'
+                    }
+                `;
+                summaryDiv.style.display = 'block';
+            }
+
+            async runTests() {
+                try {
+                    // Test 1: Port Configuration Bug
+                    const configUrl = window.productionConfig ? window.productionConfig.getApiUrl() : 'Not Available';
+                    const correctPort = configUrl.includes('3001') && !configUrl.includes('8080');
+                    this.addResult(
+                        'Port Configuration Bug',
+                        correctPort,
+                        correctPort ? 'Database client now connects to port 3001' : 'Still connecting to wrong port',
+                        `API URL: ${configUrl}`
+                    );
+
+                    // Test 2: Database Connectivity
+                    if (window.NFLDatabaseClient) {
+                        const dbClient = new NFLDatabaseClient(configUrl);
+                        const teams = await dbClient.getTeams();
+                        this.addResult(
+                            'Database API Connectivity',
+                            teams.length > 0,
+                            teams.length > 0 ? `Successfully loaded ${teams.length} teams` : 'Database returned no teams',
+                            `Teams API: ${configUrl}/teams`
+                        );
+
+                        // Test 3: Roster Data Access
+                        if (teams.length > 0) {
+                            const roster = await dbClient.getTeamRoster(teams[0].id);
+                            this.addResult(
+                                'Roster Data Access',
+                                roster.length > 0,
+                                roster.length > 0 ? `Successfully loaded ${roster.length} players for ${teams[0].name}` : 'No roster data found',
+                                `First team tested: ${teams[0].name}`
+                            );
+                        }
+                    } else {
+                        this.addResult('Database API Connectivity', false, 'NFLDatabaseClient not loaded');
+                    }
+
+                    // Test 4: AI Analyzer Initialization
+                    if (window.comprehensiveAIAnalyzer) {
+                        const initResult = await window.comprehensiveAIAnalyzer.initialize();
+                        this.addResult(
+                            'AI Analyzer Initialization',
+                            initResult === true,
+                            initResult ? 'AI Analyzer initialized successfully' : 'AI Analyzer failed to initialize',
+                            `isInitialized: ${window.comprehensiveAIAnalyzer.isInitialized}`
+                        );
+
+                        // Test 5: Analysis Not Using Emergency Fallback
+                        if (initResult) {
+                            const analysis = await window.comprehensiveAIAnalyzer.analyzeGameComprehensively(
+                                'test-game-123',
+                                'Kansas City Chiefs',
+                                'Buffalo Bills'
+                            );
+                            
+                            const notFallback = analysis.gameInfo.dataQuality !== 'fallback';
+                            const hasProps = analysis.playerProps.count > 0;
+                            const uniqueConfidence = analysis.gameInfo.aiConfidence !== 0.5;
+                            
+                            this.addResult(
+                                '50% Confidence Bug (Fallback Mode)',
+                                notFallback,
+                                notFallback ? 'Using live data, not emergency fallback' : 'Still using emergency fallback mode',
+                                `Data quality: ${analysis.gameInfo.dataQuality}, Confidence: ${(analysis.gameInfo.aiConfidence * 100).toFixed(0)}%`
+                            );
+
+                            this.addResult(
+                                'Zero Player Props Bug',
+                                hasProps,
+                                hasProps ? `Generated ${analysis.playerProps.count} player props` : 'No player props generated',
+                                `Props count: ${analysis.playerProps.count}, Goldmines: ${analysis.playerProps.goldmines.length}`
+                            );
+
+                            this.addResult(
+                                'Unique Confidence Ratings',
+                                uniqueConfidence,
+                                uniqueConfidence ? `Dynamic confidence: ${(analysis.gameInfo.aiConfidence * 100).toFixed(0)}%` : 'Still showing generic 50% confidence',
+                                `Confidence should vary based on team strength analysis`
+                            );
+                        }
+                    } else {
+                        this.addResult('AI Analyzer Initialization', false, 'comprehensiveAIAnalyzer not loaded');
+                    }
+
+                } catch (error) {
+                    this.addResult('Test Execution', false, `Test failed with error: ${error.message}`);
+                } finally {
+                    this.showSummary();
+                }
+            }
+        }
+
+        // Run tests when page loads with proper waiting
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Wait for all scripts to load
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const tester = new BugVerificationTest();
+            await tester.runTests();
+        });
+    </script>
+</body>
+</html>

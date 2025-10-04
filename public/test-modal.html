@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal Functionality</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 40px; }
+        .metric { 
+            background: #f0f0f0; 
+            padding: 20px; 
+            margin: 10px; 
+            border-radius: 10px; 
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .metric:hover { background: #e0e0e0; transform: translateY(-2px); }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .close-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏈 Test Modal Functionality</h1>
+    <p>This page tests if the modal popup is working correctly.</p>
+    
+    <div class="metric" onclick="showPropsModal()">
+        <div style="font-size: 1.5rem; font-weight: 600; color: #007aff;">25</div>
+        <div>Available Props (Click Me!)</div>
+    </div>
+    
+    <div class="metric" onclick="testWithoutData()">
+        <div style="font-size: 1.5rem; font-weight: 600; color: #ff3b30;">0</div>
+        <div>Test Without Data</div>
+    </div>
+
+    <!-- Modal -->
+    <div id="propsModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #1d1d1f;">🏈 Player Props & Lines</h2>
+                <button class="close-btn" onclick="closePropsModal()">×</button>
+            </div>
+            <div id="modalPropsContent">
+                <p>Loading props...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test data
+        let currentGameAnalysis = {
+            playerProps: {
+                available: [
+                    {
+                        player: "Patrick Mahomes",
+                        team: "Kansas City Chiefs",
+                        position: "QB",
+                        type: "Passing Yards",
+                        line: 275.5,
+                        confidence: 0.85,
+                        edge: "+8.2",
+                        reasoning: "Strong matchup against weak secondary"
+                    },
+                    {
+                        player: "Travis Kelce",
+                        team: "Kansas City Chiefs",
+                        position: "TE",
+                        type: "Receiving Yards",
+                        line: 65.5,
+                        confidence: 0.78,
+                        edge: "+5.1",
+                        reasoning: "High target volume expected"
+                    },
+                    {
+                        player: "Josh Allen",
+                        team: "Buffalo Bills",
+                        position: "QB",
+                        type: "Passing TDs",
+                        line: 1.5,
+                        confidence: 0.92,
+                        edge: "+12.4",
+                        reasoning: "Excellent red zone efficiency"
+                    }
+                ],
+                goldmines: [
+                    {
+                        player: "Josh Allen",
+                        team: "Buffalo Bills",
+                        position: "QB",
+                        type: "Passing TDs",
+                        line: 1.5,
+                        pick: "Over",
+                        confidence: 0.92,
+                        edge: "+12.4",
+                        reasoning: "Excellent red zone efficiency"
+                    }
+                ]
+            }
+        };
+        
+        function showPropsModal() {
+            console.log('showPropsModal called');
+            console.log('currentGameAnalysis:', currentGameAnalysis);
+            
+            if (!currentGameAnalysis || !currentGameAnalysis.playerProps) {
+                alert('No props data available. Please select a game first.');
+                return;
+            }
+            
+            const modal = document.getElementById('propsModal');
+            const content = document.getElementById('modalPropsContent');
+            
+            const props = currentGameAnalysis.playerProps.available || [];
+            const goldmines = currentGameAnalysis.playerProps.goldmines || [];
+            
+            console.log(`Found ${props.length} props and ${goldmines.length} goldmines`);
+            
+            let modalHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h3>🏆 Goldmine Props (${goldmines.length})</h3>
+                    ${goldmines.map(prop => `
+                        <div style="background: linear-gradient(135deg, #ffd700, #ffed4e); padding: 15px; margin: 10px 0; border-radius: 10px; color: #1d1d1f;">
+                            <strong>${prop.player}</strong> (${prop.team})<br>
+                            <strong>${prop.type}:</strong> ${prop.line.toFixed(1)} | Pick: ${prop.pick}<br>
+                            Confidence: <strong>${(prop.confidence * 100).toFixed(0)}%</strong> | Edge: <strong>${prop.edge}</strong><br>
+                            <em>${prop.reasoning}</em>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div>
+                    <h3>📊 All Available Props (${props.length})</h3>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${props.map(prop => `
+                            <div style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid ${prop.confidence > 0.8 ? '#ffd700' : prop.confidence > 0.7 ? '#00ff88' : '#007aff'};">
+                                <strong>${prop.player}</strong> (${prop.team}) - ${prop.position}<br>
+                                <strong>${prop.type}:</strong> ${prop.line.toFixed(1)}<br>
+                                Confidence: ${(prop.confidence * 100).toFixed(0)}% | Edge: ${prop.edge}<br>
+                                <em style="font-size: 0.9rem; opacity: 0.8;">${prop.reasoning}</em>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = modalHTML;
+            modal.style.display = 'block';
+            console.log('Modal should now be visible');
+        }
+        
+        function testWithoutData() {
+            currentGameAnalysis = null;
+            showPropsModal();
+        }
+        
+        function closePropsModal() {
+            console.log('closePropsModal called');
+            document.getElementById('propsModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('propsModal');
+            if (event.target == modal) {
+                closePropsModal();
+            }
+        }
+        
+        console.log('Test page loaded successfully');
+    </script>
+</body>
+</html>

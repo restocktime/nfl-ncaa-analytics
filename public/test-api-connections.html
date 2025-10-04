@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f0f0f0; }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            border: 1px solid #ddd;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .pending { background: #fff3cd; border-color: #ffeaa7; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>🧪 NFL API Connection Test</h1>
+    <button onclick="testAPIs()">Test All APIs</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAPIs() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="pending">🔄 Testing API connections...</div>';
+            
+            const tests = [
+                {
+                    name: 'CORS Proxy Server',
+                    url: 'http://localhost:8001/',
+                    test: () => fetch('http://localhost:8001/')
+                },
+                {
+                    name: 'ESPN API (via proxy)',
+                    url: 'ESPN NFL Scoreboard',
+                    test: () => {
+                        const espnURL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+                        const proxyURL = `http://localhost:8001/?url=${encodeURIComponent(espnURL)}`;
+                        return fetch(proxyURL);
+                    }
+                },
+                {
+                    name: 'The Odds API (via proxy)',
+                    url: 'The Odds API',
+                    test: () => {
+                        const oddsURL = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=9de126998e0df996011a28e9527dd7b9';
+                        const proxyURL = `http://localhost:8001/?url=${encodeURIComponent(oddsURL)}`;
+                        return fetch(proxyURL);
+                    }
+                },
+                {
+                    name: 'API-Sports (via proxy)',
+                    url: 'API-Sports NFL',
+                    test: () => {
+                        const apisportsURL = 'https://v1.american-football.api-sports.io/games';
+                        const proxyURL = `http://localhost:8001/?url=${encodeURIComponent(apisportsURL)}`;
+                        return fetch(proxyURL);
+                    }
+                }
+            ];
+            
+            let resultsHTML = '';
+            
+            for (const test of tests) {
+                try {
+                    resultsHTML += `<div class="pending">🔄 Testing ${test.name}...</div>`;
+                    results.innerHTML = resultsHTML;
+                    
+                    const response = await test.test();
+                    
+                    if (response.ok) {
+                        resultsHTML = resultsHTML.replace(
+                            `<div class="pending">🔄 Testing ${test.name}...</div>`,
+                            `<div class="success">✅ ${test.name}: Connected (${response.status})</div>`
+                        );
+                    } else {
+                        resultsHTML = resultsHTML.replace(
+                            `<div class="pending">🔄 Testing ${test.name}...</div>`,
+                            `<div class="error">❌ ${test.name}: HTTP ${response.status}</div>`
+                        );
+                    }
+                } catch (error) {
+                    resultsHTML = resultsHTML.replace(
+                        `<div class="pending">🔄 Testing ${test.name}...</div>`,
+                        `<div class="error">❌ ${test.name}: ${error.message}</div>`
+                    );
+                }
+                results.innerHTML = resultsHTML;
+            }
+            
+            resultsHTML += `<div class="success">🎉 API Test Complete</div>`;
+            results.innerHTML = resultsHTML;
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testAPIs, 1000);
+        });
+    </script>
+</body>
+</html>

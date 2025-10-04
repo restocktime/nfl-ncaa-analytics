@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧪 Props Debug Test</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .pass { background: #d4edda; }
+        .fail { background: #f8d7da; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Player Props Debug Test</h1>
+    <div id="output"></div>
+
+    <script src="production-config.js?v=fixed-port"></script>
+    <script src="nfl-database-client.js?v=fixed-port"></script>
+    <script src="comprehensive-ai-analyzer.js?v=fixed-roster-array"></script>
+
+    <script>
+        async function debugProps() {
+            const output = document.getElementById('output');
+            
+            try {
+                output.innerHTML += '<div class="result">🚀 Starting props debug test...</div>';
+                
+                // Initialize analyzer
+                await window.comprehensiveAIAnalyzer.initialize();
+                output.innerHTML += '<div class="result pass">✅ Analyzer initialized</div>';
+                
+                // Test direct props generation
+                const analyzer = window.comprehensiveAIAnalyzer;
+                
+                // Get some test rosters
+                const dbClient = analyzer.databaseClient;
+                const teams = await dbClient.getTeams();
+                const homeTeam = teams.find(t => t.name.includes('Kansas City'));
+                const awayTeam = teams.find(t => t.name.includes('Buffalo'));
+                
+                if (homeTeam && awayTeam) {
+                    output.innerHTML += `<div class="result pass">✅ Found test teams: ${homeTeam.name} vs ${awayTeam.name}</div>`;
+                    
+                    const homeRoster = await dbClient.getTeamRoster(homeTeam.id);
+                    const awayRoster = await dbClient.getTeamRoster(awayTeam.id);
+                    
+                    output.innerHTML += `<div class="result pass">✅ Rosters loaded: ${homeRoster.length} + ${awayRoster.length} players</div>`;
+                    
+                    // Test props generation directly
+                    const props = analyzer.generateDynamicPlayerProps(homeRoster, awayRoster, homeTeam.name, awayTeam.name);
+                    output.innerHTML += `<div class="result ${props.length > 0 ? 'pass' : 'fail'}">Props generated: ${props.length}</div>`;
+                    
+                    if (props.length > 0) {
+                        const goldmines = props.filter(p => p.confidence > 80);
+                        output.innerHTML += `<div class="result pass">✅ Goldmines found: ${goldmines.length}</div>`;
+                        
+                        // Show first few props
+                        output.innerHTML += '<div class="result">First 5 props:</div>';
+                        const first5 = props.slice(0, 5);
+                        first5.forEach(prop => {
+                            output.innerHTML += `<div class="result">- ${prop.player} (${prop.team}) ${prop.type}: ${prop.line.toFixed(1)} (${prop.confidence.toFixed(0)}%)</div>`;
+                        });
+                        
+                        // Test full analysis
+                        const analysis = await analyzer.analyzeGameComprehensively('test-123', homeTeam.name, awayTeam.name);
+                        output.innerHTML += `<div class="result ${analysis.playerProps.count > 0 ? 'pass' : 'fail'}">Full analysis props count: ${analysis.playerProps.count}</div>`;
+                        output.innerHTML += `<div class="result">Analysis goldmines: ${analysis.playerProps.goldmines.length}</div>`;
+                        
+                        output.innerHTML += '<pre>' + JSON.stringify(analysis.playerProps, null, 2) + '</pre>';
+                    }
+                    
+                } else {
+                    output.innerHTML += '<div class="result fail">❌ Could not find test teams</div>';
+                }
+                
+            } catch (error) {
+                output.innerHTML += `<div class="result fail">❌ Error: ${error.message}</div>`;
+                console.error('Debug error:', error);
+            }
+        }
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(debugProps, 1000);
+        });
+    </script>
+</body>
+</html>

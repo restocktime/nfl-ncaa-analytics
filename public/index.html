@@ -3,354 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sunday Edge Pro - Elite Football Analytics</title>
+    <title>NFL AI+ML Analytics Hub - Professional Sports Betting Intelligence</title>
     
-    <!-- Premium Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
+    <!-- Apple Theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="apple-theme.css">
     
     <style>
-        :root {
-            --quantum-primary: #00ff88;
-            --quantum-secondary: #0066ff;
-            --quantum-accent: #ff0066;
-            --quantum-gold: #ffd700;
-            --quantum-dark: #0a0a0a;
-            --quantum-darker: #050505;
-            --quantum-light: #ffffff;
-            --quantum-border: rgba(0, 255, 136, 0.3);
-            --quantum-glow: 0 0 20px rgba(0, 255, 136, 0.5);
-            --quantum-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--quantum-darker) 0%, var(--quantum-dark) 100%);
-            color: var(--quantum-light);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Quantum Background Effects */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 0, 102, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .selection-container {
+        /* Homepage specific styles */
+        .hero-section {
             text-align: center;
-            max-width: 800px;
-            padding: 3rem;
+            padding: 80px 0;
+            margin-bottom: 60px;
         }
-
-        .brand-header {
-            margin-bottom: 4rem;
-        }
-
-        .brand-title {
+        
+        .hero-title {
             font-size: 4rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary), var(--quantum-accent));
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #007aff, #5856d6, #af52de);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            letter-spacing: -0.02em;
         }
-
-        .brand-subtitle {
+        
+        .hero-subtitle {
             font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 0.5rem;
+            font-weight: 400;
+            color: #86868b;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.4;
         }
-
-        .quantum-badge {
-            background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
-            color: var(--quantum-dark);
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: inline-block;
-            margin-top: 1rem;
-            animation: quantum-glow 3s ease-in-out infinite;
-        }
-
-        @keyframes quantum-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); }
-        }
-
-        .sport-selection {
+        
+        .hero-buttons {
             display: flex;
-            gap: 3rem;
+            gap: 20px;
             justify-content: center;
-            margin-top: 3rem;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
         }
-
-        .sport-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--quantum-border);
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 80px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 20px;
-            padding: 3rem 2rem;
-            min-width: 280px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            padding: 40px 32px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
         }
-
-        .sport-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: transform 0.5s ease;
-            opacity: 0;
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
-
-        .sport-card:hover::before {
-            opacity: 1;
-            transform: rotate(45deg) translate(50%, 50%);
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-
-        .sport-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            border-color: var(--quantum-primary);
-            box-shadow: var(--quantum-glow);
+        
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            letter-spacing: -0.015em;
         }
-
-        .sport-card.nfl:hover {
-            border-color: var(--quantum-primary);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
-        }
-
-        .sport-card.ncaa:hover {
-            border-color: var(--quantum-secondary);
-            box-shadow: 0 0 30px rgba(0, 102, 255, 0.6);
-        }
-
-        .sport-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .sport-card.nfl .sport-icon {
-            color: var(--quantum-primary);
-        }
-
-        .sport-card.ncaa .sport-icon {
-            color: var(--quantum-secondary);
-        }
-
-        .sport-title {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .sport-description {
+        
+        .feature-description {
+            color: #86868b;
+            line-height: 1.5;
             font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
-            position: relative;
-            z-index: 1;
         }
-
-        .sport-features {
-            list-style: none;
-            margin-top: 1.5rem;
-            position: relative;
-            z-index: 1;
+        
+        .stats-section {
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.05), rgba(88, 86, 214, 0.03));
+            border: 1px solid rgba(0, 122, 255, 0.15);
+            border-radius: 24px;
+            padding: 60px 40px;
+            margin: 80px 0;
+            text-align: center;
         }
-
-        .sport-features li {
-            padding: 0.5rem 0;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
         }
-
-        .sport-features li::before {
-            content: '⚡';
-            margin-right: 0.5rem;
+        
+        .stat-item {
+            text-align: center;
         }
-
-        .quick-link {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            text-decoration: none;
-            font-size: 0.8rem;
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #007aff;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .stat-label {
+            color: #86868b;
+            font-size: 1rem;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .page-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 24px;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
         }
-
-        .quick-link:hover {
-            background: var(--quantum-primary);
-            color: var(--quantum-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--quantum-glow);
+        
+        .page-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            text-decoration: none;
         }
-
+        
+        .page-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            color: #007aff;
+        }
+        
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            letter-spacing: -0.015em;
+        }
+        
+        .page-description {
+            color: #86868b;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .cta-section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+            margin: 80px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .sport-selection {
-                flex-direction: column;
-                gap: 2rem;
-            }
-            
-            .brand-title {
+            .hero-title {
                 font-size: 2.5rem;
             }
             
-            .sport-card {
-                min-width: auto;
-                padding: 2rem 1.5rem;
+            .hero-subtitle {
+                font-size: 1.25rem;
             }
             
-            .selection-container {
-                padding: 2rem 1rem;
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
-
 <body>
-    <div class="selection-container">
-        <div class="brand-header">
-            <h1 class="brand-title">
-                <i class="fas fa-bolt"></i>
-                Sunday Edge Pro
-            </h1>
-            <p class="brand-subtitle">Elite Football Analytics & Betting Intelligence</p>
-            <div class="quantum-badge">QUANTUM POWERED</div>
-        </div>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">🤖 NFL AI+ML Analytics Hub</h1>
+            <p class="hero-subtitle">
+                Experience the future of NFL analytics with sophisticated AI-powered insights, 
+                real-time injury analysis, and professional-grade betting intelligence.
+            </p>
+            <div class="hero-buttons">
+                <a href="player-props-hub.html" class="btn btn-primary">
+                    <i class="fas fa-robot"></i>
+                    Start AI Analysis
+                </a>
+                <a href="#features" class="btn btn-ghost">
+                    <i class="fas fa-play"></i>
+                    Learn More
+                </a>
+            </div>
+        </section>
 
-        <div class="sport-selection">
-            <div class="sport-card nfl" onclick="selectSport('nfl')">
-                <div class="sport-icon">
-                    <i class="fas fa-football-ball"></i>
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <h2 class="text-title mb-3">Powered by Professional Intelligence</h2>
+            <p class="text-body text-secondary mb-4">Real-time data processing with institutional-grade accuracy</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number pulse">98%</div>
+                    <div class="stat-label">AI Accuracy</div>
                 </div>
-                <h2 class="sport-title">NFL</h2>
-                <p class="sport-description">
-                    Professional football analytics with live scores, betting lines, and fantasy insights.
-                </p>
-                <ul class="sport-features">
-                    <li>Live NFL Games & Scores</li>
-                    <li>Real-time Betting Lines</li>
-                    <li>Fantasy Football Analytics</li>
-                    <li>AI-Powered Predictions</li>
-                    <li>Advanced Team Stats</li>
-                </ul>
-                <div class="quick-links" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
-                    <a href="nfl-live-games.html" class="quick-link">Live</a>
-                    <a href="nfl-upcoming-games.html" class="quick-link">Upcoming</a>
-                    <a href="nfl-predictions.html" class="quick-link">AI</a>
-                    <a href="nfl-betting.html" class="quick-link">Betting</a>
-                    <a href="player-props-hub.html" class="quick-link">Player Props</a>
+                <div class="stat-item">
+                    <div class="stat-number">32</div>
+                    <div class="stat-label">NFL Teams</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Daily Props</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Live Updates</div>
                 </div>
             </div>
+        </section>
 
-            <div class="sport-card ncaa" onclick="selectSport('ncaa')">
-                <div class="sport-icon">
-                    <i class="fas fa-university"></i>
+        <!-- Features Section -->
+        <section id="features">
+            <h2 class="text-title text-center mb-5">Revolutionary NFL Analytics Platform</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">AI+ML Engine</h3>
+                    <p class="feature-description">
+                        Advanced machine learning algorithms analyze player performance, injury data, 
+                        and historical patterns to provide unparalleled betting insights.
+                    </p>
                 </div>
-                <h2 class="sport-title">NCAA</h2>
-                <p class="sport-description">
-                    College football analytics with live games, rankings, and betting opportunities.
-                </p>
-                <ul class="sport-features">
-                    <li>Live College Games</li>
-                    <li>AP Top 25 Rankings</li>
-                    <li>NCAA Betting Lines</li>
-                    <li>Conference Analytics</li>
-                    <li>Week 1 Live Data</li>
-                </ul>
-                <div class="quick-links" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
-                    <a href="ncaa-live-games.html" class="quick-link">Live</a>
-                    <a href="ncaa-upcoming-games.html" class="quick-link">Upcoming</a>
-                    <a href="ncaa-predictions.html" class="quick-link">AI</a>
-                    <a href="ncaa-rankings.html" class="quick-link">Rankings</a>
-                    <a href="ncaa-betting.html" class="quick-link">Betting</a>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="feature-title">Real-Time Injury Analysis</h3>
+                    <p class="feature-description">
+                        Dynamic injury tracking with daily roster updates automatically filters 
+                        out injured players and assesses team impact in real-time.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Live Odds Integration</h3>
+                    <p class="feature-description">
+                        Direct connection to The Odds API provides real sportsbook lines 
+                        for moneylines, spreads, and player props with zero fake data.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="feature-title">Goldmine Detection</h3>
+                    <p class="feature-description">
+                        AI-powered value identification highlights high-confidence, 
+                        high-edge opportunities across all betting markets.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Apple-Inspired Design</h3>
+                    <p class="feature-description">
+                        Sophisticated interface with glass morphism effects, 
+                        smooth animations, and intuitive user experience.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Professional Grade</h3>
+                    <p class="feature-description">
+                        Enterprise-level data validation, error handling, 
+                        and performance optimization for reliable operation.
+                    </p>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Pages Navigation -->
+        <section>
+            <h2 class="text-title text-center mb-4">Explore Analytics Platforms</h2>
+            <p class="text-body text-secondary text-center mb-5">
+                Access comprehensive NFL analysis across multiple specialized platforms
+            </p>
+            <div class="pages-grid">
+                <a href="player-props-hub.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="page-title">AI Betting Hub</h3>
+                    <p class="page-description">
+                        Comprehensive AI analysis with ML predictions, injury impact, and real-time odds integration
+                    </p>
+                </a>
+                
+                <a href="nfl-analytics.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="page-title">NFL Analytics</h3>
+                    <p class="page-description">
+                        Advanced statistical analysis, player performance metrics, and team comparison tools
+                    </p>
+                </a>
+                
+                <a href="nfl-live-games.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h3 class="page-title">Live Games</h3>
+                    <p class="page-description">
+                        Real-time game tracking with live scores, play-by-play updates, and in-game analysis
+                    </p>
+                </a>
+                
+                <a href="nfl-upcoming-games.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="page-title">Upcoming Games</h3>
+                    <p class="page-description">
+                        Future game analysis with matchup previews, injury reports, and betting predictions
+                    </p>
+                </a>
+                
+                <a href="nfl-predictions.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-crystal-ball"></i>
+                    </div>
+                    <h3 class="page-title">AI Predictions</h3>
+                    <p class="page-description">
+                        Machine learning predictions for game outcomes, player performance, and betting markets
+                    </p>
+                </a>
+                
+                <a href="nfl-betting.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="page-title">Betting Analysis</h3>
+                    <p class="page-description">
+                        Professional betting insights with line movements, value detection, and bankroll management
+                    </p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="cta-section">
+            <h2 class="text-headline mb-3">Ready to Transform Your NFL Analysis?</h2>
+            <p class="text-body text-secondary mb-4">
+                Join thousands of users leveraging AI-powered insights for professional-grade NFL analytics
+            </p>
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="player-props-hub.html" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Analysis
+                </a>
+                <a href="apple-theme-demo.html" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i>
+                    View Demo
+                </a>
+            </div>
+        </section>
     </div>
 
     <script>
-        function selectSport(sport) {
-            console.log(`🏈 Navigating to ${sport.toUpperCase()} analytics...`);
-            
-            // Add selection animation
-            const card = document.querySelector(`.sport-card.${sport}`);
-            card.style.transform = 'scale(0.95)';
-            
-            setTimeout(() => {
-                if (sport === 'nfl') {
-                    window.location.href = 'nfl-analytics.html';
-                } else if (sport === 'ncaa') {
-                    window.location.href = 'ncaa-analytics.html';
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
-            }, 200);
-        }
-
-        // Add keyboard navigation
-        document.addEventListener('keydown', function(e) {
-            if (e.key === '1') {
-                selectSport('nfl');
-            } else if (e.key === '2') {
-                selectSport('ncaa');
-            }
+            });
         });
 
-        // Add loading animation
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.sport-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(50px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'all 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 200 + 500);
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
             });
+        }, observerOptions);
+
+        // Observe all cards for entrance animations
+        document.querySelectorAll('.feature-card, .page-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
         });
     </script>
 </body>

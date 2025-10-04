@@ -1,0 +1,418 @@
+/**
+ * IBY Game Cards - Sophisticated NFL Game Display
+ * Created by IBY @benyakar94 - IG
+ * Clean, modern game card designs
+ */
+
+/* ============================================================================
+   GAME CARDS - Premium Design
+   ============================================================================ */
+
+.game-card {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    transition: all var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--iby-bright), var(--iby-success));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transition-medium);
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--iby-bright);
+}
+
+.game-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Game Status Bar */
+.game-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.game-week {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.game-time {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Team Matchup */
+.team-matchup {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.team-away .team-info {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.team-home .team-info {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.team-logo {
+    width: 64px;
+    height: 64px;
+    background: var(--background-secondary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: bold;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.game-card:hover .team-logo {
+    border-color: var(--iby-bright);
+    background: rgba(50, 130, 246, 0.1);
+}
+
+.team-name {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.team-record {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.team-score {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--iby-bright);
+    margin-top: var(--space-2);
+    line-height: 1;
+}
+
+/* VS Divider */
+.vs-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.vs-text {
+    background: var(--background-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Game Status */
+.game-status {
+    text-align: center;
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border-light);
+    margin-top: var(--space-4);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-live {
+    background: rgba(0, 212, 170, 0.1);
+    color: var(--iby-success);
+    border: 1px solid rgba(0, 212, 170, 0.3);
+}
+
+.status-upcoming {
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.status-final {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+}
+
+.status-postponed {
+    background: rgba(255, 167, 38, 0.1);
+    color: var(--iby-warning);
+    border: 1px solid rgba(255, 167, 38, 0.3);
+}
+
+/* Live Indicator Animation */
+.status-live .live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--iby-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* Game Meta Information */
+.game-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.game-meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/* Betting Lines (if included) */
+.betting-lines {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-light);
+}
+
+.line-item {
+    text-align: center;
+    padding: var(--space-2);
+    background: var(--background-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.line-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: var(--space-1);
+}
+
+.line-value {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Loading State for Game Cards */
+.game-card.loading {
+    background: linear-gradient(90deg, 
+        var(--background-secondary) 25%, 
+        var(--background-tertiary) 50%, 
+        var(--background-secondary) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border: 1px solid transparent;
+}
+
+.game-card.loading * {
+    visibility: hidden;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Empty State */
+.games-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-6);
+    color: var(--text-muted);
+}
+
+.games-empty-icon {
+    font-size: 64px;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.games-empty-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.games-empty-description {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .game-card {
+        padding: var(--space-4);
+    }
+    
+    .team-matchup {
+        gap: var(--space-3);
+    }
+    
+    .team-logo {
+        width: 48px;
+        height: 48px;
+        font-size: var(--text-lg);
+    }
+    
+    .team-name {
+        font-size: var(--text-base);
+    }
+    
+    .team-score {
+        font-size: var(--text-2xl);
+    }
+    
+    .betting-lines {
+        grid-template-columns: 1fr;
+        gap: var(--space-1);
+    }
+}
+
+/* Dark Theme Support */
+@media (prefers-color-scheme: dark) {
+    .game-card {
+        background: var(--dark-bg-secondary);
+        border-color: var(--dark-border-light);
+    }
+    
+    .team-logo {
+        background: var(--dark-bg-tertiary);
+        border-color: var(--dark-border-light);
+    }
+    
+    .vs-text,
+    .line-item {
+        background: var(--dark-bg-tertiary);
+        border-color: var(--dark-border-light);
+    }
+}
+
+/* Special Effects */
+.game-card-featured {
+    position: relative;
+    background: linear-gradient(135deg, 
+        rgba(50, 130, 246, 0.05) 0%, 
+        rgba(0, 212, 170, 0.05) 100%
+    );
+    border: 1px solid var(--iby-bright);
+}
+
+.game-card-featured::after {
+    content: 'FEATURED';
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    background: var(--iby-bright);
+    color: var(--white);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Hover Effects for Interactive Elements */
+.game-card .team-logo:hover {
+    transform: scale(1.05);
+}
+
+.line-item:hover {
+    background: var(--background-tertiary);
+    cursor: pointer;
+}
+
+/* Accessibility */
+.game-card:focus-visible {
+    outline: 2px solid var(--iby-bright);
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .game-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .game-card:hover {
+        transform: none;
+    }
+}

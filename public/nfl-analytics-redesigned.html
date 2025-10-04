@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Analytics - IBY Pro Suite</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- IBY Sophisticated Theme - Main Stylesheet -->
+    <link rel="stylesheet" href="iby-sophisticated-theme.css">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Dynamic System Scripts - Load First -->
+    <script src="dom-ready-fix.js"></script>
+    <script src="circuit-breaker.js"></script>
+    <script src="resilient-data-service.js"></script>
+    <script src="api-sports-service.js"></script>
+    <script src="multi-source-data-aggregator.js"></script>
+    <script src="dynamic-site-controller.js"></script>
+    <script src="live-data-bindings.js"></script>
+    <script src="dynamic-integration-manager.js"></script>
+    <script src="dynamic-validation.js"></script>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand">
+                <i class="fas fa-chart-line"></i>
+                <span>NFL Analytics</span>
+                <span class="iby-signature">by IBY</span>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#live-games" class="nav-link" data-view="live-games">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <span>Live Games</span>
+                </a>
+                <a href="#analytics" class="nav-link" data-view="analytics">
+                    <i class="fas fa-brain"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#player-props" class="nav-link" data-view="player-props">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Player Props</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="status-indicator status-live">
+                    <i class="fas fa-circle"></i>
+                    <span>Live</span>
+                </div>
+                <button class="btn btn-ghost" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dynamic Status Indicator -->
+    <div class="dynamic-status-indicator">
+        <i class="fas fa-broadcast-tower"></i>
+        <span>FULLY DYNAMIC</span>
+    </div>
+
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <!-- Hero Section -->
+            <div class="view-header">
+                <h1>NFL Pro Analytics Suite</h1>
+                <p class="text-secondary">Professional-grade NFL analytics and betting intelligence</p>
+            </div>
+
+            <!-- Key Metrics Dashboard -->
+            <div class="dashboard-grid">
+                <!-- Main Content Area -->
+                <div class="main-content">
+                    <!-- Quick Stats -->
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <h3 class="card-title">Live NFL Overview</h3>
+                            <p class="card-subtitle">Real-time game data and insights</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="games-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="totalGames">--</div>
+                                    <div class="metric-label">Games Today</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value" id="liveGames">--</div>
+                                    <div class="metric-label">Live Now</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value" id="completedGames">--</div>
+                                    <div class="metric-label">Completed</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value" id="upcomingGames">--</div>
+                                    <div class="metric-label">Upcoming</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Games Section -->
+                    <div class="games-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Today's Games</h2>
+                            <button class="btn btn-secondary" id="viewAllGames">
+                                <i class="fas fa-external-link-alt"></i>
+                                View All
+                            </button>
+                        </div>
+                        
+                        <div id="gamesGrid" class="games-grid dynamic-content" data-dynamic="true">
+                            <!-- Loading State -->
+                            <div class="game-card skeleton" style="height: 200px;"></div>
+                            <div class="game-card skeleton" style="height: 200px;"></div>
+                            <div class="game-card skeleton" style="height: 200px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="flex gap-4">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-brain"></i>
+                                    AI Predictions
+                                </button>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Team Stats
+                                </button>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-trophy"></i>
+                                    Fantasy Hub
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- AI Insights Widget -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h4 class="widget-title">
+                                <i class="fas fa-brain"></i>
+                                AI Insights
+                            </h4>
+                        </div>
+                        <div class="widget-body">
+                            <div class="insight-item">
+                                <div class="insight-icon">🔥</div>
+                                <div class="insight-content">
+                                    <div class="insight-title">Hot Pick</div>
+                                    <div class="insight-desc">Chiefs -3.5 has 89% confidence</div>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">⚡</div>
+                                <div class="insight-content">
+                                    <div class="insight-title">Live Edge</div>
+                                    <div class="insight-desc">Under 47.5 showing value</div>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">🎯</div>
+                                <div class="insight-content">
+                                    <div class="insight-title">Prop Alert</div>
+                                    <div class="insight-desc">Mahomes O2.5 TDs +180</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Status Widget -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h4 class="widget-title">
+                                <i class="fas fa-cogs"></i>
+                                System Status
+                            </h4>
+                        </div>
+                        <div class="widget-body">
+                            <div class="status-item">
+                                <span class="status-label">Data Feed</span>
+                                <span class="status-indicator status-live">
+                                    <i class="fas fa-circle"></i>
+                                    Live
+                                </span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">AI Engine</span>
+                                <span class="status-indicator status-live">
+                                    <i class="fas fa-circle"></i>
+                                    Active
+                                </span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Updates</span>
+                                <span class="status-indicator status-live">
+                                    <i class="fas fa-circle"></i>
+                                    Real-time
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Widget -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h4 class="widget-title">
+                                <i class="fas fa-clock"></i>
+                                Recent Updates
+                            </h4>
+                        </div>
+                        <div class="widget-body">
+                            <div class="activity-item">
+                                <div class="activity-time">2m ago</div>
+                                <div class="activity-desc">Bills score updated</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">5m ago</div>
+                                <div class="activity-desc">New injury report</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">8m ago</div>
+                                <div class="activity-desc">Odds line moved</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Games View -->
+        <div id="live-games" class="view">
+            <div class="view-header">
+                <h1>Live NFL Games</h1>
+                <p class="text-secondary">Real-time scores and game updates</p>
+            </div>
+            
+            <div id="liveGamesGrid" class="games-grid dynamic-content" data-dynamic="true">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span style="margin-left: 12px;">Loading live games...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analytics" class="view">
+            <div class="view-header">
+                <h1>Advanced Analytics</h1>
+                <p class="text-secondary">Deep dive into team and player statistics</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Coming Soon</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div style="padding: 40px;">
+                        <i class="fas fa-chart-bar" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                        <p class="text-secondary">Advanced analytics dashboard is being developed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Props View -->
+        <div id="player-props" class="view">
+            <div class="view-header">
+                <h1>Player Props</h1>
+                <p class="text-secondary">Individual player betting opportunities</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Coming Soon</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div style="padding: 40px;">
+                        <i class="fas fa-gamepad" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                        <p class="text-secondary">Player props analysis is being developed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IBY Branding Footer -->
+    <div class="iby-brand-footer">
+        <div class="iby-signature-line">Sophisticated NFL Analytics Platform</div>
+        <div class="iby-signature-main">
+            <i class="fas fa-code"></i>
+            <span>Crafted by IBY</span>
+            <a href="https://instagram.com/benyakar94" class="iby-social-link" target="_blank">@benyakar94</a>
+        </div>
+    </div>
+
+    <!-- Custom Styles for Enhanced Design -->
+    <style>
+        .metric-card {
+            text-align: center;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            background: var(--background-secondary);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-medium);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--iby-bright);
+        }
+
+        .metric-value {
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            color: var(--iby-bright);
+            line-height: 1;
+            margin-bottom: var(--space-2);
+        }
+
+        .metric-label {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .insight-item,
+        .status-item,
+        .activity-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .insight-item:last-child,
+        .status-item:last-child,
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-icon {
+            font-size: var(--text-lg);
+            margin-right: var(--space-3);
+        }
+
+        .insight-content,
+        .status-label,
+        .activity-desc {
+            flex: 1;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--text-primary);
+        }
+
+        .insight-desc {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+        }
+
+        .activity-time {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <!-- Enhanced Application Logic -->
+    <script>
+        // Simple view switching logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation handling
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('.view');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active classes
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    views.forEach(v => v.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show corresponding view
+                    const viewId = this.getAttribute('data-view');
+                    const targetView = document.getElementById(viewId);
+                    if (targetView) {
+                        targetView.classList.add('active');
+                    }
+                });
+            });
+
+            // Refresh button
+            const refreshBtn = document.getElementById('refreshBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    this.querySelector('i').style.animation = 'spin 1s linear';
+                    setTimeout(() => {
+                        this.querySelector('i').style.animation = '';
+                    }, 1000);
+                    
+                    // Trigger data refresh if available
+                    if (window.dynamicSiteController && window.dynamicSiteController.refreshAllContent) {
+                        window.dynamicSiteController.refreshAllContent();
+                    }
+                });
+            }
+
+            // Load sample data
+            setTimeout(() => {
+                document.getElementById('totalGames').textContent = '16';
+                document.getElementById('liveGames').textContent = '3';
+                document.getElementById('completedGames').textContent = '8';
+                document.getElementById('upcomingGames').textContent = '5';
+            }, 1000);
+
+            console.log('🎨 IBY Sophisticated Theme loaded successfully');
+        });
+    </script>
+</body>
+</html>

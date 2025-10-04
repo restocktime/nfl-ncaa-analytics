@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Analytics - Emergency Test</title>
+    
+    <!-- Emergency styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 800px;
+        }
+        
+        .game-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .team {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .score {
+            color: #007bff;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        h1 { color: #1a1a2e; }
+        h2 { color: #16213e; }
+        
+        .status-live {
+            background: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🏈 NFL Analytics - Emergency Test</h1>
+    
+    <div class="test-card">
+        <h2>✅ Site Loading Test</h2>
+        <p><strong>Status:</strong> Page loaded successfully!</p>
+        <p><strong>Time:</strong> <span id="timestamp"></span></p>
+        <p><strong>Test Result:</strong> HTML, CSS, and JavaScript are working</p>
+    </div>
+
+    <div class="test-card">
+        <h2>🎮 Live NFL Games</h2>
+        
+        <div class="game-card">
+            <div>
+                <div class="team">Kansas City Chiefs</div>
+                <div>vs</div>
+                <div class="team">Buffalo Bills</div>
+            </div>
+            <div>
+                <div class="score">21 - 14</div>
+                <div class="status-live">LIVE Q3</div>
+            </div>
+        </div>
+        
+        <div class="game-card">
+            <div>
+                <div class="team">Dallas Cowboys</div>
+                <div>vs</div>
+                <div class="team">Philadelphia Eagles</div>
+            </div>
+            <div>
+                <div class="score">17 - 10</div>
+                <div class="status-live">LIVE Q2</div>
+            </div>
+        </div>
+        
+        <div class="game-card">
+            <div>
+                <div class="team">Green Bay Packers</div>
+                <div>vs</div>
+                <div class="team">Detroit Lions</div>
+            </div>
+            <div>
+                <div class="score">0 - 0</div>
+                <div style="background: #6c757d; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">1:00 PM</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>📊 System Status</h2>
+        <div id="system-status">
+            <p>✅ HTML Loading: <span style="color: green;">WORKING</span></p>
+            <p>✅ CSS Styling: <span style="color: green;">WORKING</span></p>
+            <p>✅ JavaScript: <span id="js-status" style="color: red;">LOADING...</span></p>
+            <p>❌ External APIs: <span style="color: orange;">BYPASSED</span></p>
+            <p>✅ Fallback Data: <span style="color: green;">ACTIVE</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Test JavaScript functionality
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        document.getElementById('js-status').innerHTML = '<span style="color: green;">WORKING</span>';
+        
+        console.log('🧪 Emergency test page loaded successfully');
+        console.log('✅ If you can see this page, the basic HTML/CSS/JS is working');
+        console.log('🔍 The white screen issue is likely caused by API dependencies or complex JavaScript');
+        
+        // Show we can render content dynamically
+        setTimeout(() => {
+            const statusDiv = document.getElementById('system-status');
+            statusDiv.innerHTML += '<p>✅ Dynamic Content: <span style="color: green;">WORKING</span></p>';
+        }, 1000);
+    </script>
+</body>
+</html>
