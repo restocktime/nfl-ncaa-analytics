@@ -7,8 +7,9 @@
 class ESPNLiveRosterAPI {
     constructor() {
         this.baseUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl';
+        this.coreApiUrl = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl';
         this.cache = new Map();
-        this.cacheTimeout = 10 * 60 * 1000; // 10 minutes for live data
+        this.cacheTimeout = 5 * 60 * 1000; // 5 minutes for more current data
         this.teamIdMap = {
             'Arizona Cardinals': 22, 'Atlanta Falcons': 1, 'Baltimore Ravens': 33, 'Buffalo Bills': 2,
             'Carolina Panthers': 29, 'Chicago Bears': 3, 'Cincinnati Bengals': 4, 'Cleveland Browns': 5,
@@ -45,16 +46,33 @@ class ESPNLiveRosterAPI {
         try {
             console.log(`🔄 Fetching live ESPN roster for ${teamName} (ID: ${teamId})`);
             
-            const response = await fetch(
+            // Try multiple endpoints for current data
+            let response;
+            const endpoints = [
+                `${this.coreApiUrl}/seasons/2025/teams/${teamId}/athletes?limit=100`,
                 `${this.baseUrl}/teams/${teamId}?enable=roster,projection,stats`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                `${this.baseUrl}/teams/${teamId}/roster`
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    response = await fetch(endpoint, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        console.log(`✅ Using endpoint: ${endpoint}`);
+                        break;
                     }
+                } catch (err) {
+                    console.log(`❌ Endpoint failed: ${endpoint}`);
+                    continue;
                 }
-            );
+            }
 
             if (!response.ok) {
                 throw new Error(`ESPN API error: ${response.status}`);

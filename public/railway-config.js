@@ -44,7 +44,7 @@ window.NFL_FALLBACK_API = {
     ],
     players: {
         'Las Vegas Raiders': [
-            { name: 'Jeff Driskel', position: 'QB', team: 'Las Vegas Raiders', experience_years: 8 },
+            { name: 'Geno Smith', position: 'QB', team: 'Las Vegas Raiders', experience_years: 14 },
             { name: 'Aidan O\'Connell', position: 'QB', team: 'Las Vegas Raiders', experience_years: 3 },
             { name: 'Jakobi Meyers', position: 'WR', team: 'Las Vegas Raiders', experience_years: 6 },
             { name: 'Tre Tucker', position: 'WR', team: 'Las Vegas Raiders', experience_years: 2 },
@@ -95,9 +95,8 @@ window.NFL_FALLBACK_API = {
             { name: 'A.J. Brown', position: 'WR', team: 'Philadelphia Eagles', experience_years: 6 }
         ],
         'Baltimore Ravens': [
-            { name: 'Lamar Jackson', position: 'QB', team: 'Baltimore Ravens', experience_years: 8 },
+            { name: 'Cooper Rush', position: 'QB', team: 'Baltimore Ravens', experience_years: 8 },
             { name: 'Tyler Huntley', position: 'QB', team: 'Baltimore Ravens', experience_years: 5 },
-            { name: 'Josh Johnson', position: 'QB', team: 'Baltimore Ravens', experience_years: 16 },
             { name: 'DeAndre Hopkins', position: 'WR', team: 'Baltimore Ravens', experience_years: 13 },
             { name: 'Zay Flowers', position: 'WR', team: 'Baltimore Ravens', experience_years: 2 },
             { name: 'Mark Andrews', position: 'TE', team: 'Baltimore Ravens', experience_years: 8 },
@@ -111,7 +110,7 @@ window.NFL_FALLBACK_API = {
         ],
     },
     injuries: [
-        { name: 'Lamar Jackson', team: 'Baltimore Ravens', position: 'QB', injury: 'hamstring', status: 'QUESTIONABLE' },
+        { name: 'Lamar Jackson', team: 'Baltimore Ravens', position: 'QB', injury: 'hamstring', status: 'OUT' },
         { name: 'Bucky Irving', team: 'Tampa Bay Buccaneers', position: 'RB', injury: 'foot', status: 'OUT' },
         { name: 'Tyreek Hill', team: 'Miami Dolphins', position: 'WR', injury: 'torn ACL', status: 'OUT - Season' },
         { name: 'Malik Nabers', team: 'New York Giants', position: 'WR', injury: 'torn ACL', status: 'OUT - Season' },
