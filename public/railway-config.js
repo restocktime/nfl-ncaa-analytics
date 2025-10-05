@@ -44,7 +44,7 @@ window.NFL_FALLBACK_API = {
     ],
     players: {
         'Las Vegas Raiders': [
-            { name: 'Geno Smith', position: 'QB', team: 'Las Vegas Raiders', experience_years: 14 },
+            { name: 'Jeff Driskel', position: 'QB', team: 'Las Vegas Raiders', experience_years: 8 },
             { name: 'Aidan O\'Connell', position: 'QB', team: 'Las Vegas Raiders', experience_years: 3 },
             { name: 'Jakobi Meyers', position: 'WR', team: 'Las Vegas Raiders', experience_years: 6 },
             { name: 'Tre Tucker', position: 'WR', team: 'Las Vegas Raiders', experience_years: 2 },
@@ -54,9 +54,9 @@ window.NFL_FALLBACK_API = {
         'Kansas City Chiefs': [
             { name: 'Patrick Mahomes', position: 'QB', team: 'Kansas City Chiefs', experience_years: 9 },
             { name: 'Travis Kelce', position: 'TE', team: 'Kansas City Chiefs', experience_years: 13 },
-            { name: 'DeAndre Hopkins', position: 'WR', team: 'Kansas City Chiefs', experience_years: 13 },
             { name: 'Xavier Worthy', position: 'WR', team: 'Kansas City Chiefs', experience_years: 1 },
-            { name: 'Isiah Pacheco', position: 'RB', team: 'Kansas City Chiefs', experience_years: 4 }
+            { name: 'Isiah Pacheco', position: 'RB', team: 'Kansas City Chiefs', experience_years: 4 },
+            { name: 'Kareem Hunt', position: 'RB', team: 'Kansas City Chiefs', experience_years: 8 }
         ],
         'Buffalo Bills': [
             { name: 'Josh Allen', position: 'QB', team: 'Buffalo Bills', experience_years: 8 },
@@ -96,7 +96,9 @@ window.NFL_FALLBACK_API = {
         ],
         'Baltimore Ravens': [
             { name: 'Lamar Jackson', position: 'QB', team: 'Baltimore Ravens', experience_years: 8 },
+            { name: 'Tyler Huntley', position: 'QB', team: 'Baltimore Ravens', experience_years: 5 },
             { name: 'Josh Johnson', position: 'QB', team: 'Baltimore Ravens', experience_years: 16 },
+            { name: 'DeAndre Hopkins', position: 'WR', team: 'Baltimore Ravens', experience_years: 13 },
             { name: 'Zay Flowers', position: 'WR', team: 'Baltimore Ravens', experience_years: 2 },
             { name: 'Mark Andrews', position: 'TE', team: 'Baltimore Ravens', experience_years: 8 },
             { name: 'Derrick Henry', position: 'RB', team: 'Baltimore Ravens', experience_years: 10 }
