@@ -22,6 +22,94 @@
             min-height: 100vh;
         }
 
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .password-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .password-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #a8d8ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .password-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .password-submit {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: #ffffff;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .password-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .password-error {
+            color: #ef4444;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .main-content.unlocked {
+            display: block;
+        }
+
         .header {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
@@ -361,20 +449,29 @@
     </style>
 </head>
 <body>
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-card">
+            <div class="password-title">
+                <i class="fas fa-lock"></i><br>
+                Premium Access
+            </div>
+            <p style="margin-bottom: 2rem; opacity: 0.9;">Enter password to access weekly NFL picks</p>
+            <input type="password" id="passwordInput" class="password-input" placeholder="Enter password">
+            <button onclick="checkPassword()" class="password-submit">
+                <i class="fas fa-key"></i> Unlock Access
+            </button>
+            <div id="passwordError" class="password-error"></div>
+        </div>
+    </div>
     <header class="header">
         <div class="container">
             <div class="header-content">
                 <a href="/" class="logo">
                     <i class="fas fa-football-ball"></i> SundayEdgePro
                 </a>
-                <nav>
-                    <ul class="nav-links">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/player-props-hub.html">Props Hub</a></li>
-                        <li><a href="/weekly-nfl-picks.html">Weekly Picks</a></li>
-                        <li><a href="/nfl-analytics.html">Analytics</a></li>
-                    </ul>
-                </nav>
+                <div class="access-info">
+                    <span style="font-size: 0.9rem; opacity: 0.8;">🔒 Premium Access • Week 5</span>
+                </div>
             </div>
         </div>
     </header>
@@ -643,6 +740,37 @@
     </footer>
 
     <script>
+        // Password protection
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('passwordError');
+            
+            if (password === 'IBY') {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.querySelector('.main-content').classList.add('unlocked');
+                localStorage.setItem('weeklyPicksAccess', 'granted');
+            } else {
+                errorDiv.textContent = 'Incorrect password. Please try again.';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // Check if already authenticated
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('weeklyPicksAccess') === 'granted') {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.querySelector('.main-content').classList.add('unlocked');
+            }
+            
+            // Allow Enter key to submit password
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        });
+
         // Week tab switching
         document.querySelectorAll('.week-tab').forEach(tab => {
             tab.addEventListener('click', function() {
