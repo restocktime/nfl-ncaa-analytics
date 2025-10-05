@@ -99,6 +99,12 @@ window.NFL_FALLBACK_API = {
             { name: 'DeAndre Hopkins', position: 'WR', team: 'Baltimore Ravens', experience_years: 13 },
             { name: 'Mark Andrews', position: 'TE', team: 'Baltimore Ravens', experience_years: 8 },
             { name: 'Derrick Henry', position: 'RB', team: 'Baltimore Ravens', experience_years: 10 }
+        ],
+        'New York Giants': [
+            { name: 'Russell Wilson', position: 'QB', team: 'New York Giants', experience_years: 13 },
+            { name: 'Jaxson Dart', position: 'QB', team: 'New York Giants', experience_years: 1 },
+            { name: 'Darius Slayton', position: 'WR', team: 'New York Giants', experience_years: 6 },
+            { name: 'Devin Singletary', position: 'RB', team: 'New York Giants', experience_years: 6 }
         ]
     },
     injuries: [
