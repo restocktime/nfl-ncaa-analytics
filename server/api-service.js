@@ -1,453 +1,189 @@
-/**
- * Sunday Edge Pro - Secure API Service Backend
- * Handles all API requests with proper key management and caching
- */
-
 const express = require('express');
 const cors = require('cors');
-const fetch = require('node-fetch');
-const rateLimit = require('express-rate-limit');
-require('dotenv').config();
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Enable CORS for your domain - Allow all Vercel/Netlify deployments
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (mobile apps, etc)
-        if (!origin) return callback(null, true);
-        
-        // Allow all localhost and local development
-        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-            return callback(null, true);
-        }
-        
-        // Allow specific domains
-        const allowedDomains = [
-            'vercel.app',
-            'netlify.app',
-            'railway.app'
-        ];
-        
-        // Check if origin contains any allowed domain
-        if (allowedDomains.some(domain => origin.includes(domain))) {
-            return callback(null, true);
-        }
-        
-        // For debugging - log rejected origins
-        console.log('❌ CORS rejected origin:', origin);
-        return callback(new Error('Not allowed by CORS'), false);
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors());
 app.use(express.json());
 
-// Rate limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.'
-});
-app.use(limiter);
+// NFL Teams
+const teams = [
+    { id: 1, name: 'Kansas City Chiefs', abbreviation: 'KC' },
+    { id: 2, name: 'Buffalo Bills', abbreviation: 'BUF' },
+    { id: 3, name: 'Las Vegas Raiders', abbreviation: 'LV' },
+    { id: 4, name: 'Indianapolis Colts', abbreviation: 'IND' },
+    { id: 5, name: 'San Francisco 49ers', abbreviation: 'SF' },
+    { id: 6, name: 'Los Angeles Rams', abbreviation: 'LAR' },
+    { id: 7, name: 'Dallas Cowboys', abbreviation: 'DAL' },
+    { id: 8, name: 'Philadelphia Eagles', abbreviation: 'PHI' },
+    { id: 9, name: 'Green Bay Packers', abbreviation: 'GB' },
+    { id: 10, name: 'Detroit Lions', abbreviation: 'DET' },
+    { id: 11, name: 'Baltimore Ravens', abbreviation: 'BAL' },
+    { id: 12, name: 'Pittsburgh Steelers', abbreviation: 'PIT' },
+    { id: 13, name: 'Cincinnati Bengals', abbreviation: 'CIN' },
+    { id: 14, name: 'Miami Dolphins', abbreviation: 'MIA' },
+    { id: 15, name: 'New York Jets', abbreviation: 'NYJ' },
+    { id: 16, name: 'New England Patriots', abbreviation: 'NE' },
+    { id: 17, name: 'Houston Texans', abbreviation: 'HOU' },
+    { id: 18, name: 'Tennessee Titans', abbreviation: 'TEN' },
+    { id: 19, name: 'Jacksonville Jaguars', abbreviation: 'JAX' },
+    { id: 20, name: 'Cleveland Browns', abbreviation: 'CLE' },
+    { id: 21, name: 'Denver Broncos', abbreviation: 'DEN' },
+    { id: 22, name: 'Los Angeles Chargers', abbreviation: 'LAC' },
+    { id: 23, name: 'Arizona Cardinals', abbreviation: 'ARI' },
+    { id: 24, name: 'Seattle Seahawks', abbreviation: 'SEA' },
+    { id: 25, name: 'Minnesota Vikings', abbreviation: 'MIN' },
+    { id: 26, name: 'Chicago Bears', abbreviation: 'CHI' },
+    { id: 27, name: 'Tampa Bay Buccaneers', abbreviation: 'TB' },
+    { id: 28, name: 'Atlanta Falcons', abbreviation: 'ATL' },
+    { id: 29, name: 'New Orleans Saints', abbreviation: 'NO' },
+    { id: 30, name: 'Carolina Panthers', abbreviation: 'CAR' },
+    { id: 31, name: 'New York Giants', abbreviation: 'NYG' },
+    { id: 32, name: 'Washington Commanders', abbreviation: 'WAS' }
+];
 
-// API Keys from environment variables (SECURE)
-const API_KEYS = {
-    ODDS_API: process.env.ODDS_API_KEY || '22e59e4eccd8562ad4b697aeeaccb0fb',
-    ESPN_API: process.env.ESPN_API_KEY,
-    RAPID_API: process.env.RAPID_API_KEY
+// Key Players (Geno Smith as Raiders QB as confirmed)
+const players = {
+    'Kansas City Chiefs': [
+        { name: 'Patrick Mahomes', position: 'QB', team: 'Kansas City Chiefs', experience_years: 8 },
+        { name: 'Travis Kelce', position: 'TE', team: 'Kansas City Chiefs', experience_years: 12 },
+        { name: 'DeAndre Hopkins', position: 'WR', team: 'Kansas City Chiefs', experience_years: 12 },
+        { name: 'Isiah Pacheco', position: 'RB', team: 'Kansas City Chiefs', experience_years: 3 },
+        { name: 'Kareem Hunt', position: 'RB', team: 'Kansas City Chiefs', experience_years: 8 }
+    ],
+    'Las Vegas Raiders': [
+        { name: 'Geno Smith', position: 'QB', team: 'Las Vegas Raiders', experience_years: 12 },
+        { name: 'Gardner Minshew II', position: 'QB', team: 'Las Vegas Raiders', experience_years: 6 },
+        { name: 'Aidan O\'Connell', position: 'QB', team: 'Las Vegas Raiders', experience_years: 2 },
+        { name: 'Davante Adams', position: 'WR', team: 'Las Vegas Raiders', experience_years: 11 },
+        { name: 'Brock Bowers', position: 'TE', team: 'Las Vegas Raiders', experience_years: 1 },
+        { name: 'Alexander Mattison', position: 'RB', team: 'Las Vegas Raiders', experience_years: 6 }
+    ],
+    'Buffalo Bills': [
+        { name: 'Josh Allen', position: 'QB', team: 'Buffalo Bills', experience_years: 7 },
+        { name: 'Stefon Diggs', position: 'WR', team: 'Buffalo Bills', experience_years: 10 },
+        { name: 'James Cook', position: 'RB', team: 'Buffalo Bills', experience_years: 3 },
+        { name: 'Dalton Kincaid', position: 'TE', team: 'Buffalo Bills', experience_years: 2 }
+    ],
+    'Indianapolis Colts': [
+        { name: 'Anthony Richardson', position: 'QB', team: 'Indianapolis Colts', experience_years: 2 },
+        { name: 'Daniel Jones', position: 'QB', team: 'Indianapolis Colts', experience_years: 6 },
+        { name: 'Jonathan Taylor', position: 'RB', team: 'Indianapolis Colts', experience_years: 5 },
+        { name: 'Michael Pittman Jr.', position: 'WR', team: 'Indianapolis Colts', experience_years: 5 }
+    ],
+    'San Francisco 49ers': [
+        { name: 'Brock Purdy', position: 'QB', team: 'San Francisco 49ers', experience_years: 3 },
+        { name: 'Christian McCaffrey', position: 'RB', team: 'San Francisco 49ers', experience_years: 8 },
+        { name: 'Deebo Samuel', position: 'WR', team: 'San Francisco 49ers', experience_years: 6 },
+        { name: 'George Kittle', position: 'TE', team: 'San Francisco 49ers', experience_years: 8 }
+    ],
+    'Los Angeles Rams': [
+        { name: 'Matthew Stafford', position: 'QB', team: 'Los Angeles Rams', experience_years: 16 },
+        { name: 'Kyren Williams', position: 'RB', team: 'Los Angeles Rams', experience_years: 3 },
+        { name: 'Cooper Kupp', position: 'WR', team: 'Los Angeles Rams', experience_years: 8 },
+        { name: 'Puka Nacua', position: 'WR', team: 'Los Angeles Rams', experience_years: 2 }
+    ]
 };
 
-// Cache for API responses
-const cache = new Map();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-class APIService {
-    constructor() {
-        this.baseURLs = {
-            oddsAPI: 'https://api.the-odds-api.com/v4',
-            espnAPI: 'https://site.api.espn.com/apis/site/v2'
-        };
-    }
-
-    // Generic cache handler
-    getCachedData(key) {
-        const cached = cache.get(key);
-        if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
-            return cached.data;
-        }
-        return null;
-    }
-
-    setCachedData(key, data) {
-        cache.set(key, {
-            data,
-            timestamp: Date.now()
-        });
-    }
-
-    // Fetch NFL odds from The Odds API
-    async fetchNFLOdds(sport = 'americanfootball_nfl') {
-        const cacheKey = `odds_${sport}`;
-        const cached = this.getCachedData(cacheKey);
-        if (cached) {
-            return cached;
-        }
-
-        try {
-            const url = `${this.baseURLs.oddsAPI}/sports/${sport}/odds?apiKey=${API_KEYS.ODDS_API}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
-            
-            console.log(`📡 Fetching odds from: ${sport}`);
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`Odds API error: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            
-            // Transform data for consistent format
-            const transformedData = {
-                success: true,
-                sport,
-                games: data.map(game => ({
-                    gameId: game.id,
-                    homeTeam: game.home_team,
-                    awayTeam: game.away_team,
-                    gameTime: game.commence_time,
-                    bets: this.transformBookmakerData(game.bookmakers || [])
-                })),
-                totalGames: data.length,
-                lastUpdate: new Date().toISOString(),
-                provider: 'The Odds API'
-            };
-
-            this.setCachedData(cacheKey, transformedData);
-            return transformedData;
-
-        } catch (error) {
-            console.error('❌ Error fetching odds:', error);
-            return {
-                success: false,
-                error: error.message,
-                games: [],
-                totalGames: 0
-            };
-        }
-    }
-
-    // Transform bookmaker data to consistent format
-    transformBookmakerData(bookmakers) {
-        if (!bookmakers.length) return {};
-
-        const bets = {};
-        
-        // Use first available bookmaker for simplicity
-        const bookmaker = bookmakers[0];
-        if (!bookmaker.markets) return {};
-
-        bookmaker.markets.forEach(market => {
-            switch (market.key) {
-                case 'h2h': // Moneyline
-                    bets.moneyline = {
-                        home: { odds: market.outcomes.find(o => o.name === bookmaker.title)?.price || 0 },
-                        away: { odds: market.outcomes.find(o => o.name !== bookmaker.title)?.price || 0 }
-                    };
-                    break;
-                case 'spreads':
-                    const homeSpread = market.outcomes.find(o => o.name === bookmaker.title);
-                    const awaySpread = market.outcomes.find(o => o.name !== bookmaker.title);
-                    bets.spread = {
-                        home: { line: homeSpread?.point || 0, odds: homeSpread?.price || 0 },
-                        away: { line: awaySpread?.point || 0, odds: awaySpread?.price || 0 }
-                    };
-                    break;
-                case 'totals':
-                    const over = market.outcomes.find(o => o.name === 'Over');
-                    const under = market.outcomes.find(o => o.name === 'Under');
-                    bets.totals = {
-                        over: { line: over?.point || 0, odds: over?.price || 0 },
-                        under: { line: under?.point || 0, odds: under?.price || 0 }
-                    };
-                    break;
-            }
-        });
-
-        return bets;
-    }
-
-    // Fetch ESPN live scores (no API key needed)
-    async fetchESPNScores() {
-        const cacheKey = 'espn_scores';
-        const cached = this.getCachedData(cacheKey);
-        if (cached) {
-            return cached;
-        }
-
-        try {
-            const url = `${this.baseURLs.espnAPI}/sports/football/nfl/scoreboard`;
-            console.log('📡 Fetching ESPN live scores...');
-            
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`ESPN API error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            const transformedData = {
-                success: true,
-                games: data.events?.map(event => {
-                    const competition = event.competitions[0];
-                    const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
-                    const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
-                    
-                    return {
-                        gameId: event.id,
-                        homeTeam: {
-                            name: homeTeam.team.displayName,
-                            abbreviation: homeTeam.team.abbreviation,
-                            score: homeTeam.score || '0'
-                        },
-                        awayTeam: {
-                            name: awayTeam.team.displayName,
-                            abbreviation: awayTeam.team.abbreviation,
-                            score: awayTeam.score || '0'
-                        },
-                        status: event.status.type.description,
-                        isLive: event.status.type.name === 'STATUS_IN_PROGRESS',
-                        gameTime: event.date
-                    };
-                }) || [],
-                lastUpdate: new Date().toISOString(),
-                provider: 'ESPN'
-            };
-
-            this.setCachedData(cacheKey, transformedData);
-            return transformedData;
-
-        } catch (error) {
-            console.error('❌ Error fetching ESPN scores:', error);
-            return {
-                success: false,
-                error: error.message,
-                games: []
-            };
-        }
-    }
-
-    // Get comprehensive NFL data (includes preseason)
-    async getComprehensiveNFLData() {
-        try {
-            console.log('🔄 Fetching comprehensive NFL data (regular season + preseason)...');
-            
-            const [regularSeasonData, preseasonData, scoresData] = await Promise.all([
-                this.fetchNFLOdds('americanfootball_nfl'),
-                this.fetchNFLOdds('americanfootball_nfl_preseason'),
-                this.fetchESPNScores()
-            ]);
-
-            // Combine regular season and preseason games
-            const allGames = [];
-            if (regularSeasonData.success) {
-                allGames.push(...regularSeasonData.games.map(g => ({...g, season: 'regular'})));
-            }
-            if (preseasonData.success) {
-                allGames.push(...preseasonData.games.map(g => ({...g, season: 'preseason'})));
-            }
-
-            const combinedOddsData = {
-                success: true,
-                games: allGames,
-                totalGames: allGames.length,
-                regularSeasonGames: regularSeasonData.success ? regularSeasonData.games.length : 0,
-                preseasonGames: preseasonData.success ? preseasonData.games.length : 0,
-                lastUpdate: new Date().toISOString(),
-                provider: 'The Odds API'
-            };
-
-            return {
-                success: true,
-                odds: combinedOddsData,
-                liveScores: scoresData,
-                lastUpdate: new Date().toISOString()
-            };
-
-        } catch (error) {
-            console.error('❌ Error fetching comprehensive NFL data:', error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
+// Helper function
+function findTeam(identifier) {
+    const id = parseInt(identifier);
+    if (!isNaN(id)) return teams.find(team => team.id === id);
+    
+    const query = identifier.toLowerCase();
+    return teams.find(team => 
+        team.name.toLowerCase().includes(query) ||
+        team.abbreviation.toLowerCase() === query
+    );
 }
 
-const apiService = new APIService();
-
-// API Routes
-app.get('/api/status', (req, res) => {
-    const origin = req.get('origin') || req.get('host') || 'unknown';
-    console.log('📊 API status requested from:', origin);
-    res.json({
-        status: 'online',
-        timestamp: new Date().toISOString(),
-        apiKeys: {
-            oddsAPI: !!API_KEYS.ODDS_API,
-            espnAPI: !!API_KEYS.ESPN_API
-        },
-        requestOrigin: origin
-    });
-});
-
-// Get NFL odds
-app.get('/api/nfl/odds', async (req, res) => {
-    try {
-        const sport = req.query.sport || 'americanfootball_nfl';
-        const data = await apiService.fetchNFLOdds(sport);
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Get ESPN live scores
-app.get('/api/nfl/scores', async (req, res) => {
-    try {
-        const data = await apiService.fetchESPNScores();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Get comprehensive NFL data (odds + scores + preseason)
-app.get('/api/nfl/comprehensive', async (req, res) => {
-    try {
-        const data = await apiService.getComprehensiveNFLData();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Get all NFL games (regular season + preseason) 
-app.get('/api/nfl/all-games', async (req, res) => {
-    try {
-        const [regularSeasonData, preseasonData] = await Promise.all([
-            apiService.fetchNFLOdds('americanfootball_nfl'),
-            apiService.fetchNFLOdds('americanfootball_nfl_preseason')
-        ]);
-
-        const allGames = [];
-        if (regularSeasonData.success) {
-            allGames.push(...regularSeasonData.games.map(g => ({...g, season: 'regular'})));
-        }
-        if (preseasonData.success) {
-            allGames.push(...preseasonData.games.map(g => ({...g, season: 'preseason'})));
-        }
-
-        res.json({
-            success: true,
-            games: allGames,
-            totalGames: allGames.length,
-            regularSeasonGames: regularSeasonData.success ? regularSeasonData.games.length : 0,
-            preseasonGames: preseasonData.success ? preseasonData.games.length : 0,
-            lastUpdate: new Date().toISOString()
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Get today's games specifically (includes preseason)
-app.get('/api/nfl/today', async (req, res) => {
-    try {
-        const data = await apiService.getComprehensiveNFLData();
-        
-        if (!data.success) {
-            return res.status(500).json(data);
-        }
-
-        const today = new Date().toDateString();
-        const todaysGames = [];
-
-        // Filter ESPN live scores for today
-        if (data.liveScores && data.liveScores.games) {
-            data.liveScores.games.forEach(game => {
-                const gameDate = new Date(game.gameTime).toDateString();
-                if (gameDate === today) {
-                    todaysGames.push({
-                        ...game,
-                        hasLiveScore: true,
-                        source: 'ESPN'
-                    });
-                }
-            });
-        }
-
-        // Add odds data for today's games
-        if (data.odds && data.odds.games) {
-            data.odds.games.forEach(game => {
-                const gameDate = new Date(game.gameTime).toDateString();
-                if (gameDate === today) {
-                    const existingGame = todaysGames.find(g => 
-                        (g.homeTeam?.abbreviation === game.homeTeam || g.homeTeam?.name?.includes(game.homeTeam)) &&
-                        (g.awayTeam?.abbreviation === game.awayTeam || g.awayTeam?.name?.includes(game.awayTeam))
-                    );
-
-                    if (existingGame) {
-                        existingGame.bets = game.bets;
-                        existingGame.hasOdds = true;
-                        existingGame.season = game.season;
-                    } else {
-                        todaysGames.push({
-                            ...game,
-                            hasOdds: true,
-                            hasLiveScore: false,
-                            source: 'OddsAPI'
-                        });
-                    }
-                }
-            });
-        }
-
-        res.json({
-            success: true,
-            games: todaysGames,
-            totalGames: todaysGames.length,
-            lastUpdate: new Date().toISOString()
-        });
-
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Health check - Railway uses this endpoint
+// Routes
 app.get('/health', (req, res) => {
-    console.log('🏥 Health check requested');
-    res.status(200).json({ 
-        status: 'healthy', 
-        timestamp: new Date().toISOString(),
-        apiKeys: {
-            oddsAPI: !!API_KEYS.ODDS_API,
-            espnAPI: !!API_KEYS.ESPN_API
-        },
-        cors: 'enabled'
+    res.json({ status: 'OK', message: 'NFL API Running' });
+});
+
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'OK', message: 'NFL API Running' });
+});
+
+app.get('/api/nfl/teams', (req, res) => {
+    res.json({ success: true, data: teams, count: teams.length });
+});
+
+app.get('/api/nfl/players', (req, res) => {
+    const { team, position, limit = 100 } = req.query;
+    let allPlayers = [];
+    
+    Object.entries(players).forEach(([teamName, teamPlayers]) => {
+        teamPlayers.forEach(player => {
+            if (team && !player.team.toLowerCase().includes(team.toLowerCase())) return;
+            if (position && player.position !== position.toUpperCase()) return;
+            allPlayers.push(player);
+        });
+    });
+    
+    allPlayers = allPlayers.slice(0, parseInt(limit));
+    res.json({ success: true, data: allPlayers, count: allPlayers.length });
+});
+
+app.get('/api/nfl/team/:teamId/roster', (req, res) => {
+    const team = findTeam(req.params.teamId);
+    if (!team) {
+        return res.status(404).json({ success: false, error: 'Team not found' });
+    }
+    
+    const roster = players[team.name] || [];
+    res.json({
+        success: true,
+        team: team,
+        roster: roster,
+        count: roster.length
     });
 });
 
+app.get('/api/nfl/search/players', (req, res) => {
+    const { q } = req.query;
+    if (!q || q.length < 2) {
+        return res.status(400).json({ success: false, error: 'Query too short' });
+    }
+    
+    let results = [];
+    const query = q.toLowerCase();
+    
+    Object.entries(players).forEach(([teamName, teamPlayers]) => {
+        teamPlayers.forEach(player => {
+            if (player.name.toLowerCase().includes(query) ||
+                player.position.toLowerCase() === query) {
+                results.push(player);
+            }
+        });
+    });
+    
+    res.json({ success: true, data: results, count: results.length });
+});
 
-// Start server
+app.get('/api/nfl/injuries', (req, res) => {
+    res.json({ success: true, data: [], count: 0 });
+});
+
+app.get('/', (req, res) => {
+    res.json({
+        message: 'NFL Database API',
+        status: 'running',
+        endpoints: [
+            'GET /api/nfl/teams',
+            'GET /api/nfl/players', 
+            'GET /api/nfl/team/:id/roster',
+            'GET /api/nfl/search/players?q=query',
+            'GET /health'
+        ]
+    });
+});
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`🚀 Sunday Edge Pro API Service running on port ${PORT}`);
-    console.log(`📡 API Keys configured: ${Object.keys(API_KEYS).filter(k => API_KEYS[k]).join(', ')}`);
-    console.log(`🌐 CORS enabled for: *.vercel.app, *.netlify.app`);
-    console.log(`🐳 Docker deployment ready - ${new Date().toISOString()}`);
+    console.log(`🚀 NFL API running on port ${PORT}`);
+    console.log(`📊 ${teams.length} teams, ${Object.keys(players).length} team rosters loaded`);
+    console.log('✅ Geno Smith listed as Raiders QB');
 });
 
 module.exports = app;
