@@ -46,33 +46,18 @@ class ESPNLiveRosterAPI {
         try {
             console.log(`🔄 Fetching live ESPN roster for ${teamName} (ID: ${teamId})`);
             
-            // Try multiple endpoints for current data
-            let response;
-            const endpoints = [
-                `${this.coreApiUrl}/seasons/2025/teams/${teamId}/athletes?limit=100`,
-                `${this.baseUrl}/teams/${teamId}?enable=roster,projection,stats`,
-                `${this.baseUrl}/teams/${teamId}/roster`
-            ];
+            // Use the most current 2025 ESPN roster endpoint
+            const currentEndpoint = `${this.baseUrl}/teams/${teamId}/roster`;
+            console.log(`🔄 Using current 2025 ESPN endpoint: ${currentEndpoint}`);
             
-            for (const endpoint of endpoints) {
-                try {
-                    response = await fetch(endpoint, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        console.log(`✅ Using endpoint: ${endpoint}`);
-                        break;
-                    }
-                } catch (err) {
-                    console.log(`❌ Endpoint failed: ${endpoint}`);
-                    continue;
+            const response = await fetch(currentEndpoint, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)',
+                    'Referer': 'https://www.espn.com/'
                 }
-            }
+            });
 
             if (!response.ok) {
                 throw new Error(`ESPN API error: ${response.status}`);
@@ -98,39 +83,45 @@ class ESPNLiveRosterAPI {
      * Process ESPN roster response into our format
      */
     processESPNRosterData(espnData, teamName) {
-        if (!espnData?.team?.athletes) {
+        // Handle the 2025 roster endpoint structure
+        if (!espnData?.athletes && !espnData?.team?.athletes) {
             throw new Error('Invalid ESPN roster data structure');
         }
 
         const roster = [];
-        const athletes = espnData.team.athletes;
+        // The 2025 endpoint returns athletes directly in the root
+        const athletes = espnData.athletes || espnData.team?.athletes || [];
 
         for (const athlete of athletes) {
-            // Get player details
+            // Get player details from 2025 endpoint structure
             const player = {
-                name: athlete.displayName || athlete.name,
-                position: athlete.position?.abbreviation || 'UNK',
+                name: athlete.displayName || athlete.fullName || athlete.name,
+                position: athlete.position?.abbreviation || athlete.position || 'UNK',
                 team: teamName,
-                experience_years: this.calculateExperience(athlete.experience?.years),
-                jersey: athlete.jersey,
+                experience_years: this.calculateExperience(athlete.experience?.years || athlete.experience),
+                jersey: athlete.jersey || athlete.uniformNumber,
                 starter: this.determineStarterStatus(athlete),
                 injured: this.checkInjuryStatus(athlete),
-                espnId: athlete.id
+                espnId: athlete.id,
+                weight: athlete.weight,
+                height: athlete.height,
+                age: athlete.age
             };
 
-            // Filter for key positions
-            if (['QB', 'RB', 'WR', 'TE', 'K', 'DEF'].includes(player.position)) {
+            // Filter for key positions that impact betting
+            if (['QB', 'RB', 'WR', 'TE', 'K', 'DEF', 'DST'].includes(player.position)) {
                 roster.push(player);
             }
         }
 
         // Sort by starter status and position priority
         roster.sort((a, b) => {
-            const positionPriority = { 'QB': 1, 'RB': 2, 'WR': 3, 'TE': 4, 'K': 5, 'DEF': 6 };
+            const positionPriority = { 'QB': 1, 'RB': 2, 'WR': 3, 'TE': 4, 'K': 5, 'DEF': 6, 'DST': 7 };
             if (a.starter !== b.starter) return b.starter - a.starter;
             return (positionPriority[a.position] || 99) - (positionPriority[b.position] || 99);
         });
 
+        console.log(`✅ Processed ${roster.length} key players for ${teamName} from 2025 ESPN endpoint`);
         return roster;
     }
 
@@ -294,16 +285,19 @@ class ESPNLiveRosterAPI {
     }
 
     /**
-     * Get system status
+     * Get system status with 2025 endpoint test
      */
     async getSystemStatus() {
         try {
-            const testResponse = await fetch(`${this.baseUrl}/teams/12`); // Test with Chiefs
+            // Test the 2025 roster endpoint with Chiefs
+            const testResponse = await fetch(`${this.baseUrl}/teams/12/roster`);
             return {
                 status: testResponse.ok ? 'online' : 'degraded',
                 espnApi: testResponse.ok,
+                endpoint: `${this.baseUrl}/teams/{id}/roster`,
                 fallbackAvailable: !!window.NFL_FALLBACK_API,
-                lastUpdated: new Date().toISOString()
+                lastUpdated: new Date().toISOString(),
+                cacheTimeout: this.cacheTimeout / 1000 + ' seconds'
             };
         } catch (error) {
             return {
