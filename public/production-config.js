@@ -52,6 +52,10 @@ class ProductionConfig {
     }
     
     getApiUrl(endpoint = '') {
+        // Check if we should use fallback data instead of API calls
+        if (window.RAILWAY_API_URL === null && window.NFL_FALLBACK_API) {
+            return 'fallback'; // Signal to use embedded data
+        }
         return `${this.config.apiBaseUrl}${endpoint}`;
     }
     

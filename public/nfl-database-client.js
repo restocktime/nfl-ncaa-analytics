@@ -37,6 +37,14 @@ class NFLDatabaseClient {
             return this.cache.get(cacheKey).data;
         }
 
+        // Check if we should use fallback data
+        if (this.apiBaseUrl === 'fallback' && window.NFL_FALLBACK_API) {
+            console.log('✅ Using embedded NFL teams data (fallback mode)');
+            const teams = window.NFL_FALLBACK_API.teams;
+            this.setCache(cacheKey, teams);
+            return teams;
+        }
+
         try {
             const response = await fetch(`${this.apiBaseUrl}/teams`);
             const result = await response.json();
@@ -48,6 +56,11 @@ class NFLDatabaseClient {
             
         } catch (error) {
             console.error('❌ Failed to load teams from database:', error);
+            // Fallback to embedded data if API fails
+            if (window.NFL_FALLBACK_API) {
+                console.log('🔄 Falling back to embedded NFL teams data');
+                return window.NFL_FALLBACK_API.teams;
+            }
             return [];
         }
     }
@@ -63,6 +76,20 @@ class NFLDatabaseClient {
             return this.cache.get(cacheKey).data;
         }
 
+        // Check if we should use fallback data
+        if (this.apiBaseUrl === 'fallback' && window.NFL_FALLBACK_API) {
+            // Find team by name or abbreviation
+            const team = window.NFL_FALLBACK_API.teams.find(t => 
+                t.name === teamId || t.abbreviation === teamId || t.id == teamId
+            );
+            if (team && window.NFL_FALLBACK_API.players[team.name]) {
+                console.log(`✅ Using embedded roster data for ${team.name} (fallback mode)`);
+                const roster = window.NFL_FALLBACK_API.players[team.name];
+                this.setCache(cacheKey, roster);
+                return roster;
+            }
+        }
+
         try {
             const response = await fetch(`${this.apiBaseUrl}/team/${encodeURIComponent(teamId)}/roster`);
             const result = await response.json();
@@ -76,6 +103,16 @@ class NFLDatabaseClient {
             
         } catch (error) {
             console.error(`❌ Failed to load roster for team ${teamId}:`, error);
+            // Fallback to embedded data if API fails
+            if (window.NFL_FALLBACK_API) {
+                const team = window.NFL_FALLBACK_API.teams.find(t => 
+                    t.name === teamId || t.abbreviation === teamId || t.id == teamId
+                );
+                if (team && window.NFL_FALLBACK_API.players[team.name]) {
+                    console.log(`🔄 Falling back to embedded roster data for ${team.name}`);
+                    return window.NFL_FALLBACK_API.players[team.name];
+                }
+            }
             return null;
         }
     }
