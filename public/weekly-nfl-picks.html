@@ -229,6 +229,65 @@
             line-height: 1.5;
         }
 
+        .player-props {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .props-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #22c55e;
+        }
+
+        .prop {
+            margin: 0.3rem 0;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .lock-card {
+            border: 2px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+        }
+
+        .lock-badge {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: #ffffff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .injury-impact {
+            border: 2px solid #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+        }
+
+        .injury-badge {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: #ffffff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-time {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
         .injury-alert {
             background: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.3);
@@ -347,69 +406,164 @@
                 </div>
 
                 <div class="picks-grid">
-                    <div class="pick-card">
-                        <div class="matchup">Buffalo Bills vs New England Patriots</div>
+                    <!-- LOCK OF THE WEEK -->
+                    <div class="pick-card lock-card">
+                        <div class="lock-badge">🔥 LOCK OF THE WEEK</div>
+                        <div class="matchup">Buffalo Bills (-7) vs New England Patriots</div>
+                        <div class="game-time">8:20 PM ET - Sunday Night Football</div>
                         <div class="pick-info">
                             <div class="pick">Bills -7 ✅</div>
                             <div class="confidence">96% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>Lock of the Week:</strong> Josh Allen (8 years exp, 2024 MVP) at home in primetime. Patriots in full rebuild mode. Key weapons: Khalil Shakir, James Cook, Dalton Kincaid.
+                            <strong>Analysis:</strong> Josh Allen (8 years exp, 2024 MVP) vs Patriots backup QBs. Bills undefeated through Week 4.
+                            <br><strong>Key Players:</strong> Khalil Shakir (WR1), James Cook (4 years, Pro Bowl), Dalton Kincaid (3 years, TE)
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Josh Allen O/U 2.5 TD passes: <strong>OVER</strong> (92%)</div>
+                            <div class="prop">• James Cook O/U 75.5 rushing yards: <strong>OVER</strong> (85%)</div>
+                            <div class="prop">• Khalil Shakir O/U 5.5 receptions: <strong>OVER</strong> (slot target monster)</div>
                         </div>
                     </div>
 
+                    <!-- MONDAY NIGHT FOOTBALL -->
                     <div class="pick-card">
-                        <div class="matchup">Kansas City Chiefs @ Jacksonville Jaguars</div>
+                        <div class="matchup">Kansas City Chiefs (-7.5) @ Jacksonville Jaguars</div>
+                        <div class="game-time">8:15 PM ET - Monday Night Football</div>
                         <div class="pick-info">
                             <div class="pick">Chiefs -7.5 ✅</div>
                             <div class="confidence">94% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>Monday Night:</strong> Patrick Mahomes (9 years) desperate after 0-2 start. Travis Kelce + Rashee Rice leading receiving corps. Perfect bounce-back spot.
+                            <strong>Analysis:</strong> Patrick Mahomes (9 years exp) desperate after 0-2 start. Perfect bounce-back spot.
+                            <br><strong>Corrected Roster:</strong> Travis Kelce + Rashee Rice + Xavier Worthy (Hopkins now with Ravens)
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Patrick Mahomes O/U 2.5 TD passes: <strong>OVER</strong></div>
+                            <div class="prop">• Travis Kelce O/U 65.5 receiving yards: <strong>OVER</strong></div>
+                            <div class="prop">• Rashee Rice O/U 5.5 receptions: <strong>OVER</strong> (Chiefs WR1)</div>
                         </div>
                     </div>
 
-                    <div class="pick-card">
-                        <div class="matchup">Houston Texans @ Baltimore Ravens</div>
+                    <!-- MAJOR INJURY IMPACT -->
+                    <div class="pick-card injury-impact">
+                        <div class="injury-badge">🏥 INJURY IMPACT</div>
+                        <div class="matchup">Houston Texans (+4) @ Baltimore Ravens</div>
+                        <div class="game-time">1:00 PM ET - Early Games</div>
                         <div class="pick-info">
-                            <div class="pick">Texans +4 ✅</div>
+                            <div class="pick">TEXANS +4 ✅ (FLIPPED)</div>
                             <div class="confidence">89% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>Major Injury Impact:</strong> Lamar Jackson OUT (hamstring), Cooper Rush starting. Take points with better QB situation. Flipped from Ravens favorite.
+                            <strong>CRITICAL CHANGE:</strong> Lamar Jackson OUT (hamstring), Cooper Rush starting for Ravens.
+                            <br><strong>Value:</strong> Ravens from Super Bowl favorites to backup QB situation - take the points!
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Updated Props:</div>
+                            <div class="prop">• Cooper Rush O/U 1.5 TD passes: <strong>UNDER</strong> (backup QB)</div>
+                            <div class="prop">• Derrick Henry O/U 85.5 rushing yards: <strong>OVER</strong> (heavy workload)</div>
+                            <div class="prop">• DeAndre Hopkins O/U 4.5 receptions: <strong>UNDER</strong> (backup QB target)</div>
                         </div>
                     </div>
 
                     <div class="pick-card">
-                        <div class="matchup">Las Vegas Raiders @ Indianapolis Colts</div>
+                        <div class="matchup">Las Vegas Raiders @ Indianapolis Colts (-3)</div>
+                        <div class="game-time">1:00 PM ET - Early Games</div>
                         <div class="pick-info">
                             <div class="pick">Colts -3 ✅</div>
                             <div class="confidence">82% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>QB Matchup:</strong> Geno Smith (14 years, Raiders starter) vs Daniel Jones (8 years, Colts starter). Jonathan Taylor at home advantage. Monitor Brock Bowers status.
+                            <strong>QB Matchup:</strong> Geno Smith (14 years, Raiders starter) vs Daniel Jones (8 years, Colts starter)
+                            <br><strong>Key Factor:</strong> Brock Bowers QUESTIONABLE (knee) - major impact if out
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Jonathan Taylor O/U 85.5 rushing yards: <strong>OVER</strong></div>
+                            <div class="prop">• Jakobi Meyers O/U 4.5 receptions: <strong>OVER</strong> (Raiders WR1)</div>
+                            <div class="prop">• Michael Pittman Jr. O/U 5.5 receptions: <strong>OVER</strong> (8+ targets expected)</div>
                         </div>
                     </div>
 
                     <div class="pick-card">
-                        <div class="matchup">Denver Broncos @ Philadelphia Eagles</div>
+                        <div class="matchup">Denver Broncos @ Philadelphia Eagles (-6.5)</div>
+                        <div class="game-time">1:00 PM ET - Early Games</div>
                         <div class="pick-info">
                             <div class="pick">Eagles -6.5 ✅</div>
                             <div class="confidence">93% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>Elite Weapons:</strong> Jalen Hurts (Super Bowl champ) + Saquon Barkley + A.J. Brown. Eagles undefeated at home dome vs outdoor team.
+                            <strong>Elite Weapons:</strong> Jalen Hurts (6 years, Super Bowl champ) + Saquon Barkley + A.J. Brown
+                            <br><strong>Advantage:</strong> Eagles undefeated at home dome vs outdoor team
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Saquon Barkley O/U 95.5 rushing yards: <strong>OVER</strong></div>
+                            <div class="prop">• A.J. Brown O/U 6.5 receptions: <strong>OVER</strong></div>
+                            <div class="prop">• Jalen Hurts O/U 45.5 rushing yards: <strong>OVER</strong></div>
                         </div>
                     </div>
 
-                    <div class="pick-card">
-                        <div class="matchup">Tampa Bay Buccaneers @ Seattle Seahawks</div>
+                    <div class="pick-card injury-impact">
+                        <div class="injury-badge">🏥 INJURY IMPACT</div>
+                        <div class="matchup">Tampa Bay Buccaneers @ Seattle Seahawks (-2.5)</div>
+                        <div class="game-time">4:25 PM ET - Late Games</div>
                         <div class="pick-info">
                             <div class="pick">Seahawks -2.5 ✅</div>
                             <div class="confidence">89% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>Injury Factor:</strong> Bucky Irving OUT (foot, on crutches). West Coast early start + missing explosive RB = value on Seahawks.
+                            <strong>Injury Impact:</strong> Bucky Irving OUT (foot, on crutches) - Bucs lose explosive RB
+                            <br><strong>Edge:</strong> West Coast early start + missing key offensive weapon
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Rachaad White O/U 65.5 rushing yards: <strong>UNDER</strong> (backup RB)</div>
+                            <div class="prop">• DK Metcalf O/U 5.5 receptions: <strong>OVER</strong></div>
+                            <div class="prop">• Kenneth Walker III O/U 85.5 rushing yards: <strong>OVER</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- SEASON-ENDING INJURY IMPACT -->
+                    <div class="pick-card injury-impact">
+                        <div class="injury-badge">💔 SEASON ENDER</div>
+                        <div class="matchup">Miami Dolphins @ Carolina Panthers (+7)</div>
+                        <div class="game-time">1:00 PM ET - Early Games</div>
+                        <div class="pick-info">
+                            <div class="pick">Panthers +7 ✅</div>
+                            <div class="confidence">91% Confidence (MASSIVELY INCREASED)</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Season-Ending Impact:</strong> Tyreek Hill OUT (torn ACL) - Dolphins offense completely different
+                            <br><strong>Value:</strong> Panthers getting massive value - spread doesn't account for Hill absence
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Tua Tagovailoa O/U 275.5 passing yards: <strong>UNDER</strong> (no Hill)</div>
+                            <div class="prop">• Bryce Young O/U 1.5 TD passes: <strong>OVER</strong> (desperation mode)</div>
+                            <div class="prop">• Jaylen Waddle O/U 75.5 receiving yards: <strong>UNDER</strong> (more coverage)</div>
+                        </div>
+                    </div>
+
+                    <!-- ADDITIONAL VALUE PLAYS -->
+                    <div class="pick-card">
+                        <div class="matchup">New York Giants @ New Orleans Saints (-6.5)</div>
+                        <div class="game-time">1:00 PM ET - Early Games</div>
+                        <div class="pick-info">
+                            <div class="pick">Saints -6.5 ✅</div>
+                            <div class="confidence">88% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Injury Factor:</strong> Malik Nabers OUT (torn ACL) - Giants lost their #1 WR
+                            <br><strong>Value:</strong> Saints getting extra value with Giants' depleted receiving corps
+                        </div>
+                        <div class="player-props">
+                            <div class="props-title">🎯 Player Props:</div>
+                            <div class="prop">• Alvin Kamara O/U 85.5 rushing yards: <strong>OVER</strong></div>
+                            <div class="prop">• Chris Olave O/U 6.5 receptions: <strong>OVER</strong></div>
+                            <div class="prop">• Daniel Jones O/U 225.5 passing yards: <strong>UNDER</strong> (no Nabers)</div>
                         </div>
                     </div>
                 </div>
