@@ -56,8 +56,18 @@ class ESPNLiveRosterAPI {
                     'Accept': 'application/json',
                     'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)',
                     'Referer': 'https://www.espn.com/'
-                }
+                },
+                mode: 'cors'
             });
+            
+            console.log(`📡 ESPN API Response: ${response.status} for ${teamName}`);
+            
+            if (!response.ok) {
+                console.warn(`❌ ESPN API failed: ${response.status} ${response.statusText}`);
+                if (response.status === 403 || response.status === 429) {
+                    console.warn('🚫 CORS or rate limiting detected, using fallback immediately');
+                }
+            }
 
             if (!response.ok) {
                 throw new Error(`ESPN API error: ${response.status}`);
