@@ -127,14 +127,14 @@
 
 **Championship Pedigree Analysis**:
 - Patrick Mahomes (8 years exp) in primetime
-- Travis Kelce (12 years exp) + DeAndre Hopkins (12 years exp) connection
+- Travis Kelce (13 years exp) + Rashee Rice (2 years exp) + Xavier Worthy (rookie) receiving corps
 - Jaguars home field negated by primetime stage
 - Chiefs 12-3 ATS as road favorites in MNF since 2019
 
 **Star Player Props**:
 - Patrick Mahomes O/U 2.5 TD passes: **OVER**
 - Travis Kelce O/U 65.5 receiving yards: **OVER**
-- DeAndre Hopkins first game impact: **OVER 4.5 receptions**
+- Rashee Rice O/U 5.5 receptions: **OVER** (Chiefs WR1)
 
 ---
 

@@ -93,6 +93,12 @@ window.NFL_FALLBACK_API = {
             { name: 'Jalen Hurts', position: 'QB', team: 'Philadelphia Eagles', experience_years: 5 },
             { name: 'Saquon Barkley', position: 'RB', team: 'Philadelphia Eagles', experience_years: 7 },
             { name: 'A.J. Brown', position: 'WR', team: 'Philadelphia Eagles', experience_years: 6 }
+        ],
+        'Baltimore Ravens': [
+            { name: 'Cooper Rush', position: 'QB', team: 'Baltimore Ravens', experience_years: 8 },
+            { name: 'DeAndre Hopkins', position: 'WR', team: 'Baltimore Ravens', experience_years: 13 },
+            { name: 'Mark Andrews', position: 'TE', team: 'Baltimore Ravens', experience_years: 8 },
+            { name: 'Derrick Henry', position: 'RB', team: 'Baltimore Ravens', experience_years: 10 }
         ]
     },
     injuries: [

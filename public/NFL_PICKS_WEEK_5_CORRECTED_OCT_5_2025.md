@@ -75,7 +75,7 @@
 **CORRECTED Roster Analysis**:
 - **Patrick Mahomes** (9 years exp) with CURRENT receiving corps
 - **Travis Kelce** (13 years exp) still elite TE
-- **Rashee Rice** (2 years exp) + **Xavier Worthy** (rookie) - NOT DeAndre Hopkins (traded away)
+- **Rashee Rice** (2 years exp) + **Xavier Worthy** (rookie) - Hopkins now with Ravens, not Chiefs
 - **Isiah Pacheco** (4 years exp) healthy and ready
 - Chiefs 0-2 start makes them desperate - perfect bounce-back spot
 
