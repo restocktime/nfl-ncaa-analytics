@@ -498,7 +498,7 @@
                     <h2 class="picks-title">Week 5 Picks - October 5, 2025</h2>
                     <div class="system-status">
                         <div class="status-dot"></div>
-                        <span>System Live</span>
+                        <span id="system-status-text">System Live</span>
                     </div>
                 </div>
 
@@ -579,7 +579,7 @@
                             <div class="confidence">89% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>CRITICAL CHANGE:</strong> Lamar Jackson OUT (hamstring), Cooper Rush starting for Ravens.
+                            <strong>CRITICAL CHANGE:</strong> Lamar Jackson OUT (hamstring), <span id=\"ravens-qb-prop\">Cooper Rush starting for Ravens</span>.
                             <br><strong>Value:</strong> Ravens from Super Bowl favorites to backup QB situation - take the points!
                         </div>
                         <div class="player-props">
@@ -587,7 +587,7 @@
                             <div class="prop">• Cooper Rush O/U 1.5 TD passes: <strong>UNDER</strong> (backup QB)</div>
                             <div class="prop">• Cooper Rush O/U 225.5 passing yards: <strong>UNDER</strong> (limited upside)</div>
                             <div class="prop">• Derrick Henry O/U 85.5 rushing yards: <strong>OVER</strong> (heavy workload)</div>
-                            <div class="prop">• DeAndre Hopkins O/U 4.5 receptions: <strong>UNDER</strong> (backup QB target)</div>
+                            <div class="prop" id="hopkins-prop">• DeAndre Hopkins O/U 4.5 receptions: <strong>UNDER</strong> (backup QB target)</div>
                             <div class="prop">• C.J. Stroud O/U 250.5 passing yards: <strong>OVER</strong> (better QB play)</div>
                         </div>
                         <div class="player-props defensive-props">
@@ -606,7 +606,7 @@
                             <div class="confidence">82% Confidence</div>
                         </div>
                         <div class="pick-analysis">
-                            <strong>QB Matchup:</strong> Geno Smith (14 years, Raiders starter) vs Daniel Jones (8 years, Colts starter)
+                            <strong>QB Matchup:</strong> <span id=\"raiders-qb-prop\">Geno Smith (14 years, Raiders starter)</span> vs <span id=\"jones-prop\">Daniel Jones (8 years, Colts starter)</span>
                             <br><strong>Key Factor:</strong> Brock Bowers QUESTIONABLE (knee) - major impact if out
                         </div>
                         <div class="player-props">
@@ -824,6 +824,106 @@
             document.querySelectorAll('.pick-card').forEach(card => {
                 observer.observe(card);
             });
+        });
+    </script>
+
+    <!-- ESPN Live Roster API Integration -->
+    <script src="railway-config.js"></script>
+    <script src="espn-live-roster-api.js"></script>
+    <script src="nfl-database-client.js"></script>
+
+    <script>
+        // Dynamic roster verification system
+        let rosterAccuracySystem = {
+            verifiedRosters: new Map(),
+            
+            async verifyPlayerTeam(playerName, expectedTeam) {
+                try {
+                    const roster = await window.espnLiveRosterAPI.getTeamRoster(expectedTeam);
+                    const player = roster.find(p => 
+                        p.name.toLowerCase().includes(playerName.toLowerCase()) ||
+                        playerName.toLowerCase().includes(p.name.toLowerCase())
+                    );
+                    
+                    return {
+                        verified: !!player,
+                        actualTeam: player ? player.team : null,
+                        position: player ? player.position : null,
+                        starter: player ? player.starter : false
+                    };
+                } catch (error) {
+                    console.warn(`Could not verify ${playerName} for ${expectedTeam}:`, error);
+                    return { verified: false, error: true };
+                }
+            },
+            
+            async addRosterIndicators() {
+                // Add verification indicators to key player props
+                const keyPlayers = [
+                    { name: 'Cooper Rush', team: 'Baltimore Ravens', element: 'ravens-qb-prop' },
+                    { name: 'Geno Smith', team: 'Las Vegas Raiders', element: 'raiders-qb-prop' },
+                    { name: 'DeAndre Hopkins', team: 'Baltimore Ravens', element: 'hopkins-prop' },
+                    { name: 'Daniel Jones', team: 'Indianapolis Colts', element: 'jones-prop' }
+                ];
+                
+                for (const player of keyPlayers) {
+                    const verification = await this.verifyPlayerTeam(player.name, player.team);
+                    this.addVerificationBadge(player.element, verification, player.name);
+                }
+            },
+            
+            addVerificationBadge(elementId, verification, playerName) {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+                
+                const badge = document.createElement('span');
+                badge.style.cssText = `
+                    font-size: 0.7rem;
+                    padding: 2px 6px;
+                    border-radius: 8px;
+                    margin-left: 8px;
+                    font-weight: 600;
+                `;
+                
+                if (verification.verified) {
+                    badge.textContent = '✅ Verified';
+                    badge.style.background = 'rgba(34, 197, 94, 0.2)';
+                    badge.style.color = '#22c55e';
+                } else if (verification.error) {
+                    badge.textContent = '⚠️ Check';
+                    badge.style.background = 'rgba(245, 158, 11, 0.2)';
+                    badge.style.color = '#f59e0b';
+                } else {
+                    badge.textContent = '❌ Error';
+                    badge.style.background = 'rgba(239, 68, 68, 0.2)';
+                    badge.style.color = '#ef4444';
+                }
+                
+                element.appendChild(badge);
+            }
+        };
+        
+        // Initialize roster verification when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔄 Initializing dynamic roster verification...');
+            
+            // Wait for ESPN API to be ready
+            setTimeout(async () => {
+                try {
+                    const status = await window.espnLiveRosterAPI.getSystemStatus();
+                    console.log('📊 ESPN API Status:', status);
+                    
+                    if (status.espnApi) {
+                        document.getElementById('system-status-text').textContent = 'Live ESPN Data';
+                        await rosterAccuracySystem.addRosterIndicators();
+                        console.log('✅ Roster verification badges added');
+                    } else {
+                        document.getElementById('system-status-text').textContent = 'Fallback Data';
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Could not verify rosters:', error);
+                }
+            }, 2000);
         });
     </script>
 
