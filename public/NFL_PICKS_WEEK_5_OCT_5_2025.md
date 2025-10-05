@@ -38,10 +38,12 @@
 **Confidence**: 87%  
 
 **Advanced Analytics**:
-- **QB Matchup**: Geno Smith (12 years exp) vs Anthony Richardson (2 years exp)
+- **QB Matchup**: Geno Smith (14 years exp, Raiders starter) vs Daniel Jones (8 years exp, Colts starter 2025)
 - **Key Factor**: Jonathan Taylor (5 years exp) at home vs Raiders weak run defense
 - **System Edge**: Colts 4-1 ATS when favored by 3 or less at home
 - **Player Spotlight**: Michael Pittman Jr. (5 years exp) expected 8+ targets
+
+**QB Update**: Daniel Jones is the Colts starting QB for 2025 season, not Richardson
 
 **Props to Target**:
 - Jonathan Taylor O/U 85.5 rushing yards: **OVER**

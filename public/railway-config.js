@@ -44,11 +44,10 @@ window.NFL_FALLBACK_API = {
     ],
     players: {
         'Las Vegas Raiders': [
-            { name: 'Geno Smith', position: 'QB', team: 'Las Vegas Raiders', experience_years: 12 },
-            { name: 'Gardner Minshew II', position: 'QB', team: 'Las Vegas Raiders', experience_years: 6 },
-            { name: 'Aidan O\'Connell', position: 'QB', team: 'Las Vegas Raiders', experience_years: 2 },
+            { name: 'Geno Smith', position: 'QB', team: 'Las Vegas Raiders', experience_years: 14 },
+            { name: 'Aidan O\'Connell', position: 'QB', team: 'Las Vegas Raiders', experience_years: 3 },
             { name: 'Davante Adams', position: 'WR', team: 'Las Vegas Raiders', experience_years: 11 },
-            { name: 'Brock Bowers', position: 'TE', team: 'Las Vegas Raiders', experience_years: 1 },
+            { name: 'Brock Bowers', position: 'TE', team: 'Las Vegas Raiders', experience_years: 2 },
             { name: 'Alexander Mattison', position: 'RB', team: 'Las Vegas Raiders', experience_years: 6 }
         ],
         'Kansas City Chiefs': [
@@ -65,8 +64,9 @@ window.NFL_FALLBACK_API = {
             { name: 'Dalton Kincaid', position: 'TE', team: 'Buffalo Bills', experience_years: 2 }
         ],
         'Indianapolis Colts': [
-            { name: 'Anthony Richardson', position: 'QB', team: 'Indianapolis Colts', experience_years: 2 },
-            { name: 'Daniel Jones', position: 'QB', team: 'Indianapolis Colts', experience_years: 6 },
+            { name: 'Daniel Jones', position: 'QB', team: 'Indianapolis Colts', experience_years: 8 },
+            { name: 'Anthony Richardson', position: 'QB', team: 'Indianapolis Colts', experience_years: 3 },
+            { name: 'Joe Flacco', position: 'QB', team: 'Indianapolis Colts', experience_years: 17 },
             { name: 'Jonathan Taylor', position: 'RB', team: 'Indianapolis Colts', experience_years: 5 },
             { name: 'Michael Pittman Jr.', position: 'WR', team: 'Indianapolis Colts', experience_years: 5 }
         ],
