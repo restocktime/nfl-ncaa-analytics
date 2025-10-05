@@ -46,22 +46,24 @@ window.NFL_FALLBACK_API = {
         'Las Vegas Raiders': [
             { name: 'Geno Smith', position: 'QB', team: 'Las Vegas Raiders', experience_years: 14 },
             { name: 'Aidan O\'Connell', position: 'QB', team: 'Las Vegas Raiders', experience_years: 3 },
-            { name: 'Davante Adams', position: 'WR', team: 'Las Vegas Raiders', experience_years: 11 },
+            { name: 'Jakobi Meyers', position: 'WR', team: 'Las Vegas Raiders', experience_years: 6 },
+            { name: 'Tre Tucker', position: 'WR', team: 'Las Vegas Raiders', experience_years: 2 },
             { name: 'Brock Bowers', position: 'TE', team: 'Las Vegas Raiders', experience_years: 2 },
             { name: 'Alexander Mattison', position: 'RB', team: 'Las Vegas Raiders', experience_years: 6 }
         ],
         'Kansas City Chiefs': [
-            { name: 'Patrick Mahomes', position: 'QB', team: 'Kansas City Chiefs', experience_years: 8 },
-            { name: 'Travis Kelce', position: 'TE', team: 'Kansas City Chiefs', experience_years: 12 },
-            { name: 'DeAndre Hopkins', position: 'WR', team: 'Kansas City Chiefs', experience_years: 12 },
-            { name: 'Isiah Pacheco', position: 'RB', team: 'Kansas City Chiefs', experience_years: 3 },
-            { name: 'Kareem Hunt', position: 'RB', team: 'Kansas City Chiefs', experience_years: 8 }
+            { name: 'Patrick Mahomes', position: 'QB', team: 'Kansas City Chiefs', experience_years: 9 },
+            { name: 'Travis Kelce', position: 'TE', team: 'Kansas City Chiefs', experience_years: 13 },
+            { name: 'Rashee Rice', position: 'WR', team: 'Kansas City Chiefs', experience_years: 2 },
+            { name: 'Xavier Worthy', position: 'WR', team: 'Kansas City Chiefs', experience_years: 1 },
+            { name: 'Isiah Pacheco', position: 'RB', team: 'Kansas City Chiefs', experience_years: 4 }
         ],
         'Buffalo Bills': [
-            { name: 'Josh Allen', position: 'QB', team: 'Buffalo Bills', experience_years: 7 },
-            { name: 'Stefon Diggs', position: 'WR', team: 'Buffalo Bills', experience_years: 10 },
-            { name: 'James Cook', position: 'RB', team: 'Buffalo Bills', experience_years: 3 },
-            { name: 'Dalton Kincaid', position: 'TE', team: 'Buffalo Bills', experience_years: 2 }
+            { name: 'Josh Allen', position: 'QB', team: 'Buffalo Bills', experience_years: 8 },
+            { name: 'Khalil Shakir', position: 'WR', team: 'Buffalo Bills', experience_years: 3 },
+            { name: 'Keon Coleman', position: 'WR', team: 'Buffalo Bills', experience_years: 1 },
+            { name: 'James Cook', position: 'RB', team: 'Buffalo Bills', experience_years: 4 },
+            { name: 'Dalton Kincaid', position: 'TE', team: 'Buffalo Bills', experience_years: 3 }
         ],
         'Indianapolis Colts': [
             { name: 'Daniel Jones', position: 'QB', team: 'Indianapolis Colts', experience_years: 8 },
@@ -93,6 +95,14 @@ window.NFL_FALLBACK_API = {
             { name: 'A.J. Brown', position: 'WR', team: 'Philadelphia Eagles', experience_years: 6 }
         ]
     },
+    injuries: [
+        { name: 'Lamar Jackson', team: 'Baltimore Ravens', position: 'QB', injury: 'hamstring', status: 'OUT' },
+        { name: 'Bucky Irving', team: 'Tampa Bay Buccaneers', position: 'RB', injury: 'foot', status: 'OUT' },
+        { name: 'Tyreek Hill', team: 'Miami Dolphins', position: 'WR', injury: 'torn ACL', status: 'OUT - Season' },
+        { name: 'Malik Nabers', team: 'New York Giants', position: 'WR', injury: 'torn ACL', status: 'OUT - Season' },
+        { name: 'CeeDee Lamb', team: 'Dallas Cowboys', position: 'WR', injury: 'ankle', status: 'OUT' },
+        { name: 'Brock Bowers', team: 'Las Vegas Raiders', position: 'TE', injury: 'knee', status: 'QUESTIONABLE' }
+    ],
     liveGames: [
         {
             id: 'buf_ne_20251005',

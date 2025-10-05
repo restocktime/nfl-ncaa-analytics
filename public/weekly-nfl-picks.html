@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly NFL Picks | SundayEdgePro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #a8d8ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-title p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .week-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .week-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .week-tab {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .week-tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .picks-content {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .picks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .picks-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .picks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .pick-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .pick-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .matchup {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .pick-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pick {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #22c55e;
+        }
+
+        .confidence {
+            background: rgba(34, 197, 94, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .pick-analysis {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .injury-alert {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .injury-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: #ffffff;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-title h1 {
+                font-size: 2rem;
+            }
+            
+            .picks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <i class="fas fa-football-ball"></i> SundayEdgePro
+                </a>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/player-props-hub.html">Props Hub</a></li>
+                        <li><a href="/weekly-nfl-picks.html">Weekly Picks</a></li>
+                        <li><a href="/nfl-analytics.html">Analytics</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h1><i class="fas fa-chart-line"></i> Weekly NFL Picks</h1>
+                <p>Advanced analytics and machine learning predictions for every NFL game</p>
+            </div>
+
+            <div class="week-selector">
+                <div class="week-tabs">
+                    <div class="week-tab" data-week="4">Week 4</div>
+                    <div class="week-tab active" data-week="5">Week 5</div>
+                    <div class="week-tab" data-week="6">Week 6</div>
+                    <div class="week-tab" data-week="7">Week 7</div>
+                </div>
+                <p>Select a week to view our AI-powered predictions and analysis</p>
+            </div>
+
+            <div class="picks-content" id="picks-content">
+                <div class="picks-header">
+                    <h2 class="picks-title">Week 5 Picks - October 5, 2025</h2>
+                    <div class="system-status">
+                        <div class="status-dot"></div>
+                        <span>System Live</span>
+                    </div>
+                </div>
+
+                <div class="injury-alert">
+                    <div class="injury-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Critical Injury Updates</span>
+                    </div>
+                    <p><strong>OUT:</strong> Lamar Jackson (hamstring), Tyreek Hill (torn ACL - season), Bucky Irving (foot)</p>
+                    <p><strong>QUESTIONABLE:</strong> Brock Bowers (knee)</p>
+                </div>
+
+                <div class="picks-grid">
+                    <div class="pick-card">
+                        <div class="matchup">Buffalo Bills vs New England Patriots</div>
+                        <div class="pick-info">
+                            <div class="pick">Bills -7 ✅</div>
+                            <div class="confidence">96% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Lock of the Week:</strong> Josh Allen (8 years exp, 2024 MVP) at home in primetime. Patriots in full rebuild mode. Key weapons: Khalil Shakir, James Cook, Dalton Kincaid.
+                        </div>
+                    </div>
+
+                    <div class="pick-card">
+                        <div class="matchup">Kansas City Chiefs @ Jacksonville Jaguars</div>
+                        <div class="pick-info">
+                            <div class="pick">Chiefs -7.5 ✅</div>
+                            <div class="confidence">94% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Monday Night:</strong> Patrick Mahomes (9 years) desperate after 0-2 start. Travis Kelce + Rashee Rice leading receiving corps. Perfect bounce-back spot.
+                        </div>
+                    </div>
+
+                    <div class="pick-card">
+                        <div class="matchup">Houston Texans @ Baltimore Ravens</div>
+                        <div class="pick-info">
+                            <div class="pick">Texans +4 ✅</div>
+                            <div class="confidence">89% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Major Injury Impact:</strong> Lamar Jackson OUT (hamstring), Cooper Rush starting. Take points with better QB situation. Flipped from Ravens favorite.
+                        </div>
+                    </div>
+
+                    <div class="pick-card">
+                        <div class="matchup">Las Vegas Raiders @ Indianapolis Colts</div>
+                        <div class="pick-info">
+                            <div class="pick">Colts -3 ✅</div>
+                            <div class="confidence">82% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>QB Matchup:</strong> Geno Smith (14 years, Raiders starter) vs Daniel Jones (8 years, Colts starter). Jonathan Taylor at home advantage. Monitor Brock Bowers status.
+                        </div>
+                    </div>
+
+                    <div class="pick-card">
+                        <div class="matchup">Denver Broncos @ Philadelphia Eagles</div>
+                        <div class="pick-info">
+                            <div class="pick">Eagles -6.5 ✅</div>
+                            <div class="confidence">93% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Elite Weapons:</strong> Jalen Hurts (Super Bowl champ) + Saquon Barkley + A.J. Brown. Eagles undefeated at home dome vs outdoor team.
+                        </div>
+                    </div>
+
+                    <div class="pick-card">
+                        <div class="matchup">Tampa Bay Buccaneers @ Seattle Seahawks</div>
+                        <div class="pick-info">
+                            <div class="pick">Seahawks -2.5 ✅</div>
+                            <div class="confidence">89% Confidence</div>
+                        </div>
+                        <div class="pick-analysis">
+                            <strong>Injury Factor:</strong> Bucky Irving OUT (foot, on crutches). West Coast early start + missing explosive RB = value on Seahawks.
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="NFL_PICKS_WEEK_5_CORRECTED_OCT_5_2025.md" class="download-btn" download>
+                        <i class="fas fa-download"></i>
+                        Download Full Analysis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 SundayEdgePro. Advanced NFL Analytics & Predictions.</p>
+            <p><small>Gamble responsibly. Must be 21+. Past performance doesn't guarantee future results.</small></p>
+        </div>
+    </footer>
+
+    <script>
+        // Week tab switching
+        document.querySelectorAll('.week-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.week-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const week = this.dataset.week;
+                updatePicksForWeek(week);
+            });
+        });
+
+        function updatePicksForWeek(week) {
+            // For now, just update the title
+            const title = document.querySelector('.picks-title');
+            title.textContent = `Week ${week} Picks - Coming Soon`;
+            
+            if (week === '5') {
+                title.textContent = 'Week 5 Picks - October 5, 2025';
+                // Show current picks
+            } else {
+                // Hide picks grid for other weeks
+                const grid = document.querySelector('.picks-grid');
+                grid.innerHTML = `
+                    <div style="text-align: center; grid-column: 1/-1; padding: 3rem;">
+                        <i class="fas fa-clock" style="font-size: 3rem; opacity: 0.5; margin-bottom: 1rem;"></i>
+                        <h3>Week ${week} picks will be available soon!</h3>
+                        <p>Our AI system updates every Tuesday with fresh analysis.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Add some dynamic functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏈 SundayEdgePro Weekly Picks System Loaded');
+            
+            // Animate pick cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.pick-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+</html>

@@ -43,11 +43,9 @@
 - **System Edge**: Colts 4-1 ATS when favored by 3 or less at home
 - **Player Spotlight**: Michael Pittman Jr. (5 years exp) expected 8+ targets
 
-**QB Update**: Daniel Jones is the Colts starting QB for 2025 season, not Richardson
-
 **Props to Target**:
 - Jonathan Taylor O/U 85.5 rushing yards: **OVER**
-- Davante Adams O/U 6.5 receptions: **UNDER** (road struggles)
+- Jakobi Meyers O/U 4.5 receptions: **OVER** (Raiders WR1 now)
 
 ---
 
