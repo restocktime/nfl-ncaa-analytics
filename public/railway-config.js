@@ -54,7 +54,7 @@ window.NFL_FALLBACK_API = {
         'Kansas City Chiefs': [
             { name: 'Patrick Mahomes', position: 'QB', team: 'Kansas City Chiefs', experience_years: 9 },
             { name: 'Travis Kelce', position: 'TE', team: 'Kansas City Chiefs', experience_years: 13 },
-            { name: 'Rashee Rice', position: 'WR', team: 'Kansas City Chiefs', experience_years: 2 },
+            { name: 'DeAndre Hopkins', position: 'WR', team: 'Kansas City Chiefs', experience_years: 13 },
             { name: 'Xavier Worthy', position: 'WR', team: 'Kansas City Chiefs', experience_years: 1 },
             { name: 'Isiah Pacheco', position: 'RB', team: 'Kansas City Chiefs', experience_years: 4 }
         ],
@@ -95,20 +95,21 @@ window.NFL_FALLBACK_API = {
             { name: 'A.J. Brown', position: 'WR', team: 'Philadelphia Eagles', experience_years: 6 }
         ],
         'Baltimore Ravens': [
-            { name: 'Cooper Rush', position: 'QB', team: 'Baltimore Ravens', experience_years: 8 },
-            { name: 'DeAndre Hopkins', position: 'WR', team: 'Baltimore Ravens', experience_years: 13 },
+            { name: 'Lamar Jackson', position: 'QB', team: 'Baltimore Ravens', experience_years: 8 },
+            { name: 'Josh Johnson', position: 'QB', team: 'Baltimore Ravens', experience_years: 16 },
+            { name: 'Zay Flowers', position: 'WR', team: 'Baltimore Ravens', experience_years: 2 },
             { name: 'Mark Andrews', position: 'TE', team: 'Baltimore Ravens', experience_years: 8 },
             { name: 'Derrick Henry', position: 'RB', team: 'Baltimore Ravens', experience_years: 10 }
         ],
         'New York Giants': [
-            { name: 'Russell Wilson', position: 'QB', team: 'New York Giants', experience_years: 13 },
-            { name: 'Jaxson Dart', position: 'QB', team: 'New York Giants', experience_years: 1 },
+            { name: 'Tommy DeVito', position: 'QB', team: 'New York Giants', experience_years: 2 },
+            { name: 'Drew Lock', position: 'QB', team: 'New York Giants', experience_years: 6 },
             { name: 'Darius Slayton', position: 'WR', team: 'New York Giants', experience_years: 6 },
-            { name: 'Devin Singletary', position: 'RB', team: 'New York Giants', experience_years: 6 }
-        ]
+            { name: 'Tyrone Tracy Jr.', position: 'RB', team: 'New York Giants', experience_years: 1 }
+        ],
     },
     injuries: [
-        { name: 'Lamar Jackson', team: 'Baltimore Ravens', position: 'QB', injury: 'hamstring', status: 'OUT' },
+        { name: 'Lamar Jackson', team: 'Baltimore Ravens', position: 'QB', injury: 'hamstring', status: 'QUESTIONABLE' },
         { name: 'Bucky Irving', team: 'Tampa Bay Buccaneers', position: 'RB', injury: 'foot', status: 'OUT' },
         { name: 'Tyreek Hill', team: 'Miami Dolphins', position: 'WR', injury: 'torn ACL', status: 'OUT - Season' },
         { name: 'Malik Nabers', team: 'New York Giants', position: 'WR', injury: 'torn ACL', status: 'OUT - Season' },
