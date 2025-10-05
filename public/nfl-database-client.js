@@ -87,6 +87,9 @@ class NFLDatabaseClient {
                 const roster = window.NFL_FALLBACK_API.players[team.name];
                 this.setCache(cacheKey, roster);
                 return roster;
+            } else {
+                console.log(`⚠️ No roster data found for team: ${teamId}`);
+                return [];
             }
         }
 
@@ -151,6 +154,14 @@ class NFLDatabaseClient {
         if (this.isValidCache(cacheKey)) {
             console.log('✅ Injury report loaded from cache');
             return this.cache.get(cacheKey).data;
+        }
+
+        // Check if we should use fallback data
+        if (this.apiBaseUrl === 'fallback') {
+            console.log('✅ Using embedded injury data (fallback mode) - no injuries currently');
+            const injuries = []; // No injury data in fallback mode
+            this.setCache(cacheKey, injuries);
+            return injuries;
         }
 
         try {

@@ -81,8 +81,47 @@ window.NFL_FALLBACK_API = {
             { name: 'Kyren Williams', position: 'RB', team: 'Los Angeles Rams', experience_years: 3 },
             { name: 'Cooper Kupp', position: 'WR', team: 'Los Angeles Rams', experience_years: 8 },
             { name: 'Puka Nacua', position: 'WR', team: 'Los Angeles Rams', experience_years: 2 }
+        ],
+        'New England Patriots': [
+            { name: 'Drake Maye', position: 'QB', team: 'New England Patriots', experience_years: 1 },
+            { name: 'Jacoby Brissett', position: 'QB', team: 'New England Patriots', experience_years: 8 },
+            { name: 'Rhamondre Stevenson', position: 'RB', team: 'New England Patriots', experience_years: 4 }
+        ],
+        'Philadelphia Eagles': [
+            { name: 'Jalen Hurts', position: 'QB', team: 'Philadelphia Eagles', experience_years: 5 },
+            { name: 'Saquon Barkley', position: 'RB', team: 'Philadelphia Eagles', experience_years: 7 },
+            { name: 'A.J. Brown', position: 'WR', team: 'Philadelphia Eagles', experience_years: 6 }
         ]
-    }
+    },
+    liveGames: [
+        {
+            id: 'buf_ne_20251005',
+            homeTeam: 'Buffalo Bills',
+            awayTeam: 'New England Patriots',
+            gameTime: '8:20 PM ET',
+            status: 'upcoming',
+            week: 5,
+            date: '2025-10-05'
+        },
+        {
+            id: 'lv_ind_20251005', 
+            homeTeam: 'Indianapolis Colts',
+            awayTeam: 'Las Vegas Raiders',
+            gameTime: '1:00 PM ET',
+            status: 'upcoming',
+            week: 5,
+            date: '2025-10-05'
+        },
+        {
+            id: 'kc_jax_20251007',
+            homeTeam: 'Jacksonville Jaguars', 
+            awayTeam: 'Kansas City Chiefs',
+            gameTime: '8:15 PM ET',
+            status: 'upcoming',
+            week: 5,
+            date: '2025-10-07'
+        }
+    ]
 };
 
 // Alternative: Set via environment or auto-detection
