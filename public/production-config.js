@@ -40,6 +40,18 @@ class ProductionConfig {
             };
         }
         
+        // Check if we should use fallback mode (Railway URL is explicitly null)
+        if (window.RAILWAY_API_URL === null && window.NFL_FALLBACK_API) {
+            return {
+                environment: 'production',
+                apiBaseUrl: 'fallback',
+                databaseUrl: 'fallback',
+                isProduction: true,
+                isDevelopment: false,
+                deploymentType: 'fallback'
+            };
+        }
+        
         // Fallback to same-domain API
         return {
             environment: 'production',
@@ -76,22 +88,24 @@ class ProductionConfig {
     }
     
     getRailwayUrl() {
-        // Check for Railway URL configuration
+        // Check for Railway URL configuration from railway-config.js
+        if (typeof window !== 'undefined' && window.RAILWAY_API_URL !== undefined) {
+            return window.RAILWAY_API_URL; // Will be null for fallback mode
+        }
+        
         // Option 1: Environment variable (if set)
         if (typeof process !== 'undefined' && process.env && process.env.RAILWAY_API_URL) {
             return process.env.RAILWAY_API_URL;
         }
         
-        // Option 2: Hardcoded Railway URL (update this after deployment)
-        const RAILWAY_API_URL = null; // Set to your Railway URL like: 'https://your-app.railway.app'
-        
-        // Option 3: Auto-detect Railway domain pattern
+        // Option 2: Auto-detect Railway domain pattern
         const hostname = window.location.hostname;
         if (hostname.includes('railway.app') || hostname.includes('up.railway.app')) {
             return `${window.location.protocol}//${hostname}`;
         }
         
-        return RAILWAY_API_URL;
+        // Option 3: Default fallback
+        return null;
     }
     
     getDeploymentType() {
