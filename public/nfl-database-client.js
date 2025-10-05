@@ -6,16 +6,23 @@
 
 class NFLDatabaseClient {
     constructor(apiBaseUrl) {
-        // Auto-detect environment and use appropriate API URL
+        // Force fallback mode when no local server is available
         if (!apiBaseUrl) {
             if (typeof window !== 'undefined' && window.productionConfig) {
                 this.apiBaseUrl = window.productionConfig.getApiUrl();
             } else {
-                // Fallback detection
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                this.apiBaseUrl = isLocal 
-                    ? 'http://localhost:3001/api/nfl' 
-                    : `${window.location.origin}/api/nfl`;
+                // Check if we're on production without a backend server
+                const isProduction = window.location.hostname === 'sundayedgepro.com' || 
+                                   !window.location.hostname.includes('localhost');
+                
+                if (isProduction) {
+                    // Use fallback mode for production sites without backend
+                    this.apiBaseUrl = 'fallback';
+                    console.log('🔄 Production detected - using fallback/ESPN mode');
+                } else {
+                    // Local development - try local server
+                    this.apiBaseUrl = 'http://localhost:3001/api/nfl';
+                }
             }
         } else {
             this.apiBaseUrl = apiBaseUrl;
@@ -23,7 +30,7 @@ class NFLDatabaseClient {
         
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
-        console.log(`🚀 NFL Database Client initialized with server: ${this.apiBaseUrl}`);
+        console.log(`🚀 NFL Database Client initialized with: ${this.apiBaseUrl}`);
     }
 
     /**

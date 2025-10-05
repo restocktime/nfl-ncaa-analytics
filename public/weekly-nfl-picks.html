@@ -830,7 +830,7 @@
     <!-- ESPN Live Roster API Integration -->
     <script src="railway-config.js"></script>
     <script src="espn-live-roster-api.js"></script>
-    <script src="nfl-database-client.js"></script>
+    <!-- Skip nfl-database-client.js to avoid 404 errors -->
 
     <script>
         // Dynamic roster verification system
@@ -839,7 +839,30 @@
             
             async verifyPlayerTeam(playerName, expectedTeam) {
                 try {
+                    // Use ESPN API directly to avoid 404 errors
+                    console.log(`🔍 Verifying ${playerName} with ${expectedTeam}`);
                     const roster = await window.espnLiveRosterAPI.getTeamRoster(expectedTeam);
+                    
+                    if (!roster || roster.length === 0) {
+                        console.warn(`⚠️ No roster data for ${expectedTeam}, checking fallback`);
+                        // Try fallback data
+                        if (window.NFL_FALLBACK_API && window.NFL_FALLBACK_API.players[expectedTeam]) {
+                            const fallbackRoster = window.NFL_FALLBACK_API.players[expectedTeam];
+                            const fallbackPlayer = fallbackRoster.find(p => 
+                                p.name.toLowerCase().includes(playerName.toLowerCase()) ||
+                                playerName.toLowerCase().includes(p.name.toLowerCase())
+                            );
+                            return {
+                                verified: !!fallbackPlayer,
+                                actualTeam: fallbackPlayer ? fallbackPlayer.team : null,
+                                position: fallbackPlayer ? fallbackPlayer.position : null,
+                                starter: true, // Assume starter in fallback
+                                source: 'fallback'
+                            };
+                        }
+                        return { verified: false, error: true, reason: 'No roster data' };
+                    }
+                    
                     const player = roster.find(p => 
                         p.name.toLowerCase().includes(playerName.toLowerCase()) ||
                         playerName.toLowerCase().includes(p.name.toLowerCase())
@@ -849,11 +872,29 @@
                         verified: !!player,
                         actualTeam: player ? player.team : null,
                         position: player ? player.position : null,
-                        starter: player ? player.starter : false
+                        starter: player ? player.starter : false,
+                        source: 'espn'
                     };
                 } catch (error) {
                     console.warn(`Could not verify ${playerName} for ${expectedTeam}:`, error);
-                    return { verified: false, error: true };
+                    
+                    // Try fallback as last resort
+                    if (window.NFL_FALLBACK_API && window.NFL_FALLBACK_API.players[expectedTeam]) {
+                        const fallbackRoster = window.NFL_FALLBACK_API.players[expectedTeam];
+                        const fallbackPlayer = fallbackRoster.find(p => 
+                            p.name.toLowerCase().includes(playerName.toLowerCase()) ||
+                            playerName.toLowerCase().includes(p.name.toLowerCase())
+                        );
+                        return {
+                            verified: !!fallbackPlayer,
+                            actualTeam: fallbackPlayer ? fallbackPlayer.team : null,
+                            position: fallbackPlayer ? fallbackPlayer.position : null,
+                            starter: true,
+                            source: 'fallback'
+                        };
+                    }
+                    
+                    return { verified: false, error: true, reason: error.message };
                 }
             },
             
