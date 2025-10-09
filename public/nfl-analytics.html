@@ -8,15 +8,12 @@
     <!-- Apple Theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="apple-theme.css">
-    
-    <!-- Site Password Protection -->
-    <script src="site-password-protection.js"></script>
-    
-    <!-- ESPN Live Roster API -->
-    <script src="espn-live-roster-api.js"></script>
-    
+
+    <!-- Global Error Handler - Load First! -->
+    <script src="global-error-handler.js"></script>
+
     <!-- Chart.js for Analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" onerror="console.error('Chart.js failed to load')"></script>
     
     <style>
         /* Analytics-specific styles */
