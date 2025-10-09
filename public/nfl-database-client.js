@@ -103,19 +103,64 @@ class NFLDatabaseClient {
         try {
             const response = await fetch(`${this.apiBaseUrl}/team/${encodeURIComponent(teamId)}/roster`);
             const result = await response.json();
-            
+
             const roster = result.roster || result.data || result;
+
+            // If database returned empty roster, trigger ESPN fallback
+            if (!Array.isArray(roster) || roster.length === 0) {
+                console.log(`⚠️ Database has no roster for ${teamId}, trying ESPN live API...`);
+
+                // Try ESPN live roster API if available
+                if (window.espnLiveRosterAPI) {
+                    try {
+                        const espnRoster = await window.espnLiveRosterAPI.getTeamRoster(teamId);
+                        if (espnRoster && espnRoster.length > 0) {
+                            this.setCache(cacheKey, espnRoster);
+                            console.log(`✅ Loaded ${espnRoster.length} players from ESPN live API for ${teamId}`);
+                            return espnRoster;
+                        }
+                    } catch (espnError) {
+                        console.warn(`⚠️ ESPN API also failed for ${teamId}:`, espnError);
+                    }
+                }
+
+                // Final fallback to embedded data
+                if (window.NFL_FALLBACK_API) {
+                    const team = window.NFL_FALLBACK_API.teams.find(t =>
+                        t.name === teamId || t.abbreviation === teamId || t.id == teamId
+                    );
+                    if (team && window.NFL_FALLBACK_API.players[team.name]) {
+                        console.log(`🔄 Using embedded fallback roster for ${team.name}`);
+                        return window.NFL_FALLBACK_API.players[team.name];
+                    }
+                }
+
+                return [];
+            }
+
             this.setCache(cacheKey, roster);
-            console.log(`✅ Loaded ${Array.isArray(roster) ? roster.length : 0} players for team ${teamId} from database server`);
-            
-            // Return full roster array (no formatting needed for comprehensive analyzer)
-            return Array.isArray(roster) ? roster : [];
-            
+            console.log(`✅ Loaded ${roster.length} players for team ${teamId} from database server`);
+            return roster;
+
         } catch (error) {
             console.error(`❌ Failed to load roster for team ${teamId}:`, error);
-            // Fallback to embedded data if API fails
+
+            // Try ESPN live API as fallback
+            if (window.espnLiveRosterAPI) {
+                try {
+                    const espnRoster = await window.espnLiveRosterAPI.getTeamRoster(teamId);
+                    if (espnRoster && espnRoster.length > 0) {
+                        console.log(`✅ Loaded ${espnRoster.length} players from ESPN live API (fallback) for ${teamId}`);
+                        return espnRoster;
+                    }
+                } catch (espnError) {
+                    console.warn(`⚠️ ESPN API also failed for ${teamId}:`, espnError);
+                }
+            }
+
+            // Final fallback to embedded data
             if (window.NFL_FALLBACK_API) {
-                const team = window.NFL_FALLBACK_API.teams.find(t => 
+                const team = window.NFL_FALLBACK_API.teams.find(t =>
                     t.name === teamId || t.abbreviation === teamId || t.id == teamId
                 );
                 if (team && window.NFL_FALLBACK_API.players[team.name]) {
