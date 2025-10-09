@@ -77,10 +77,18 @@ class NFLDatabaseClient {
      */
     async getTeamRoster(teamId) {
         const cacheKey = `roster_${teamId}`;
-        
+
+        // Check cache but validate it has data
         if (this.isValidCache(cacheKey)) {
-            console.log(`✅ Roster for team ${teamId} loaded from cache`);
-            return this.cache.get(cacheKey).data;
+            const cachedData = this.cache.get(cacheKey).data;
+            // If cached data is empty or invalid, clear it and fetch fresh
+            if (!Array.isArray(cachedData) || cachedData.length === 0) {
+                console.log(`⚠️ Cached roster for ${teamId} is empty, clearing cache...`);
+                this.cache.delete(cacheKey);
+            } else {
+                console.log(`✅ Roster for team ${teamId} loaded from cache (${cachedData.length} players)`);
+                return cachedData;
+            }
         }
 
         // Check if we should use fallback data
