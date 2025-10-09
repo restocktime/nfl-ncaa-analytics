@@ -45,31 +45,24 @@ class ESPNLiveRosterAPI {
 
         try {
             console.log(`🔄 Fetching live ESPN roster for ${teamName} (ID: ${teamId})`);
-            
-            // Use the most current 2025 ESPN roster endpoint
-            const currentEndpoint = `${this.baseUrl}/teams/${teamId}/roster`;
-            console.log(`🔄 Using current 2025 ESPN endpoint: ${currentEndpoint}`);
-            
-            const response = await fetch(currentEndpoint, {
+
+            // Direct ESPN API call (works on Vercel static hosting)
+            const espnEndpoint = `${this.baseUrl}/teams/${teamId}/roster`;
+            console.log(`🔄 Calling ESPN directly: ${espnEndpoint}`);
+
+            const response = await fetch(espnEndpoint, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)',
-                    'Referer': 'https://www.espn.com/'
-                },
-                mode: 'cors'
-            });
-            
-            console.log(`📡 ESPN API Response: ${response.status} for ${teamName}`);
-            
-            if (!response.ok) {
-                console.warn(`❌ ESPN API failed: ${response.status} ${response.statusText}`);
-                if (response.status === 403 || response.status === 429) {
-                    console.warn('🚫 CORS or rate limiting detected, using fallback immediately');
+                    'Origin': window.location.origin
                 }
-            }
+            });
+
+            console.log(`📡 ESPN API Response: ${response.status} for ${teamName}`);
 
             if (!response.ok) {
+                console.warn(`❌ ESPN API failed: ${response.status} ${response.statusText}`);
                 throw new Error(`ESPN API error: ${response.status}`);
             }
 
@@ -229,7 +222,12 @@ class ESPNLiveRosterAPI {
      */
     async getInjuryReport() {
         try {
-            const response = await fetch(`${this.baseUrl}/news?limit=50&categories=injuries`);
+            const response = await fetch(`${this.baseUrl}/news?limit=50&categories=injuries`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                }
+            });
             const data = await response.json();
             
             if (data?.articles) {
@@ -300,7 +298,12 @@ class ESPNLiveRosterAPI {
     async getSystemStatus() {
         try {
             // Test the 2025 roster endpoint with Chiefs
-            const testResponse = await fetch(`${this.baseUrl}/teams/12/roster`);
+            const testResponse = await fetch(`${this.baseUrl}/teams/12/roster`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)'
+                }
+            });
             return {
                 status: testResponse.ok ? 'online' : 'degraded',
                 espnApi: testResponse.ok,
