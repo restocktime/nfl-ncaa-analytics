@@ -601,8 +601,8 @@ class MLModelsEngine {
         baseStrength *= rosterDepthFactor;
         
         // Injury impact (real calculation)
-        const keyInjuries = injuries.filter(inj => 
-            inj.team === teamName && 
+        const keyInjuries = (Array.isArray(injuries) ? injuries : []).filter(inj =>
+            inj.team === teamName &&
             ['Out', 'Doubtful', 'IR'].includes(inj.status)
         );
         const injuryPenalty = keyInjuries.length * 0.02; // 2% per key injury
