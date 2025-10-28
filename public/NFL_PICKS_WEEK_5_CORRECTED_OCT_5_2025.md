@@ -129,7 +129,7 @@
 **Confidence**: 88%
 
 **Injury Factor**: Malik Nabers OUT (torn ACL) - Giants lost their #1 WR
-- **Russell Wilson** (13 years exp, Giants QB) vs depleted weapons
+- **Jaxson Dart** (rookie QB, Giants starter) vs depleted weapons
 - Saints getting extra value with Giants' depleted receiving corps
 - Take Saints laying points
 

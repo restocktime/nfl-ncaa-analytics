@@ -121,10 +121,16 @@ class NFLDatabaseClient {
                 // Try ESPN live roster API if available
                 if (window.espnLiveRosterAPI) {
                     try {
-                        const espnRoster = await window.espnLiveRosterAPI.getTeamRoster(teamId);
+                        // Convert team ID to team name for ESPN API
+                        const teams = await this.getTeams();
+                        const team = teams.find(t => t.id == teamId || t.name === teamId || t.abbreviation === teamId);
+                        const teamName = team ? team.name : teamId;
+
+                        console.log(`🔄 Converting team ID ${teamId} → ${teamName} for ESPN API`);
+                        const espnRoster = await window.espnLiveRosterAPI.getTeamRoster(teamName);
                         if (espnRoster && espnRoster.length > 0) {
                             this.setCache(cacheKey, espnRoster);
-                            console.log(`✅ Loaded ${espnRoster.length} players from ESPN live API for ${teamId}`);
+                            console.log(`✅ Loaded ${espnRoster.length} players from ESPN live API for ${teamName}`);
                             return espnRoster;
                         }
                     } catch (espnError) {
@@ -156,9 +162,15 @@ class NFLDatabaseClient {
             // Try ESPN live API as fallback
             if (window.espnLiveRosterAPI) {
                 try {
-                    const espnRoster = await window.espnLiveRosterAPI.getTeamRoster(teamId);
+                    // Convert team ID to team name for ESPN API
+                    const teams = await this.getTeams();
+                    const team = teams.find(t => t.id == teamId || t.name === teamId || t.abbreviation === teamId);
+                    const teamName = team ? team.name : teamId;
+
+                    console.log(`🔄 Converting team ID ${teamId} → ${teamName} for ESPN API (error fallback)`);
+                    const espnRoster = await window.espnLiveRosterAPI.getTeamRoster(teamName);
                     if (espnRoster && espnRoster.length > 0) {
-                        console.log(`✅ Loaded ${espnRoster.length} players from ESPN live API (fallback) for ${teamId}`);
+                        console.log(`✅ Loaded ${espnRoster.length} players from ESPN live API (fallback) for ${teamName}`);
                         return espnRoster;
                     }
                 } catch (espnError) {

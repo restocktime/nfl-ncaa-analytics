@@ -1,32 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
-
 const app = express();
 
-// CORS configuration
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: '1h',
-    etag: true,
-    lastModified: true
-}));
-
-// Request logging middleware
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    next();
-});
 
 // NFL Teams
 const teams = [
@@ -188,184 +165,24 @@ app.get('/api/nfl/injuries', (req, res) => {
     res.json({ success: true, data: [], count: 0 });
 });
 
-// Live Analysis Data endpoint
-app.get('/api/live/analysis', (req, res) => {
-    const liveData = {
-        last_updated: new Date().toISOString(),
-        nfl: {
-            week: 6,
-            completed_games: [
-                {
-                    id: 'nfl_20251010_phi_nyg',
-                    teams: ['Philadelphia Eagles', 'New York Giants'],
-                    score: { away: 17, home: 34 },
-                    status: 'Final',
-                    date: '2025-10-10'
-                }
-            ],
-            upcoming_games: [
-                { teams: ['Denver Broncos', 'New York Jets'], date: '2025-10-12' },
-                { teams: ['Arizona Cardinals', 'Indianapolis Colts'], date: '2025-10-12' }
-            ]
-        },
-        ncaa: {
-            week: 7,
-            featured_games: [
-                {
-                    id: 'ncaa_20251010_usf_unt',
-                    teams: ['South Florida', 'North Texas'],
-                    spread: { favorite: 'UNT', line: -2.5 },
-                    total: 66.5,
-                    date: '2025-10-10T23:30Z',
-                    tv: 'ESPN2'
-                },
-                {
-                    id: 'ncaa_20251011_osu_ill',
-                    teams: ['Ohio State', 'Illinois'],
-                    rankings: { away: 1, home: 17 },
-                    spread: { favorite: 'OSU', line: -14.5 },
-                    total: 50.5,
-                    date: '2025-10-11T16:00Z',
-                    tv: 'FOX'
-                },
-                {
-                    id: 'ncaa_20251011_ala_miz',
-                    teams: ['Alabama', 'Missouri'],
-                    rankings: { away: 8, home: 14 },
-                    spread: { favorite: 'ALA', line: -2.5 },
-                    total: 51.5,
-                    date: '2025-10-11T16:00Z',
-                    tv: 'ABC'
-                }
-            ]
-        },
-        betting_recommendations: [
-            { game: 'USF @ UNT', bet: 'OVER 66.5', confidence: 5 },
-            { game: 'Alabama @ Missouri', bet: 'Missouri +2.5', confidence: 5 },
-            { game: 'Ohio State @ Illinois', bet: 'Illinois +14.5', confidence: 4 }
-        ]
-    };
-    
-    res.json({ success: true, data: liveData });
-});
-
-// ESPN NFL API Proxy endpoint
-app.get('/api/proxy/espn/nfl/:path(*)', async (req, res) => {
-    try {
-        const espnPath = req.params.path;
-        const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/${espnPath}`;
-
-        const response = await fetch(espnUrl, {
-            headers: {
-                'Accept': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)',
-                'Referer': 'https://www.espn.com/'
-            }
-        });
-
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('ESPN NFL proxy error:', error);
-        res.status(500).json({ error: 'ESPN NFL API unavailable', message: error.message });
-    }
-});
-
-// ESPN NCAA/College Football API Proxy endpoint
-app.get('/api/proxy/espn/college/:path(*)', async (req, res) => {
-    try {
-        const espnPath = req.params.path;
-        const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/college-football/${espnPath}`;
-
-        const response = await fetch(espnUrl, {
-            headers: {
-                'Accept': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (compatible; NCAAAnalytics/1.0)',
-                'Referer': 'https://www.espn.com/'
-            }
-        });
-
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('ESPN College proxy error:', error);
-        res.status(500).json({ error: 'ESPN College API unavailable', message: error.message });
-    }
-});
-
-// Legacy ESPN API Proxy endpoint (maintains backward compatibility)
-app.get('/api/proxy/espn/:path(*)', async (req, res) => {
-    try {
-        const espnPath = req.params.path;
-        const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/${espnPath}`;
-
-        const response = await fetch(espnUrl, {
-            headers: {
-                'Accept': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)',
-                'Referer': 'https://www.espn.com/'
-            }
-        });
-
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('ESPN proxy error:', error);
-        res.status(500).json({ error: 'ESPN API unavailable', message: error.message });
-    }
-});
-
-// The Odds API Proxy endpoint
-app.get('/api/proxy/odds/:endpoint(*)', async (req, res) => {
-    try {
-        const oddsEndpoint = req.params.endpoint;
-        const apiKey = process.env.ODDS_API_KEY || '9de126998e0df996011a28e9527dd7b9';
-        const oddsUrl = `https://api.the-odds-api.com/v4/${oddsEndpoint}?apiKey=${apiKey}`;
-
-        const response = await fetch(oddsUrl);
-        const data = await response.json();
-
-        res.json(data);
-    } catch (error) {
-        console.error('Odds API proxy error:', error);
-        res.status(500).json({ error: 'Odds API unavailable', message: error.message });
-    }
-});
-
-// Fallback route - serve index.html for client-side routing
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).json({
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    res.json({
+        message: 'NFL Database API',
+        status: 'running',
+        endpoints: [
+            'GET /api/nfl/teams',
+            'GET /api/nfl/players', 
+            'GET /api/nfl/team/:id/roster',
+            'GET /api/nfl/search/players?q=query',
+            'GET /health'
+        ]
     });
 });
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ error: 'Not found', path: req.url });
-});
-
-const PORT = process.env.PORT || 3001;
-const server = app.listen(PORT, () => {
-    console.log(`🚀 NFL API running on port ${PORT}`);
-    console.log(`📊 ${teams.length} teams, ${Object.keys(players).length} team rosters loaded`);
-    console.log('✅ Geno Smith listed as Raiders QB');
-    console.log(`🌐 Server: http://localhost:${PORT}`);
-    console.log(`📁 Serving static files from: ${path.join(__dirname, 'public')}`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received: closing HTTP server');
-    server.close(() => {
-        console.log('HTTP server closed');
-    });
-});
-
-module.exports = app;
+// Export as Netlify function
+exports.handler = async (event, context) => {
+    const express = require('express');
+    const serverless = require('serverless-http');
+    
+    return serverless(app)(event, context);
+};

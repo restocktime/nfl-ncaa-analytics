@@ -1,0 +1,4258 @@
+{
+  "ATL": {
+    "teamName": "Atlanta Falcons",
+    "abbreviation": "ATL",
+    "startingQB": "Kirk Cousins",
+    "startingRB": "Bijan Robinson",
+    "startingWR": "Drake London",
+    "quarterbacks": [
+      {
+        "name": "Kirk Cousins",
+        "position": "QB",
+        "jersey": "18",
+        "age": 37,
+        "experience": 14,
+        "college": "Michigan State",
+        "height": 75,
+        "weight": 205
+      },
+      {
+        "name": "Michael Penix Jr.",
+        "position": "QB",
+        "jersey": "9",
+        "age": 25,
+        "experience": 2,
+        "college": "Washington",
+        "height": 75,
+        "weight": 220
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Tyler Allgeier",
+        "position": "RB",
+        "jersey": "25",
+        "age": 25,
+        "experience": 4,
+        "college": "BYU",
+        "height": 70,
+        "weight": 225
+      },
+      {
+        "name": "Bijan Robinson",
+        "position": "RB",
+        "jersey": "7",
+        "age": 23,
+        "experience": 3,
+        "college": "Texas",
+        "height": 71,
+        "weight": 215
+      },
+      {
+        "name": "Nathan Carter",
+        "position": "RB",
+        "jersey": "38",
+        "age": 23,
+        "experience": 0,
+        "college": "Michigan State",
+        "height": 70,
+        "weight": 202
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Jamal Agnew",
+        "position": "WR",
+        "jersey": "14",
+        "age": 30,
+        "experience": 9,
+        "college": "San Diego",
+        "height": 70,
+        "weight": 190
+      },
+      {
+        "name": "KhaDarel Hodge",
+        "position": "WR",
+        "jersey": "4",
+        "age": 30,
+        "experience": 8,
+        "college": "Prairie View A&M",
+        "height": 74,
+        "weight": 210
+      },
+      {
+        "name": "Ray-Ray McCloud III",
+        "position": "WR",
+        "jersey": "34",
+        "age": 28,
+        "experience": 8,
+        "college": "Clemson",
+        "height": 69,
+        "weight": 185
+      },
+      {
+        "name": "Darnell Mooney",
+        "position": "WR",
+        "jersey": "1",
+        "age": 27,
+        "experience": 6,
+        "college": "Tulane",
+        "height": 71,
+        "weight": 180
+      },
+      {
+        "name": "Drake London",
+        "position": "WR",
+        "jersey": "5",
+        "age": 24,
+        "experience": 4,
+        "college": "USC",
+        "height": 76,
+        "weight": 215
+      },
+      {
+        "name": "David Sills V",
+        "position": "WR",
+        "jersey": "87",
+        "age": 29,
+        "experience": 3,
+        "college": "West Virginia",
+        "height": 75,
+        "weight": 211
+      },
+      {
+        "name": "Casey Washington",
+        "position": "WR",
+        "jersey": "82",
+        "age": 24,
+        "experience": 2,
+        "college": "Illinois",
+        "height": 72,
+        "weight": 205
+      }
+    ]
+  },
+  "BUF": {
+    "teamName": "Buffalo Bills",
+    "abbreviation": "BUF",
+    "startingQB": "Josh Allen",
+    "startingRB": "James Cook",
+    "startingWR": "Khalil Shakir",
+    "quarterbacks": [
+      {
+        "name": "Mitchell Trubisky",
+        "position": "QB",
+        "jersey": "11",
+        "age": 31,
+        "experience": 9,
+        "college": "North Carolina",
+        "height": 75,
+        "weight": 222
+      },
+      {
+        "name": "Josh Allen",
+        "position": "QB",
+        "jersey": "17",
+        "age": 29,
+        "experience": 8,
+        "college": "Wyoming",
+        "height": 77,
+        "weight": 237
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Ty Johnson",
+        "position": "RB",
+        "jersey": "26",
+        "age": 28,
+        "experience": 7,
+        "college": "Maryland",
+        "height": 70,
+        "weight": 210
+      },
+      {
+        "name": "Reggie Gilliam",
+        "position": "FB",
+        "jersey": "41",
+        "age": 28,
+        "experience": 6,
+        "college": "Toledo",
+        "height": 72,
+        "weight": 244
+      },
+      {
+        "name": "James Cook",
+        "position": "RB",
+        "jersey": "4",
+        "age": 26,
+        "experience": 4,
+        "college": "Georgia",
+        "height": 71,
+        "weight": 190
+      },
+      {
+        "name": "Ray Davis",
+        "position": "RB",
+        "jersey": "22",
+        "age": 25,
+        "experience": 2,
+        "college": "Kentucky",
+        "height": 68,
+        "weight": 220
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Curtis Samuel",
+        "position": "WR",
+        "jersey": "1",
+        "age": 29,
+        "experience": 9,
+        "college": "Ohio State",
+        "height": 71,
+        "weight": 195
+      },
+      {
+        "name": "Elijah Moore",
+        "position": "WR",
+        "jersey": "18",
+        "age": 25,
+        "experience": 5,
+        "college": "Ole Miss",
+        "height": 70,
+        "weight": 178
+      },
+      {
+        "name": "Joshua Palmer",
+        "position": "WR",
+        "jersey": "5",
+        "age": 26,
+        "experience": 5,
+        "college": "Tennessee",
+        "height": 73,
+        "weight": 210
+      },
+      {
+        "name": "Khalil Shakir",
+        "position": "WR",
+        "jersey": "10",
+        "age": 25,
+        "experience": 4,
+        "college": "Boise State",
+        "height": 72,
+        "weight": 190
+      },
+      {
+        "name": "Keon Coleman",
+        "position": "WR",
+        "jersey": "0",
+        "age": 22,
+        "experience": 2,
+        "college": "Florida State",
+        "height": 76,
+        "weight": 215
+      },
+      {
+        "name": "Tyrell Shavers",
+        "position": "WR",
+        "jersey": "14",
+        "age": 26,
+        "experience": 1,
+        "college": "San Diego State",
+        "height": 76,
+        "weight": 211
+      }
+    ]
+  },
+  "CHI": {
+    "teamName": "Chicago Bears",
+    "abbreviation": "CHI",
+    "startingQB": "Caleb Williams",
+    "startingRB": "D'Andre Swift",
+    "startingWR": "DJ Moore",
+    "quarterbacks": [
+      {
+        "name": "Case Keenum",
+        "position": "QB",
+        "jersey": "11",
+        "age": 37,
+        "experience": 13,
+        "college": "Houston",
+        "height": 73,
+        "weight": 220
+      },
+      {
+        "name": "Tyson Bagent",
+        "position": "QB",
+        "jersey": "17",
+        "age": 25,
+        "experience": 3,
+        "college": "Shepherd",
+        "height": 75,
+        "weight": 212
+      },
+      {
+        "name": "Caleb Williams",
+        "position": "QB",
+        "jersey": "18",
+        "age": 23,
+        "experience": 2,
+        "college": "USC",
+        "height": 73,
+        "weight": 226
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "D'Andre Swift",
+        "position": "RB",
+        "jersey": "4",
+        "age": 26,
+        "experience": 6,
+        "college": "Georgia",
+        "height": 68,
+        "weight": 204
+      },
+      {
+        "name": "Roschon Johnson",
+        "position": "RB",
+        "jersey": "23",
+        "age": 24,
+        "experience": 3,
+        "college": "Texas",
+        "height": 72,
+        "weight": 227
+      },
+      {
+        "name": "Kyle Monangai",
+        "position": "RB",
+        "jersey": "25",
+        "age": 23,
+        "experience": 0,
+        "college": "Rutgers",
+        "height": 68,
+        "weight": 207
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "DJ Moore",
+        "position": "WR",
+        "jersey": "2",
+        "age": 28,
+        "experience": 8,
+        "college": "Maryland",
+        "height": 72,
+        "weight": 213
+      },
+      {
+        "name": "Olamide Zaccheaus",
+        "position": "WR",
+        "jersey": "14",
+        "age": 28,
+        "experience": 7,
+        "college": "Virginia",
+        "height": 68,
+        "weight": 199
+      },
+      {
+        "name": "Devin Duvernay",
+        "position": "WR",
+        "jersey": "12",
+        "age": 28,
+        "experience": 6,
+        "college": "Texas",
+        "height": 71,
+        "weight": 202
+      },
+      {
+        "name": "Rome Odunze",
+        "position": "WR",
+        "jersey": "15",
+        "age": 23,
+        "experience": 2,
+        "college": "Washington",
+        "height": 75,
+        "weight": 214
+      },
+      {
+        "name": "Luther Burden III",
+        "position": "WR",
+        "jersey": "10",
+        "age": 21,
+        "experience": 0,
+        "college": "Missouri",
+        "height": 72,
+        "weight": 210
+      },
+      {
+        "name": "Jahdae Walker",
+        "position": "WR",
+        "jersey": "20",
+        "age": 23,
+        "experience": 0,
+        "college": "Texas A&M",
+        "height": 75,
+        "weight": 206
+      }
+    ]
+  },
+  "CIN": {
+    "teamName": "Cincinnati Bengals",
+    "abbreviation": "CIN",
+    "startingQB": "Joe Burrow",
+    "startingRB": "Joe Mixon",
+    "startingWR": "Ja'Marr Chase",
+    "quarterbacks": [
+      {
+        "name": "Joe Flacco",
+        "position": "QB",
+        "jersey": "15",
+        "age": 40,
+        "experience": 18,
+        "college": "Delaware",
+        "height": 78,
+        "weight": 245
+      },
+      {
+        "name": "Jake Browning",
+        "position": "QB",
+        "jersey": "6",
+        "age": 29,
+        "experience": 3,
+        "college": "Washington",
+        "height": 74,
+        "weight": 209
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Samaje Perine",
+        "position": "RB",
+        "jersey": "34",
+        "age": 30,
+        "experience": 9,
+        "college": "Oklahoma",
+        "height": 71,
+        "weight": 240
+      },
+      {
+        "name": "Chase Brown",
+        "position": "RB",
+        "jersey": "30",
+        "age": 25,
+        "experience": 3,
+        "college": "Illinois",
+        "height": 70,
+        "weight": 210
+      },
+      {
+        "name": "Tahj Brooks",
+        "position": "RB",
+        "jersey": "25",
+        "age": 23,
+        "experience": 0,
+        "college": "Texas Tech",
+        "height": 69,
+        "weight": 220
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Tee Higgins",
+        "position": "WR",
+        "jersey": "5",
+        "age": 26,
+        "experience": 6,
+        "college": "Clemson",
+        "height": 76,
+        "weight": 220
+      },
+      {
+        "name": "Ja'Marr Chase",
+        "position": "WR",
+        "jersey": "1",
+        "age": 25,
+        "experience": 5,
+        "college": "LSU",
+        "height": 72,
+        "weight": 205
+      },
+      {
+        "name": "Andrei Iosivas",
+        "position": "WR",
+        "jersey": "80",
+        "age": 25,
+        "experience": 3,
+        "college": "Princeton",
+        "height": 75,
+        "weight": 210
+      },
+      {
+        "name": "Charlie Jones",
+        "position": "WR",
+        "jersey": "15",
+        "age": 26,
+        "experience": 3,
+        "college": "Purdue",
+        "height": 72,
+        "weight": 190
+      },
+      {
+        "name": "Jermaine Burton",
+        "position": "WR",
+        "jersey": "81",
+        "age": 24,
+        "experience": 2,
+        "college": "Alabama",
+        "height": 72,
+        "weight": 204
+      },
+      {
+        "name": "Mitchell Tinsley",
+        "position": "WR",
+        "jersey": "82",
+        "age": 26,
+        "experience": 2,
+        "college": "Penn State",
+        "height": 73,
+        "weight": 205
+      }
+    ]
+  },
+  "CLE": {
+    "teamName": "Cleveland Browns",
+    "abbreviation": "CLE",
+    "startingQB": "Jameis Winston",
+    "startingRB": "Jerome Ford",
+    "startingWR": "Jerry Jeudy",
+    "quarterbacks": [
+      {
+        "name": "Dillon Gabriel",
+        "position": "QB",
+        "jersey": "8",
+        "age": 24,
+        "experience": 0,
+        "college": "Oregon",
+        "height": 71,
+        "weight": 205
+      },
+      {
+        "name": "Shedeur Sanders",
+        "position": "QB",
+        "jersey": "12",
+        "age": 23,
+        "experience": 0,
+        "college": "Colorado",
+        "height": 74,
+        "weight": 212
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Jerome Ford",
+        "position": "RB",
+        "jersey": "34",
+        "age": 26,
+        "experience": 4,
+        "college": "Cincinnati",
+        "height": 70,
+        "weight": 210
+      },
+      {
+        "name": "Quinshon Judkins",
+        "position": "RB",
+        "jersey": "10",
+        "age": 21,
+        "experience": 0,
+        "college": "Ohio State",
+        "height": 71,
+        "weight": 221
+      },
+      {
+        "name": "Dylan Sampson",
+        "position": "RB",
+        "jersey": "22",
+        "age": 21,
+        "experience": 0,
+        "college": "Tennessee",
+        "height": 68,
+        "weight": 200
+      },
+      {
+        "name": "Raheim Sanders",
+        "position": "RB",
+        "jersey": "35",
+        "age": 23,
+        "experience": 0,
+        "college": "South Carolina",
+        "height": 72,
+        "weight": 230
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Jerry Jeudy",
+        "position": "WR",
+        "jersey": "3",
+        "age": 26,
+        "experience": 6,
+        "college": "Alabama",
+        "height": 73,
+        "weight": 195
+      },
+      {
+        "name": "Malachi Corley",
+        "position": "WR",
+        "jersey": "83",
+        "age": 23,
+        "experience": 2,
+        "college": "Western Kentucky",
+        "height": 71,
+        "weight": 215
+      },
+      {
+        "name": "Jamari Thrash",
+        "position": "WR",
+        "jersey": "80",
+        "age": 24,
+        "experience": 2,
+        "college": "Louisville",
+        "height": 72,
+        "weight": 190
+      },
+      {
+        "name": "Isaiah Bond",
+        "position": "WR",
+        "jersey": "16",
+        "age": 21,
+        "experience": 0,
+        "college": "Texas",
+        "height": 71,
+        "weight": 180
+      },
+      {
+        "name": "Gage Larvadain",
+        "position": "WR",
+        "jersey": "84",
+        "age": 22,
+        "experience": 0,
+        "college": "South Carolina",
+        "height": 68,
+        "weight": 171
+      }
+    ]
+  },
+  "DAL": {
+    "teamName": "Dallas Cowboys",
+    "abbreviation": "DAL",
+    "startingQB": "Dak Prescott",
+    "startingRB": "Rico Dowdle",
+    "startingWR": "CeeDee Lamb",
+    "quarterbacks": [
+      {
+        "name": "Dak Prescott",
+        "position": "QB",
+        "jersey": "4",
+        "age": 32,
+        "experience": 10,
+        "college": "Mississippi State",
+        "height": 74,
+        "weight": 238
+      },
+      {
+        "name": "Joe Milton III",
+        "position": "QB",
+        "jersey": "10",
+        "age": 25,
+        "experience": 2,
+        "college": "Tennessee",
+        "height": 77,
+        "weight": 246
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Miles Sanders",
+        "position": "RB",
+        "jersey": "24",
+        "age": 28,
+        "experience": 7,
+        "college": "Penn State",
+        "height": 71,
+        "weight": 211
+      },
+      {
+        "name": "Javonte Williams",
+        "position": "RB",
+        "jersey": "33",
+        "age": 25,
+        "experience": 5,
+        "college": "North Carolina",
+        "height": 70,
+        "weight": 220
+      },
+      {
+        "name": "Hunter Luepke",
+        "position": "RB",
+        "jersey": "40",
+        "age": 25,
+        "experience": 3,
+        "college": "North Dakota State",
+        "height": 73,
+        "weight": 238
+      },
+      {
+        "name": "Jaydon Blue",
+        "position": "RB",
+        "jersey": "23",
+        "age": 21,
+        "experience": 0,
+        "college": "Texas",
+        "height": 69,
+        "weight": 196
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "CeeDee Lamb",
+        "position": "WR",
+        "jersey": "88",
+        "age": 26,
+        "experience": 6,
+        "college": "Oklahoma",
+        "height": 74,
+        "weight": 200
+      },
+      {
+        "name": "George Pickens",
+        "position": "WR",
+        "jersey": "3",
+        "age": 24,
+        "experience": 4,
+        "college": "Georgia",
+        "height": 75,
+        "weight": 200
+      },
+      {
+        "name": "Jalen Tolbert",
+        "position": "WR",
+        "jersey": "1",
+        "age": 26,
+        "experience": 4,
+        "college": "South Alabama",
+        "height": 73,
+        "weight": 195
+      },
+      {
+        "name": "KaVontae Turpin",
+        "position": "WR",
+        "jersey": "9",
+        "age": 29,
+        "experience": 4,
+        "college": "TCU",
+        "height": 69,
+        "weight": 153
+      },
+      {
+        "name": "Ryan Flournoy",
+        "position": "WR",
+        "jersey": "19",
+        "age": 25,
+        "experience": 2,
+        "college": "Southeast Missouri State",
+        "height": 73,
+        "weight": 200
+      }
+    ]
+  },
+  "DEN": {
+    "teamName": "Denver Broncos",
+    "abbreviation": "DEN",
+    "startingQB": "Bo Nix",
+    "startingRB": "Javonte Williams",
+    "startingWR": "Courtland Sutton",
+    "quarterbacks": [
+      {
+        "name": "Jarrett Stidham",
+        "position": "QB",
+        "jersey": "8",
+        "age": 29,
+        "experience": 6,
+        "college": "Auburn",
+        "height": 75,
+        "weight": 215
+      },
+      {
+        "name": "Sam Ehlinger",
+        "position": "QB",
+        "jersey": "4",
+        "age": 27,
+        "experience": 5,
+        "college": "Texas",
+        "height": 73,
+        "weight": 222
+      },
+      {
+        "name": "Bo Nix",
+        "position": "QB",
+        "jersey": "10",
+        "age": 25,
+        "experience": 2,
+        "college": "Oregon",
+        "height": 74,
+        "weight": 217
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "J.K. Dobbins",
+        "position": "RB",
+        "jersey": "27",
+        "age": 26,
+        "experience": 6,
+        "college": "Ohio State",
+        "height": 70,
+        "weight": 212
+      },
+      {
+        "name": "Adam Prentice",
+        "position": "FB",
+        "jersey": "46",
+        "age": 28,
+        "experience": 5,
+        "college": "South Carolina",
+        "height": 72,
+        "weight": 245
+      },
+      {
+        "name": "Jaleel McLaughlin",
+        "position": "RB",
+        "jersey": "38",
+        "age": 25,
+        "experience": 3,
+        "college": "Youngstown State",
+        "height": 67,
+        "weight": 187
+      },
+      {
+        "name": "Tyler Badie",
+        "position": "RB",
+        "jersey": "28",
+        "age": 25,
+        "experience": 2,
+        "college": "Missouri",
+        "height": 68,
+        "weight": 197
+      },
+      {
+        "name": "RJ Harvey",
+        "position": "RB",
+        "jersey": "12",
+        "age": 24,
+        "experience": 0,
+        "college": "UCF",
+        "height": 68,
+        "weight": 205
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Trent Sherfield Sr.",
+        "position": "WR",
+        "jersey": "5",
+        "age": 29,
+        "experience": 8,
+        "college": "Vanderbilt",
+        "height": 73,
+        "weight": 205
+      },
+      {
+        "name": "Courtland Sutton",
+        "position": "WR",
+        "jersey": "14",
+        "age": 29,
+        "experience": 8,
+        "college": "SMU",
+        "height": 76,
+        "weight": 216
+      },
+      {
+        "name": "Marvin Mims Jr.",
+        "position": "WR",
+        "jersey": "19",
+        "age": 23,
+        "experience": 3,
+        "college": "Oklahoma",
+        "height": 71,
+        "weight": 182
+      },
+      {
+        "name": "Troy Franklin",
+        "position": "WR",
+        "jersey": "11",
+        "age": 22,
+        "experience": 2,
+        "college": "Oregon",
+        "height": 75,
+        "weight": 180
+      },
+      {
+        "name": "Pat Bryant",
+        "position": "WR",
+        "jersey": "13",
+        "age": 22,
+        "experience": 0,
+        "college": "Illinois",
+        "height": 74,
+        "weight": 204
+      }
+    ]
+  },
+  "DET": {
+    "teamName": "Detroit Lions",
+    "abbreviation": "DET",
+    "startingQB": "Jared Goff",
+    "startingRB": "Jahmyr Gibbs",
+    "startingWR": "Amon-Ra St. Brown",
+    "quarterbacks": [
+      {
+        "name": "Jared Goff",
+        "position": "QB",
+        "jersey": "16",
+        "age": 30,
+        "experience": 10,
+        "college": "California",
+        "height": 76,
+        "weight": 217
+      },
+      {
+        "name": "Kyle Allen",
+        "position": "QB",
+        "jersey": "8",
+        "age": 29,
+        "experience": 7,
+        "college": "Houston",
+        "height": 75,
+        "weight": 210
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "David Montgomery",
+        "position": "RB",
+        "jersey": "5",
+        "age": 28,
+        "experience": 7,
+        "college": "Iowa State",
+        "height": 71,
+        "weight": 230
+      },
+      {
+        "name": "Justin Jackson",
+        "position": "RB",
+        "jersey": "38",
+        "age": 29,
+        "experience": 6,
+        "college": "Northwestern",
+        "height": 72,
+        "weight": 199
+      },
+      {
+        "name": "Craig Reynolds",
+        "position": "RB",
+        "jersey": "13",
+        "age": 29,
+        "experience": 6,
+        "college": "Kutztown",
+        "height": 71,
+        "weight": 216
+      },
+      {
+        "name": "Jahmyr Gibbs",
+        "position": "RB",
+        "jersey": "0",
+        "age": 23,
+        "experience": 3,
+        "college": "Alabama",
+        "height": 69,
+        "weight": 202
+      },
+      {
+        "name": "Sione Vaki",
+        "position": "RB",
+        "jersey": "33",
+        "age": 24,
+        "experience": 2,
+        "college": "Utah",
+        "height": 71,
+        "weight": 216
+      },
+      {
+        "name": "Jacob Saylors",
+        "position": "RB",
+        "jersey": "25",
+        "age": 25,
+        "experience": 1,
+        "college": "East Tennessee State",
+        "height": 71,
+        "weight": 195
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Kalif Raymond",
+        "position": "WR",
+        "jersey": "11",
+        "age": 31,
+        "experience": 9,
+        "college": "Holy Cross",
+        "height": 68,
+        "weight": 180
+      },
+      {
+        "name": "Amon-Ra St. Brown",
+        "position": "WR",
+        "jersey": "14",
+        "age": 25,
+        "experience": 5,
+        "college": "USC",
+        "height": 72,
+        "weight": 202
+      },
+      {
+        "name": "Jameson Williams",
+        "position": "WR",
+        "jersey": "1",
+        "age": 24,
+        "experience": 4,
+        "college": "Alabama",
+        "height": 73,
+        "weight": 182
+      },
+      {
+        "name": "Dominic Lovett",
+        "position": "WR",
+        "jersey": "19",
+        "age": 22,
+        "experience": 0,
+        "college": "Georgia",
+        "height": 70,
+        "weight": 185
+      },
+      {
+        "name": "Isaac TeSlaa",
+        "position": "WR",
+        "jersey": "18",
+        "age": 23,
+        "experience": 0,
+        "college": "Arkansas",
+        "height": 76,
+        "weight": 214
+      }
+    ]
+  },
+  "GB": {
+    "teamName": "Green Bay Packers",
+    "abbreviation": "GB",
+    "startingQB": "Jordan Love",
+    "startingRB": "Josh Jacobs",
+    "startingWR": "Jayden Reed",
+    "quarterbacks": [
+      {
+        "name": "Jordan Love",
+        "position": "QB",
+        "jersey": "10",
+        "age": 26,
+        "experience": 6,
+        "college": "Utah State",
+        "height": 76,
+        "weight": 219
+      },
+      {
+        "name": "Malik Willis",
+        "position": "QB",
+        "jersey": "2",
+        "age": 26,
+        "experience": 4,
+        "college": "Liberty",
+        "height": 73,
+        "weight": 225
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Josh Jacobs",
+        "position": "RB",
+        "jersey": "8",
+        "age": 27,
+        "experience": 7,
+        "college": "Alabama",
+        "height": 70,
+        "weight": 223
+      },
+      {
+        "name": "Chris Brooks",
+        "position": "RB",
+        "jersey": "30",
+        "age": 25,
+        "experience": 3,
+        "college": "BYU",
+        "height": 73,
+        "weight": 219
+      },
+      {
+        "name": "Emanuel Wilson",
+        "position": "RB",
+        "jersey": "23",
+        "age": 26,
+        "experience": 3,
+        "college": "Fort Valley State",
+        "height": 70,
+        "weight": 226
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Romeo Doubs",
+        "position": "WR",
+        "jersey": "87",
+        "age": 25,
+        "experience": 4,
+        "college": "Nevada",
+        "height": 74,
+        "weight": 204
+      },
+      {
+        "name": "Malik Heath",
+        "position": "WR",
+        "jersey": "18",
+        "age": 25,
+        "experience": 3,
+        "college": "Ole Miss",
+        "height": 74,
+        "weight": 213
+      },
+      {
+        "name": "Dontayvion Wicks",
+        "position": "WR",
+        "jersey": "13",
+        "age": 24,
+        "experience": 3,
+        "college": "Virginia",
+        "height": 73,
+        "weight": 206
+      },
+      {
+        "name": "Matthew Golden",
+        "position": "WR",
+        "jersey": "0",
+        "age": 22,
+        "experience": 0,
+        "college": "Texas",
+        "height": 71,
+        "weight": 191
+      },
+      {
+        "name": "Savion Williams",
+        "position": "WR",
+        "jersey": "83",
+        "age": 23,
+        "experience": 0,
+        "college": "TCU",
+        "height": 76,
+        "weight": 222
+      }
+    ]
+  },
+  "TEN": {
+    "teamName": "Tennessee Titans",
+    "abbreviation": "TEN",
+    "startingQB": "Will Levis",
+    "startingRB": "Tony Pollard",
+    "startingWR": "Calvin Ridley",
+    "quarterbacks": [
+      {
+        "name": "Brandon Allen",
+        "position": "QB",
+        "jersey": "10",
+        "age": 33,
+        "experience": 9,
+        "college": "Arkansas",
+        "height": 74,
+        "weight": 209
+      },
+      {
+        "name": "Cam Ward",
+        "position": "QB",
+        "jersey": "1",
+        "age": 23,
+        "experience": 0,
+        "college": "Miami",
+        "height": 74,
+        "weight": 219
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Tony Pollard",
+        "position": "RB",
+        "jersey": "20",
+        "age": 28,
+        "experience": 7,
+        "college": "Memphis",
+        "height": 72,
+        "weight": 209
+      },
+      {
+        "name": "Julius Chestnut",
+        "position": "RB",
+        "jersey": "36",
+        "age": 24,
+        "experience": 4,
+        "college": "Sacred Heart",
+        "height": 71,
+        "weight": 228
+      },
+      {
+        "name": "Tyjae Spears",
+        "position": "RB",
+        "jersey": "2",
+        "age": 24,
+        "experience": 3,
+        "college": "Tulane",
+        "height": 71,
+        "weight": 195
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Tyler Lockett",
+        "position": "WR",
+        "jersey": "4",
+        "age": 33,
+        "experience": 11,
+        "college": "Kansas State",
+        "height": 70,
+        "weight": 182
+      },
+      {
+        "name": "Calvin Ridley",
+        "position": "WR",
+        "jersey": "0",
+        "age": 30,
+        "experience": 7,
+        "college": "Alabama",
+        "height": 73,
+        "weight": 190
+      },
+      {
+        "name": "Van Jefferson",
+        "position": "WR",
+        "jersey": "11",
+        "age": 29,
+        "experience": 6,
+        "college": "Florida",
+        "height": 73,
+        "weight": 200
+      },
+      {
+        "name": "Bryce Oliver",
+        "position": "WR",
+        "jersey": "80",
+        "age": 25,
+        "experience": 2,
+        "college": "Youngstown State",
+        "height": 73,
+        "weight": 214
+      },
+      {
+        "name": "Elic Ayomanor",
+        "position": "WR",
+        "jersey": "5",
+        "age": 22,
+        "experience": 0,
+        "college": "Stanford",
+        "height": 74,
+        "weight": 206
+      },
+      {
+        "name": "Chimere Dike",
+        "position": "WR",
+        "jersey": "17",
+        "age": 22,
+        "experience": 0,
+        "college": "Florida",
+        "height": 73,
+        "weight": 196
+      }
+    ]
+  },
+  "IND": {
+    "teamName": "Indianapolis Colts",
+    "abbreviation": "IND",
+    "startingQB": "Anthony Richardson",
+    "startingRB": "Jonathan Taylor",
+    "startingWR": "Michael Pittman Jr.",
+    "quarterbacks": [
+      {
+        "name": "Daniel Jones",
+        "position": "QB",
+        "jersey": "17",
+        "age": 28,
+        "experience": 7,
+        "college": "Duke",
+        "height": 77,
+        "weight": 230
+      },
+      {
+        "name": "Anthony Richardson Sr.",
+        "position": "QB",
+        "jersey": "5",
+        "age": 23,
+        "experience": 3,
+        "college": "Florida",
+        "height": 76,
+        "weight": 244
+      },
+      {
+        "name": "Riley Leonard",
+        "position": "QB",
+        "jersey": "15",
+        "age": 23,
+        "experience": 0,
+        "college": "Notre Dame",
+        "height": 76,
+        "weight": 213
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Jonathan Taylor",
+        "position": "RB",
+        "jersey": "28",
+        "age": 26,
+        "experience": 6,
+        "college": "Wisconsin",
+        "height": 70,
+        "weight": 226
+      },
+      {
+        "name": "Tyler Goodson",
+        "position": "RB",
+        "jersey": "31",
+        "age": 24,
+        "experience": 3,
+        "college": "Iowa",
+        "height": 69,
+        "weight": 197
+      },
+      {
+        "name": "DJ Giddens",
+        "position": "RB",
+        "jersey": "21",
+        "age": 22,
+        "experience": 0,
+        "college": "Kansas State",
+        "height": 72,
+        "weight": 212
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Ashton Dulin",
+        "position": "WR",
+        "jersey": "16",
+        "age": 28,
+        "experience": 7,
+        "college": "Malone",
+        "height": 74,
+        "weight": 215
+      },
+      {
+        "name": "Michael Pittman Jr.",
+        "position": "WR",
+        "jersey": "11",
+        "age": 28,
+        "experience": 6,
+        "college": "USC",
+        "height": 76,
+        "weight": 223
+      },
+      {
+        "name": "Alec Pierce",
+        "position": "WR",
+        "jersey": "14",
+        "age": 25,
+        "experience": 4,
+        "college": "Cincinnati",
+        "height": 75,
+        "weight": 211
+      },
+      {
+        "name": "Josh Downs",
+        "position": "WR",
+        "jersey": "1",
+        "age": 24,
+        "experience": 3,
+        "college": "North Carolina",
+        "height": 69,
+        "weight": 171
+      },
+      {
+        "name": "Anthony Gould",
+        "position": "WR",
+        "jersey": "6",
+        "age": 24,
+        "experience": 2,
+        "college": "Oregon State",
+        "height": 68,
+        "weight": 174
+      },
+      {
+        "name": "Adonai Mitchell",
+        "position": "WR",
+        "jersey": "10",
+        "age": 23,
+        "experience": 2,
+        "college": "Texas",
+        "height": 74,
+        "weight": 205
+      }
+    ]
+  },
+  "KC": {
+    "teamName": "Kansas City Chiefs",
+    "abbreviation": "KC",
+    "startingQB": "Patrick Mahomes",
+    "startingRB": "Isiah Pacheco",
+    "startingWR": "DeAndre Hopkins",
+    "quarterbacks": [
+      {
+        "name": "Patrick Mahomes",
+        "position": "QB",
+        "jersey": "15",
+        "age": 30,
+        "experience": 9,
+        "college": "Texas Tech",
+        "height": 74,
+        "weight": 225
+      },
+      {
+        "name": "Gardner Minshew",
+        "position": "QB",
+        "jersey": "17",
+        "age": 29,
+        "experience": 7,
+        "college": "Washington State",
+        "height": 73,
+        "weight": 225
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Kareem Hunt",
+        "position": "RB",
+        "jersey": "29",
+        "age": 30,
+        "experience": 9,
+        "college": "Toledo",
+        "height": 71,
+        "weight": 216
+      },
+      {
+        "name": "Elijah Mitchell",
+        "position": "RB",
+        "jersey": "25",
+        "age": 27,
+        "experience": 5,
+        "college": "Louisiana",
+        "height": 70,
+        "weight": 200
+      },
+      {
+        "name": "Isiah Pacheco",
+        "position": "RB",
+        "jersey": "10",
+        "age": 26,
+        "experience": 4,
+        "college": "Rutgers",
+        "height": 70,
+        "weight": 216
+      },
+      {
+        "name": "Brashard Smith",
+        "position": "RB",
+        "jersey": "24",
+        "age": 22,
+        "experience": 0,
+        "college": "SMU",
+        "height": 70,
+        "weight": 196
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "JuJu Smith-Schuster",
+        "position": "WR",
+        "jersey": "9",
+        "age": 28,
+        "experience": 9,
+        "college": "USC",
+        "height": 73,
+        "weight": 215
+      },
+      {
+        "name": "Hollywood Brown",
+        "position": "WR",
+        "jersey": "5",
+        "age": 28,
+        "experience": 7,
+        "college": "Oklahoma",
+        "height": 69,
+        "weight": 180
+      },
+      {
+        "name": "Tyquan Thornton",
+        "position": "WR",
+        "jersey": "80",
+        "age": 25,
+        "experience": 4,
+        "college": "Baylor",
+        "height": 74,
+        "weight": 185
+      },
+      {
+        "name": "Rashee Rice",
+        "position": "WR",
+        "jersey": "4",
+        "age": 25,
+        "experience": 3,
+        "college": "SMU",
+        "height": 73,
+        "weight": 204
+      },
+      {
+        "name": "Jason Brownlee",
+        "position": "WR",
+        "jersey": "89",
+        "age": 26,
+        "experience": 2,
+        "college": "Southern Miss",
+        "height": 75,
+        "weight": 202
+      },
+      {
+        "name": "Xavier Worthy",
+        "position": "WR",
+        "jersey": "1",
+        "age": 22,
+        "experience": 2,
+        "college": "Texas",
+        "height": 71,
+        "weight": 165
+      },
+      {
+        "name": "Nikko Remigio",
+        "position": "WR",
+        "jersey": "81",
+        "age": 25,
+        "experience": 1,
+        "college": "Fresno State",
+        "height": 69,
+        "weight": 187
+      },
+      {
+        "name": "Jalen Royals",
+        "position": "WR",
+        "jersey": "11",
+        "age": 22,
+        "experience": 0,
+        "college": "Utah State",
+        "height": 72,
+        "weight": 195
+      }
+    ]
+  },
+  "LV": {
+    "teamName": "Las Vegas Raiders",
+    "abbreviation": "LV",
+    "startingQB": "Gardner Minshew",
+    "startingRB": "Alexander Mattison",
+    "startingWR": "Davante Adams",
+    "quarterbacks": [
+      {
+        "name": "Geno Smith",
+        "position": "QB",
+        "jersey": "7",
+        "age": 34,
+        "experience": 13,
+        "college": "West Virginia",
+        "height": 75,
+        "weight": 221
+      },
+      {
+        "name": "Kenny Pickett",
+        "position": "QB",
+        "jersey": "15",
+        "age": 27,
+        "experience": 4,
+        "college": "Pittsburgh",
+        "height": 75,
+        "weight": 220
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Raheem Mostert",
+        "position": "RB",
+        "jersey": "31",
+        "age": 33,
+        "experience": 11,
+        "college": "Purdue",
+        "height": 70,
+        "weight": 212
+      },
+      {
+        "name": "Zamir White",
+        "position": "RB",
+        "jersey": "3",
+        "age": 26,
+        "experience": 4,
+        "college": "Georgia",
+        "height": 71,
+        "weight": 227
+      },
+      {
+        "name": "Dylan Laube",
+        "position": "RB",
+        "jersey": "23",
+        "age": 25,
+        "experience": 2,
+        "college": "New Hampshire",
+        "height": 69,
+        "weight": 204
+      },
+      {
+        "name": "Ashton Jeanty",
+        "position": "RB",
+        "jersey": "2",
+        "age": 21,
+        "experience": 0,
+        "college": "Boise State",
+        "height": 68,
+        "weight": 208
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Jakobi Meyers",
+        "position": "WR",
+        "jersey": "16",
+        "age": 28,
+        "experience": 7,
+        "college": "NC State",
+        "height": 74,
+        "weight": 193
+      },
+      {
+        "name": "Justin Shorter",
+        "position": "WR",
+        "jersey": "88",
+        "age": 25,
+        "experience": 3,
+        "college": "Florida",
+        "height": 76,
+        "weight": 227
+      },
+      {
+        "name": "Tre Tucker",
+        "position": "WR",
+        "jersey": "1",
+        "age": 24,
+        "experience": 3,
+        "college": "Cincinnati",
+        "height": 68,
+        "weight": 182
+      },
+      {
+        "name": "Alex Bachman",
+        "position": "WR",
+        "jersey": "81",
+        "age": 29,
+        "experience": 2,
+        "college": "Wake Forest",
+        "height": 72,
+        "weight": 190
+      },
+      {
+        "name": "Jack Bech",
+        "position": "WR",
+        "jersey": "18",
+        "age": 22,
+        "experience": 0,
+        "college": "TCU",
+        "height": 73,
+        "weight": 214
+      },
+      {
+        "name": "Dont'e Thornton Jr.",
+        "position": "WR",
+        "jersey": "10",
+        "age": 22,
+        "experience": 0,
+        "college": "Tennessee",
+        "height": 77,
+        "weight": 205
+      }
+    ]
+  },
+  "LAR": {
+    "teamName": "Los Angeles Rams",
+    "abbreviation": "LAR",
+    "startingQB": "Matthew Stafford",
+    "startingRB": "Kyren Williams",
+    "startingWR": "Cooper Kupp",
+    "quarterbacks": [
+      {
+        "name": "Matthew Stafford",
+        "position": "QB",
+        "jersey": "9",
+        "age": 37,
+        "experience": 17,
+        "college": "Georgia",
+        "height": 75,
+        "weight": 214
+      },
+      {
+        "name": "Jimmy Garoppolo",
+        "position": "QB",
+        "jersey": "11",
+        "age": 33,
+        "experience": 12,
+        "college": "Eastern Illinois",
+        "height": 74,
+        "weight": 225
+      },
+      {
+        "name": "Stetson Bennett IV",
+        "position": "QB",
+        "jersey": "13",
+        "age": 27,
+        "experience": 2,
+        "college": "Georgia",
+        "height": 71,
+        "weight": 190
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Kyren Williams",
+        "position": "RB",
+        "jersey": "23",
+        "age": 25,
+        "experience": 4,
+        "college": "Notre Dame",
+        "height": 69,
+        "weight": 202
+      },
+      {
+        "name": "Blake Corum",
+        "position": "RB",
+        "jersey": "22",
+        "age": 24,
+        "experience": 2,
+        "college": "Michigan",
+        "height": 68,
+        "weight": 210
+      },
+      {
+        "name": "Jarquez Hunter",
+        "position": "RB",
+        "jersey": "27",
+        "age": 22,
+        "experience": 0,
+        "college": "Auburn",
+        "height": 70,
+        "weight": 209
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Davante Adams",
+        "position": "WR",
+        "jersey": "17",
+        "age": 32,
+        "experience": 12,
+        "college": "Fresno State",
+        "height": 73,
+        "weight": 215
+      },
+      {
+        "name": "Tutu Atwell",
+        "position": "WR",
+        "jersey": "5",
+        "age": 26,
+        "experience": 5,
+        "college": "Louisville",
+        "height": 69,
+        "weight": 165
+      },
+      {
+        "name": "Puka Nacua",
+        "position": "WR",
+        "jersey": "12",
+        "age": 24,
+        "experience": 3,
+        "college": "BYU",
+        "height": 74,
+        "weight": 212
+      },
+      {
+        "name": "Xavier Smith",
+        "position": "WR",
+        "jersey": "19",
+        "age": 28,
+        "experience": 2,
+        "college": "Florida A&M",
+        "height": 69,
+        "weight": 176
+      },
+      {
+        "name": "Jordan Whittington",
+        "position": "WR",
+        "jersey": "88",
+        "age": 25,
+        "experience": 2,
+        "college": "Texas",
+        "height": 73,
+        "weight": 202
+      },
+      {
+        "name": "Konata Mumpfield",
+        "position": "WR",
+        "jersey": "15",
+        "age": 22,
+        "experience": 0,
+        "college": "Pittsburgh",
+        "height": 73,
+        "weight": 185
+      }
+    ]
+  },
+  "MIA": {
+    "teamName": "Miami Dolphins",
+    "abbreviation": "MIA",
+    "startingQB": "Tua Tagovailoa",
+    "startingRB": "De'Von Achane",
+    "startingWR": "Tyreek Hill",
+    "quarterbacks": [
+      {
+        "name": "Tua Tagovailoa",
+        "position": "QB",
+        "jersey": "1",
+        "age": 27,
+        "experience": 6,
+        "college": "Alabama",
+        "height": 73,
+        "weight": 225
+      },
+      {
+        "name": "Zach Wilson",
+        "position": "QB",
+        "jersey": "0",
+        "age": 26,
+        "experience": 5,
+        "college": "BYU",
+        "height": 74,
+        "weight": 214
+      },
+      {
+        "name": "Quinn Ewers",
+        "position": "QB",
+        "jersey": "14",
+        "age": 22,
+        "experience": 0,
+        "college": "Texas",
+        "height": 74,
+        "weight": 209
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Alec Ingold",
+        "position": "FB",
+        "jersey": "30",
+        "age": 29,
+        "experience": 7,
+        "college": "Wisconsin",
+        "height": 73,
+        "weight": 232
+      },
+      {
+        "name": "De'Von Achane",
+        "position": "RB",
+        "jersey": "28",
+        "age": 23,
+        "experience": 3,
+        "college": "Texas A&M",
+        "height": 69,
+        "weight": 191
+      },
+      {
+        "name": "Jaylen Wright",
+        "position": "RB",
+        "jersey": "5",
+        "age": 22,
+        "experience": 2,
+        "college": "Tennessee",
+        "height": 70,
+        "weight": 208
+      },
+      {
+        "name": "Ollie Gordon II",
+        "position": "RB",
+        "jersey": "31",
+        "age": 21,
+        "experience": 0,
+        "college": "Oklahoma State",
+        "height": 74,
+        "weight": 225
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Cedrick Wilson Jr.",
+        "position": "WR",
+        "jersey": "19",
+        "age": 30,
+        "experience": 8,
+        "college": "Boise State",
+        "height": 74,
+        "weight": 197
+      },
+      {
+        "name": "Nick Westbrook-Ikhine",
+        "position": "WR",
+        "jersey": "18",
+        "age": 28,
+        "experience": 6,
+        "college": "Indiana",
+        "height": 74,
+        "weight": 211
+      },
+      {
+        "name": "Dee Eskridge",
+        "position": "WR",
+        "jersey": "82",
+        "age": 28,
+        "experience": 5,
+        "college": "Western Michigan",
+        "height": 69,
+        "weight": 190
+      },
+      {
+        "name": "Jaylen Waddle",
+        "position": "WR",
+        "jersey": "17",
+        "age": 26,
+        "experience": 5,
+        "college": "Alabama",
+        "height": 70,
+        "weight": 185
+      },
+      {
+        "name": "Malik Washington",
+        "position": "WR",
+        "jersey": "6",
+        "age": 24,
+        "experience": 2,
+        "college": "Virginia",
+        "height": 68,
+        "weight": 195
+      },
+      {
+        "name": "Tahj Washington",
+        "position": "WR",
+        "jersey": "84",
+        "age": 24,
+        "experience": 2,
+        "college": "USC",
+        "height": 70,
+        "weight": 174
+      }
+    ]
+  },
+  "MIN": {
+    "teamName": "Minnesota Vikings",
+    "abbreviation": "MIN",
+    "startingQB": "Sam Darnold",
+    "startingRB": "Aaron Jones",
+    "startingWR": "Justin Jefferson",
+    "quarterbacks": [
+      {
+        "name": "Carson Wentz",
+        "position": "QB",
+        "jersey": "11",
+        "age": 32,
+        "experience": 10,
+        "college": "North Dakota State",
+        "height": 77,
+        "weight": 237
+      },
+      {
+        "name": "J.J. McCarthy",
+        "position": "QB",
+        "jersey": "9",
+        "age": 22,
+        "experience": 2,
+        "college": "Michigan",
+        "height": 75,
+        "weight": 219
+      },
+      {
+        "name": "Max Brosmer",
+        "position": "QB",
+        "jersey": "12",
+        "age": 24,
+        "experience": 0,
+        "college": "Minnesota",
+        "height": 74,
+        "weight": 217
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "C.J. Ham",
+        "position": "FB",
+        "jersey": "30",
+        "age": 32,
+        "experience": 9,
+        "college": "Augustana University (SD)",
+        "height": 71,
+        "weight": 250
+      },
+      {
+        "name": "Jordan Mason",
+        "position": "RB",
+        "jersey": "27",
+        "age": 26,
+        "experience": 4,
+        "college": "Georgia Tech",
+        "height": 71,
+        "weight": 223
+      },
+      {
+        "name": "Zavier Scott",
+        "position": "RB",
+        "jersey": "36",
+        "age": 26,
+        "experience": 1,
+        "college": "Maine",
+        "height": 73,
+        "weight": 219
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Adam Thielen",
+        "position": "WR",
+        "jersey": "19",
+        "age": 35,
+        "experience": 12,
+        "college": "Minnesota State",
+        "height": 74,
+        "weight": 195
+      },
+      {
+        "name": "Justin Jefferson",
+        "position": "WR",
+        "jersey": "18",
+        "age": 26,
+        "experience": 6,
+        "college": "LSU",
+        "height": 73,
+        "weight": 195
+      },
+      {
+        "name": "Jalen Nailor",
+        "position": "WR",
+        "jersey": "1",
+        "age": 26,
+        "experience": 4,
+        "college": "Michigan State",
+        "height": 71,
+        "weight": 190
+      },
+      {
+        "name": "Jordan Addison",
+        "position": "WR",
+        "jersey": "3",
+        "age": 23,
+        "experience": 3,
+        "college": "USC",
+        "height": 71,
+        "weight": 175
+      },
+      {
+        "name": "Tai Felton",
+        "position": "WR",
+        "jersey": "13",
+        "age": 22,
+        "experience": 0,
+        "college": "Maryland",
+        "height": 73,
+        "weight": 183
+      },
+      {
+        "name": "Myles Price",
+        "position": "WR",
+        "jersey": "4",
+        "age": 23,
+        "experience": 0,
+        "college": "Indiana",
+        "height": 69,
+        "weight": 183
+      }
+    ]
+  },
+  "NE": {
+    "teamName": "New England Patriots",
+    "abbreviation": "NE",
+    "startingQB": "Drake Maye",
+    "startingRB": "Rhamondre Stevenson",
+    "startingWR": "Ja'Lynn Polk",
+    "quarterbacks": [
+      {
+        "name": "Joshua Dobbs",
+        "position": "QB",
+        "jersey": "11",
+        "age": 30,
+        "experience": 9,
+        "college": "Tennessee",
+        "height": 75,
+        "weight": 220
+      },
+      {
+        "name": "Tommy DeVito",
+        "position": "QB",
+        "jersey": "16",
+        "age": 27,
+        "experience": 3,
+        "college": "Illinois",
+        "height": 74,
+        "weight": 210
+      },
+      {
+        "name": "Drake Maye",
+        "position": "QB",
+        "jersey": "10",
+        "age": 23,
+        "experience": 2,
+        "college": "North Carolina",
+        "height": 76,
+        "weight": 225
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Antonio Gibson",
+        "position": "RB",
+        "jersey": "4",
+        "age": 27,
+        "experience": 6,
+        "college": "Memphis",
+        "height": 72,
+        "weight": 228
+      },
+      {
+        "name": "Rhamondre Stevenson",
+        "position": "RB",
+        "jersey": "38",
+        "age": 27,
+        "experience": 5,
+        "college": "Oklahoma",
+        "height": 72,
+        "weight": 227
+      },
+      {
+        "name": "TreVeyon Henderson",
+        "position": "RB",
+        "jersey": "32",
+        "age": 22,
+        "experience": 0,
+        "college": "Ohio State",
+        "height": 70,
+        "weight": 202
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Stefon Diggs",
+        "position": "WR",
+        "jersey": "8",
+        "age": 31,
+        "experience": 11,
+        "college": "Maryland",
+        "height": 72,
+        "weight": 191
+      },
+      {
+        "name": "Mack Hollins",
+        "position": "WR",
+        "jersey": "13",
+        "age": 32,
+        "experience": 9,
+        "college": "North Carolina",
+        "height": 76,
+        "weight": 221
+      },
+      {
+        "name": "Jalen Hurd",
+        "position": "WR",
+        "jersey": "13",
+        "age": 29,
+        "experience": 4,
+        "college": "Baylor",
+        "height": 77,
+        "weight": 230
+      },
+      {
+        "name": "Kayshon Boutte",
+        "position": "WR",
+        "jersey": "9",
+        "age": 23,
+        "experience": 3,
+        "college": "LSU",
+        "height": 71,
+        "weight": 197
+      },
+      {
+        "name": "DeMario Douglas",
+        "position": "WR",
+        "jersey": "3",
+        "age": 24,
+        "experience": 3,
+        "college": "Liberty",
+        "height": 68,
+        "weight": 192
+      },
+      {
+        "name": "Efton Chism III",
+        "position": "WR",
+        "jersey": "86",
+        "age": 23,
+        "experience": 0,
+        "college": "Eastern Washington",
+        "height": 70,
+        "weight": 198
+      },
+      {
+        "name": "Kyle Williams",
+        "position": "WR",
+        "jersey": "18",
+        "age": 22,
+        "experience": 0,
+        "college": "Washington State",
+        "height": 71,
+        "weight": 190
+      }
+    ]
+  },
+  "NO": {
+    "teamName": "New Orleans Saints",
+    "abbreviation": "NO",
+    "startingQB": "Derek Carr",
+    "startingRB": "Alvin Kamara",
+    "startingWR": "Chris Olave",
+    "quarterbacks": [
+      {
+        "name": "Taysom Hill",
+        "position": "QB",
+        "jersey": "7",
+        "age": 35,
+        "experience": 9,
+        "college": "BYU",
+        "height": 74,
+        "weight": 221
+      },
+      {
+        "name": "Spencer Rattler",
+        "position": "QB",
+        "jersey": "2",
+        "age": 25,
+        "experience": 2,
+        "college": "South Carolina",
+        "height": 72,
+        "weight": 211
+      },
+      {
+        "name": "Tyler Shough",
+        "position": "QB",
+        "jersey": "6",
+        "age": 26,
+        "experience": 0,
+        "college": "Louisville",
+        "height": 77,
+        "weight": 219
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Alvin Kamara",
+        "position": "RB",
+        "jersey": "41",
+        "age": 30,
+        "experience": 9,
+        "college": "Tennessee",
+        "height": 70,
+        "weight": 215
+      },
+      {
+        "name": "Kendre Miller",
+        "position": "RB",
+        "jersey": "5",
+        "age": 23,
+        "experience": 3,
+        "college": "TCU",
+        "height": 72,
+        "weight": 220
+      },
+      {
+        "name": "Devin Neal",
+        "position": "RB",
+        "jersey": "24",
+        "age": 22,
+        "experience": 0,
+        "college": "Kansas",
+        "height": 71,
+        "weight": 213
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Brandin Cooks",
+        "position": "WR",
+        "jersey": "10",
+        "age": 32,
+        "experience": 12,
+        "college": "Oregon State",
+        "height": 70,
+        "weight": 190
+      },
+      {
+        "name": "Chris Olave",
+        "position": "WR",
+        "jersey": "12",
+        "age": 25,
+        "experience": 4,
+        "college": "Ohio State",
+        "height": 72,
+        "weight": 187
+      },
+      {
+        "name": "Rashid Shaheed",
+        "position": "WR",
+        "jersey": "22",
+        "age": 27,
+        "experience": 4,
+        "college": "Weber State",
+        "height": 72,
+        "weight": 180
+      },
+      {
+        "name": "Mason Tipton",
+        "position": "WR",
+        "jersey": "15",
+        "age": 25,
+        "experience": 2,
+        "college": "Yale",
+        "height": 71,
+        "weight": 187
+      },
+      {
+        "name": "Devaughn Vele",
+        "position": "WR",
+        "jersey": "14",
+        "age": 27,
+        "experience": 2,
+        "college": "Utah",
+        "height": 77,
+        "weight": 210
+      }
+    ]
+  },
+  "NYG": {
+    "teamName": "New York Giants",
+    "abbreviation": "NYG",
+    "startingQB": "Jaxson Dart",
+    "startingRB": "Tyrone Tracy Jr.",
+    "startingWR": "Malik Nabers",
+    "quarterbacks": [
+      {
+        "name": "Russell Wilson",
+        "position": "QB",
+        "jersey": "3",
+        "age": 36,
+        "experience": 14,
+        "college": "Wisconsin",
+        "height": 71,
+        "weight": 206
+      },
+      {
+        "name": "Jameis Winston",
+        "position": "QB",
+        "jersey": "19",
+        "age": 31,
+        "experience": 11,
+        "college": "Florida State",
+        "height": 76,
+        "weight": 231
+      },
+      {
+        "name": "Jaxson Dart",
+        "position": "QB",
+        "jersey": "6",
+        "age": 22,
+        "experience": 0,
+        "college": "Ole Miss",
+        "height": 74,
+        "weight": 223
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Devin Singletary",
+        "position": "RB",
+        "jersey": "26",
+        "age": 28,
+        "experience": 7,
+        "college": "Florida Atlantic",
+        "height": 67,
+        "weight": 203
+      },
+      {
+        "name": "Tyrone Tracy Jr.",
+        "position": "RB",
+        "jersey": "29",
+        "age": 25,
+        "experience": 2,
+        "college": "Purdue",
+        "height": 71,
+        "weight": 210
+      },
+      {
+        "name": "Cam Skattebo",
+        "position": "RB",
+        "jersey": "44",
+        "age": 23,
+        "experience": 0,
+        "college": "Arizona State",
+        "height": 71,
+        "weight": 215
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Gunner Olszewski",
+        "position": "WR",
+        "jersey": "80",
+        "age": 28,
+        "experience": 7,
+        "college": "Bemidji State",
+        "height": 72,
+        "weight": 190
+      },
+      {
+        "name": "Darius Slayton",
+        "position": "WR",
+        "jersey": "18",
+        "age": 28,
+        "experience": 7,
+        "college": "Auburn",
+        "height": 73,
+        "weight": 198
+      },
+      {
+        "name": "Wan'Dale Robinson",
+        "position": "WR",
+        "jersey": "17",
+        "age": 24,
+        "experience": 4,
+        "college": "Kentucky",
+        "height": 68,
+        "weight": 185
+      },
+      {
+        "name": "Jalin Hyatt",
+        "position": "WR",
+        "jersey": "8",
+        "age": 24,
+        "experience": 3,
+        "college": "Tennessee",
+        "height": 72,
+        "weight": 185
+      },
+      {
+        "name": "Beaux Collins",
+        "position": "WR",
+        "jersey": "81",
+        "age": 22,
+        "experience": 0,
+        "college": "Notre Dame",
+        "height": 75,
+        "weight": 206
+      }
+    ]
+  },
+  "NYJ": {
+    "teamName": "New York Jets",
+    "abbreviation": "NYJ",
+    "startingQB": "Aaron Rodgers",
+    "startingRB": "Breece Hall",
+    "startingWR": "Garrett Wilson",
+    "quarterbacks": [
+      {
+        "name": "Tyrod Taylor",
+        "position": "QB",
+        "jersey": "2",
+        "age": 36,
+        "experience": 15,
+        "college": "Virginia Tech",
+        "height": 73,
+        "weight": 217
+      },
+      {
+        "name": "Justin Fields",
+        "position": "QB",
+        "jersey": "7",
+        "age": 26,
+        "experience": 5,
+        "college": "Ohio State",
+        "height": 75,
+        "weight": 227
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Andrew Beck",
+        "position": "FB",
+        "jersey": "47",
+        "age": 29,
+        "experience": 6,
+        "college": "Texas",
+        "height": 75,
+        "weight": 255
+      },
+      {
+        "name": "Khalil Herbert",
+        "position": "RB",
+        "jersey": "36",
+        "age": 27,
+        "experience": 5,
+        "college": "Virginia Tech",
+        "height": 69,
+        "weight": 212
+      },
+      {
+        "name": "Kene Nwangwu",
+        "position": "RB",
+        "jersey": "34",
+        "age": 27,
+        "experience": 5,
+        "college": "Iowa State",
+        "height": 73,
+        "weight": 210
+      },
+      {
+        "name": "Breece Hall",
+        "position": "RB",
+        "jersey": "20",
+        "age": 24,
+        "experience": 4,
+        "college": "Iowa State",
+        "height": 71,
+        "weight": 217
+      },
+      {
+        "name": "Isaiah Davis",
+        "position": "RB",
+        "jersey": "32",
+        "age": 23,
+        "experience": 2,
+        "college": "South Dakota State",
+        "height": 73,
+        "weight": 220
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Josh Reynolds",
+        "position": "WR",
+        "jersey": "83",
+        "age": 30,
+        "experience": 9,
+        "college": "Texas A&M",
+        "height": 75,
+        "weight": 192
+      },
+      {
+        "name": "Allen Lazard",
+        "position": "WR",
+        "jersey": "10",
+        "age": 29,
+        "experience": 7,
+        "college": "Iowa State",
+        "height": 77,
+        "weight": 227
+      },
+      {
+        "name": "Tyler Johnson",
+        "position": "WR",
+        "jersey": "16",
+        "age": 27,
+        "experience": 5,
+        "college": "Minnesota",
+        "height": 73,
+        "weight": 208
+      },
+      {
+        "name": "Garrett Wilson",
+        "position": "WR",
+        "jersey": "5",
+        "age": 25,
+        "experience": 4,
+        "college": "Ohio State",
+        "height": 72,
+        "weight": 183
+      },
+      {
+        "name": "Arian Smith",
+        "position": "WR",
+        "jersey": "82",
+        "age": 23,
+        "experience": 0,
+        "college": "Georgia",
+        "height": 72,
+        "weight": 179
+      }
+    ]
+  },
+  "PHI": {
+    "teamName": "Philadelphia Eagles",
+    "abbreviation": "PHI",
+    "startingQB": "Jalen Hurts",
+    "startingRB": "Saquon Barkley",
+    "startingWR": "A.J. Brown",
+    "quarterbacks": [
+      {
+        "name": "Jalen Hurts",
+        "position": "QB",
+        "jersey": "1",
+        "age": 27,
+        "experience": 6,
+        "college": "Oklahoma",
+        "height": 73,
+        "weight": 223
+      },
+      {
+        "name": "Sam Howell",
+        "position": "QB",
+        "jersey": "14",
+        "age": 25,
+        "experience": 4,
+        "college": "North Carolina",
+        "height": 73,
+        "weight": 220
+      },
+      {
+        "name": "Tanner McKee",
+        "position": "QB",
+        "jersey": "16",
+        "age": 25,
+        "experience": 3,
+        "college": "Stanford",
+        "height": 78,
+        "weight": 231
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Saquon Barkley",
+        "position": "RB",
+        "jersey": "26",
+        "age": 28,
+        "experience": 8,
+        "college": "Penn State",
+        "height": 72,
+        "weight": 233
+      },
+      {
+        "name": "AJ Dillon",
+        "position": "RB",
+        "jersey": "29",
+        "age": 27,
+        "experience": 6,
+        "college": "Boston College",
+        "height": 72,
+        "weight": 247
+      },
+      {
+        "name": "Tank Bigsby",
+        "position": "RB",
+        "jersey": "37",
+        "age": 23,
+        "experience": 3,
+        "college": "Auburn",
+        "height": 71,
+        "weight": 215
+      },
+      {
+        "name": "Will Shipley",
+        "position": "RB",
+        "jersey": "28",
+        "age": 23,
+        "experience": 2,
+        "college": "Clemson",
+        "height": 71,
+        "weight": 209
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "A.J. Brown",
+        "position": "WR",
+        "jersey": "11",
+        "age": 28,
+        "experience": 7,
+        "college": "Ole Miss",
+        "height": 73,
+        "weight": 226
+      },
+      {
+        "name": "DeVonta Smith",
+        "position": "WR",
+        "jersey": "6",
+        "age": 26,
+        "experience": 5,
+        "college": "Alabama",
+        "height": 72,
+        "weight": 170
+      },
+      {
+        "name": "Jahan Dotson",
+        "position": "WR",
+        "jersey": "2",
+        "age": 25,
+        "experience": 4,
+        "college": "Penn State",
+        "height": 71,
+        "weight": 184
+      },
+      {
+        "name": "Xavier Gipson",
+        "position": "WR",
+        "jersey": "87",
+        "age": 24,
+        "experience": 3,
+        "college": "Stephen F. Austin",
+        "height": 69,
+        "weight": 189
+      },
+      {
+        "name": "John Metchie III",
+        "position": "WR",
+        "jersey": "18",
+        "age": 25,
+        "experience": 3,
+        "college": "Alabama",
+        "height": 72,
+        "weight": 195
+      }
+    ]
+  },
+  "ARI": {
+    "teamName": "Arizona Cardinals",
+    "abbreviation": "ARI",
+    "startingQB": "Kyler Murray",
+    "startingRB": "James Conner",
+    "startingWR": "Marvin Harrison Jr.",
+    "quarterbacks": [
+      {
+        "name": "Jacoby Brissett",
+        "position": "QB",
+        "jersey": "7",
+        "age": 32,
+        "experience": 10,
+        "college": "NC State",
+        "height": 76,
+        "weight": 235
+      },
+      {
+        "name": "Kyler Murray",
+        "position": "QB",
+        "jersey": "1",
+        "age": 28,
+        "experience": 7,
+        "college": "Oklahoma",
+        "height": 70,
+        "weight": 207
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Michael Carter",
+        "position": "RB",
+        "jersey": "22",
+        "age": 26,
+        "experience": 4,
+        "college": "North Carolina",
+        "height": 68,
+        "weight": 201
+      },
+      {
+        "name": "Emari Demercado",
+        "position": "RB",
+        "jersey": "31",
+        "age": 26,
+        "experience": 3,
+        "college": "TCU",
+        "height": 69,
+        "weight": 215
+      },
+      {
+        "name": "Bam Knight",
+        "position": "RB",
+        "jersey": "20",
+        "age": 24,
+        "experience": 3,
+        "college": "NC State",
+        "height": 71,
+        "weight": 210
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Zay Jones",
+        "position": "WR",
+        "jersey": "17",
+        "age": 30,
+        "experience": 9,
+        "college": "East Carolina",
+        "height": 74,
+        "weight": 200
+      },
+      {
+        "name": "Greg Dortch",
+        "position": "WR",
+        "jersey": "4",
+        "age": 27,
+        "experience": 5,
+        "college": "Wake Forest",
+        "height": 67,
+        "weight": 180
+      },
+      {
+        "name": "Simi Fehoko",
+        "position": "WR",
+        "jersey": "80",
+        "age": 27,
+        "experience": 5,
+        "college": "Stanford",
+        "height": 76,
+        "weight": 225
+      },
+      {
+        "name": "Michael Wilson",
+        "position": "WR",
+        "jersey": "14",
+        "age": 25,
+        "experience": 3,
+        "college": "Stanford",
+        "height": 74,
+        "weight": 213
+      },
+      {
+        "name": "Marvin Harrison Jr.",
+        "position": "WR",
+        "jersey": "18",
+        "age": 23,
+        "experience": 2,
+        "college": "Ohio State",
+        "height": 75,
+        "weight": 220
+      },
+      {
+        "name": "Xavier Weaver",
+        "position": "WR",
+        "jersey": "89",
+        "age": 24,
+        "experience": 2,
+        "college": "Colorado",
+        "height": 73,
+        "weight": 185
+      }
+    ]
+  },
+  "PIT": {
+    "teamName": "Pittsburgh Steelers",
+    "abbreviation": "PIT",
+    "startingQB": "Russell Wilson",
+    "startingRB": "Najee Harris",
+    "startingWR": "George Pickens",
+    "quarterbacks": [
+      {
+        "name": "Aaron Rodgers",
+        "position": "QB",
+        "jersey": "8",
+        "age": 41,
+        "experience": 21,
+        "college": "California",
+        "height": 74,
+        "weight": 223
+      },
+      {
+        "name": "Mason Rudolph",
+        "position": "QB",
+        "jersey": "2",
+        "age": 30,
+        "experience": 8,
+        "college": "Oklahoma State",
+        "height": 77,
+        "weight": 235
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Kenneth Gainwell",
+        "position": "RB",
+        "jersey": "14",
+        "age": 26,
+        "experience": 5,
+        "college": "Memphis",
+        "height": 69,
+        "weight": 200
+      },
+      {
+        "name": "Jaylen Warren",
+        "position": "RB",
+        "jersey": "30",
+        "age": 26,
+        "experience": 4,
+        "college": "Oklahoma State",
+        "height": 68,
+        "weight": 215
+      },
+      {
+        "name": "Kaleb Johnson",
+        "position": "RB",
+        "jersey": "20",
+        "age": 22,
+        "experience": 0,
+        "college": "Iowa",
+        "height": 73,
+        "weight": 224
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "DK Metcalf",
+        "position": "WR",
+        "jersey": "4",
+        "age": 27,
+        "experience": 7,
+        "college": "Ole Miss",
+        "height": 76,
+        "weight": 229
+      },
+      {
+        "name": "Scotty Miller",
+        "position": "WR",
+        "jersey": "13",
+        "age": 28,
+        "experience": 7,
+        "college": "Bowling Green",
+        "height": 69,
+        "weight": 174
+      },
+      {
+        "name": "Ben Skowronek",
+        "position": "WR",
+        "jersey": "15",
+        "age": 28,
+        "experience": 5,
+        "college": "Notre Dame",
+        "height": 75,
+        "weight": 224
+      },
+      {
+        "name": "Calvin Austin III",
+        "position": "WR",
+        "jersey": "19",
+        "age": 26,
+        "experience": 4,
+        "college": "Memphis",
+        "height": 69,
+        "weight": 162
+      },
+      {
+        "name": "Roman Wilson",
+        "position": "WR",
+        "jersey": "10",
+        "age": 24,
+        "experience": 2,
+        "college": "Michigan",
+        "height": 70,
+        "weight": 186
+      }
+    ]
+  },
+  "LAC": {
+    "teamName": "Los Angeles Chargers",
+    "abbreviation": "LAC",
+    "startingQB": "Justin Herbert",
+    "startingRB": "J.K. Dobbins",
+    "startingWR": "Ladd McConkey",
+    "quarterbacks": [
+      {
+        "name": "Justin Herbert",
+        "position": "QB",
+        "jersey": "10",
+        "age": 27,
+        "experience": 6,
+        "college": "Oregon",
+        "height": 78,
+        "weight": 236
+      },
+      {
+        "name": "Trey Lance",
+        "position": "QB",
+        "jersey": "5",
+        "age": 25,
+        "experience": 5,
+        "college": "North Dakota State",
+        "height": 76,
+        "weight": 226
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Hassan Haskins",
+        "position": "RB",
+        "jersey": "28",
+        "age": 25,
+        "experience": 4,
+        "college": "Michigan",
+        "height": 74,
+        "weight": 228
+      },
+      {
+        "name": "Scott Matlock",
+        "position": "FB",
+        "jersey": "44",
+        "age": 25,
+        "experience": 3,
+        "college": "Boise State",
+        "height": 76,
+        "weight": 296
+      },
+      {
+        "name": "Kimani Vidal",
+        "position": "RB",
+        "jersey": "30",
+        "age": 24,
+        "experience": 2,
+        "college": "Troy",
+        "height": 68,
+        "weight": 215
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Keenan Allen",
+        "position": "WR",
+        "jersey": "13",
+        "age": 33,
+        "experience": 13,
+        "college": "California",
+        "height": 74,
+        "weight": 211
+      },
+      {
+        "name": "Derius Davis",
+        "position": "WR",
+        "jersey": "12",
+        "age": 25,
+        "experience": 3,
+        "college": "TCU",
+        "height": 68,
+        "weight": 165
+      },
+      {
+        "name": "Quentin Johnston",
+        "position": "WR",
+        "jersey": "1",
+        "age": 24,
+        "experience": 3,
+        "college": "TCU",
+        "height": 74,
+        "weight": 208
+      },
+      {
+        "name": "Ladd McConkey",
+        "position": "WR",
+        "jersey": "15",
+        "age": 23,
+        "experience": 2,
+        "college": "Georgia",
+        "height": 72,
+        "weight": 185
+      },
+      {
+        "name": "Tre' Harris",
+        "position": "WR",
+        "jersey": "9",
+        "age": 23,
+        "experience": 0,
+        "college": "Ole Miss",
+        "height": 75,
+        "weight": 210
+      },
+      {
+        "name": "KeAndre Lambert-Smith",
+        "position": "WR",
+        "jersey": "84",
+        "age": 23,
+        "experience": 0,
+        "college": "Auburn",
+        "height": 73,
+        "weight": 182
+      }
+    ]
+  },
+  "SF": {
+    "teamName": "San Francisco 49ers",
+    "abbreviation": "SF",
+    "startingQB": "Brock Purdy",
+    "startingRB": "Christian McCaffrey",
+    "startingWR": "Deebo Samuel",
+    "quarterbacks": [
+      {
+        "name": "Mac Jones",
+        "position": "QB",
+        "jersey": "10",
+        "age": 27,
+        "experience": 5,
+        "college": "Alabama",
+        "height": 75,
+        "weight": 220
+      },
+      {
+        "name": "Brock Purdy",
+        "position": "QB",
+        "jersey": "13",
+        "age": 25,
+        "experience": 4,
+        "college": "Iowa State",
+        "height": 73,
+        "weight": 220
+      },
+      {
+        "name": "Adrian Martinez",
+        "position": "QB",
+        "jersey": "18",
+        "age": 25,
+        "experience": 1,
+        "college": "Kansas State",
+        "height": 74,
+        "weight": 220
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Kyle Juszczyk",
+        "position": "FB",
+        "jersey": "44",
+        "age": 34,
+        "experience": 13,
+        "college": "Harvard",
+        "height": 74,
+        "weight": 235
+      },
+      {
+        "name": "Christian McCaffrey",
+        "position": "RB",
+        "jersey": "23",
+        "age": 29,
+        "experience": 9,
+        "college": "Stanford",
+        "height": 71,
+        "weight": 210
+      },
+      {
+        "name": "Brian Robinson Jr.",
+        "position": "RB",
+        "jersey": "3",
+        "age": 26,
+        "experience": 4,
+        "college": "Alabama",
+        "height": 73,
+        "weight": 225
+      },
+      {
+        "name": "Isaac Guerendo",
+        "position": "RB",
+        "jersey": "31",
+        "age": 25,
+        "experience": 2,
+        "college": "Louisville",
+        "height": 72,
+        "weight": 221
+      },
+      {
+        "name": "Jordan James",
+        "position": "RB",
+        "jersey": "29",
+        "age": 21,
+        "experience": 0,
+        "college": "Oregon",
+        "height": 69,
+        "weight": 208
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Demarcus Robinson",
+        "position": "WR",
+        "jersey": "5",
+        "age": 31,
+        "experience": 10,
+        "college": "Florida",
+        "height": 73,
+        "weight": 202
+      },
+      {
+        "name": "Kendrick Bourne",
+        "position": "WR",
+        "jersey": "84",
+        "age": 30,
+        "experience": 9,
+        "college": "Eastern Washington",
+        "height": 73,
+        "weight": 205
+      },
+      {
+        "name": "Marquez Valdes-Scantling",
+        "position": "WR",
+        "jersey": "83",
+        "age": 30,
+        "experience": 8,
+        "college": "South Florida",
+        "height": 76,
+        "weight": 206
+      },
+      {
+        "name": "Jauan Jennings",
+        "position": "WR",
+        "jersey": "15",
+        "age": 28,
+        "experience": 5,
+        "college": "Tennessee",
+        "height": 75,
+        "weight": 212
+      },
+      {
+        "name": "Skyy Moore",
+        "position": "WR",
+        "jersey": "6",
+        "age": 25,
+        "experience": 4,
+        "college": "Western Michigan",
+        "height": 70,
+        "weight": 195
+      },
+      {
+        "name": "Ricky Pearsall",
+        "position": "WR",
+        "jersey": "1",
+        "age": 25,
+        "experience": 2,
+        "college": "Florida",
+        "height": 73,
+        "weight": 189
+      },
+      {
+        "name": "Jordan Watkins",
+        "position": "WR",
+        "jersey": "17",
+        "age": 23,
+        "experience": 0,
+        "college": "Ole Miss",
+        "height": 71,
+        "weight": 196
+      }
+    ]
+  },
+  "SEA": {
+    "teamName": "Seattle Seahawks",
+    "abbreviation": "SEA",
+    "startingQB": "Geno Smith",
+    "startingRB": "Kenneth Walker III",
+    "startingWR": "DK Metcalf",
+    "quarterbacks": [
+      {
+        "name": "Sam Darnold",
+        "position": "QB",
+        "jersey": "14",
+        "age": 28,
+        "experience": 8,
+        "college": "USC",
+        "height": 75,
+        "weight": 225
+      },
+      {
+        "name": "Drew Lock",
+        "position": "QB",
+        "jersey": "2",
+        "age": 28,
+        "experience": 7,
+        "college": "Missouri",
+        "height": 76,
+        "weight": 228
+      },
+      {
+        "name": "Jalen Milroe",
+        "position": "QB",
+        "jersey": "6",
+        "age": 22,
+        "experience": 0,
+        "college": "Alabama",
+        "height": 74,
+        "weight": 216
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Kenneth Walker III",
+        "position": "RB",
+        "jersey": "9",
+        "age": 24,
+        "experience": 4,
+        "college": "Michigan State",
+        "height": 69,
+        "weight": 211
+      },
+      {
+        "name": "Zach Charbonnet",
+        "position": "RB",
+        "jersey": "26",
+        "age": 24,
+        "experience": 3,
+        "college": "UCLA",
+        "height": 73,
+        "weight": 214
+      },
+      {
+        "name": "Brady Russell",
+        "position": "FB",
+        "jersey": "38",
+        "age": 27,
+        "experience": 3,
+        "college": "Colorado",
+        "height": 75,
+        "weight": 250
+      },
+      {
+        "name": "George Holani",
+        "position": "RB",
+        "jersey": "36",
+        "age": 25,
+        "experience": 2,
+        "college": "Boise State",
+        "height": 71,
+        "weight": 210
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Cooper Kupp",
+        "position": "WR",
+        "jersey": "10",
+        "age": 32,
+        "experience": 9,
+        "college": "Eastern Washington",
+        "height": 73,
+        "weight": 205
+      },
+      {
+        "name": "Cody White",
+        "position": "WR",
+        "jersey": "82",
+        "age": 26,
+        "experience": 4,
+        "college": "Michigan State",
+        "height": 75,
+        "weight": 227
+      },
+      {
+        "name": "Dareke Young",
+        "position": "WR",
+        "jersey": "83",
+        "age": 26,
+        "experience": 4,
+        "college": "Lenoir-Rhyne",
+        "height": 74,
+        "weight": 224
+      },
+      {
+        "name": "Jake Bobo",
+        "position": "WR",
+        "jersey": "19",
+        "age": 27,
+        "experience": 3,
+        "college": "UCLA",
+        "height": 76,
+        "weight": 207
+      },
+      {
+        "name": "Jaxon Smith-Njigba",
+        "position": "WR",
+        "jersey": "11",
+        "age": 23,
+        "experience": 3,
+        "college": "Ohio State",
+        "height": 72,
+        "weight": 197
+      },
+      {
+        "name": "Tory Horton",
+        "position": "WR",
+        "jersey": "15",
+        "age": 22,
+        "experience": 0,
+        "college": "Colorado State",
+        "height": 74,
+        "weight": 196
+      }
+    ]
+  },
+  "TB": {
+    "teamName": "Tampa Bay Buccaneers",
+    "abbreviation": "TB",
+    "startingQB": "Baker Mayfield",
+    "startingRB": "Rachaad White",
+    "startingWR": "Mike Evans",
+    "quarterbacks": [
+      {
+        "name": "Teddy Bridgewater",
+        "position": "QB",
+        "jersey": "10",
+        "age": 32,
+        "experience": 11,
+        "college": "Louisville",
+        "height": 74,
+        "weight": 210
+      },
+      {
+        "name": "Baker Mayfield",
+        "position": "QB",
+        "jersey": "6",
+        "age": 30,
+        "experience": 8,
+        "college": "Oklahoma",
+        "height": 73,
+        "weight": 215
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Rachaad White",
+        "position": "RB",
+        "jersey": "1",
+        "age": 26,
+        "experience": 4,
+        "college": "Arizona State",
+        "height": 72,
+        "weight": 214
+      },
+      {
+        "name": "Sean Tucker",
+        "position": "RB",
+        "jersey": "44",
+        "age": 23,
+        "experience": 3,
+        "college": "Syracuse",
+        "height": 70,
+        "weight": 205
+      },
+      {
+        "name": "Bucky Irving",
+        "position": "RB",
+        "jersey": "7",
+        "age": 23,
+        "experience": 2,
+        "college": "Oregon",
+        "height": 70,
+        "weight": 195
+      },
+      {
+        "name": "Josh Williams",
+        "position": "RB",
+        "jersey": "18",
+        "age": 24,
+        "experience": 0,
+        "college": "LSU",
+        "height": 69,
+        "weight": 210
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Mike Evans",
+        "position": "WR",
+        "jersey": "13",
+        "age": 32,
+        "experience": 12,
+        "college": "Texas A&M",
+        "height": 77,
+        "weight": 231
+      },
+      {
+        "name": "Sterling Shepard",
+        "position": "WR",
+        "jersey": "17",
+        "age": 32,
+        "experience": 10,
+        "college": "Oklahoma",
+        "height": 70,
+        "weight": 194
+      },
+      {
+        "name": "Chris Godwin Jr.",
+        "position": "WR",
+        "jersey": "14",
+        "age": 29,
+        "experience": 9,
+        "college": "Penn State",
+        "height": 73,
+        "weight": 209
+      },
+      {
+        "name": "Kameron Johnson",
+        "position": "WR",
+        "jersey": "19",
+        "age": 23,
+        "experience": 2,
+        "college": "Barton College",
+        "height": 70,
+        "weight": 170
+      },
+      {
+        "name": "Ryan Miller",
+        "position": "WR",
+        "jersey": "81",
+        "age": 25,
+        "experience": 2,
+        "college": "Furman",
+        "height": 74,
+        "weight": 221
+      },
+      {
+        "name": "Emeka Egbuka",
+        "position": "WR",
+        "jersey": "2",
+        "age": 22,
+        "experience": 0,
+        "college": "Ohio State",
+        "height": 73,
+        "weight": 205
+      },
+      {
+        "name": "Tez Johnson",
+        "position": "WR",
+        "jersey": "15",
+        "age": 23,
+        "experience": 0,
+        "college": "Oregon",
+        "height": 70,
+        "weight": 165
+      }
+    ]
+  },
+  "WAS": {
+    "teamName": "Washington Commanders",
+    "abbreviation": "WAS",
+    "startingQB": "Jayden Daniels",
+    "startingRB": "Brian Robinson Jr.",
+    "startingWR": "Terry McLaurin",
+    "quarterbacks": [
+      {
+        "name": "Josh Johnson",
+        "position": "QB",
+        "jersey": "14",
+        "age": 39,
+        "experience": 11,
+        "college": "San Diego",
+        "height": 75,
+        "weight": 214
+      },
+      {
+        "name": "Marcus Mariota",
+        "position": "QB",
+        "jersey": "8",
+        "age": 31,
+        "experience": 11,
+        "college": "Oregon",
+        "height": 76,
+        "weight": 222
+      },
+      {
+        "name": "Jayden Daniels",
+        "position": "QB",
+        "jersey": "5",
+        "age": 24,
+        "experience": 2,
+        "college": "LSU",
+        "height": 76,
+        "weight": 210
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Jeremy McNichols",
+        "position": "RB",
+        "jersey": "26",
+        "age": 29,
+        "experience": 5,
+        "college": "Boise State",
+        "height": 69,
+        "weight": 205
+      },
+      {
+        "name": "Chris Rodriguez Jr.",
+        "position": "RB",
+        "jersey": "36",
+        "age": 26,
+        "experience": 3,
+        "college": "Kentucky",
+        "height": 71,
+        "weight": 224
+      },
+      {
+        "name": "Jacory Croskey-Merritt",
+        "position": "RB",
+        "jersey": "22",
+        "age": 24,
+        "experience": 0,
+        "college": "Arizona",
+        "height": 71,
+        "weight": 208
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Noah Brown",
+        "position": "WR",
+        "jersey": "85",
+        "age": 29,
+        "experience": 9,
+        "college": "Ohio State",
+        "height": 74,
+        "weight": 225
+      },
+      {
+        "name": "Chris Moore",
+        "position": "WR",
+        "jersey": "19",
+        "age": 32,
+        "experience": 9,
+        "college": "Cincinnati",
+        "height": 73,
+        "weight": 200
+      },
+      {
+        "name": "Terry McLaurin",
+        "position": "WR",
+        "jersey": "17",
+        "age": 30,
+        "experience": 7,
+        "college": "Ohio State",
+        "height": 72,
+        "weight": 210
+      },
+      {
+        "name": "Deebo Samuel",
+        "position": "WR",
+        "jersey": "1",
+        "age": 29,
+        "experience": 7,
+        "college": "South Carolina",
+        "height": 72,
+        "weight": 215
+      },
+      {
+        "name": "Luke McCaffrey",
+        "position": "WR",
+        "jersey": "11",
+        "age": 24,
+        "experience": 2,
+        "college": "Rice",
+        "height": 74,
+        "weight": 195
+      },
+      {
+        "name": "Jaylin Lane",
+        "position": "WR",
+        "jersey": "83",
+        "age": 23,
+        "experience": 0,
+        "college": "Virginia Tech",
+        "height": 70,
+        "weight": 196
+      }
+    ]
+  },
+  "CAR": {
+    "teamName": "Carolina Panthers",
+    "abbreviation": "CAR",
+    "startingQB": "Bryce Young",
+    "startingRB": "Chuba Hubbard",
+    "startingWR": "Diontae Johnson",
+    "quarterbacks": [
+      {
+        "name": "Andy Dalton",
+        "position": "QB",
+        "jersey": "14",
+        "age": 37,
+        "experience": 15,
+        "college": "TCU",
+        "height": 74,
+        "weight": 220
+      },
+      {
+        "name": "Bryce Young",
+        "position": "QB",
+        "jersey": "9",
+        "age": 24,
+        "experience": 3,
+        "college": "Alabama",
+        "height": 70,
+        "weight": 204
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "DeeJay Dallas",
+        "position": "RB",
+        "jersey": "20",
+        "age": 27,
+        "experience": 6,
+        "college": "Miami",
+        "height": 70,
+        "weight": 217
+      },
+      {
+        "name": "Rico Dowdle",
+        "position": "RB",
+        "jersey": "5",
+        "age": 27,
+        "experience": 6,
+        "college": "South Carolina",
+        "height": 71,
+        "weight": 215
+      },
+      {
+        "name": "Chuba Hubbard",
+        "position": "RB",
+        "jersey": "30",
+        "age": 26,
+        "experience": 5,
+        "college": "Oklahoma State",
+        "height": 73,
+        "weight": 210
+      },
+      {
+        "name": "Trevor Etienne",
+        "position": "RB",
+        "jersey": "23",
+        "age": 21,
+        "experience": 0,
+        "college": "Georgia",
+        "height": 68,
+        "weight": 198
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Hunter Renfrow",
+        "position": "WR",
+        "jersey": "13",
+        "age": 29,
+        "experience": 6,
+        "college": "Clemson",
+        "height": 70,
+        "weight": 185
+      },
+      {
+        "name": "Xavier Legette",
+        "position": "WR",
+        "jersey": "17",
+        "age": 24,
+        "experience": 2,
+        "college": "South Carolina",
+        "height": 75,
+        "weight": 227
+      },
+      {
+        "name": "Brycen Tremayne",
+        "position": "WR",
+        "jersey": "87",
+        "age": 25,
+        "experience": 1,
+        "college": "Stanford",
+        "height": 76,
+        "weight": 212
+      },
+      {
+        "name": "Jimmy Horn Jr.",
+        "position": "WR",
+        "jersey": "15",
+        "age": 23,
+        "experience": 0,
+        "college": "Colorado",
+        "height": 68,
+        "weight": 174
+      },
+      {
+        "name": "Tetairoa McMillan",
+        "position": "WR",
+        "jersey": "4",
+        "age": 22,
+        "experience": 0,
+        "college": "Arizona",
+        "height": 77,
+        "weight": 212
+      }
+    ]
+  },
+  "JAX": {
+    "teamName": "Jacksonville Jaguars",
+    "abbreviation": "JAX",
+    "startingQB": "Trevor Lawrence",
+    "startingRB": "Travis Etienne Jr.",
+    "startingWR": "Brian Thomas Jr.",
+    "quarterbacks": [
+      {
+        "name": "Nick Mullens",
+        "position": "QB",
+        "jersey": "14",
+        "age": 30,
+        "experience": 7,
+        "college": "Southern Miss",
+        "height": 72,
+        "weight": 210
+      },
+      {
+        "name": "Trevor Lawrence",
+        "position": "QB",
+        "jersey": "16",
+        "age": 26,
+        "experience": 5,
+        "college": "Clemson",
+        "height": 78,
+        "weight": 220
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Travis Etienne Jr.",
+        "position": "RB",
+        "jersey": "1",
+        "age": 26,
+        "experience": 5,
+        "college": "Clemson",
+        "height": 70,
+        "weight": 215
+      },
+      {
+        "name": "Cody Schrader",
+        "position": "RB",
+        "jersey": "32",
+        "age": 26,
+        "experience": 2,
+        "college": "Missouri",
+        "height": 69,
+        "weight": 214
+      },
+      {
+        "name": "LeQuint Allen Jr.",
+        "position": "RB",
+        "jersey": "36",
+        "age": 21,
+        "experience": 0,
+        "college": "Syracuse",
+        "height": 72,
+        "weight": 201
+      },
+      {
+        "name": "Bhayshul Tuten",
+        "position": "RB",
+        "jersey": "33",
+        "age": 22,
+        "experience": 0,
+        "college": "Virginia Tech",
+        "height": 69,
+        "weight": 209
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Tim Patrick",
+        "position": "WR",
+        "jersey": "17",
+        "age": 31,
+        "experience": 8,
+        "college": "Utah",
+        "height": 77,
+        "weight": 210
+      },
+      {
+        "name": "Dyami Brown",
+        "position": "WR",
+        "jersey": "5",
+        "age": 25,
+        "experience": 5,
+        "college": "North Carolina",
+        "height": 72,
+        "weight": 195
+      },
+      {
+        "name": "Parker Washington",
+        "position": "WR",
+        "jersey": "11",
+        "age": 23,
+        "experience": 3,
+        "college": "Penn State",
+        "height": 70,
+        "weight": 204
+      },
+      {
+        "name": "Brian Thomas Jr.",
+        "position": "WR",
+        "jersey": "7",
+        "age": 23,
+        "experience": 2,
+        "college": "LSU",
+        "height": 74,
+        "weight": 209
+      },
+      {
+        "name": "Travis Hunter",
+        "position": "WR",
+        "jersey": "12",
+        "age": 22,
+        "experience": 0,
+        "college": "Colorado",
+        "height": 73,
+        "weight": 185
+      }
+    ]
+  },
+  "BAL": {
+    "teamName": "Baltimore Ravens",
+    "abbreviation": "BAL",
+    "startingQB": "Lamar Jackson",
+    "startingRB": "Derrick Henry",
+    "startingWR": "Zay Flowers",
+    "quarterbacks": [
+      {
+        "name": "Lamar Jackson",
+        "position": "QB",
+        "jersey": "8",
+        "age": 28,
+        "experience": 8,
+        "college": "Louisville",
+        "height": 74,
+        "weight": 205
+      },
+      {
+        "name": "Cooper Rush",
+        "position": "QB",
+        "jersey": "15",
+        "age": 31,
+        "experience": 8,
+        "college": "Central Michigan",
+        "height": 75,
+        "weight": 225
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Derrick Henry",
+        "position": "RB",
+        "jersey": "22",
+        "age": 31,
+        "experience": 10,
+        "college": "Alabama",
+        "height": 74,
+        "weight": 252
+      },
+      {
+        "name": "Patrick Ricard",
+        "position": "FB",
+        "jersey": "42",
+        "age": 31,
+        "experience": 9,
+        "college": "Maine",
+        "height": 75,
+        "weight": 300
+      },
+      {
+        "name": "Justice Hill",
+        "position": "RB",
+        "jersey": "43",
+        "age": 27,
+        "experience": 7,
+        "college": "Oklahoma State",
+        "height": 70,
+        "weight": 205
+      },
+      {
+        "name": "Keaton Mitchell",
+        "position": "RB",
+        "jersey": "34",
+        "age": 23,
+        "experience": 3,
+        "college": "East Carolina",
+        "height": 68,
+        "weight": 190
+      },
+      {
+        "name": "Rasheen Ali",
+        "position": "RB",
+        "jersey": "26",
+        "age": 24,
+        "experience": 2,
+        "college": "Marshall",
+        "height": 71,
+        "weight": 210
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "DeAndre Hopkins",
+        "position": "WR",
+        "jersey": "10",
+        "age": 33,
+        "experience": 13,
+        "college": "Clemson",
+        "height": 73,
+        "weight": 210
+      },
+      {
+        "name": "Rashod Bateman",
+        "position": "WR",
+        "jersey": "7",
+        "age": 25,
+        "experience": 5,
+        "college": "Minnesota",
+        "height": 73,
+        "weight": 193
+      },
+      {
+        "name": "Tylan Wallace",
+        "position": "WR",
+        "jersey": "16",
+        "age": 26,
+        "experience": 5,
+        "college": "Oklahoma State",
+        "height": 71,
+        "weight": 200
+      },
+      {
+        "name": "Zay Flowers",
+        "position": "WR",
+        "jersey": "4",
+        "age": 25,
+        "experience": 3,
+        "college": "Boston College",
+        "height": 69,
+        "weight": 183
+      },
+      {
+        "name": "Devontez Walker",
+        "position": "WR",
+        "jersey": "81",
+        "age": 24,
+        "experience": 2,
+        "college": "North Carolina",
+        "height": 73,
+        "weight": 198
+      },
+      {
+        "name": "LaJohntay Wester",
+        "position": "WR",
+        "jersey": "83",
+        "age": 23,
+        "experience": 0,
+        "college": "Colorado",
+        "height": 69,
+        "weight": 170
+      }
+    ]
+  },
+  "HOU": {
+    "teamName": "Houston Texans",
+    "abbreviation": "HOU",
+    "startingQB": "C.J. Stroud",
+    "startingRB": "Joe Mixon",
+    "startingWR": "Nico Collins",
+    "quarterbacks": [
+      {
+        "name": "Davis Mills",
+        "position": "QB",
+        "jersey": "10",
+        "age": 26,
+        "experience": 5,
+        "college": "Stanford",
+        "height": 76,
+        "weight": 225
+      },
+      {
+        "name": "C.J. Stroud",
+        "position": "QB",
+        "jersey": "7",
+        "age": 24,
+        "experience": 3,
+        "college": "Ohio State",
+        "height": 75,
+        "weight": 218
+      },
+      {
+        "name": "Graham Mertz",
+        "position": "QB",
+        "jersey": "18",
+        "age": 24,
+        "experience": 0,
+        "college": "Florida",
+        "height": 74,
+        "weight": 216
+      }
+    ],
+    "runningBacks": [
+      {
+        "name": "Nick Chubb",
+        "position": "RB",
+        "jersey": "21",
+        "age": 29,
+        "experience": 8,
+        "college": "Georgia",
+        "height": 71,
+        "weight": 227
+      },
+      {
+        "name": "Dare Ogunbowale",
+        "position": "RB",
+        "jersey": "33",
+        "age": 31,
+        "experience": 7,
+        "college": "Wisconsin",
+        "height": 70,
+        "weight": 205
+      },
+      {
+        "name": "Dameon Pierce",
+        "position": "RB",
+        "jersey": "31",
+        "age": 25,
+        "experience": 4,
+        "college": "Florida",
+        "height": 70,
+        "weight": 215
+      },
+      {
+        "name": "British Brooks",
+        "position": "RB",
+        "jersey": "44",
+        "age": 25,
+        "experience": 2,
+        "college": "North Carolina",
+        "height": 71,
+        "weight": 225
+      },
+      {
+        "name": "Woody Marks",
+        "position": "RB",
+        "jersey": "27",
+        "age": 24,
+        "experience": 0,
+        "college": "USC",
+        "height": 70,
+        "weight": 208
+      }
+    ],
+    "wideReceivers": [
+      {
+        "name": "Braxton Berrios",
+        "position": "WR",
+        "jersey": "17",
+        "age": 30,
+        "experience": 8,
+        "college": "Miami",
+        "height": 69,
+        "weight": 185
+      },
+      {
+        "name": "Christian Kirk",
+        "position": "WR",
+        "jersey": "13",
+        "age": 28,
+        "experience": 8,
+        "college": "Texas A&M",
+        "height": 71,
+        "weight": 200
+      },
+      {
+        "name": "Nico Collins",
+        "position": "WR",
+        "jersey": "12",
+        "age": 26,
+        "experience": 5,
+        "college": "Michigan",
+        "height": 76,
+        "weight": 222
+      },
+      {
+        "name": "Xavier Hutchinson",
+        "position": "WR",
+        "jersey": "19",
+        "age": 25,
+        "experience": 3,
+        "college": "Iowa State",
+        "height": 75,
+        "weight": 210
+      },
+      {
+        "name": "Jayden Higgins",
+        "position": "WR",
+        "jersey": "81",
+        "age": 22,
+        "experience": 0,
+        "college": "Iowa State",
+        "height": 76,
+        "weight": 215
+      },
+      {
+        "name": "Jaylin Noel",
+        "position": "WR",
+        "jersey": "14",
+        "age": 23,
+        "experience": 0,
+        "college": "Iowa State",
+        "height": 71,
+        "weight": 201
+      }
+    ]
+  }
+}

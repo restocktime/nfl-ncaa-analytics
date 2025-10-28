@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 NFL Week 6 Ultimate Analysis - October 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #013369, #005C8C, #1B5E20);
+            color: white;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 3px solid #FF6B35;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            background: linear-gradient(45deg, #FF6B35, #FFD700, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .week-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .info-badge {
+            background: rgba(255,107,53,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            border: 1px solid #FF6B35;
+            font-weight: bold;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #FF6B35, #E55A2E);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,107,53,0.4);
+        }
+        
+        .section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #FF6B35;
+            padding-bottom: 0.5rem;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .game-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid rgba(255,107,53,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(255,107,53,0.3);
+            border-color: #FF6B35;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .game-teams {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .game-time {
+            background: rgba(255,215,0,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+        }
+        
+        .betting-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .bet-item {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,107,53,0.3);
+        }
+        
+        .bet-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .bet-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .recommendation {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .recommendation-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .confidence-stars {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .injury-report {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .injury-title {
+            color: #FF6B6B;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .picks-summary {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,107,53,0.2));
+            border: 3px solid #FFD700;
+        }
+        
+        .pick-card {
+            background: rgba(255,215,0,0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid #FFD700;
+        }
+        
+        .pick-game {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #FFD700;
+        }
+        
+        .pick-bet {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #FF6B35;
+            margin: 0.5rem 0;
+        }
+        
+        .pick-reasoning {
+            opacity: 0.9;
+            font-style: italic;
+        }
+        
+        .parlay-card {
+            background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,215,0,0.2));
+            border: 2px solid #FF6B35;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+        
+        .parlay-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+        
+        .parlay-odds {
+            font-size: 1.3rem;
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        .weather-alert {
+            background: rgba(0,191,255,0.2);
+            border: 1px solid #00BFFF;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+        }
+        
+        .final-score {
+            background: linear-gradient(135deg, #4CAF50, #45A049);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,0,0,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            border: 1px solid #FF4444;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #FF4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .lock-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #FFD700;
+            color: #013369;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 2px solid rgba(255,107,53,0.3);
+        }
+        
+        .disclaimer {
+            opacity: 0.8;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            .game-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .betting-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏈 NFL WEEK 6 ULTIMATE ANALYSIS</h1>
+        <div class="week-info">
+            <div class="info-badge">
+                <span class="live-indicator">
+                    <span class="live-dot"></span>
+                    LIVE
+                </span>
+                October 10-13, 2025
+            </div>
+            <div class="info-badge">15 Games</div>
+            <div class="info-badge">Real-Time Odds</div>
+            <div class="info-badge">Expert Picks</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="nav-menu">
+            <button class="nav-btn" onclick="scrollToSection('completed')">Completed Games</button>
+            <button class="nav-btn" onclick="scrollToSection('london')">London Game</button>
+            <button class="nav-btn" onclick="scrollToSection('early')">Early Games</button>
+            <button class="nav-btn" onclick="scrollToSection('late')">Late Games</button>
+            <button class="nav-btn" onclick="scrollToSection('prime')">Prime Time</button>
+            <button class="nav-btn" onclick="scrollToSection('picks')">Best Picks</button>
+        </div>
+
+        <!-- Completed Games Section -->
+        <div id="completed" class="section">
+            <h2>⚡ COMPLETED GAMES</h2>
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="final-score">
+                        FINAL: New York Giants 34, Philadelphia Eagles 17
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <strong>🔥 UPSET ALERT!</strong> The Giants absolutely stunned the Eagles in what many are calling the biggest upset of Week 6. Daniel Jones looked revitalized, the defense dominated, and Philadelphia's championship hopes took a major hit.
+                    </div>
+                    <div class="injury-report">
+                        <div class="injury-title">Impact Players:</div>
+                        • Daniel Jones: Career-defining performance<br>
+                        • Jalen Hurts: 3 turnovers, poor red zone decisions<br>
+                        • Giants D: Multiple sacks, 2 forced fumbles
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Injury Report Section -->
+        <div class="section">
+            <h2>🏥 WEEK 6 INJURY REPORT & PLAYER STATUS</h2>
+            
+            <div class="games-grid">
+                <div class="injury-report" style="background: rgba(255,0,0,0.15); border: 2px solid #FF6B6B;">
+                    <div class="injury-title" style="color: #FF6B6B; font-size: 1.2rem; margin-bottom: 1rem;">🚫 OUT - DO NOT BET</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div>
+                            <strong>Kyler Murray (ARI QB)</strong><br>
+                            <span style="color: #FF6B6B;">OUT - Ankle injury</span><br>
+                            <small>Clayton Tune starting</small>
+                        </div>
+                        <div>
+                            <strong>Christian McCaffrey (SF RB)</strong><br>
+                            <span style="color: #FF6B6B;">OUT - Achilles</span><br>
+                            <small>Jordan Mason starting</small>
+                        </div>
+                        <div>
+                            <strong>Puka Nacua (LAR WR)</strong><br>
+                            <span style="color: #FF6B6B;">OUT - Knee</span><br>
+                            <small>Cooper Kupp WR1</small>
+                        </div>
+                        <div>
+                            <strong>Isiah Pacheco (KC RB)</strong><br>
+                            <span style="color: #FF6B6B;">OUT - Leg fracture</span><br>
+                            <small>Kareem Hunt starting</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="injury-report" style="background: rgba(255,165,0,0.15); border: 2px solid #FFA500;">
+                    <div class="injury-title" style="color: #FFA500; font-size: 1.2rem; margin-bottom: 1rem;">⚠️ QUESTIONABLE - MONITOR CLOSELY</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div>
+                            <strong>DeAndre Hopkins (TEN WR)</strong><br>
+                            <span style="color: #FFA500;">QUESTIONABLE - Knee</span><br>
+                            <small>Game-time decision</small>
+                        </div>
+                        <div>
+                            <strong>Mike Evans (TB WR)</strong><br>
+                            <span style="color: #FFA500;">QUESTIONABLE - Hamstring</span><br>
+                            <small>Limited in practice</small>
+                        </div>
+                        <div>
+                            <strong>Chris Godwin (TB WR)</strong><br>
+                            <span style="color: #FFA500;">QUESTIONABLE - Hamstring</span><br>
+                            <small>Limited in practice</small>
+                        </div>
+                        <div>
+                            <strong>Tee Higgins (CIN WR)</strong><br>
+                            <span style="color: #FFA500;">QUESTIONABLE - Hamstring</span><br>
+                            <small>Expected to play</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="injury-report" style="background: rgba(0,255,0,0.15); border: 2px solid #4CAF50;">
+                    <div class="injury-title" style="color: #4CAF50; font-size: 1.2rem; margin-bottom: 1rem;">✅ CLEARED TO PLAY - FULL GO</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div>
+                            <strong>Daniel Jones (IND QB)</strong><br>
+                            <span style="color: #4CAF50;">HEALTHY - Full practice</span><br>
+                            <small>No injury concerns</small>
+                        </div>
+                        <div>
+                            <strong>Jonathan Taylor (IND RB)</strong><br>
+                            <span style="color: #4CAF50;">HEALTHY - Full practice</span><br>
+                            <small>Ready for big game</small>
+                        </div>
+                        <div>
+                            <strong>Travis Kelce (KC TE)</strong><br>
+                            <span style="color: #4CAF50;">HEALTHY - Full practice</span><br>
+                            <small>Prime time ready</small>
+                        </div>
+                        <div>
+                            <strong>Ja'Marr Chase (CIN WR)</strong><br>
+                            <span style="color: #4CAF50;">HEALTHY - Full practice</span><br>
+                            <small>No concerns</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,215,0,0.1); padding: 1.5rem; border-radius: 10px; border: 1px solid #FFD700; margin-top: 2rem;">
+                <h3 style="color: #FFD700; margin-bottom: 1rem;">📊 KEY INJURY IMPACT ON BETTING:</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                    <div>
+                        <strong>Cardinals @ Colts:</strong><br>
+                        Kyler Murray OUT = Clayton Tune starting<br>
+                        <span style="color: #4CAF50;">⬆️ INCREASE: Colts -9.5, UNDER 46.5</span>
+                    </div>
+                    <div>
+                        <strong>49ers @ Bucs:</strong><br>
+                        McCaffrey OUT, Evans/Godwin questionable<br>
+                        <span style="color: #FFA500;">⚠️ MONITOR: Game total, WR props</span>
+                    </div>
+                    <div>
+                        <strong>Lions @ Chiefs:</strong><br>
+                        Pacheco OUT = More Kareem Hunt<br>
+                        <span style="color: #4CAF50;">⬆️ INCREASE: Hunt rush props</span>
+                    </div>
+                    <div>
+                        <strong>Rams @ Ravens:</strong><br>
+                        Puka Nacua OUT = Cooper Kupp WR1<br>
+                        <span style="color: #4CAF50;">⬆️ INCREASE: Kupp targets/yards</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- London Game Section -->
+        <div id="london" class="section">
+            <h2>🛩️ INTERNATIONAL SERIES - 9:30 AM EDT</h2>
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Denver Broncos @ New York Jets</div>
+                        <div class="game-time">LONDON • ESPN</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">NYJ -2.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 41.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Moneyline</div>
+                            <div class="bet-value">DEN +120</div>
+                        </div>
+                    </div>
+
+                    <div class="weather-alert">
+                        🌤️ Weather: 52°F, Overcast - Perfect for Russell Wilson's deep ball
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">BRONCOS +2.5 & UNDER 41.5</div>
+                        <div class="confidence-stars">★★★★☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Sean Payton with extra prep time is dangerous. Jets still searching for identity.</div>
+                    </div>
+
+                    <div class="injury-report">
+                        <div class="injury-title">Key Injuries:</div>
+                        • Javonte Williams (DEN) - Questionable, knee<br>
+                        • Aaron Rodgers (NYJ) - Playing through Achilles concern<br>
+                        • Breece Hall (NYJ) - Questionable, knee
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Early Games Section -->
+        <div id="early" class="section">
+            <h2>🌅 EARLY SLATE - 1:00 PM EDT</h2>
+            <div class="games-grid">
+                <!-- Cardinals @ Colts -->
+                <div class="game-card">
+                    <div class="lock-badge">🔐 LOCK</div>
+                    <div class="game-header">
+                        <div class="game-teams">Arizona Cardinals @ Indianapolis Colts</div>
+                        <div class="game-time">FOX • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">IND -9.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 46.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Moneyline</div>
+                            <div class="bet-value">IND -500</div>
+                        </div>
+                    </div>
+
+                    <div class="injury-report">
+                        <div class="injury-title">Key Players:</div>
+                        • Daniel Jones (IND QB) - 107/150, 1290 YDS, 6 TD, 2 INT<br>
+                        • Jonathan Taylor (IND RB) - 94 CAR, 480 YDS, 6 TD<br>
+                        • Tyler Warren (IND TE) - 23 REC, 307 YDS, 1 TD<br>
+                        • <span style="color: #FF6B6B;">Kyler Murray (ARI QB) - OUT (Ankle)</span><br>
+                        • <span style="color: #FFD700;">Clayton Tune (ARI QB) - STARTING</span><br>
+                        • Marvin Harrison Jr. (ARI WR) - 20 REC, 306 YDS, 2 TD
+                    </div>
+                    
+                    <div style="background: rgba(255,0,0,0.1); border: 1px solid #FF6B6B; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                        <div style="color: #FF6B6B; font-weight: bold; margin-bottom: 0.5rem;">🚨 BREAKING: Kyler Murray OUT</div>
+                        <div>Clayton Tune making first NFL start. Colts spread increases, total decreases. Heavy Colts, Under play.</div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">COLTS -9.5 & UNDER 46.5</div>
+                        <div class="confidence-stars">★★★★★</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Daniel Jones has been excellent with Colts. Jonathan Taylor dominates at home. Cardinals struggling on road.</div>
+                    </div>
+                </div>
+
+                <!-- Chargers @ Dolphins -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Los Angeles Chargers @ Miami Dolphins</div>
+                        <div class="game-time">CBS • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">LAC -3.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 44.5</div>
+                        </div>
+                    </div>
+
+                    <div class="weather-alert">
+                        🌴 Weather: 82°F, Sunny, Humid - Good conditions for passing game
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">CHARGERS -3.5 & UNDER 44.5</div>
+                        <div class="confidence-stars">★★★★☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Chargers road favorites in defensive battle. Lower total suggests ugly game.</div>
+                    </div>
+                </div>
+
+                <!-- Patriots @ Saints -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">New England Patriots @ New Orleans Saints</div>
+                        <div class="game-time">FOX • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">NE -3.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 45.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">SAINTS +3.5 & OVER 45.5</div>
+                        <div class="confidence-stars">★★★☆☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Patriots surprising road favorites. Saints at home could bounce back.</div>
+                    </div>
+                </div>
+
+                <!-- Browns @ Steelers -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Cleveland Browns @ Pittsburgh Steelers</div>
+                        <div class="game-time">CBS • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">PIT -6.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 38.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">STEELERS -6.5 & UNDER 38.5</div>
+                        <div class="confidence-stars">★★★★☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Lowest total of the week. Defense-first AFC North battle. Steelers at home.</div>
+                    </div>
+                </div>
+
+                <!-- Cowboys @ Panthers -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Dallas Cowboys @ Carolina Panthers</div>
+                        <div class="game-time">FOX • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">DAL -2.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 48.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">COWBOYS -2.5 & OVER 48.5</div>
+                        <div class="confidence-stars">★★★★☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Cowboys should handle Panthers but close line suggests competitive game.</div>
+                    </div>
+                </div>
+
+                <!-- Seahawks @ Jaguars -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Seattle Seahawks @ Jacksonville Jaguars</div>
+                        <div class="game-time">FOX • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">SEA -1.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 47.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">SEAHAWKS -1.5 & UNDER 47.5</div>
+                        <div class="confidence-stars">★★★☆☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Very close line suggests tight game. Seahawks slight road favorites.</div>
+                    </div>
+                </div>
+
+                <!-- Rams @ Ravens -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Los Angeles Rams @ Baltimore Ravens</div>
+                        <div class="game-time">CBS • 1:00 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">LAR -6.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 44.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">RAVENS +6.5 & OVER 44.5</div>
+                        <div class="confidence-stars">★★★★☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Ravens at home getting too many points. Should be competitive game.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Late Games Section -->
+        <div id="late" class="section">
+            <h2>🌆 LATE GAMES - 4:05/4:25 PM EDT</h2>
+            <div class="games-grid">
+                <!-- Titans @ Raiders -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Tennessee Titans @ Las Vegas Raiders</div>
+                        <div class="game-time">CBS • 4:05 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">LV -3.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 41.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">RAIDERS -3.5 & UNDER 41.5</div>
+                        <div class="confidence-stars">★★★☆☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Lowest total of the late games. Both teams struggling offensively.</div>
+                    </div>
+                </div>
+
+                <!-- Bengals @ Packers -->
+                <div class="game-card">
+                    <div class="lock-badge">⭐ LOCK</div>
+                    <div class="game-header">
+                        <div class="game-teams">Cincinnati Bengals @ Green Bay Packers</div>
+                        <div class="game-time">FOX • 4:25 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">GB -13.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 44.5</div>
+                        </div>
+                    </div>
+
+                    <div class="weather-alert">
+                        🌧️ Weather: 52°F, Possible light rain at Lambeau
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">BENGALS +13.5 & OVER 44.5</div>
+                        <div class="confidence-stars">★★★★★</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Massive spread for Packers. Bengals getting too many points.</div>
+                    </div>
+                </div>
+
+                <!-- 49ers @ Bucs -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">San Francisco 49ers @ Tampa Bay Buccaneers</div>
+                        <div class="game-time">FOX • 4:25 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">TB -3.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 46.5</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">49ERS +3.5 & OVER 46.5</div>
+                        <div class="confidence-stars">★★★☆☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Bucs home favorites in key NFC matchup. Could be shootout.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prime Time Section -->
+        <div id="prime" class="section">
+            <h2>🌟 PRIME TIME SHOWCASE</h2>
+            <div class="games-grid">
+                <!-- Sunday Night Football -->
+                <div class="game-card">
+                    <div class="lock-badge">🏆 SNF</div>
+                    <div class="game-header">
+                        <div class="game-teams">Detroit Lions @ Kansas City Chiefs</div>
+                        <div class="game-time">NBC • 8:20 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">KC -2.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 51.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Moneyline</div>
+                            <div class="bet-value">DET +140</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-text">LIONS +2.5 & OVER 51.5</div>
+                        <div class="confidence-stars">★★★★★</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Chiefs only slight home favorites. Highest total - potential shootout at Arrowhead!</div>
+                    </div>
+                </div>
+
+                <!-- Monday Night Games -->
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Buffalo Bills @ Atlanta Falcons</div>
+                        <div class="game-time">ESPN • Monday 7:15 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">BUF -4.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 49.5</div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation">
+                        <div class="recommendation-text">BILLS -4.5 & OVER 49.5</div>
+                        <div class="confidence-stars">★★★★☆</div>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="game-teams">Chicago Bears @ Washington Commanders</div>
+                        <div class="game-time">ESPN • Monday 8:15 PM</div>
+                    </div>
+                    
+                    <div class="betting-info">
+                        <div class="bet-item">
+                            <div class="bet-label">Spread</div>
+                            <div class="bet-value">WSH -4.5</div>
+                        </div>
+                        <div class="bet-item">
+                            <div class="bet-label">Total</div>
+                            <div class="bet-value">O/U 49.5</div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation">
+                        <div class="recommendation-text">COMMANDERS -4.5 & UNDER 49.5</div>
+                        <div class="confidence-stars">★★★☆☆</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Monday Night Double Header finale!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Picks Section -->
+        <div id="picks" class="section picks-summary">
+            <h2>💰 WEEK 6 BETTING BONANZA</h2>
+            
+            <div class="parlay-card">
+                <div class="parlay-title">🔐 LOCK OF THE WEEK</div>
+                <div class="pick-bet">Indianapolis Colts -9.5 vs Arizona Cardinals</div>
+                <div class="pick-reasoning">Daniel Jones has been excellent with the Colts. Jonathan Taylor dominates at home. Cardinals struggling on road.</div>
+                <div class="confidence-stars">★★★★★</div>
+            </div>
+
+            <div class="parlay-card">
+                <div class="parlay-title">🎯 "SUNDAY FUNDAY" 4-TEAM PARLAY (+1200)</div>
+                <div>1. Colts -9.5</div>
+                <div>2. Lions +2.5</div>
+                <div>3. Ravens +6.5</div>
+                <div>4. OVER 51.5 (Lions/Chiefs)</div>
+                <div class="parlay-odds">Risk $100 → Win $1,200</div>
+            </div>
+
+            <div class="parlay-card">
+                <div class="parlay-title">💎 UPSET SPECIAL PARLAY (+1250)</div>
+                <div>• Broncos ML (+120)</div>
+                <div>• Cardinals ML (+140)</div>
+                <div>• Patriots ML (+250)</div>
+                <div class="parlay-odds">Risk $100 → Win $1,250</div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">🔥 BEST BETS (5-STAR CONFIDENCE)</h3>
+            
+            <div class="pick-card">
+                <div class="pick-game">Detroit Lions +2.5 vs Kansas City Chiefs</div>
+                <div class="pick-reasoning">Lions offense can keep pace. Chiefs only slight home favorites in potential shootout!</div>
+            </div>
+
+            <div class="pick-card">
+                <div class="pick-game">Baltimore Ravens +6.5 vs Los Angeles Rams</div>
+                <div class="pick-reasoning">Ravens at home getting too many points. Rams road favorites is suspect.</div>
+            </div>
+
+            <div class="pick-card">
+                <div class="pick-game">Cincinnati Bengals +13.5 @ Green Bay Packers</div>
+                <div class="pick-reasoning">Massive spread for Packers. Bengals too talented to lose by 2 TDs.</div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">🎯 QUARTERBACK PROPS</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="bet-item">
+                    <div class="bet-label">Daniel Jones (IND) Passing Yards</div>
+                    <div class="bet-value">OVER 265.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Home vs weak ARI defense</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Bo Nix (DEN) Passing Yards</div>
+                    <div class="bet-value">OVER 235.5 ⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">London game, rookie showing progress</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Clayton Tune (ARI) Passing Yards</div>
+                    <div class="bet-value">UNDER 185.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Backup QB, limited playbook vs IND</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Patrick Mahomes (KC) Passing TDs</div>
+                    <div class="bet-value">OVER 2.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Home vs Lions in shootout</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Jared Goff (DET) Passing Yards</div>
+                    <div class="bet-value">OVER 285.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Must throw to keep pace</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Joe Burrow (CIN) Passing Yards</div>
+                    <div class="bet-value">OVER 275.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Down big early, garbage time</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Russell Wilson (PIT) Passing TDs</div>
+                    <div class="bet-value">OVER 1.5 ⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Home vs Browns defense</div>
+                </div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">🏃 RUNNING BACK PROPS</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="bet-item">
+                    <div class="bet-label">Jonathan Taylor (IND) Rushing Yards</div>
+                    <div class="bet-value">OVER 85.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Home vs weak ARI run D</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Jonathan Taylor (IND) Anytime TD</div>
+                    <div class="bet-value">YES -125 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">6 TDs already, red zone beast</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Jahmyr Gibbs (DET) Rushing + Rec Yards</div>
+                    <div class="bet-value">OVER 95.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Dual threat in shootout</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Derrick Henry (BAL) Rushing Yards</div>
+                    <div class="bet-value">OVER 75.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Home vs Rams run D</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Kareem Hunt (KC) Rushing Yards</div>
+                    <div class="bet-value">OVER 65.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Pacheco out = Hunt lead back</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Najee Harris (PIT) Anytime TD</div>
+                    <div class="bet-value">YES +105 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Goal line carries at home</div>
+                </div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">🎯 WIDE RECEIVER PROPS</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="bet-item">
+                    <div class="bet-label">Marvin Harrison Jr. (ARI) Receiving Yards</div>
+                    <div class="bet-value">OVER 65.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Garbage time production</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Amon-Ra St. Brown (DET) Receptions</div>
+                    <div class="bet-value">OVER 6.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">High-volume target in shootout</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Travis Kelce (KC) Receiving Yards</div>
+                    <div class="bet-value">OVER 55.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Prime time Mahomes favorite</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Ja'Marr Chase (CIN) Receiving Yards</div>
+                    <div class="bet-value">OVER 85.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Burrow's #1 target, playing catch-up</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Michael Pittman Jr. (IND) Anytime TD</div>
+                    <div class="bet-value">YES +145 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Red zone target for Jones</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Cooper Kupp (LAR) Receptions</div>
+                    <div class="bet-value">OVER 7.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Puka out = more targets for Kupp</div>
+                </div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">🛡️ DEFENSE & SPECIAL TEAMS PROPS</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="bet-item">
+                    <div class="bet-label">Colts Defense Sacks</div>
+                    <div class="bet-value">OVER 2.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">vs mobile Kyler Murray</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Ravens Defense Interceptions</div>
+                    <div class="bet-value">OVER 0.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Stafford prone to picks</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Steelers Defense Points Allowed</div>
+                    <div class="bet-value">UNDER 20.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Home vs Browns offense</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Chiefs Defense Sacks</div>
+                    <div class="bet-value">OVER 2.5 ⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Pressure on Goff</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Lions Defense Turnovers</div>
+                    <div class="bet-value">OVER 1.5 ⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Mahomes under pressure</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Cardinals Defense Points Allowed</div>
+                    <div class="bet-value">OVER 28.5 ⭐⭐⭐⭐⭐</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem;">Colts offense at home</div>
+                </div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">🔥 ANYTIME TOUCHDOWN SCORERS</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="bet-item">
+                    <div class="bet-label">Jonathan Taylor (IND)</div>
+                    <div class="bet-value">-125 ⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Travis Kelce (KC)</div>
+                    <div class="bet-value">+110 ⭐⭐⭐⭐</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Amon-Ra St. Brown (DET)</div>
+                    <div class="bet-value">+125 ⭐⭐⭐⭐</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Marvin Harrison Jr. (ARI)</div>
+                    <div class="bet-value">+140 ⭐⭐⭐⭐</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Ja'Marr Chase (CIN)</div>
+                    <div class="bet-value">+135 ⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="bet-item">
+                    <div class="bet-label">Derrick Henry (BAL)</div>
+                    <div class="bet-value">+105 ⭐⭐⭐⭐</div>
+                </div>
+            </div>
+
+            <h3 style="color: #FFD700; margin: 2rem 0 1rem;">💎 SPECIAL PROP PARLAYS</h3>
+            
+            <div class="parlay-card">
+                <div class="parlay-title">🎯 "SUNDAY PROPS SPECIAL" (+850)</div>
+                <div>• Jonathan Taylor OVER 85.5 rush yards</div>
+                <div>• Daniel Jones OVER 265.5 pass yards</div>
+                <div>• Marvin Harrison Jr. OVER 65.5 rec yards</div>
+                <div>• Colts Defense OVER 2.5 sacks</div>
+                <div class="parlay-odds">Risk $100 → Win $850</div>
+            </div>
+            
+            <div class="parlay-card">
+                <div class="parlay-title">⚡ "SUNDAY NIGHT SPECIAL" (+725)</div>
+                <div>• Lions/Chiefs OVER 51.5 total</div>
+                <div>• Patrick Mahomes OVER 2.5 pass TDs</div>
+                <div>• Amon-Ra St. Brown OVER 6.5 receptions</div>
+                <div>• Travis Kelce Anytime TD</div>
+                <div class="parlay-odds">Risk $100 → Win $725</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h3 style="color: #FFD700;">🏈 READY FOR THE BEST NFL SUNDAY OF THE SEASON!</h3>
+        <p>Week 6 is loaded with opportunity. Trust the process, bet smart, and enjoy elite football!</p>
+        
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> Bet responsibly and within your means. These picks are for entertainment purposes. 
+            Always gamble responsibly and never bet more than you can afford to lose.
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <div class="info-badge">📊 Real-Time Odds</div>
+            <div class="info-badge">🔄 Live Updates</div>
+            <div class="info-badge">⚡ Expert Analysis</div>
+        </div>
+    </div>
+
+    <script>
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            gameCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+
+            // Auto-update timestamps
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', {
+                    timeZone: 'America/New_York',
+                    hour12: true
+                });
+                
+                // Update any live indicators
+                const liveIndicators = document.querySelectorAll('.live-indicator');
+                liveIndicators.forEach(indicator => {
+                    indicator.title = `Last updated: ${timeString} ET`;
+                });
+            }, 30000);
+        });
+
+        // Smooth animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Apply animations to sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'all 0.6s ease';
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
