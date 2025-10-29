@@ -261,43 +261,17 @@
 
         async function loadGames() {
             try {
-                const response = await apiClient.getLiveScores(true);
+                // Use Railway ESPN proxy endpoint
+                const apiUrl = `${apiClient.baseURL}/api/proxy/espn/nfl/scoreboard`;
+                console.log(`📡 Fetching from: ${apiUrl}`);
                 
-                // Check if response has games in the expected format
-                if (!response.success || !response.games) {
-                    throw new Error('Invalid API response');
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
-                // Convert backend format to ESPN-like format for compatibility
-                gamesData = response.games.map(game => ({
-                    id: game.gameId,
-                    competitions: [{
-                        id: game.gameId,
-                        competitors: [
-                            {
-                                id: game.awayTeam?.id || 'away',
-                                homeAway: 'away',
-                                team: {
-                                    id: game.awayTeam?.id || 'away',
-                                    displayName: game.awayTeam || 'Away Team',
-                                    abbreviation: game.awayTeam?.slice(0, 3) || 'AWY'
-                                },
-                                score: game.awayScore || 0
-                            },
-                            {
-                                id: game.homeTeam?.id || 'home',
-                                homeAway: 'home',
-                                team: {
-                                    id: game.homeTeam?.id || 'home',
-                                    displayName: game.homeTeam || 'Home Team',
-                                    abbreviation: game.homeTeam?.slice(0, 3) || 'HOM'
-                                },
-                                score: game.homeScore || 0
-                            }
-                        ],
-                        leaders: game.leaders || []
-                    }]
-                })) || [];
+                const data = await response.json();
+                gamesData = data.events || [];
 
                 const gameSelect = document.getElementById('gameSelect');
                 
