@@ -3,163 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCAA Betting Lines - College Football Live Odds</title>
+    <title>NCAA Betting Analysis - Professional Odds & Lines</title>
+    
+    <!-- Apple Theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="simple-system-styles.css">
+    <link rel="stylesheet" href="apple-theme.css">
     <style>
-        body {
-            background: #000;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .header {
+        /* NCAA Betting-specific styles */
+        .betting-hero {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 60px 0;
+            margin-bottom: 40px;
         }
-
-        .header h1 {
-            color: #ffd700;
-            margin: 0 0 10px 0;
-            font-size: 2rem;
-        }
-
-        .navigation {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .nav-button {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-button:hover {
-            background: rgba(0, 255, 136, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .nav-button.active {
-            background: rgba(255, 215, 0, 0.3);
-            border-color: #ffd700;
-            color: #ffd700;
-        }
-
-        .back-button {
-            background: rgba(255, 136, 0, 0.1);
-            border: 1px solid rgba(255, 136, 0, 0.3);
-            color: #ff8800;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 136, 0, 0.2);
-        }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .games-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .loading-card {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            border: 3px solid rgba(255, 215, 0, 0.3);
-            border-top: 3px solid #ffd700;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .betting-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .betting-icon {
-            color: #ffd700;
-            font-size: 1.2rem;
-            animation: sparkle 3s ease-in-out infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff9500, #34c759, #007aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1><i class="fas fa-university"></i> NCAA Betting Lines</h1>
-        <div class="betting-indicator">
-            <i class="fas fa-chart-line betting-icon"></i>
-            <span id="betting-status">COLLEGE FOOTBALL LIVE BETTING</span>
+    <!-- Header -->
+    <header class="header">
+        <h1 class="header-title">🎓 NCAA Betting Analysis</h1>
+        <p class="header-subtitle">Professional college football odds and betting insights</p>
+    </header>
+
+    <!-- Sport Switcher -->
+    <div style="background: rgba(0, 0, 0, 0.03); border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 12px 0; text-align: center;">
+        <div style="display: inline-flex; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 12px; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <button onclick="window.location.href='nfl-betting.html'" style="padding: 8px 24px; border-radius: 8px; border: none; background: transparent; color: #1d1d1f; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem;">
+                🏈 NFL
+            </button>
+            <button onclick="window.location.href='ncaa-betting.html'" style="padding: 8px 24px; border-radius: 8px; border: none; background: #007aff; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem;">
+                🎓 NCAA
+            </button>
         </div>
     </div>
 
-    <div class="navigation">
-        <a href="ncaa-live-games.html" class="nav-button">
-            <i class="fas fa-broadcast-tower"></i> Live Games
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            Home
         </a>
-        <a href="ncaa-upcoming-games.html" class="nav-button">
-            <i class="fas fa-calendar-alt"></i> Upcoming
+        <a href="ncaa-betting.html" class="nav-item active">
+            <i class="fas fa-coins"></i>
+            Betting
         </a>
-        <a href="ncaa-predictions.html" class="nav-button">
-            <i class="fas fa-brain"></i> AI Predictions
+        <a href="ncaa-live-games.html" class="nav-item">
+            <i class="fas fa-broadcast-tower"></i>
+            Live Games
         </a>
-        <a href="ncaa-rankings.html" class="nav-button">
-            <i class="fas fa-trophy"></i> Rankings
+        <a href="ncaa-rankings.html" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            Rankings
         </a>
-        <a href="ncaa-betting.html" class="nav-button active">
-            <i class="fas fa-coins"></i> Betting
-        </a>
-        <a href="index.html" class="nav-button back-button">
-            <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
-    </div>
+    </nav>
 
-    <div class="main-container">
-        <div id="ncaa-betting" class="games-container">
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="betting-hero">
+            <h1 class="hero-title">NCAA Betting Lines</h1>
+            <p style="color: #86868b; font-size: 1.125rem;">
+                Real-time college football odds and betting analysis
+            </p>
+        </section>
+
+        <div id="ncaa-betting" class="odds-grid">
             <div class="loading-card">
                 <div class="loading-spinner"></div>
                 <h3>Loading Betting Lines</h3>
