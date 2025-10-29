@@ -363,9 +363,22 @@
         <section>
             <h2 class="text-title text-center mb-4">Explore Analytics Platforms</h2>
             <p class="text-body text-secondary text-center mb-5">
-                Access comprehensive NFL analysis across multiple specialized platforms
+                Access comprehensive NFL & NCAA analysis across multiple specialized platforms
             </p>
-            <div class="pages-grid">
+            
+            <!-- Sport Toggle -->
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="display: inline-flex; background: rgba(0, 0, 0, 0.05); border-radius: 12px; padding: 4px;">
+                    <button onclick="showSport('nfl')" id="nflBtn" style="padding: 12px 32px; border-radius: 10px; border: none; background: #007aff; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        🏈 NFL
+                    </button>
+                    <button onclick="showSport('ncaa')" id="ncaaBtn" style="padding: 12px 32px; border-radius: 10px; border: none; background: transparent; color: #1d1d1f; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        🎓 NCAA
+                    </button>
+                </div>
+            </div>
+            <!-- NFL Pages -->
+            <div class="pages-grid" id="nflPages">
                 <a href="player-props-hub.html" class="page-card">
                     <div class="page-icon">
                         <i class="fas fa-robot"></i>
@@ -426,9 +439,72 @@
                     </p>
                 </a>
             </div>
+            
+            <!-- NCAA Pages -->
+            <div class="pages-grid" id="ncaaPages" style="display: none;">
+                <a href="ncaa-live-games.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h3 class="page-title">NCAA Live Games</h3>
+                    <p class="page-description">
+                        Real-time college football tracking with live scores and play-by-play updates
+                    </p>
+                </a>
+                
+                <a href="ncaa-betting.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="page-title">NCAA Betting</h3>
+                    <p class="page-description">
+                        College football betting analysis with AI picks and real-time odds
+                    </p>
+                </a>
+                
+                <a href="ncaa-analytics.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="page-title">NCAA Analytics</h3>
+                    <p class="page-description">
+                        Advanced statistical analysis for college football teams and players
+                    </p>
+                </a>
+                
+                <a href="ncaa-predictions.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-crystal-ball"></i>
+                    </div>
+                    <h3 class="page-title">NCAA Predictions</h3>
+                    <p class="page-description">
+                        AI-powered game predictions and outcome analysis
+                    </p>
+                </a>
+                
+                <a href="ncaa-rankings.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="page-title">NCAA Rankings</h3>
+                    <p class="page-description">
+                        Current college football rankings and conference standings
+                    </p>
+                </a>
+                
+                <a href="ncaa-upcoming-games.html" class="page-card">
+                    <div class="page-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="page-title">NCAA Upcoming</h3>
+                    <p class="page-description">
+                        Future matchup previews and scheduling information
+                    </p>
+                </a>
+            </div>
         </section>
 
-        <!-- Call to Action -->
+        <!-- CTA Section -->
         <section class="cta-section">
             <h2 class="text-headline mb-3">Ready to Transform Your NFL Analysis?</h2>
             <p class="text-body text-secondary mb-4">
@@ -494,6 +570,30 @@
                 // Site will still be functional even if animations fail
             }
         });
+        
+        // Sport toggle functionality
+        function showSport(sport) {
+            const nflPages = document.getElementById('nflPages');
+            const ncaaPages = document.getElementById('ncaaPages');
+            const nflBtn = document.getElementById('nflBtn');
+            const ncaaBtn = document.getElementById('ncaaBtn');
+            
+            if (sport === 'nfl') {
+                nflPages.style.display = 'grid';
+                ncaaPages.style.display = 'none';
+                nflBtn.style.background = '#007aff';
+                nflBtn.style.color = 'white';
+                ncaaBtn.style.background = 'transparent';
+                ncaaBtn.style.color = '#1d1d1f';
+            } else {
+                nflPages.style.display = 'none';
+                ncaaPages.style.display = 'grid';
+                ncaaBtn.style.background = '#007aff';
+                ncaaBtn.style.color = 'white';
+                nflBtn.style.background = 'transparent';
+                nflBtn.style.color = '#1d1d1f';
+            }
+        }
     </script>
 </body>
 </html>
