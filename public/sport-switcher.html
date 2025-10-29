@@ -1,0 +1,65 @@
+<!-- Sport Switcher Component -->
+<div id="sportSwitcher" style="background: rgba(0, 0, 0, 0.03); border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 12px 0; text-align: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);">
+    <div style="display: inline-flex; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 12px; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <button id="nflSportBtn" onclick="switchToSport('nfl')" style="padding: 8px 24px; border-radius: 8px; border: none; background: #007aff; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem;">
+            🏈 NFL
+        </button>
+        <button id="ncaaSportBtn" onclick="switchToSport('ncaa')" style="padding: 8px 24px; border-radius: 8px; border: none; background: transparent; color: #1d1d1f; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem;">
+            🎓 NCAA
+        </button>
+    </div>
+</div>
+
+<script>
+function switchToSport(sport) {
+    // Get current page name
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    // Map of NFL pages to NCAA equivalents
+    const pageMap = {
+        'nfl-betting.html': 'ncaa-betting.html',
+        'nfl-live-games.html': 'ncaa-live-games.html',
+        'nfl-analytics.html': 'ncaa-analytics.html',
+        'nfl-predictions.html': 'ncaa-predictions.html',
+        'nfl-upcoming-games.html': 'ncaa-upcoming-games.html',
+        'ncaa-betting.html': 'nfl-betting.html',
+        'ncaa-live-games.html': 'nfl-live-games.html',
+        'ncaa-analytics.html': 'nfl-analytics.html',
+        'ncaa-predictions.html': 'nfl-predictions.html',
+        'ncaa-upcoming-games.html': 'nfl-upcoming-games.html'
+    };
+    
+    // Determine target page
+    let targetPage;
+    if (sport === 'nfl' && currentPage.startsWith('ncaa')) {
+        targetPage = pageMap[currentPage] || 'nfl-betting.html';
+    } else if (sport === 'ncaa' && currentPage.startsWith('nfl')) {
+        targetPage = pageMap[currentPage] || 'ncaa-betting.html';
+    } else {
+        return; // Already on correct sport
+    }
+    
+    window.location.href = targetPage;
+}
+
+// Update button states based on current page
+(function() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const nflBtn = document.getElementById('nflSportBtn');
+    const ncaaBtn = document.getElementById('ncaaSportBtn');
+    
+    if (currentPage.startsWith('ncaa')) {
+        // NCAA page - highlight NCAA button
+        ncaaBtn.style.background = '#007aff';
+        ncaaBtn.style.color = 'white';
+        nflBtn.style.background = 'transparent';
+        nflBtn.style.color = '#1d1d1f';
+    } else {
+        // NFL page - highlight NFL button (default)
+        nflBtn.style.background = '#007aff';
+        nflBtn.style.color = 'white';
+        ncaaBtn.style.background = 'transparent';
+        ncaaBtn.style.color = '#1d1d1f';
+    }
+})();
+</script>
