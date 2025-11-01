@@ -3,28 +3,27 @@
  * Replaces external API calls with fast database queries
  * Works with the local SQLite database via a simple API layer
  */
-
 class NFLDatabaseClient {
     constructor(apiBaseUrl) {
-        // Force fallback mode when no local server is available
-        if (!apiBaseUrl) {
-            // Check if we're on production without a backend server
-            const isProduction = window.location.hostname === 'sundayedgepro.com' || 
-                               !window.location.hostname.includes('localhost');
-            
+        // Check if we're on production
+        const isProduction = window.location.hostname === 'sundayedgepro.com' || 
+                           !window.location.hostname.includes('localhost');
+        
+        // Determine the API URL and fallback mode
+        if (apiBaseUrl === null || apiBaseUrl === undefined || apiBaseUrl === '') {
             if (isProduction) {
-                // Try Railway first, but prepare for fallback
+                // Try Railway first, but enable fallback
                 this.apiBaseUrl = 'https://nflncaa-production.up.railway.app/api/nfl';
-                this.fallbackMode = true; // Flag to enable automatic fallback
-                console.log('🔄 Production mode - will use ESPN fallback if Railway unavailable');
+                this.fallbackMode = true;
+                console.log('🔄 Production mode - will fallback to hardcoded teams if Railway unavailable');
             } else {
-                // Local development - try local server
+                // Local development
                 this.apiBaseUrl = 'http://localhost:3001/api/nfl';
                 this.fallbackMode = false;
             }
         } else {
             this.apiBaseUrl = apiBaseUrl;
-            this.fallbackMode = false;
+            this.fallbackMode = isProduction; // Enable fallback in production even with custom URL
         }
         
         this.cache = new Map();
