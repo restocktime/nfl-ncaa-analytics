@@ -24,7 +24,8 @@ class RealMLAnalyzer {
             return window.productionConfig.getApiUrl();
         }
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        return isLocal ? 'http://localhost:3001/api/nfl' : `${window.location.origin}/api/nfl`;
+        // Don't pass a URL - let NFLDatabaseClient handle the fallback logic
+        return isLocal ? 'http://localhost:3001/api/nfl' : null;
     }
     
     async initialize() {
