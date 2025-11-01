@@ -8,24 +8,23 @@ class NFLDatabaseClient {
     constructor(apiBaseUrl) {
         // Force fallback mode when no local server is available
         if (!apiBaseUrl) {
-            if (typeof window !== 'undefined' && window.productionConfig) {
-                this.apiBaseUrl = window.productionConfig.getApiUrl();
+            // Check if we're on production without a backend server
+            const isProduction = window.location.hostname === 'sundayedgepro.com' || 
+                               !window.location.hostname.includes('localhost');
+            
+            if (isProduction) {
+                // Try Railway first, but prepare for fallback
+                this.apiBaseUrl = 'https://nflncaa-production.up.railway.app/api/nfl';
+                this.fallbackMode = true; // Flag to enable automatic fallback
+                console.log('🔄 Production mode - will use ESPN fallback if Railway unavailable');
             } else {
-                // Check if we're on production without a backend server
-                const isProduction = window.location.hostname === 'sundayedgepro.com' || 
-                                   !window.location.hostname.includes('localhost');
-                
-                if (isProduction) {
-                    // Use fallback mode for production sites without backend
-                    this.apiBaseUrl = 'fallback';
-                    console.log('🔄 Production detected - using fallback/ESPN mode');
-                } else {
-                    // Local development - try local server
-                    this.apiBaseUrl = 'http://localhost:3001/api/nfl';
-                }
+                // Local development - try local server
+                this.apiBaseUrl = 'http://localhost:3001/api/nfl';
+                this.fallbackMode = false;
             }
         } else {
             this.apiBaseUrl = apiBaseUrl;
+            this.fallbackMode = false;
         }
         
         this.cache = new Map();
@@ -54,19 +53,29 @@ class NFLDatabaseClient {
 
         try {
             const response = await fetch(`${this.apiBaseUrl}/teams`);
-            const result = await response.json();
             
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const result = await response.json();
             const teams = result.data || result;
+            
+            if (!teams || teams.length === 0) {
+                throw new Error('API returned empty teams list');
+            }
+            
             this.setCache(cacheKey, teams);
             console.log(`✅ Loaded ${teams.length} teams from database server`);
             return teams;
             
         } catch (error) {
-            console.error('❌ Failed to load teams from database:', error);
-            // Fallback to embedded data if API fails
-            if (window.NFL_FALLBACK_API) {
-                console.log('🔄 Falling back to embedded NFL teams data');
-                return window.NFL_FALLBACK_API.teams;
+            console.warn('⚠️ Database API unavailable, using ESPN data directly:', error.message);
+            
+            // In production/fallback mode, return hardcoded team list for now
+            if (this.fallbackMode) {
+                // Return minimal team list - ML system will fetch live data from ESPN as needed
+                return this.getHardcodedTeams();
             }
             return [];
         }
@@ -331,6 +340,44 @@ class NFLDatabaseClient {
     /**
      * Cache management
      */
+    getHardcodedTeams() {
+        // Minimal team list for fallback - ML system will fetch live stats from ESPN
+        return [
+            { id: 1, name: 'Kansas City Chiefs', abbreviation: 'KC' },
+            { id: 2, name: 'Buffalo Bills', abbreviation: 'BUF' },
+            { id: 3, name: 'Cincinnati Bengals', abbreviation: 'CIN' },
+            { id: 4, name: 'Baltimore Ravens', abbreviation: 'BAL' },
+            { id: 5, name: 'San Francisco 49ers', abbreviation: 'SF' },
+            { id: 6, name: 'Dallas Cowboys', abbreviation: 'DAL' },
+            { id: 7, name: 'Philadelphia Eagles', abbreviation: 'PHI' },
+            { id: 8, name: 'Detroit Lions', abbreviation: 'DET' },
+            { id: 9, name: 'Miami Dolphins', abbreviation: 'MIA' },
+            { id: 10, name: 'Los Angeles Chargers', abbreviation: 'LAC' },
+            { id: 11, name: 'Green Bay Packers', abbreviation: 'GB' },
+            { id: 12, name: 'Minnesota Vikings', abbreviation: 'MIN' },
+            { id: 13, name: 'Pittsburgh Steelers', abbreviation: 'PIT' },
+            { id: 14, name: 'Cleveland Browns', abbreviation: 'CLE' },
+            { id: 15, name: 'Houston Texans', abbreviation: 'HOU' },
+            { id: 16, name: 'Jacksonville Jaguars', abbreviation: 'JAX' },
+            { id: 17, name: 'Indianapolis Colts', abbreviation: 'IND' },
+            { id: 18, name: 'Tennessee Titans', abbreviation: 'TEN' },
+            { id: 19, name: 'Denver Broncos', abbreviation: 'DEN' },
+            { id: 20, name: 'Las Vegas Raiders', abbreviation: 'LV' },
+            { id: 21, name: 'Seattle Seahawks', abbreviation: 'SEA' },
+            { id: 22, name: 'Los Angeles Rams', abbreviation: 'LAR' },
+            { id: 23, name: 'Arizona Cardinals', abbreviation: 'ARI' },
+            { id: 24, name: 'Tampa Bay Buccaneers', abbreviation: 'TB' },
+            { id: 25, name: 'Atlanta Falcons', abbreviation: 'ATL' },
+            { id: 26, name: 'New Orleans Saints', abbreviation: 'NO' },
+            { id: 27, name: 'Carolina Panthers', abbreviation: 'CAR' },
+            { id: 28, name: 'Washington Commanders', abbreviation: 'WAS' },
+            { id: 29, name: 'New York Giants', abbreviation: 'NYG' },
+            { id: 30, name: 'New York Jets', abbreviation: 'NYJ' },
+            { id: 31, name: 'New England Patriots', abbreviation: 'NE' },
+            { id: 32, name: 'Chicago Bears', abbreviation: 'CHI' }
+        ];
+    }
+    
     isValidCache(key) {
         if (!this.cache.has(key)) return false;
         
