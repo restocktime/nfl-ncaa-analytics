@@ -404,13 +404,15 @@
 
         async function fetchOdds() {
             try {
-                // Note: Direct calls to Odds API will fail from browser due to CORS
-                // Backend proxy is required for odds data
+                // Try backend proxy first
                 const response = await fetch(`${BACKEND_URL}/api/proxy/odds/sports/americanfootball_ncaaf/odds?regions=us&markets=h2h,spreads,totals&oddsFormat=american`);
-                if (!response.ok) throw new Error('Odds API failed');
-                return await response.json();
+                if (!response.ok) throw new Error('Backend proxy unavailable');
+                const data = await response.json();
+                console.log('✅ Fetched real odds from API');
+                return data;
             } catch (error) {
-                console.error('Odds fetch error - backend proxy required:', error);
+                console.warn('⚠️ Backend unavailable, using ESPN lines fallback');
+                // Return empty to use ESPN's built-in odds
                 return [];
             }
         }
@@ -546,6 +548,34 @@
         }
 
         function findOddsForGame(event, oddsData) {
+            // First try to get odds from The Odds API data
+            if (oddsData && oddsData.length > 0) {
+                const apiOdds = findOddsFromAPI(event, oddsData);
+                if (apiOdds) return apiOdds;
+            }
+            
+            // Fallback: Try to get odds from ESPN's own data
+            const competition = event.competitions[0];
+            const espnOdds = competition.odds?.[0];
+            
+            if (espnOdds) {
+                const result = {};
+                
+                if (espnOdds.details) {
+                    result.spread = espnOdds.details;
+                }
+                if (espnOdds.overUnder) {
+                    result.total = espnOdds.overUnder;
+                }
+                
+                console.log('📊 Using ESPN odds:', result);
+                return Object.keys(result).length > 0 ? result : null;
+            }
+            
+            return null;
+        }
+        
+        function findOddsFromAPI(event, oddsData) {
             if (!oddsData || oddsData.length === 0) return null;
 
             const awayTeam = event.competitions[0].competitors.find(c => c.homeAway === 'away');
@@ -768,10 +798,16 @@
         }
         
         function generatePlayerProps(awayTeam, homeTeam) {
-            const awayQB = { name: `${awayTeam.team.abbreviation} QB`, passYds: 225 + Math.floor(Math.random() * 150), passTD: 2 + Math.floor(Math.random() * 2) };
-            const homeQB = { name: `${homeTeam.team.abbreviation} QB`, passYds: 240 + Math.floor(Math.random() * 140), passTD: 2 + Math.floor(Math.random() * 3) };
-            const awayRB = { name: `${awayTeam.team.abbreviation} RB1`, rushYds: 75 + Math.floor(Math.random() * 75), rushTD: Math.floor(Math.random() * 2) };
-            const homeRB = { name: `${homeTeam.team.abbreviation} RB1`, rushYds: 85 + Math.floor(Math.random() * 70), rushTD: Math.floor(Math.random() * 3) };
+            // Try to get real player names from roster
+            const awayQBName = getRealPlayerName(awayTeam, 'QB');
+            const homeQBName = getRealPlayerName(homeTeam, 'QB');
+            const awayRBName = getRealPlayerName(awayTeam, 'RB');
+            const homeRBName = getRealPlayerName(homeTeam, 'RB');
+            
+            const awayQB = { name: awayQBName, passYds: 225 + Math.floor(Math.random() * 150), passTD: 2 + Math.floor(Math.random() * 2) };
+            const homeQB = { name: homeQBName, passYds: 240 + Math.floor(Math.random() * 140), passTD: 2 + Math.floor(Math.random() * 3) };
+            const awayRB = { name: awayRBName, rushYds: 75 + Math.floor(Math.random() * 75), rushTD: Math.floor(Math.random() * 2) };
+            const homeRB = { name: homeRBName, rushYds: 85 + Math.floor(Math.random() * 70), rushTD: Math.floor(Math.random() * 3) };
             
             return `
                 <div class="analysis-section" style="margin-top: 20px; background: linear-gradient(135deg, #fff4e6 0%, #f5f5f7 100%);">
@@ -896,6 +932,23 @@
             `;
         }
 
+        function getRealPlayerName(team, position) {
+            // Check if team has roster/leaders data
+            if (team.leaders && team.leaders.length > 0) {
+                for (const leader of team.leaders) {
+                    if (position === 'QB' && leader.name?.includes('passing')) {
+                        return leader.leaders?.[0]?.athlete?.displayName || `${team.team.abbreviation} QB`;
+                    }
+                    if (position === 'RB' && leader.name?.includes('rushing')) {
+                        return leader.leaders?.[0]?.athlete?.displayName || `${team.team.abbreviation} RB`;
+                    }
+                }
+            }
+            
+            // Fallback to team abbreviation
+            return `${team.team.abbreviation} ${position}`;
+        }
+        
         function showError(message) {
             document.getElementById('report-content').innerHTML = `
                 <div class="report-section" style="text-align: center;">
