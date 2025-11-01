@@ -333,6 +333,110 @@ app.get('/api/proxy/odds/:endpoint(*)', async (req, res) => {
     }
 });
 
+// Comprehensive NCAAF Game Report endpoint
+app.get('/api/ncaaf/game-report', async (req, res) => {
+    try {
+        console.log('📊 Generating comprehensive NCAAF game report...');
+        
+        const apiKey = process.env.ODDS_API_KEY || '9de126998e0df996011a28e9527dd7b9';
+        
+        // Fetch data from multiple sources in parallel
+        const [scoreboardResponse, oddsResponse] = await Promise.all([
+            fetch('https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard', {
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (compatible; NCAAAnalytics/1.0)',
+                    'Referer': 'https://www.espn.com/'
+                }
+            }),
+            fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`)
+        ]);
+
+        const scoreboardData = await scoreboardResponse.json();
+        const oddsData = await oddsResponse.json();
+
+        // Compile comprehensive report
+        const report = {
+            generated_at: new Date().toISOString(),
+            games_count: scoreboardData.events?.length || 0,
+            scoreboard: scoreboardData,
+            odds: oddsData,
+            summary: {
+                live_games: scoreboardData.events?.filter(e => 
+                    e.competitions[0].status.type.name === 'STATUS_IN_PROGRESS'
+                ).length || 0,
+                completed_games: scoreboardData.events?.filter(e => 
+                    e.competitions[0].status.type.name === 'STATUS_FINAL'
+                ).length || 0,
+                scheduled_games: scoreboardData.events?.filter(e => 
+                    e.competitions[0].status.type.name === 'STATUS_SCHEDULED'
+                ).length || 0
+            }
+        };
+
+        console.log(`✅ Report generated: ${report.games_count} games found`);
+        res.json({ success: true, data: report });
+    } catch (error) {
+        console.error('❌ NCAAF game report error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to generate game report', 
+            message: error.message 
+        });
+    }
+});
+
+// NFL Game Report endpoint
+app.get('/api/nfl/game-report', async (req, res) => {
+    try {
+        console.log('📊 Generating comprehensive NFL game report...');
+        
+        const apiKey = process.env.ODDS_API_KEY || '9de126998e0df996011a28e9527dd7b9';
+        
+        const [scoreboardResponse, oddsResponse] = await Promise.all([
+            fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard', {
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (compatible; NFLAnalytics/1.0)',
+                    'Referer': 'https://www.espn.com/'
+                }
+            }),
+            fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`)
+        ]);
+
+        const scoreboardData = await scoreboardResponse.json();
+        const oddsData = await oddsResponse.json();
+
+        const report = {
+            generated_at: new Date().toISOString(),
+            games_count: scoreboardData.events?.length || 0,
+            scoreboard: scoreboardData,
+            odds: oddsData,
+            summary: {
+                live_games: scoreboardData.events?.filter(e => 
+                    e.competitions[0].status.type.name === 'STATUS_IN_PROGRESS'
+                ).length || 0,
+                completed_games: scoreboardData.events?.filter(e => 
+                    e.competitions[0].status.type.name === 'STATUS_FINAL'
+                ).length || 0,
+                scheduled_games: scoreboardData.events?.filter(e => 
+                    e.competitions[0].status.type.name === 'STATUS_SCHEDULED'
+                ).length || 0
+            }
+        };
+
+        console.log(`✅ Report generated: ${report.games_count} games found`);
+        res.json({ success: true, data: report });
+    } catch (error) {
+        console.error('❌ NFL game report error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to generate game report', 
+            message: error.message 
+        });
+    }
+});
+
 // Fallback route - serve index.html for client-side routing
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
