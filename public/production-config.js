@@ -52,14 +52,14 @@ class ProductionConfig {
             };
         }
         
-        // Fallback to same-domain API
+        // Fallback - return null to let NFLDatabaseClient handle it
         return {
             environment: 'production',
-            apiBaseUrl: `${protocol}//${hostname}${port ? ':' + port : ''}/api/nfl`,
-            databaseUrl: `${protocol}//${hostname}${port ? ':' + port : ''}`,
+            apiBaseUrl: null, // Let NFLDatabaseClient handle fallback
+            databaseUrl: null,
             isProduction: true,
             isDevelopment: false,
-            deploymentType: 'same-domain'
+            deploymentType: 'fallback'
         };
     }
     
